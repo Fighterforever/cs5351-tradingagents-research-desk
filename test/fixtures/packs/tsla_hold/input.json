@@ -1,0 +1,24 @@
+{
+  "instrument_context": "The instrument to analyze is `TSLA`.",
+  "past_context": "",
+  "initial_state": {
+    "company_of_interest": "TSLA",
+    "trade_date": "2026-06-10"
+  },
+  "identity": {
+    "company_name": "TSLA",
+    "sector": "Technology"
+  },
+  "data_snapshot": {
+    "get_stock_data": {
+      "{\"end_date\": \"2026-06-10\", \"start_date\": \"2026-06-01\", \"symbol\": \"TSLA\"}": "# Stock data for TSLA from 2026-06-01 to 2026-06-10\n# Total records: 8\n# Data retrieved on: 2026-06-10 00:00:00\n\nDate,Open,High,Low,Close,Adj Close,Volume\n2026-06-01,250.00,251.00,249.00,250.00,250.00,1000000\n2026-06-02,251.00,252.00,250.00,251.00,251.00,1000000\n2026-06-03,252.00,253.00,251.00,252.00,252.00,1000000\n2026-06-04,253.00,254.00,252.00,253.00,253.00,1000000\n2026-06-05,254.00,255.00,253.00,254.00,254.00,1000000\n2026-06-08,255.00,256.00,254.00,255.00,255.00,1000000\n2026-06-09,256.00,257.00,255.00,256.00,256.00,1000000\n2026-06-10,257.00,258.00,256.00,257.00,257.00,1000000\n"
+    },
+    "get_news": {
+      "{\"end_date\": \"2026-06-10\", \"start_date\": \"2026-06-01\", \"ticker\": \"TSLA\"}": "# News for TSLA\n\n2026-06-09: TSLA reports steady product demand.\n2026-06-08: No material regulatory filings.\n"
+    }
+  },
+  "memory_used": [],
+  "memory_sources": [
+    "test/fixtures"
+  ]
+}

@@ -25,3 +25,7 @@ The approval boundary stays outside all model tools. The extension retains respo
 ## Affected paths
 
 The accepted application scope includes `src/research_desk/config.py`, `graph_adapter.py`, `budget.py`, `evidence.py`, `context.py`, `models.py`, `replay.py`, `report.py`, `cli.py` and the application-owned `src/research_desk/eval/` adapters. `pyproject.toml` exposes the installed extension. These paths implement the already approved evidence, research-context and runtime-budget boundaries. The deterministic approval and ledger changes are specified more precisely in ADR-002. No upstream vendor implementation is replaced.
+
+## Development correction within the accepted boundary
+
+The initial two-case experiment established token reduction but failed citation acceptance. The initial past_context alone did not reach downstream roles, so the common evidence policy is now attached to every real model request in both arms through a plain delegate. Tool binding and structured output compose a LangChain Runnable preprocessor with the real client; they preserve the real returned messages and tool-call identities. Baseline substantive history stays unchanged. Compact retains its declared concise-output target. Runtime prompt version0.1.1 records this source-grounding correction, and the0.1.0 snapshot and original development outputs remain available. The rubric and thresholds are unchanged; the four reserved cases remain unopened until development is frozen.

@@ -115,8 +115,9 @@ requirements:
   - AT-05
 - id: INV-002
   type: invariant
-  statement: Unapproved, rejected, nontradeable, over-cap, insolvent, missing-price
-    and oversell proposals never alter the ledger.
+  statement: Unapproved, rejected, nontradeable, insolvent, missing-price and oversell
+    proposals never alter the ledger. Over-cap buys are rejected; valid risk-reducing
+    sells remain permitted when the remaining holding exceeds the buy cap.
   priority: Must
   fit:
     metric: unsafe_execution_escapes

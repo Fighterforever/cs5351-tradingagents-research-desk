@@ -3,7 +3,7 @@
 | ID | Requirement | Statement | Enforcer | Verification | Operational fallback |
 |---|---|---|---|---|---|
 | I-AUTH | INV-001 | Ledger mutations require exact approved terms | review, storage | AT-03/05 | Keep ledger unchanged; set REVIEW_REQUIRED and request a fresh review |
-| I-POLICY | INV-002 | Cash, total-position and no-short limits hold after a trade | policy | AT-04/05 | Reject transaction and retain named failed checks |
+| I-POLICY | INV-002 | Cash stays nonnegative and sells never exceed owned shares. A buy must leave total ticker holdings at or below 10% of current equity; a valid sale may reduce an already overweight holding even if it remains above the cap. | policy | AT-04/05 | Reject transaction and retain named failed checks |
 | I-ADVISORY | INV-002 | Research cannot grant itself approval or execute | graph_adapter, CLI boundary | AT-04 | Treat model instructions as report text; never route them to review/execute |
 | I-COMPLETE | FR-001 | A complete package has the records required for replay | evidence | AT-01 | Reject incomplete replay; preserve partial run for diagnosis |
 | I-CUTOFF | SEC-001 | Historical inputs are eligible at the analysis cutoff | context, frozen corpus | AT-02 | Exclude ineligible records and mark unknown availability |

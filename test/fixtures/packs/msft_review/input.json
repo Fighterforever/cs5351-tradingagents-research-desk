@@ -1,0 +1,24 @@
+{
+  "instrument_context": "The instrument to analyze is `MSFT`.",
+  "past_context": "",
+  "initial_state": {
+    "company_of_interest": "MSFT",
+    "trade_date": "2026-06-10"
+  },
+  "identity": {
+    "company_name": "MSFT",
+    "sector": "Technology"
+  },
+  "data_snapshot": {
+    "get_stock_data": {
+      "{\"end_date\": \"2026-06-10\", \"start_date\": \"2026-06-01\", \"symbol\": \"MSFT\"}": "# Stock data for MSFT from 2026-06-01 to 2026-06-10\n# Total records: 8\n# Data retrieved on: 2026-06-10 00:00:00\n\nDate,Open,High,Low,Close,Adj Close,Volume\n2026-06-01,400.00,401.00,399.00,400.00,400.00,1000000\n2026-06-02,401.00,402.00,400.00,401.00,401.00,1000000\n2026-06-03,402.00,403.00,401.00,402.00,402.00,1000000\n2026-06-04,403.00,404.00,402.00,403.00,403.00,1000000\n2026-06-05,404.00,405.00,403.00,404.00,404.00,1000000\n2026-06-08,405.00,406.00,404.00,405.00,405.00,1000000\n2026-06-09,406.00,407.00,405.00,406.00,406.00,1000000\n2026-06-10,407.00,408.00,406.00,407.00,407.00,1000000\n"
+    },
+    "get_news": {
+      "{\"end_date\": \"2026-06-10\", \"start_date\": \"2026-06-01\", \"ticker\": \"MSFT\"}": "# News for MSFT\n\n2026-06-09: MSFT reports steady product demand.\n2026-06-08: No material regulatory filings.\n"
+    }
+  },
+  "memory_used": [],
+  "memory_sources": [
+    "test/fixtures"
+  ]
+}

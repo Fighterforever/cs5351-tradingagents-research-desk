@@ -1,0 +1,30 @@
+{
+  "company_of_interest": "MSFT",
+  "trade_date": "2026-06-10",
+  "instrument_context": "The instrument to analyze is `AAPL`.",
+  "past_context": "",
+  "market_report": "**Market Analysis of AAPL**\n\nAAPL trends higher with strong volume. The last close is 100.00. RSI is 58 (neutral-to-bullish).",
+  "news_report": "**News Analysis of AAPL**\n\nNo negative regulatory headlines; product cycle momentum continues.",
+  "investment_debate_state": {
+    "bull_history": "Bull: AAPL fundamentals are solid.",
+    "bear_history": "Bear: valuation is stretched.",
+    "history": "Debate complete.",
+    "current_response": "",
+    "judge_decision": "**Recommendation**: Buy\n\n**Rationale**: Fundamentals.",
+    "count": 1
+  },
+  "trader_investment_plan": "**Action**: Buy\n\n**Reasoning**: Momentum confirms the research plan.\n\nFINAL TRANSACTION PROPOSAL: **BUY**",
+  "risk_debate_state": {
+    "aggressive_history": "Aggressive: size it up.",
+    "conservative_history": "Conservative: keep it modest.",
+    "neutral_history": "Neutral: balanced.",
+    "history": "Risk debate complete.",
+    "latest_speaker": "Portfolio Manager",
+    "current_aggressive_response": "",
+    "current_conservative_response": "",
+    "current_neutral_response": "",
+    "judge_decision": "**Rating**: Buy\n\n**Executive Summary**: Buy modest size.\n\n**Investment Thesis**: Supported by evidence.",
+    "count": 1
+  },
+  "final_trade_decision": "The analysis is ambiguous; no clear rating could be established."
+}

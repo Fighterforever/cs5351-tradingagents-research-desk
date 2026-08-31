@@ -1,0 +1,193 @@
+schema_version: 1.0.0
+project: TradingAgents Research Desk
+decision_owner: leo
+entries:
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Generate the approved evidence/review/context extension and meaningful offline tests
+  session: ses_fa849396effeNN2dsVIpTIaax8
+  prompt: transcripts/prompts/project-01-offline.md
+  scope:
+  - src/research_desk
+  - test/offline
+  - pyproject.toml
+  review: docs/review-memo.md
+  evidence: transcripts/project-01.full.json
+  outcome: Offline slice47 passed; review required exact approval, total position and full-input
+    compaction fixes
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Apply substantive review corrections and implement the real fixed-corpus evaluation
+    adapter
+  session: ses_fa83026e7ffe84kFIOlxvQB3aB
+  prompt: transcripts/prompts/project-02-live.md
+  scope:
+  - src/research_desk
+  - test/offline
+  - test/live
+  - test/fixtures
+  review: docs/architecture/adr/002-exact-approval-and-total-position.md
+  outcome: Fixed-corpus adapter and review corrections generated; concrete integration corrections
+    continued in the next recorded session
+  evidence: transcripts/project-02.full.json
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Implement the six offline CI gates against approved requirements and real project
+    interfaces
+  session: ses_fa82cafc9ffeeAkOozPwPQ41De
+  prompt: transcripts/prompts/project-ci.md
+  scope:
+  - scripts
+  - .github/workflows/research-desk.yml
+  - docs/req/req-schema.json
+  review: docs/ci-gates.md
+  evidence: transcripts/project-ci.full.json
+  outcome: Six gates generated; coordinator requested concrete approval, diff and semantic-interface
+    corrections before the complete local run
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Prepare and install ADR-003 role permissions, preserve upstream ownership, and pin
+    CI to the existing dependency constraints
+  session: ses_fa8181668ffeCa1wxagTDCdSli
+  prompt: transcripts/prompts/project-permissions.md
+  scope:
+  - opencode.json
+  - .opencode/permissions.jsonc
+  - .opencode/config-schema.json
+  - scripts/check_permissions.py
+  - scripts/check_static.py
+  - .github/workflows/research-desk.yml
+  - test/offline/test_evidence_message_roundtrip.py
+  review: docs/architecture/adr/003-effective-agent-permissions.md
+  evidence: transcripts/project-permissions.full.json
+  outcome: Candidate and manifest passed the official schema and role-boundary checks. Exact
+    shell commands closed the identified output-path bypasses. After source freeze, OpenCode
+    installed the accepted configuration at 2026-08-31T13:23:25.861000+00:00 and verified the
+    copy matched the candidate. Locked CI constraints and the authorized unused-import correction
+    are complete; the real runtime probe recorded an explicit denial.
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Demonstrate that explicit protected-path permissions remain enforced with --auto
+    using the inactive candidate only in this process
+  session: ses_fa80c9b43ffeQxAOOAzm0TfP7m
+  prompt: transcripts/prompts/project-permission-probe.md
+  scope:
+  - transcripts/project-permission-probe.jsonl
+  review: docs/ci-gates.md
+  evidence: transcripts/project-permission-probe.full.json
+  outcome: The actual write tool rejected docs/process/permission-probe.txt; no probe file was
+    created and no fallback tool was attempted
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Generate one local runner that captures the six real gate commands and the six AT-08
+    expected rejections against explicit Git revisions
+  session: ses_fa80bcfeaffesU8pYhL8W33pWk
+  prompt: transcripts/prompts/project-ci-runner.md
+  scope:
+  - scripts/run_gates.py
+  review: docs/ci-gates.md
+  evidence: transcripts/project-ci-runner.full.json
+  outcome: Runner generated; focused lint and help invocation passed. Actual complete gate run
+    awaits the final committed source scope.
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Resolve the four specifically authorized files' actual final lint findings while preserving source behavior and test side effects
+  session: ses_fa8062ac3ffeKfXEYAXA7301Hn
+  prompt: transcripts/prompts/project-ci-lint-finish.md
+  scope:
+  - src/research_desk/budget.py
+  - test/offline/test_at05_version_recheck.py
+  - test/offline/test_at06_budget_context.py
+  - test/offline/test_live_fixes.py
+  review: docs/ci-gates.md
+  evidence: transcripts/project-ci-lint-finish.full.json
+  outcome: Combined one equivalent short-circuit guard, removed two unused assignment targets while retaining calls, and sorted or removed unused imports. Focused Ruff passed; live.py was untouched.
+- date: '2026-08-31'
+  tool: Codex coordinating workflow
+  model: Codex
+  purpose: Read course and upstream contracts, specify requirements/architecture, approve scoped
+    tests under leo, write bounded OpenCode prompts and interpret actual evidence
+  scope:
+  - AGENTS.md
+  - Prompt.md
+  - architecture-blueprint.md
+  - docs
+  - transcripts/prompts
+  - Report.md
+  - transcripts/annotations
+  - transcripts/leo-leo.md
+  review: docs/process/APPROVAL_PACKET.md
+  evidence: transcripts/leo-leo.md
+  outcome: Requirements, approval chronology, source review and report draft; measured results
+    filled only from actual execution
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Repair real message/tool contracts and finish the live evaluation commands
+  session: ses_fa825e6e8fferDOiutg4e8ECO8
+  prompt: transcripts/prompts/project-04-ready-live.md
+  scope:
+  - src/research_desk
+  - test/offline
+  - test/live
+  - prompts
+  review: docs/review-memo.md
+  evidence: transcripts/project-04.full.json
+  outcome: Real graph configuration, message/tool contracts, complete frozen evidence, valid
+    sales and opt-in live entry implemented; 66 offline tests and application mypy passed before
+    the separate message roundtrip additions
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Fix evidence export of real LangChain messages and preserve numeric token usage during
+    credential redaction
+  session: ses_fa817dbb4ffescaq14SFvAqA2I
+  prompt: transcripts/prompts/project-evidence-fix.md
+  scope:
+  - src/research_desk/evidence.py
+  - test/offline/test_evidence_message_roundtrip.py
+  review: docs/bug-diary.md
+  evidence: transcripts/project-evidence-fix.full.json
+  outcome: Two directory/ZIP message-roundtrip regressions and eight existing offline replay
+    tests passed; initial CallRecord test assertion corrected against its declared model
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Repair actual development citation failure at every real model request in both arms;
+    retain honest source attribution and baseline history
+  session: ses_fa80e5e8bffei1CBiJ8vadPRtm
+  prompt: transcripts/prompts/project-09-grounding.md
+  follow_up_prompt: transcripts/prompts/project-10-grounding-precision.md
+  scope:
+  - src/research_desk/context.py
+  - src/research_desk/eval/compact_delegate.py
+  - src/research_desk/graph_adapter.py
+  - src/research_desk/eval/frozen_provider.py
+  - src/research_desk/config.py
+  - test/offline/test_common_grounding_delegate.py
+  - prompts/runtime-prompts-v0.1.1.yaml
+  review: docs/architecture/adr/001-application-extension.md
+  evidence: transcripts/project-09.full.json.gz
+  outcome: Shared source layer reaches plain/tools/structured paths in both modes;72 offline
+    passed before final prompt precision correction,5 focused passed after it; mypy clean across18
+    files. Root reruns development before held-out evaluation.
+
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
+  purpose: Preserve actual report role context and verify reported closing prices against evidence
+  session: ses_fa80b1435ffeLfgOoIjVIDIpKP
+  prompt: transcripts/prompts/project-report-check-fix.md
+  scope:
+  - src/research_desk/eval/live.py
+  - test/offline/test_evaluation_report_checks.py
+  review: docs/bug-diary.md
+  evidence: transcripts/project-report-check.full.json.gz
+  outcome: Twenty-four focused report and exact-price checks passed; original LLM rubric and thresholds unchanged; repeated inspection was redirected to bounded implementation

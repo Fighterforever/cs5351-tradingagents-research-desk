@@ -1,0 +1,129 @@
+# Runtime prompt & setting review snapshot - v0.1.1 (common grounding correction)
+#
+# Status: REVIEW SNAPSHOT ONLY - the running Python source is authoritative.
+#
+# This YAML records the *actual current* runtime prompts and grounding/compaction
+# settings so reviewers can inspect what the running graph sends and how grounding
+# works. It is a review aid derived by reading the source listed under
+# `source_paths`; it does not define behavior. If any line here disagrees with the
+# source, the source wins. This is the corrected snapshot (0.1.1); the initial
+# development snapshot remains unchanged at prompts/runtime-prompts-v0.1.0.yaml.
+
+prompt_version: research-desk-0.1.1
+prompt_version_source: research_desk.config.ResearchDeskSettings.prompt_version
+
+source_paths: |
+  - common grounding layer: src/research_desk/context.py
+      build_common_grounding (per-case ticker/identity/date/close, source-ID
+      registry, official earnings notes, citation & grounding rules)
+      market_source_id (market-<ticker>)
+  - per-message grounding + compaction delegate: src/research_desk/eval/compact_delegate.py
+      GroundingDelegate (invoke / bind_tools / with_structured_output via
+      RunnableLambda composition), delegate_transform, compact_transform,
+      wrap_for_mode (applied to BOTH modes)
+  - graph adapter: src/research_desk/graph_adapter.py
+      _build_graph (wraps both modes, rebuilds GraphSetup with original
+      memory/tool/conditional objects), _available_sources_from_provider
+  - frozen market source labels: src/research_desk/eval/frozen_provider.py
+      _market_source_label (source_id: market-<ticker> in stock data /
+      indicators / verified snapshot headers)
+  - live config: src/research_desk/eval/live.py
+      _graph_config (provider/model/settings), _judge_prompt (isolated evaluator)
+  - eval runner: src/research_desk/graph_adapter.py
+      _build_graph, _assemble_context (standing constraints)
+
+mode_common: |
+  The identical COMMON grounding layer is prepended to EVERY real LLM request in
+  BOTH modes (baseline and compact):
+  - Per-case: ticker, legal company identity, analysis date, frozen latest close
+    (with market-<ticker> attribution) when actually present.
+  - Source-ID registry, registered ONLY when the evidence actually exists:
+      src-<ticker>   = official earnings news  (only when source_id + news notes)
+      market-<ticker> = market CSV / technical (only when market/verified present)
+  - With no frozen registry (ordinary live path), no hardcoded src-<ticker> claim;
+    attribution is to the actual observed tool results and unavailable facts are
+    reported as unknown.
+  - Official earnings notes are carried verbatim when present.
+  - Grounding rules: cite the actual source ID inline (<supported claim>
+    [<actual source ID>]); a derived number is a CALCULATION with its actual
+    operands and citations; unknown ratios/multiples/estimates stay unknown;
+    price targets/entry/stops are labeled assumptions; each role identifies
+    itself and only the final Portfolio Manager labels FINAL TRANSACTION PROPOSAL;
+    facts must come from the grounding OR subsequent actual tool results and be
+    known by the analysis date.
+  - Response contract (rule 8): the final research/recommendation rationale
+    restates ticker, analysis date and frozen latest close with market attribution
+    when present.
+  No numeric or company-specific example values appear in the instruction prose.
+
+mode_baseline: |
+  Grounding only; substantive history unchanged:
+  - wrap_for_mode(context_mode=baseline) wraps the real client in a GroundingDelegate
+    that prepends the common grounding layer and delegates unchanged otherwise
+    (no trimming, no rewrite, no padding).
+  - ContextAssembler.assemble(BASELINE) preserves the original memory text
+    verbatim (no de-duplication, no rewrite).
+  - DEFAULT_HARD_MAX_CHARS = 20000 bounds total assembled length as a pure
+    safety net (normally does not fire); deduplicated = 0.
+  - Standing constraints are prepended (see standing_constraints_header).
+
+mode_compact: |
+  Grounding + trim + de-duplicate + concise-output instruction:
+  - wrap_for_mode(context_mode=compact) wraps the real client in the same
+    GroundingDelegate; delegate_transform prepends the grounding layer, then
+    compact_transform trims/de-duplicates the substantive messages and appends a
+    concise-output instruction.
+  - compact_transform thresholds: max_output_tokens=600, max_msg_chars=1500,
+    fact_floor_chars=6000.
+  - Message integrity: AIMessage.tool_calls and ToolMessage.tool_call_id are
+    preserved (rebuilt via model_copy(update={content}) only); a ToolMessage
+    answering an assistant tool call is never de-duplicated away; evidence
+    messages (carrying a _FACT_MARKERS token) are not truncated.
+  - ContextAssembler.assemble(COMPACT): dedup_repeated_blocks removes exact
+    duplicate paragraph blocks; DEFAULT_COMPACT_MAX_CHARS=6000 bounds history;
+    DEFAULT_MAX_ENTRIES=5 caps recent memory entries.
+  - Output-instruction appended as a SystemMessage (see output_instruction).
+
+delegate_contract: |
+  GroundingDelegate is a small plain delegate around the real LangChain client:
+  - invoke: transforms and delegates to the real client.
+  - bind_tools: delegates to the real client's binding and composes a
+    RunnableLambda preprocessor with the returned Runnable.
+  - with_structured_output: likewise composes the real structured Runnable with
+    the same RunnableLambda preprocessor.
+  No dynamic __class__ mutation, no global factory patch, no dropped tool
+  responses; the real client's AIMessage.tool_calls and ToolMessage.tool_call_id
+  are preserved exactly.
+
+output_instruction: |-
+  Respond concisely: keep your entire answer within {max_tokens} tokens.
+  Do not repeat the input; only output the requested analysis.
+  max_tokens = 600 for compact roles; the provider max_tokens cap stays 1800
+  in both arms (eval/live.py::OUTPUT_CAP).
+
+standing_constraints_header: |-
+  STANDING ANALYSIS CONSTRAINTS (always true for this run):
+  - Instrument identity: <ticker>
+  - Company: <company_name>            (when known)
+  - Sector/industry: <sector> / <industry>   (when known)
+  - Analysis date: <trade_date>
+  - Key price (label): <price>         (per available price, e.g. last_close)
+  - Standing constraint - <key>: <value>   (initial_cash, max_single_position,
+                                            integer_shares, no_shorting, ...)
+  - Current task: <current_task>
+
+compact_fact_markers:
+  - STANDING ANALYSIS CONSTRAINTS
+  - last_close
+  - NO_DATA_AVAILABLE
+  - source_id
+  - src-
+  - USD
+  - "% of equity"
+  - integer_shares
+  - no_shorting
+  - Analysis date
+  - "Company:"
+  - Instrument identity
+  - trade_date
+  - past_context

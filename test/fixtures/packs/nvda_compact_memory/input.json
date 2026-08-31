@@ -1,0 +1,57 @@
+{
+  "instrument_context": "The instrument to analyze is `NVDA`.",
+  "past_context": "",
+  "initial_state": {
+    "company_of_interest": "NVDA",
+    "trade_date": "2026-06-10"
+  },
+  "identity": {
+    "company_name": "NVDA",
+    "sector": "Technology"
+  },
+  "data_snapshot": {
+    "get_stock_data": {
+      "{\"end_date\": \"2026-06-10\", \"start_date\": \"2026-06-01\", \"symbol\": \"NVDA\"}": "# Stock data for NVDA from 2026-06-01 to 2026-06-10\n# Total records: 8\n# Data retrieved on: 2026-06-10 00:00:00\n\nDate,Open,High,Low,Close,Adj Close,Volume\n2026-06-01,130.00,131.00,129.00,130.00,130.00,1000000\n2026-06-02,131.00,132.00,130.00,131.00,131.00,1000000\n2026-06-03,132.00,133.00,131.00,132.00,132.00,1000000\n2026-06-04,133.00,134.00,132.00,133.00,133.00,1000000\n2026-06-05,134.00,135.00,133.00,134.00,134.00,1000000\n2026-06-08,135.00,136.00,134.00,135.00,135.00,1000000\n2026-06-09,136.00,137.00,135.00,136.00,136.00,1000000\n2026-06-10,137.00,138.00,136.00,137.00,137.00,1000000\n"
+    },
+    "get_news": {
+      "{\"end_date\": \"2026-06-10\", \"start_date\": \"2026-06-01\", \"ticker\": \"NVDA\"}": "# News for NVDA\n\n2026-06-09: NVDA reports steady product demand.\n2026-06-08: No material regulatory filings.\n"
+    }
+  },
+  "memory_used": [
+    {
+      "date": "2026-05-20",
+      "ticker": "NVDA",
+      "rating": "Buy",
+      "decision": "DECISION:\nBuy on strength.",
+      "reflection": "Momentum signals worked well; keep the same discipline.",
+      "resolved": "2026-06-01"
+    },
+    {
+      "date": "2026-04-15",
+      "ticker": "NVDA",
+      "rating": "Overweight",
+      "decision": "DECISION:\nOverweight on data-center demand.",
+      "reflection": "Momentum signals worked well; keep the same discipline.",
+      "resolved": "2026-04-30"
+    },
+    {
+      "date": "2026-03-01",
+      "ticker": "NVDA",
+      "rating": "Hold",
+      "decision": "DECISION:\nHold; valuation elevated.",
+      "reflection": "Momentum signals worked well; keep the same discipline.",
+      "resolved": "2026-03-15"
+    },
+    {
+      "date": "2026-02-10",
+      "ticker": "NVDA",
+      "rating": "Overweight",
+      "decision": "DECISION:\nOverweight on data-center demand.",
+      "reflection": "Momentum signals worked well; keep the same discipline.",
+      "resolved": "2026-02-25"
+    }
+  ],
+  "memory_sources": [
+    "test/fixtures"
+  ]
+}

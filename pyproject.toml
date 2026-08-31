@@ -47,20 +47,25 @@ bedrock = [
 
 [project.scripts]
 tradingagents = "cli.main:app"
+research-desk = "research_desk.cli:app"
+research_desk = "research_desk.cli:app"
 
 [tool.setuptools.packages.find]
-include = ["tradingagents*", "cli*"]
+where = ["src", "."]
+include = ["tradingagents*", "cli*", "research_desk*"]
 
 [tool.setuptools.package-data]
 cli = ["static/*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "test"]
 addopts = "-ra --strict-markers"
 markers = [
     "unit: fast isolated unit tests",
     "integration: tests requiring external services",
     "smoke: quick sanity-check tests",
+    "offline: research-desk offline slice tests (no network, no live API)",
+    "live: research-desk tests that require live LLM API access",
 ]
 filterwarnings = [
     "ignore::DeprecationWarning",

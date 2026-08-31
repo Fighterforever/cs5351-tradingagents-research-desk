@@ -1,0 +1,23 @@
+{
+  "run_id": "fixture-nvda-compact-memory",
+  "ticker": "NVDA",
+  "trade_date": "2026-06-10",
+  "asset_type": "stock",
+  "analysts": [
+    "market",
+    "news"
+  ],
+  "context_mode": "baseline",
+  "data_mode": "live",
+  "outcome": "completed",
+  "signal": "Buy",
+  "prompt_version": "research-desk-0.1.0",
+  "package_schema_version": 1,
+  "created_at": "2026-08-31T12:28:02.631307Z",
+  "operator": "research-desk",
+  "model_quick": "deepseek-chat",
+  "model_deep": "deepseek-reasoner",
+  "budget_max_calls": null,
+  "source_pack": null,
+  "reason": null
+}

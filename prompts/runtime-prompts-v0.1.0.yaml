@@ -1,0 +1,85 @@
+# Runtime prompt & setting review snapshot
+#
+# Status: REVIEW SNAPSHOT ONLY - the running Python source is authoritative.
+#
+# This YAML records the *actual current* runtime prompts and compaction settings
+# so reviewers can inspect what the running graph sends and how compaction works.
+# It is a review aid derived by reading the source listed under `source_paths`;
+# it does not define behavior. If any line here disagrees with the source, the
+# source wins. There is deliberately ONE prompt version - the currently running
+# one. No second, historical prompt version is invented here.
+
+prompt_version: research-desk-0.1.0
+prompt_version_source: research_desk.config.ResearchDeskSettings.prompt_version
+
+source_paths: |
+  - context assembly: src/research_desk/context.py
+      StandingConstraints.header_text (injected standing-constraints header)
+      ContextAssembler.assemble / assemble_from_entries (baseline vs compact)
+  - per-message compaction delegate: src/research_desk/eval/compact_delegate.py
+      _OUTPUT_INSTRUCTION, compact_transform thresholds, wrap_for_mode
+      (baseline identity / compact delegate)
+  - live config: src/research_desk/eval/live.py
+      _graph_config (provider/model/settings), _judge_prompt (isolated evaluator)
+  - eval runner: src/research_desk/graph_adapter.py
+      _build_graph (compact wrap + GraphSetup rebuild),
+      _assemble_context (standing constraints)
+
+mode_baseline: |
+  Identity, no transform:
+  - wrap_for_mode(context_mode=baseline) returns the SAME client object
+    unchanged - no wrap, no rewrite, no padding.
+  - ContextAssembler.assemble(BASELINE) preserves the original memory text
+    verbatim (no de-duplication, no rewrite).
+  - DEFAULT_HARD_MAX_CHARS = 20000 bounds total assembled length as a pure
+    safety net (normally does not fire); deduplicated = 0.
+  - Standing constraints are prepended (see standing_constraints_header).
+
+mode_compact: |
+  Trim + de-duplicate + concise-output instruction:
+  - wrap_for_mode(context_mode=compact) wraps the real client in a declared
+    *CompactionDelegate subclass (built via model_copy) whose invoke transforms
+    each per-agent prompt, then calls the real client.
+  - compact_transform thresholds: max_output_tokens=600, max_msg_chars=1500,
+    fact_floor_chars=6000.
+  - Message integrity: AIMessage.tool_calls and ToolMessage.tool_call_id are
+    preserved (rebuilt via model_copy(update={content}) only); a ToolMessage
+    answering an assistant tool call is never de-duplicated away; evidence
+    messages (carrying a _FACT_MARKERS token) are not truncated.
+  - ContextAssembler.assemble(COMPACT): dedup_repeated_blocks removes exact
+    duplicate paragraph blocks; DEFAULT_COMPACT_MAX_CHARS=6000 bounds history;
+    DEFAULT_MAX_ENTRIES=5 caps recent memory entries.
+  - Output-instruction appended as a SystemMessage (see output_instruction).
+
+output_instruction: |-
+  Respond concisely: keep your entire answer within {max_tokens} tokens.
+  Do not repeat the input; only output the requested analysis.
+  max_tokens = 600 for compact roles; the provider max_tokens cap stays 1800
+  in both arms (eval/live.py::OUTPUT_CAP).
+
+standing_constraints_header: |-
+  STANDING ANALYSIS CONSTRAINTS (always true for this run):
+  - Instrument identity: <ticker>
+  - Company: <company_name>            (when known)
+  - Sector/industry: <sector> / <industry>   (when known)
+  - Analysis date: <trade_date>
+  - Key price (label): <price>         (per available price, e.g. last_close)
+  - Standing constraint - <key>: <value>   (initial_cash, max_single_position,
+                                            integer_shares, no_shorting, ...)
+  - Current task: <current_task>
+
+compact_fact_markers:
+  - STANDING ANALYSIS CONSTRAINTS
+  - last_close
+  - NO_DATA_AVAILABLE
+  - source_id
+  - src-
+  - USD
+  - "% of equity"
+  - integer_shares
+  - no_shorting
+  - Analysis date
+  - "Company:"
+  - Instrument identity
+  - trade_date
+  - past_context
