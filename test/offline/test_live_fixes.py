@@ -345,7 +345,7 @@ def test_judge_raw_persists_tool_call_message(monkeypatch):
     raw, score = _llm_judge(
         {"ticker": "AAPL", "analysis_date": "2026-07-31", "latest_close": 308.91, "source_id": "src-aapl", "notes": ["n"]},
         "report text", [{"check": "x", "passed": True, "detail": "d"}],
-        available_sources={}, data_snapshot={},
+        available_sources={}, events=[],
     )
     # Full raw message with tool_calls preserved (content may be empty).
     assert raw["raw_message"]["tool_calls"][0]["name"] == "the_tool"

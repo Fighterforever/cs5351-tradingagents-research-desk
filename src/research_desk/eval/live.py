@@ -374,7 +374,7 @@ def run_judge_case(
             report_text,
             deterministic,
             available_sources=pack.input.available_sources or {},
-            data_snapshot=pack.input.data_snapshot,
+            events=pack.events,
         )
         arm_judge_dir = out / "judge" / ticker / mode
         arm_judge_dir.mkdir(parents=True, exist_ok=True)
@@ -385,14 +385,30 @@ def run_judge_case(
     return judged
 
 
-def _observed_tools_text(data_snapshot: dict[str, Any]) -> str:
-    """The actual tool outputs recorded in this pack (observations, not fake calls)."""
+def _observed_tools_text(events) -> str:
+    """Every actual ``tool_result`` payload in the event log, in event order.
+
+    ``input.data_snapshot`` is a lossy fallback projection keyed by tool
+    arguments and keeps only the last output for a repeated tool name, so the
+    judge reads the authoritative event log instead. Each output keeps its
+    tool/source name and event sequence; an exact duplicate (same tool, same
+    result) is not repeated, but different results from the same tool survive.
+    """
     lines: list[str] = []
-    for tool, results in (data_snapshot or {}).items():
-        lines.append(f"## observed tool output: {tool}")
-        for result in results.values():
-            if isinstance(result, str) and result.strip():
-                lines.append(result)
+    seen: set[tuple[str, str]] = set()
+    for ev in events:
+        if getattr(ev, "kind", None) != "tool_result":
+            continue
+        payload = getattr(ev, "payload", None) or {}
+        name = payload.get("name") or "unknown"
+        result = payload.get("result")
+        if not isinstance(result, str) or not result.strip():
+            continue
+        if (name, result) in seen:
+            continue
+        seen.add((name, result))
+        lines.append(f"## observed tool output: {name} (event {getattr(ev, 'seq', '?')})")
+        lines.append(result)
     return "\n".join(lines)
 
 
@@ -401,15 +417,15 @@ def _judge_prompt(
     report_text: str,
     deterministic: list[dict],
     available_sources: dict[str, Any],
-    data_snapshot: dict[str, Any],
+    events,
 ) -> str:
     """Build the judge prompt from the *actual* frozen evidence captured in this pack.
 
     Supplies the official earnings notes, the fixed ticker/date/identity and
     source IDs, plus the real market evidence (market CSV, verified snapshot and
-    official news) and the observed tool outputs captured in the pack — so the
-    judge can validate technical/history claims in the report. No baseline/compact
-    identity is revealed.
+    official news) and every observed tool result recorded in the event log — so
+    the judge can validate technical/history claims in the report. No
+    baseline/compact identity is revealed.
     """
     identity = available_sources.get("identity") or case.get("identity", {})
     notes = "\n".join(f"- {n}" for n in case.get("notes", []))
@@ -420,7 +436,7 @@ def _judge_prompt(
     market_evidence = str(available_sources.get("market", "")).strip()
     verified = str(available_sources.get("verified_snapshot", "")).strip()
     news = str(available_sources.get("news", "")).strip()
-    observed = _observed_tools_text(data_snapshot).strip()
+    observed = _observed_tools_text(events).strip()
 
     return f"""You are an independent equity-research evaluator (a separate role from the analyst). You are judging a single research report for a single equity case. You have no knowledge of which context configuration produced it.
 
@@ -480,7 +496,7 @@ def _llm_judge(
     deterministic: list[dict],
     *,
     available_sources: dict[str, Any],
-    data_snapshot: dict[str, Any],
+    events,
 ):
     """Run the real DeepSeek evaluator; returns (raw, score) without fabrication."""
     from pydantic import BaseModel, Field, model_validator
@@ -515,9 +531,7 @@ def _llm_judge(
     if hasattr(llm, "extra_body"):
         llm.extra_body = dict(THINKING_DISABLED_EXTRA_BODY)
 
-    prompt = _judge_prompt(
-        case, report_text, deterministic, available_sources, data_snapshot
-    )
+    prompt = _judge_prompt(case, report_text, deterministic, available_sources, events)
     structured = llm.with_structured_output(_Judge, include_raw=True)
     try:
         raw_out = structured.invoke(prompt)

@@ -62,7 +62,7 @@ Verification recorded two new roundtrip passes and eight existing replay passes.
 
 ## Transcript integrity and counting
 
-These five numbered sections refer to five distinct native OpenCode session identifiers. Later grounding and permission sessions are retained as additional evidence. A large native export must be redirected to a regular file; a captured pipe produced a65KB truncated JSON file during preparation. The final full exports were parsed successfully and scanned for the exact configured credential. Only any actual credential value is redacted. Optional --sanitize exports redact message text and are clearly separated from complete course evidence.
+The first five numbered sections refer to five distinct native OpenCode session identifiers. Subsequent sections document additional actual grounding and evaluation sessions; the permission sessions are also retained. A large native export must be redirected to a regular file; a captured pipe produced a65KB truncated JSON file during preparation. The final full exports were parsed successfully and scanned for the exact configured credential. Only any actual credential value is redacted. Optional --sanitize exports redact message text and are clearly separated from complete course evidence.
 
 ## Session6: common per-role evidence grounding
 
@@ -75,3 +75,13 @@ Intervention2 required a plain delegate composed with real LangChain Runnables, 
 Intervention3 caught illustrative numeric facts and a hardcoded source ticker in the newly generated prompt. Those examples could contaminate another stock's analysis. The follow-up removed fabricated numeric examples, registered only sources that actually exist, and left unknown live facts unknown. The final response contract requests the real ticker, date and frozen close where available. An additional no-corpus/other-ticker test guards this concrete failure.
 
 The session recorded72 passing offline tests before the final precision change, five focused passing checks afterward, and a clean type check across18 application files. The coordinator stopped repeated broader cleanup at that milestone. Runtime prompt0.1.1 is frozen for the restarted development evaluation; no test success is presented as proof of live research quality.
+
+## Session7: accurate evaluation inputs and mandatory fields
+
+Session: ses_fa80b1435ffeLfgOoIjVIDIpKP. Complete native export: project-report-check.full.json.gz. Prompt: prompts/project-report-check-fix.md. The original event turns are project-report-check-fix.raw.jsonl, project-report-check-focus.raw.jsonl and project-report-number-fix.raw.jsonl. The gzip preserves the full84.8MB native record losslessly; the original JSON parsed successfully and the configured credential was absent.
+
+Intervention1 tightened frozen_price_used. The first implementation only looked for the close in input evidence. The corrected check also requires the expected price to appear as a complete monetary value in generated report text. The real tests cover missing/wrong prices and numerical boundaries, including negative values and thousands separators. The repair strengthens measurement without changing the LLM scoring rubric.
+
+Intervention2 retained role and stage headings when assembling a research report for the judge. Analyst and trader opinions remain visible, including disagreement with the final portfolio decision. Only a byte-identical duplicate risk/final terminal field is omitted. The operation does not rewrite any generated sentence or hide an unfavorable intermediate opinion.
+
+Intervention3 stopped repeated exploration and constrained the continuation to the two actual owner functions and their focused tests. The final run recorded24 focused parameterized passes, with16 existing live-fix tests also passing earlier. The measurement source was frozen before the final judgments; evaluation/final/measurement-provenance.json records the actual source provenance. All initial development judgments remain unchanged in their archived directory.

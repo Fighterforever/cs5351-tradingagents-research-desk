@@ -5,12 +5,24 @@ entries:
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
+  purpose: Fix the actual offline failure resolving the official configuration schema's public model-schema dependency
+  session: ses_fa7ffd8cfffeKu8F0XdeWcNGv9
+  prompt: transcripts/prompts/project-ci-offline-schema.md
+  scope:
+  - scripts/check_permissions.py
+  review: docs/ci-gates.md
+  evidence: transcripts/project-ci-offline-schema.full.json
+  outcome: Registered the coordinator-archived official dependency in a local JSON Schema registry; permission definitions and application behavior remain unchanged
+- date: '2026-08-31'
+  tool: OpenCode CLI
+  model: deepseek/deepseek-v4-flash
   purpose: Generate the approved evidence/review/context extension and meaningful offline tests
   session: ses_fa849396effeNN2dsVIpTIaax8
   prompt: transcripts/prompts/project-01-offline.md
   scope:
   - src/research_desk
   - test/offline
+  - test/__init__.py
   - pyproject.toml
   review: docs/review-memo.md
   evidence: transcripts/project-01.full.json
@@ -188,6 +200,7 @@ entries:
   scope:
   - src/research_desk/eval/live.py
   - test/offline/test_evaluation_report_checks.py
+  - test/offline/test_live_fixes.py
   review: docs/bug-diary.md
   evidence: transcripts/project-report-check.full.json.gz
-  outcome: Twenty-four focused report and exact-price checks passed; original LLM rubric and thresholds unchanged; repeated inspection was redirected to bounded implementation
+  outcome: Twenty-five focused report/price/complete-observation checks and sixteen existing evaluation tests passed; original LLM rubric and thresholds unchanged; repeated inspection was redirected to bounded implementation; final judge receives every captured tool result

@@ -12,6 +12,11 @@ comparison and repaired in ``src/research_desk/eval/live.py``:
    expected close to be supported by evidence/corpus AND stated in the report,
    normalizing ordinary monetary formatting without accepting a different
    number or a substring of a larger number.
+3. The judge's observed-tool material used the lossy ``data_snapshot``
+   projection, which keeps only the last output for a repeated tool name. The
+   judge now reads every ``tool_result`` from the authoritative event log, so
+   different outputs from the same tool survive and only an exact duplicate is
+   collapsed.
 
 These tests use the real ``aapl_pack`` fixture (``model_copy``-based) and the
 real ``case_for`` records; no live API call is made.
@@ -287,3 +292,42 @@ def test_frozen_price_evidence_support_from_observed_tool_result(aapl_pack):
         available_sources={},
     )
     assert _price_check(case, pack)["passed"] is True
+
+
+def test_observed_tool_outputs_reach_judge_prompt_deduping_exact_duplicates(aapl_pack):
+    """All distinct tool_result outputs reach the judge prompt.
+
+    Two different indicator results under the same tool name both reach the
+    final judge prompt with their tool/source context, while an exact duplicate
+    of the same output is not repeated.
+    """
+    from research_desk.eval.live import _judge_prompt
+    from research_desk.models import EvidenceEvent
+
+    pack = aapl_pack.model_copy(deep=True)
+    pack.events = [
+        EvidenceEvent(
+            seq=7, kind="tool_result", ts="2026-06-10T00:00:00Z",
+            payload={"name": "get_indicators", "result": "rsi: 45.2"},
+        ),
+        EvidenceEvent(
+            seq=11, kind="tool_result", ts="2026-06-10T00:00:00Z",
+            payload={"name": "get_indicators", "result": "rsi: 52.0"},
+        ),
+        EvidenceEvent(
+            seq=15, kind="tool_result", ts="2026-06-10T00:00:00Z",
+            payload={"name": "get_indicators", "result": "rsi: 52.0"},
+        ),
+    ]
+    case = case_for("AAPL")
+    prompt = _judge_prompt(
+        case,
+        "report text",
+        [{"check": "x", "passed": True, "detail": "d"}],
+        available_sources=pack.input.available_sources or {},
+        events=pack.events,
+    )
+    assert "rsi: 45.2" in prompt
+    assert "rsi: 52.0" in prompt
+    assert prompt.count("rsi: 52.0") == 1  # exact duplicate collapsed
+    assert prompt.count("get_indicators") == 2  # both distinct outputs kept

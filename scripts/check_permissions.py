@@ -205,6 +205,39 @@ def _load_json(path: Path) -> dict | None:
     return data
 
 
+# The official OpenCode schema references the shared model schema by its
+# absolute ``$id`` URI. We resolve that dependency against the actual vendored
+# snapshot (so local and GitHub CI use the same file) instead of letting
+# jsonschema fetch the URL over the network.
+MODEL_SCHEMA_URI = "https://models.dev/model-schema.json"
+MODEL_SCHEMA_SNAPSHOT = Path("transcripts") / "public-schema" / "models.dev-model-schema.json"
+
+
+def _load_model_schema(root: Path, failures: list[str]) -> dict | None:
+    """Load the vendored model-schema dependency (or report its absence)."""
+    path = root / MODEL_SCHEMA_SNAPSHOT
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        failures.append(
+            f"required schema dependency not found at {path}; "
+            "register the vendored model schema and re-run"
+        )
+        return None
+    except (json.JSONDecodeError, OSError) as exc:
+        failures.append(f"invalid required schema dependency at {path}: {exc}")
+        return None
+    if not isinstance(data, dict):
+        failures.append(f"required schema dependency {path} must contain a JSON object")
+        return None
+    if data.get("$id") != MODEL_SCHEMA_URI:
+        failures.append(
+            f"required schema dependency {path} must declare $id {MODEL_SCHEMA_URI!r}"
+        )
+        return None
+    return data
+
+
 def _load_schema(path: Path, failures: list[str]) -> dict | None:
     if not path.exists():
         failures.append(f"official schema not found at {path}; schema validation is required")
@@ -224,13 +257,21 @@ def _load_schema(path: Path, failures: list[str]) -> dict | None:
         return None
 
 
-def _check_schema(instance: dict, name: str, schema_path: Path, failures: list[str]) -> None:
+def _check_schema(instance: dict, name: str, schema_path: Path,
+                  root: Path, failures: list[str]) -> None:
     schema = _load_schema(schema_path, failures)
     if schema is None:
         return
+    model_schema = _load_model_schema(root, failures)
+    if model_schema is None:
+        return
     import jsonschema  # already confirmed available by _load_schema
+    from referencing import Registry, Resource
 
-    validator = jsonschema.Draft202012Validator(schema)
+    registry = Registry().with_resources(
+        [(MODEL_SCHEMA_URI, Resource.from_contents(model_schema))]
+    )
+    validator = jsonschema.Draft202012Validator(schema, registry=registry)
     for error in sorted(validator.iter_errors(instance), key=lambda e: list(e.path)):
         failures.append(f"{name} does not match the official OpenCode schema: {error.message}")
 
@@ -286,8 +327,8 @@ def main() -> int:
     checks.append(f"official schema {schema_path}")
 
     # Required schema validation of BOTH the config and the manifest.
-    _check_schema(config, "effective config", schema_path, failures)
-    _check_schema(manifest, "manifest", schema_path, failures)
+    _check_schema(config, "effective config", schema_path, root, failures)
+    _check_schema(manifest, "manifest", schema_path, root, failures)
 
     # Required rule files must be loaded through the instructions array.
     instructions = config.get("instructions")
