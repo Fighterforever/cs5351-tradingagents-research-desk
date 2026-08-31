@@ -1,0 +1,24 @@
+schema_version: 1.0.0
+decision: APPROVED
+approver: leo
+approved_at: '2026-08-31T12:05:17.791955+00:00'
+implementation_started_at: '2026-08-31T12:06:32.695000+00:00'
+plan: docs/process/PROJECT_PLAN.md
+plan_version: 1.0.0
+test_plan: docs/process/TEST_PLAN.md
+test_plan_version: 1.0.0
+tests:
+- AT-01
+- AT-02
+- AT-03
+- AT-04
+- AT-05
+- AT-06
+- AT-07
+- AT-08
+scope:
+- F1 evidence and replay
+- F2 approved paper ledger
+- F3 context budget and evaluation
+evidence: transcripts/project-01.full.json
+approval_record: docs/process/APPROVAL_PACKET.md

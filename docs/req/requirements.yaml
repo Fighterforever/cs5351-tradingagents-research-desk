@@ -1,0 +1,413 @@
+schema_version: 1.0.0
+product: TradingAgents Research Desk
+requirements:
+- id: FR-001
+  type: functional
+  statement: Export a complete research evidence package and reconstruct its reports
+    in a fresh process.
+  priority: Must
+  fit:
+    metric: complete_pack_replay_success_rate
+    operator: ==
+    threshold: 1.0
+    verification: Export, import and replay all six completed fixed cases; a missing
+      required record must fail.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.evidence
+  - research_desk.replay
+  - research_desk.cli
+  tests:
+  - AT-01
+- id: NFR-001
+  type: performance
+  statement: Offline replay must reproduce the structured decision and policy without
+    external calls.
+  priority: Must
+  fit:
+    metric: max_replay_seconds
+    operator: <
+    threshold: 2.0
+    verification: Run six complete packs in new processes; compare signal and policy;
+      assert zero external calls.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.replay
+  tests:
+  - AT-01
+- id: SEC-001
+  type: security
+  statement: Captured evidence excludes credentials and facts unavailable at the analysis
+    cutoff.
+  priority: Must
+  fit:
+    metric: credential_or_future_fact_escapes
+    operator: ==
+    threshold: 0
+    verification: Check evidence serialization and future-resolved memory; distinguish
+      retrieval time from availability date.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.evidence
+  - research_desk.context
+  - research_desk.graph_adapter
+  tests:
+  - AT-02
+- id: FR-002
+  type: functional
+  statement: An operator reviews evidence, approves or rejects exact trade terms,
+    and can execute a permitted paper transaction.
+  priority: Must
+  fit:
+    metric: approved_valid_transactions_applied_once
+    operator: ==
+    threshold: 1.0
+    verification: Approve 100 shares at USD100 against USD100000; execute twice; final
+      cash remains USD90000 and shares100.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.review
+  - research_desk.storage
+  - research_desk.cli
+  tests:
+  - AT-03
+  - AT-05
+- id: NFR-002
+  type: quality
+  statement: The execution policy is deterministic and independent of the language
+    model.
+  priority: Must
+  fit:
+    metric: policy_fixture_agreement
+    operator: ==
+    threshold: 1.0
+    verification: Exercise approved and denied transactions; verify no LLM imports
+      or calls on policy path.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.policy
+  - research_desk.review
+  tests:
+  - AT-04
+- id: INV-001
+  type: invariant
+  statement: Every ledger change references exact approved terms and a passing policy
+    result for the current ledger.
+  priority: Must
+  fit:
+    metric: unauthorized_ledger_writes
+    operator: ==
+    threshold: 0
+    verification: Mutate approved quantity/evidence or current portfolio; require
+      re-review with no partial write.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.review
+  - research_desk.storage
+  tests:
+  - AT-03
+  - AT-05
+- id: INV-002
+  type: invariant
+  statement: Unapproved, rejected, nontradeable, over-cap, insolvent, missing-price
+    and oversell proposals never alter the ledger.
+  priority: Must
+  fit:
+    metric: unsafe_execution_escapes
+    operator: ==
+    threshold: 0
+    verification: Negative cases include model text requesting a bypass; all balances
+      and holdings stay unchanged.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.policy
+  - research_desk.review
+  tests:
+  - AT-04
+- id: FR-003
+  type: functional
+  statement: Compare baseline and compact runs using the same fixed corpus, complete
+    graph, model and settings.
+  priority: Must
+  fit:
+    metric: paired_cases_with_recorded_usage_and_quality
+    operator: ==
+    threshold: 6
+    verification: Record input/output tokens, wall time, actual calls, outcome and
+      independent quality for every arm.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.context
+  - research_desk.graph_adapter
+  - research_desk.cli
+  tests:
+  - AT-07
+- id: NFR-003
+  type: cost
+  statement: A configured call budget prevents starting another model request, and
+    budget-stopped research cannot be approved.
+  priority: Must
+  fit:
+    metric: requests_started_after_call_limit
+    operator: ==
+    threshold: 0
+    verification: A fake provider path attempts four calls with limit three; only
+      three start, and no proposal is generated.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.budget
+  - research_desk.evidence
+  - research_desk.graph_adapter
+  tests:
+  - AT-06
+- id: QUALITY-001
+  type: quality
+  statement: Mandatory identity/date/price/state fields agree with frozen evidence.
+  priority: Must
+  fit:
+    metric: mandatory_fact_accuracy
+    operator: ==
+    threshold: 1.0
+    verification: Check mandatory fields deterministically for six paired runs; include
+      failed/incomplete runs.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.graph_adapter
+  - research_desk.replay
+  tests:
+  - AT-07
+- id: QUALITY-002
+  type: quality
+  statement: Factual citations identify an available source supporting the cited statement.
+  priority: Must
+  fit:
+    metric: valid_citation_rate
+    operator: '>='
+    threshold: 0.95
+    verification: Fixed rubric judge checks report claims against complete frozen
+      sources; report uncited factual claims too.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.graph_adapter
+  tests:
+  - AT-07
+- id: QUALITY-003
+  type: quality
+  statement: Reports remain supported by evidence and relevant to the requested equity
+    research task.
+  priority: Must
+  fit:
+    metric: minimum_support_and_relevance
+    operator: '>='
+    threshold: 0.8
+    verification: Score support and relevance separately with the same independent
+      judge; retain raw judgments and failures.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.graph_adapter
+  tests:
+  - AT-07
+- id: COST-001
+  type: cost
+  statement: Compact context reduces provider-reported application tokens while preserving
+    quality.
+  priority: Should
+  fit:
+    metric: total_token_reduction_fraction
+    operator: '>='
+    threshold: 0.2
+    verification: Same six cases and settings; quality mean drop <=0.05; judge tokens
+      excluded and separately reported.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.context
+  - research_desk.graph_adapter
+  tests:
+  - AT-07
+- id: PERF-001
+  type: performance
+  statement: Compact research wall time stays within110 percent of baseline.
+  priority: Should
+  fit:
+    metric: compact_to_baseline_wall_ratio
+    operator: <=
+    threshold: 1.1
+    verification: Sum measured elapsed seconds of six runs per arm; disclose concurrency
+      and all retries.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - research_desk.graph_adapter
+  tests:
+  - AT-07
+- id: GOV-001
+  type: governance
+  statement: Implementation follows a concrete plan and test approval that predates
+    code generation.
+  priority: Must
+  fit:
+    metric: unapproved_changes_accepted
+    operator: ==
+    threshold: 0
+    verification: Validate approval timestamps and eight test IDs; changed safety
+      paths require decision evidence.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - .github/workflows/research-desk.yml
+  - scripts
+  tests:
+  - AT-08
+- id: GOV-002
+  type: governance
+  statement: Every change passes static checks, requirement schema and the complete
+    earlier regression suites.
+  priority: Must
+  fit:
+    metric: regressions_accepted
+    operator: ==
+    threshold: 0
+    verification: Run lint/type/dependency/schema checks and both tests/ and test/offline/
+      in CI.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - .github/workflows/research-desk.yml
+  - scripts
+  tests:
+  - AT-08
+- id: GOV-003
+  type: governance
+  statement: Code or prompt changes include an updated AI-use log, with fixed semantic
+    evaluation for prompt/model changes.
+  priority: Must
+  fit:
+    metric: unlogged_or_semantically_failing_changes_accepted
+    operator: ==
+    threshold: 0
+    verification: Compare changed paths to the log; recompute fixed evidence quality
+      rather than trusting a hand-written PASS.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - .github/workflows/research-desk.yml
+  - scripts
+  tests:
+  - AT-08
+- id: GOV-004
+  type: governance
+  statement: The private GitHub branch requires CI and approval for safety-critical
+    changes when account capabilities permit enforcement.
+  priority: Must
+  fit:
+    metric: unprotected_safety_merges
+    operator: ==
+    threshold: 0
+    verification: Record actual GitHub protection response and failure/recovery checks;
+      do not claim unavailable enforcement.
+  source:
+  - docs/process/TEST_PLAN.md
+  components:
+  - .github/workflows/research-desk.yml
+  - .github/CODEOWNERS
+  tests:
+  - AT-08
+- id: INH-001
+  type: functional
+  statement: Preserve the upstream market/news and research/trader/risk graph with
+    structured final decisions.
+  priority: Must
+  fit:
+    metric: upstream_regression_failures
+    operator: ==
+    threshold: 0
+    verification: Run the complete original tests/ directory; frozen integration preserves
+      public graph contracts.
+  source:
+  - https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/tradingagents/graph/trading_graph.py
+  components:
+  - tradingagents.graph
+  tests:
+  - upstream-regression
+  - AT-07
+- id: INH-002
+  type: functional
+  statement: Preserve append-only decision memory and point-in-time retrieval.
+  priority: Must
+  fit:
+    metric: upstream_regression_failures
+    operator: ==
+    threshold: 0
+    verification: Run the complete original tests/ directory; frozen integration preserves
+      public graph contracts.
+  source:
+  - https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/tradingagents/agents/utils/memory.py
+  components:
+  - tradingagents.agents.utils.memory
+  tests:
+  - upstream-regression
+  - AT-07
+- id: INH-003
+  type: functional
+  statement: Preserve upstream checkpoint and resume behavior.
+  priority: Must
+  fit:
+    metric: upstream_regression_failures
+    operator: ==
+    threshold: 0
+    verification: Run the complete original tests/ directory; frozen integration preserves
+      public graph contracts.
+  source:
+  - https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/tradingagents/graph/checkpointer.py
+  components:
+  - tradingagents.graph
+  tests:
+  - upstream-regression
+  - AT-07
+- id: INH-004
+  type: functional
+  statement: Preserve evidence-derived price checks and verified market snapshots.
+  priority: Must
+  fit:
+    metric: upstream_regression_failures
+    operator: ==
+    threshold: 0
+    verification: Run the complete original tests/ directory; frozen integration preserves
+      public graph contracts.
+  source:
+  - https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/tradingagents/dataflows/market_data_validator.py
+  components:
+  - tradingagents.dataflows
+  tests:
+  - upstream-regression
+  - AT-07
+- id: INH-005
+  type: functional
+  statement: Record real provider token usage using the upstream callback conventions.
+  priority: Must
+  fit:
+    metric: upstream_regression_failures
+    operator: ==
+    threshold: 0
+    verification: Run the complete original tests/ directory; frozen integration preserves
+      public graph contracts.
+  source:
+  - https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/cli/stats_handler.py
+  components:
+  - research_desk.evidence
+  tests:
+  - upstream-regression
+  - AT-07

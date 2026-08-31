@@ -1,0 +1,18 @@
+schema_version: 1.0.0
+decision: APPROVED
+decision_owner: leo
+approved_at: 2026-08-31T12:49:31.698870+00:00
+model: deepseek-v4-flash
+thinking: disabled
+provider_max_output_tokens: 1800
+compact_response_target_tokens: 600
+max_calls: 32
+analysts: [market, news]
+max_debate_rounds: 1
+max_risk_discuss_rounds: 1
+development: [AAPL, MSFT]
+held_out: [NVDA, AMZN, META, GOOGL]
+fixed_sources: test/fixtures/market
+case_registry: src/research_desk/eval/case_registry.py
+quality_rubric: docs/process/TEST_PLAN.md
+policy: Same graph, corpus and inference settings for both arms; record all outcomes and actual usage; judge separately.
