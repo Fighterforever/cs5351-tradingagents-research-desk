@@ -1,0 +1,82 @@
+{
+  "recorded_at": "2026-08-31T13:39:17.394386+00:00",
+  "command": [
+    "gh",
+    "run",
+    "view",
+    "33397954871",
+    "--repo",
+    "Fighterforever/cs5351-tradingagents-research-desk",
+    "--json",
+    "jobs,conclusion,url,status"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "response": {
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "completedAt": "2026-08-31T13:37:09Z",
+        "conclusion": "failure",
+        "databaseId": 99506936883,
+        "name": "Gate 3 - requirements schema and traceability",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954871/job/99506936883"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:09Z",
+        "conclusion": "failure",
+        "databaseId": 99506936999,
+        "name": "Gate 6 - AI-use log required for code/prompt changes",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954871/job/99506936999"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:10Z",
+        "conclusion": "failure",
+        "databaseId": 99506937069,
+        "name": "Gate 1 - tests approved before implementation",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954871/job/99506937069"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:10Z",
+        "conclusion": "failure",
+        "databaseId": 99506937087,
+        "name": "Gate 4 - fixed semantic regression (offline)",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954871/job/99506937087"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:10Z",
+        "conclusion": "failure",
+        "databaseId": 99506937135,
+        "name": "Gate 2 - lint, types, deps and authority boundary",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954871/job/99506937135"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:12Z",
+        "conclusion": "failure",
+        "databaseId": 99506937231,
+        "name": "Gate 5 - full regression (tests + test/offline)",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954871/job/99506937231"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954871"
+  }
+}

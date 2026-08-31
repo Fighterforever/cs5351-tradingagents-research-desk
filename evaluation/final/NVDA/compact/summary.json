@@ -1,0 +1,16 @@
+{
+  "ticker": "NVDA",
+  "analysis_date": "2026-08-27",
+  "context_mode": "compact",
+  "outcome": "completed",
+  "signal": "Overweight",
+  "stop_reason": "completed",
+  "calls": 14,
+  "input_tokens": 55703,
+  "output_tokens": 7166,
+  "total_tokens": 62869,
+  "wall_seconds": 67.388,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/NVDA/compact/run"
+}

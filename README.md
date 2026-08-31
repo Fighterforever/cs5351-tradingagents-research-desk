@@ -47,6 +47,8 @@ Run the same pair for MSFT, NVDA, AMZN, META and GOOGL. Source CSVs are under te
 
 Both arms use the same complete selected graph, model, frozen corpus and provider output cap. Runtime prompt version `research-desk-0.1.1` supplies the same evidence-grounding rules to every role in both modes; version snapshots are retained under `prompts/`. Compact requests concise role outputs and removes redundant non-evidence text. `judge-case` uses a separate evaluator role and records its usage outside application totals. `aggregate` reads saved files and makes no provider request. API usage and quality are actual results, not values inferred from output length.
 
+The frozen six-case comparison recorded **45.73% fewer application tokens**, with compact elapsed-time sum at **40.42% of baseline**. All 12 runs completed. Research support/relevance and counted-citation targets passed; mandatory fields passed 59/60 checks because the META compact report omitted the full legal company name. The report preserves that QUALITY-001 gap and a quarterly-EPS valuation interpretation error.
+
 **Replay** rebuilds saved results without external calls. **Controlled rerun** regenerates research from fixed non-LLM inputs and remains stochastic. These modes answer different reproducibility questions.
 
 ## Verification
@@ -58,9 +60,9 @@ Both arms use the same complete selected graph, model, frozen corpus and provide
 .venv/bin/mypy src/research_desk --follow-imports=skip --ignore-missing-imports --python-version 3.12
 ```
 
-The unchanged upstream baseline recorded 649 passed, 2 skipped and 71 subtests. The extension's initial slice recorded 47 passing tests. After the shared grounding repair, the recorded offline run passed 72 tests; the final focused prompt correction passed all five grounding checks. Final test and live results are reported from their saved logs in Report.md. Tests that call real providers are separate from offline CI and require explicit environment credentials.
+The final unified local checks recorded **649 upstream tests passed, 2 skipped, 71 subtests passed**, plus **98 application tests passed**. All six gates and six controlled rejection examples passed; exact outputs are under `evaluation/ci/`. Final live quality scores are reported from the saved judgments in Report.md. Tests that call real providers are separate from offline CI and require explicit environment credentials.
 
-The CI workflow implements six checks: prior test approval, static/dependency/safety checks, requirement schema, fixed semantic replay, all prior regressions, and an updated AI-use log for source/prompt changes. [docs/ci-gates.md](docs/ci-gates.md) describes exact commands and negative examples. Private GitHub branch protection is a separate server setting; the final release records the actual API/check outcome and does not equate local passing tests with remote enforcement.
+The CI workflow implements six checks: prior test approval, static/dependency/safety checks, requirement schema, fixed semantic replay, all prior regressions, and an updated AI-use log for source/prompt changes. [docs/ci-gates.md](docs/ci-gates.md) describes exact commands and negative examples. The private repository is published, but GitHub blocked Actions before any step because of account payment/spending limits, and private branch protection returned HTTP 403 requiring an eligible plan or public repository. The repository remains private and billing was not changed. **Remote CI has not executed and branch protection is not enabled.** Actual responses and the desired policy are retained under `evaluation/github/`; these D7/GOV-004 limits are separate from the passing local gates.
 
 ## Repository map
 

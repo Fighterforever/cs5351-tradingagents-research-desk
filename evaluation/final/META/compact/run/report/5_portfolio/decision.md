@@ -1,0 +1,9 @@
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a moderate first tranche (~2-3% of portfolio) near the $524-526 support zone that held on 7/30, with a hard stop at $515. Reserve a second tranche strictly for confirmed stabilization — RSI recovery above 30 or a reclaim of the 10 EMA ($597.37). Do not chase above the 10 EMA until MACD turns positive. Reassess after the next earnings print to confirm the one-off nature of legal/severance charges and capex ROI.
+
+**Investment Thesis**: The bull case wins on the core fundamental driver: revenue compounding at 28% to $60.8B with daily active people up 3% to 3.60B [src-meta]. The margin compression to 31% from 43% [src-meta] is materially influenced by $2.40B legal charges and $1.18B severance [src-meta] — one-off items, though the conservative analyst correctly cautions these may recur and the $31.08B capex [src-meta] is structural margin pressure. The technical picture is genuinely mixed: RSI at 13.71 signals capitulation [market-meta], but MACD at -3.14 and 42.27M volume confirm distribution [market-meta]. The neutral analyst's balanced path is most sound: keep the constructive stance but shrink the first tranche to ~2-3% (not 3-4%) at $525, accept the $515 stop only with reduced size to tolerate gap risk given ATR of $24.36 [market-meta], and gate the second tranche on RSI recovery above 30 or a 10 EMA reclaim — not vague "stabilization." This captures capitulation upside (~13.7% to the 10 EMA) while capping downside to a small, survivable loss. This is an Overweight, not a full Buy — the bear's capex ROI caution and momentum weakness warrant measured conviction, not aggressive accumulation.
+
+**Price Target**: 597.0
+
+**Time Horizon**: 3-6 months

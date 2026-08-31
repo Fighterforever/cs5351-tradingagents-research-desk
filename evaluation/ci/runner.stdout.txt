@@ -1,0 +1,9 @@
+[check_approval] PASS exit=0 elapsed=0.045s
+[check_static] PASS exit=0 elapsed=0.512s
+[check_requirements] PASS exit=0 elapsed=0.069s
+[check_semantic] PASS exit=0 elapsed=0.553s
+[check_regression] PASS exit=0 elapsed=15.877s
+[check_ai_use_log] PASS exit=0 elapsed=0.041s
+[gate_examples] PASS exit=0 elapsed=1.566s
+
+SUMMARY: PASS -> /Users/leeyoma/Downloads/cs5351/work/project/evaluation/ci/summary.json

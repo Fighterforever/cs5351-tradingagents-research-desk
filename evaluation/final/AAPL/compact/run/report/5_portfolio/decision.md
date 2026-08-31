@@ -1,0 +1,9 @@
+**Rating**: Hold
+
+**Executive Summary**: Maintain current AAPL position at current size. Do not add into the broken short-term trend (price 308.91 below 10 EMA 327.24, MACD bearish crossover) and do not exit a fundamentally sound franchise (~22% organic ex-refund EPS growth). Set stop at 300.00; trim toward Underweight on a sustained-volume close below 300, upgrade toward Overweight on a volume-confirmed reclaim of 327.24. Reassess after next quarter when the tariff-refund base resets.
+
+**Investment Thesis**: The risk debate converges on Hold. The bull's case for aggression is undermined by the record-volume 7% two-day drop (132.5M) [market-aapl] and price well below the 10 EMA of 327.24 with a bearish MACD crossover (6.82 vs 8.14) [market-aapl] — a broken short-term trend, not a launchpad. The bear's fear of a cliff is equally speculative; RSI at 45.08 is neutral, not oversold, and fundamentals are genuinely strong: revenue +16% YoY to USD109.4B, EPS 2.02 up 29% [src-aapl]. Stripping the 0.11 tariff-refund benefit yields ~22% organic EPS growth and ~48% ex-refund gross margin [calculation from src-aapl]. The market repriced the transitory refund distortion, but the underlying franchise is intact. With price at 308.91 essentially at VWMA (308.54) and just above the lower Bollinger band (304.22) [market-aapl], the 300–304 zone is the key decision line. Neither adding nor exiting is supported by the data — evidence-based patience with disciplined triggers is the correct stance.
+
+**Price Target**: 327.24
+
+**Time Horizon**: Next quarterly earnings (reassess after tariff-refund base resets)

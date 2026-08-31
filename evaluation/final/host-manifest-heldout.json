@@ -1,0 +1,263 @@
+{
+  "started_at": "2026-08-31T13:25:04.284822+00:00",
+  "decision_owner": "leo",
+  "model": "deepseek-v4-flash",
+  "provider": "https://api.deepseek.com",
+  "tickers": [
+    "NVDA",
+    "AMZN",
+    "META",
+    "GOOGL"
+  ],
+  "stage": "heldout",
+  "cases_in_parallel": 4,
+  "graph_max_calls": 32,
+  "source_sha256": {
+    "src/research_desk/__init__.py": "92194d26dea05b89632dbc5d9b3b073f7654f59f555ec0e891e31b48ba7993d6",
+    "src/research_desk/__main__.py": "0b5867a538d13604f1affc8f13488d5a11cd35c5687ca04963a33f64c171e794",
+    "src/research_desk/budget.py": "6a2f9353b5fc9b3f0fc0d76a7e294e35438dccff912293f0dda798afe6a3f31c",
+    "src/research_desk/cli.py": "d10c4468a5d36e7f42724c30171de869df1f6072def23aebd5f0ad524a21b677",
+    "src/research_desk/config.py": "1b622a87973786f8136e1fd8a430765b88e720e32b1f61e45b76273d7043da0d",
+    "src/research_desk/context.py": "de63382370f5c4074d93a2e380345ee1e9b7e1bcd19022438c652c9b0d5023d4",
+    "src/research_desk/eval/case_registry.py": "dc6c4fc5d55e5d2632afd5f478614a5ae605284c3c26ad83dfeaf1ae1b584f95",
+    "src/research_desk/eval/compact_delegate.py": "3bd9014696d5f63fd3d6c7ab5a186cae73373060cf717994cb7a32cdc548271d",
+    "src/research_desk/eval/frozen_provider.py": "77c8cda5e8d7fa56ac49b8dccc38ad2b162686bd78ec0c3a9173e7cd57382195",
+    "src/research_desk/eval/live.py": "63d1111e9eb432674ec55e672678e1ee402af4d9344db45bdae031e82d5a617f",
+    "src/research_desk/evidence.py": "04c268d4604dc93e11492a5825757e70f8093ffae5922b5d6c46b8cea186c194",
+    "src/research_desk/graph_adapter.py": "1adcc684e2b2e77c0cf8a34f346a0bc7824909a3672124dc7d0d042e207e0a23",
+    "src/research_desk/models.py": "e171556a7b3450f3a6ccdb7d907d2113b0c6ed4929f4e9a741847887b4859774",
+    "src/research_desk/policy.py": "22cffeaafc7f008237922c481024ea6e9a46a23cdec2ae96be23b96149af66c6",
+    "src/research_desk/replay.py": "5ab9954b27946688b7622b90ac0b1c43fc464dcd84b70b2a90f9a6b6e6ea9931",
+    "src/research_desk/report.py": "75b56bd0ce58eae3180443bf8737528fc46d8b4e20f23955ba8bc18411737d1e",
+    "src/research_desk/review.py": "41374107bbcd881ddc5702d9e5a2532a421f6cedc9f134ab933cbc2ffe4a8c91",
+    "src/research_desk/storage.py": "0853daa3cef323da576b6270904a7a3a16d1ac0cd7c39400ae382e16ec602c07"
+  },
+  "executions": [
+    {
+      "ticker": "AMZN",
+      "stage": "baseline",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "AMZN",
+        "--mode",
+        "baseline",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:25:04.285237+00:00",
+      "finished_at": "2026-08-31T13:27:28.824950+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/AMZN-baseline.log"
+    },
+    {
+      "ticker": "AMZN",
+      "stage": "compact",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "AMZN",
+        "--mode",
+        "compact",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:27:28.825259+00:00",
+      "finished_at": "2026-08-31T13:28:32.279126+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/AMZN-compact.log"
+    },
+    {
+      "ticker": "AMZN",
+      "stage": "judge",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "AMZN",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:28:32.279425+00:00",
+      "finished_at": "2026-08-31T13:29:03.635234+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/AMZN-judge.log"
+    },
+    {
+      "ticker": "META",
+      "stage": "baseline",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "META",
+        "--mode",
+        "baseline",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:25:04.285279+00:00",
+      "finished_at": "2026-08-31T13:27:33.896822+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/META-baseline.log"
+    },
+    {
+      "ticker": "META",
+      "stage": "compact",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "META",
+        "--mode",
+        "compact",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:27:33.896950+00:00",
+      "finished_at": "2026-08-31T13:28:38.757881+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/META-compact.log"
+    },
+    {
+      "ticker": "META",
+      "stage": "judge",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "META",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:28:38.758066+00:00",
+      "finished_at": "2026-08-31T13:29:06.302988+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/META-judge.log"
+    },
+    {
+      "ticker": "GOOGL",
+      "stage": "baseline",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "GOOGL",
+        "--mode",
+        "baseline",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:25:04.285323+00:00",
+      "finished_at": "2026-08-31T13:27:53.585613+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/GOOGL-baseline.log"
+    },
+    {
+      "ticker": "GOOGL",
+      "stage": "compact",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "GOOGL",
+        "--mode",
+        "compact",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:27:53.585760+00:00",
+      "finished_at": "2026-08-31T13:29:02.930840+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/GOOGL-compact.log"
+    },
+    {
+      "ticker": "GOOGL",
+      "stage": "judge",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "GOOGL",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:29:02.931100+00:00",
+      "finished_at": "2026-08-31T13:29:14.232733+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/GOOGL-judge.log"
+    },
+    {
+      "ticker": "NVDA",
+      "stage": "baseline",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "NVDA",
+        "--mode",
+        "baseline",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:25:04.285158+00:00",
+      "finished_at": "2026-08-31T13:27:56.985959+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/NVDA-baseline.log"
+    },
+    {
+      "ticker": "NVDA",
+      "stage": "compact",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "NVDA",
+        "--mode",
+        "compact",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:27:56.986090+00:00",
+      "finished_at": "2026-08-31T13:29:05.117662+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/NVDA-compact.log"
+    },
+    {
+      "ticker": "NVDA",
+      "stage": "judge",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "NVDA",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:29:05.117754+00:00",
+      "finished_at": "2026-08-31T13:29:16.288819+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/NVDA-judge.log"
+    },
+    {
+      "ticker": "ALL",
+      "stage": "aggregate",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "aggregate",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:29:16.289489+00:00",
+      "finished_at": "2026-08-31T13:29:17.136260+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/ALL-aggregate.log"
+    }
+  ],
+  "finished_at": "2026-08-31T13:29:17.136318+00:00"
+}

@@ -1,0 +1,18 @@
+{
+  "decision_owner": "leo",
+  "started_at": "2026-08-31T13:09:12.383294+00:00",
+  "purpose": "Exercise the real call-budget boundary for the demonstration; excluded from six-case comparison",
+  "command": [
+    "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+    "evaluate-case",
+    "MSFT",
+    "--mode",
+    "compact",
+    "--out",
+    "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/budget-stop",
+    "--max-calls",
+    "1"
+  ],
+  "exit_code": 0,
+  "finished_at": "2026-08-31T13:09:15.688509+00:00"
+}

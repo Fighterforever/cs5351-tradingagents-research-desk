@@ -1,0 +1,16 @@
+{
+  "ticker": "MSFT",
+  "analysis_date": "2026-07-30",
+  "context_mode": "compact",
+  "outcome": "completed",
+  "signal": "Hold",
+  "stop_reason": "completed",
+  "calls": 15,
+  "input_tokens": 51321,
+  "output_tokens": 7552,
+  "total_tokens": 58873,
+  "wall_seconds": 76.987,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/MSFT/compact/run"
+}

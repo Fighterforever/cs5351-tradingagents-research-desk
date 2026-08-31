@@ -1,0 +1,16 @@
+{
+  "ticker": "AMZN",
+  "analysis_date": "2026-07-31",
+  "context_mode": "baseline",
+  "outcome": "completed",
+  "signal": "Overweight",
+  "stop_reason": "completed",
+  "calls": 14,
+  "input_tokens": 79749,
+  "output_tokens": 15384,
+  "total_tokens": 95133,
+  "wall_seconds": 143.778,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/AMZN/baseline/run"
+}

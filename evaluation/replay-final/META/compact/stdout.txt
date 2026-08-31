@@ -1,0 +1,9 @@
+Replayed run-546d8ae1e4e5 (external calls: 0)
+signal: Overweight
+reports: 12 files under 
+/Users/leeyoma/Downloads/cs5351/work/project/evaluation/replay-final/META/compac
+t/report
+policy: max 18 shares by 10% cap, max 185 by cash, on equity $100,000.00
+policy allowed: False
+  - proposal_material: FAIL (proposal missing operator shares (supplied at 
+approval); policy bounds are reported instead)

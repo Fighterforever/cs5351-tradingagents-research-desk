@@ -1,0 +1,47 @@
+{
+  "support": 0.9,
+  "relevance": 1.0,
+  "cited_claim_count": 30,
+  "supported_cited_claim_count": 30,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "Cloud represents ~66% of total revenue (59.3/90.0) - derived calculation, presented as calculation not sourced fact",
+    "Operating margin held at ~45% (40.6/90.0) - derived calculation",
+    "Trailing P/E ~93.8x (451.10/4.81) - derived calculation, presented as operands only",
+    "RSI = 73.62 - cited to market-msft but this value is not present in the observed market data (computed indicator not in frozen CSV)",
+    "MACD = 7.50 - cited to market-msft but not present in observed data",
+    "10 EMA = $401.04 - cited to market-msft but not present in observed data",
+    "Bollinger middle (20 SMA) = $393.15 - cited to market-msft but not present in observed data",
+    "ATR = $15.87 - cited to market-msft but not present in observed data"
+  ],
+  "rationale": "The report is highly relevant, fully focused on MSFT, analysis date 2026-07-30, and the earnings catalyst. All key conclusions (bullish fundamental thesis, Overweight rating, staged accumulation, technical extension) are directly supported by the evidence: earnings figures from src-msft and price/volume data from market-msft. The fundamental claims (revenue $90B +18%, op income $40.6B +18%, EPS 4.81, Cloud $59.3B +27%, Azure +43%, FY revenue $331.8B, close $451.10, volume 110.2M) are all accurately cited and supported. However, several technical indicator values (RSI 73.62, MACD 7.50, 10 EMA $401.04, Bollinger mid $393.15, ATR $15.87) are cited to market-msft but are NOT present in the observed market data \u2014 only VWMA 386.48 and last_close 451.10 were returned by get_indicators. These appear to be fabricated/estimated indicator values attributed to a source that does not contain them. This is a notable support deduction since these technical values drive the \"overbought/extended\" conclusion. The derived calculations (66% cloud mix, 45% margin, 93.8x P/E) are appropriately flagged as calculations rather than sourced facts, so they are not counted as unsupported citations. Overall main conclusions are supported with no key fabrication of the fundamental data, but the technical indicator fabrication warrants a deduction from 1.0.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Microsoft Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 451.10 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-msft'"
+    }
+  ]
+}

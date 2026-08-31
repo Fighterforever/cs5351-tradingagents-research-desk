@@ -1,0 +1,110 @@
+[
+  {
+    "gate": "Gate 3 - requirements schema and traceability",
+    "check_run_id": 99506936883,
+    "annotations": [
+      {
+        "path": ".github",
+        "blob_href": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/5826d32fce7619fe24268a3a5d05ac15c256b95f/.github",
+        "start_line": 1,
+        "start_column": null,
+        "end_line": 1,
+        "end_column": null,
+        "annotation_level": "failure",
+        "title": "",
+        "message": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "raw_details": ""
+      }
+    ]
+  },
+  {
+    "gate": "Gate 6 - AI-use log required for code/prompt changes",
+    "check_run_id": 99506936999,
+    "annotations": [
+      {
+        "path": ".github",
+        "blob_href": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/5826d32fce7619fe24268a3a5d05ac15c256b95f/.github",
+        "start_line": 1,
+        "start_column": null,
+        "end_line": 1,
+        "end_column": null,
+        "annotation_level": "failure",
+        "title": "",
+        "message": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "raw_details": ""
+      }
+    ]
+  },
+  {
+    "gate": "Gate 1 - tests approved before implementation",
+    "check_run_id": 99506937069,
+    "annotations": [
+      {
+        "path": ".github",
+        "blob_href": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/5826d32fce7619fe24268a3a5d05ac15c256b95f/.github",
+        "start_line": 1,
+        "start_column": null,
+        "end_line": 1,
+        "end_column": null,
+        "annotation_level": "failure",
+        "title": "",
+        "message": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "raw_details": ""
+      }
+    ]
+  },
+  {
+    "gate": "Gate 4 - fixed semantic regression (offline)",
+    "check_run_id": 99506937087,
+    "annotations": [
+      {
+        "path": ".github",
+        "blob_href": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/5826d32fce7619fe24268a3a5d05ac15c256b95f/.github",
+        "start_line": 1,
+        "start_column": null,
+        "end_line": 1,
+        "end_column": null,
+        "annotation_level": "failure",
+        "title": "",
+        "message": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "raw_details": ""
+      }
+    ]
+  },
+  {
+    "gate": "Gate 2 - lint, types, deps and authority boundary",
+    "check_run_id": 99506937135,
+    "annotations": [
+      {
+        "path": ".github",
+        "blob_href": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/5826d32fce7619fe24268a3a5d05ac15c256b95f/.github",
+        "start_line": 1,
+        "start_column": null,
+        "end_line": 1,
+        "end_column": null,
+        "annotation_level": "failure",
+        "title": "",
+        "message": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "raw_details": ""
+      }
+    ]
+  },
+  {
+    "gate": "Gate 5 - full regression (tests + test/offline)",
+    "check_run_id": 99506937231,
+    "annotations": [
+      {
+        "path": ".github",
+        "blob_href": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/5826d32fce7619fe24268a3a5d05ac15c256b95f/.github",
+        "start_line": 1,
+        "start_column": null,
+        "end_line": 1,
+        "end_column": null,
+        "annotation_level": "failure",
+        "title": "",
+        "message": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+        "raw_details": ""
+      }
+    ]
+  }
+]

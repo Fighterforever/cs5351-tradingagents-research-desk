@@ -1,0 +1,87 @@
+{
+  "ticker": "AAPL",
+  "arms": {
+    "baseline": {
+      "support": 0.9,
+      "relevance": 1.0,
+      "cited_claim_count": 30,
+      "supported_cited_claim_count": 30,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [],
+      "rationale": "The report is a multi-role analysis culminating in a Hold decision. All key factual claims are directly supported by the frozen evidence: the verified market snapshot (close 308.91, open 304.81, high 310.69, low 300.00, volume 132,489,100), all technical indicators (10-EMA 327.24, MACD 6.82, signal 8.14, histogram -1.32, RSI 45.08, Bollinger 324.37/344.51/304.22, ATR 9.90, VWMA 308.54), the 50/200 SMA NO_DATA_AVAILABLE limitation, and the earnings facts (revenue 109.4B +16%, gross margin 50.1% incl ~2pp tariff benefit, EPS 2.02 +29% incl 0.11, dividend 0.27). All cited claims carry correct source IDs (market-aapl, src-aapl) that actually support the specific claims. Derived calculations (ex-refund margin ~48.1%, ex-refund EPS ~1.91, ~22% EPS growth, dividend yield ~0.35%, ~7.3% decline, ~5.6% below 10-EMA) are clearly labeled as derived calculations from sourced figures and are arithmetically correct. The report appropriately flags unavailable data (50/200 SMA, macro, global news, prediction markets) rather than fabricating. No key factual fabrication found. Minor deduction: some interpretive/analytical claims (e.g., 'sell-the-news', 'structural' tariff refund debate) are framed as analysis rather than sourced facts, which is appropriate, and the report is thorough. Relevance is fully on-task: focused on AAPL, analysis date 2026-07-31, correct ticker/company, final Hold decision present, frozen price 308.91 correctly used, source_id referenced.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report references company 'Apple Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-07-31"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 308.91 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-aapl'"
+        }
+      ]
+    },
+    "compact": {
+      "support": 0.9,
+      "relevance": 1.0,
+      "cited_claim_count": 20,
+      "supported_cited_claim_count": 20,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [
+        "Day range 300.00-310.69 and volume 132.5M cited to market-aapl (supported)",
+        "Peak of 344.57 (Jul 29 high) cited to market-aapl (supported)",
+        "~7.4% two-day drop calculation from market-aapl data (supported)",
+        "EPS ex-refund ~1.91 and ~22% organic growth are calculations from src-aapl data (supported)",
+        "Ex-refund gross margin ~48% is a calculation from src-aapl data (supported)"
+      ],
+      "rationale": "The report is highly relevant, fully focused on AAPL at 2026-07-31 with a clear final Hold decision. All cited claims are supported by the cited sources (market-aapl for technicals/price, src-aapl for earnings figures). The derived calculations (EPS ~1.91 ex-refund, ~22% organic growth, ~48% ex-refund margin, ~7.4% two-day drop) are arithmetic derivations from the cited source data and are internally consistent. The report correctly notes unavailable data (50/200 SMA, macro, global news, prediction markets) without fabricating. Minor caveat: the report treats derived calculations as if cited, but these are legitimate arithmetic from cited sources. No key fabrication; main conclusions (Hold, technical breakdown, strong fundamentals) are directly supported by evidence. Slight deduction for the derived-calculation claims being presented as sourced when they are computations, though they are accurate.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report references company 'Apple Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-07-31"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 308.91 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-aapl'"
+        }
+      ]
+    }
+  }
+}

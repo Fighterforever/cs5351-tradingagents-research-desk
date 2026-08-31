@@ -1,0 +1,16 @@
+{
+  "ticker": "META",
+  "analysis_date": "2026-07-30",
+  "context_mode": "baseline",
+  "outcome": "completed",
+  "signal": "Hold",
+  "stop_reason": "completed",
+  "calls": 15,
+  "input_tokens": 83946,
+  "output_tokens": 15917,
+  "total_tokens": 99863,
+  "wall_seconds": 148.863,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/META/baseline/run"
+}

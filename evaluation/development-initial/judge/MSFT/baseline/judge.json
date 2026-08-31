@@ -1,0 +1,61 @@
+{
+  "support": 0.8,
+  "relevance": 0.9,
+  "cited_claim_count": 0,
+  "supported_cited_claim_count": 0,
+  "valid_citation_rate": null,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "Revenue USD90.0 billion increased 18%",
+    "Operating income 40.6 billion increased 18%",
+    "GAAP EPS 4.81 compared with non-GAAP 4.74",
+    "Microsoft Cloud revenue 59.3 billion increased 27%",
+    "Azure and other cloud revenue increased 43%",
+    "Full fiscal year revenue 331.8 billion",
+    "Last close 451.10",
+    "Open 437.90",
+    "Day high 458.69",
+    "Day low 432.44",
+    "Volume 110,160,700",
+    "VWMA 386.48",
+    "Prior close 390.54",
+    "June 25 low 352.83",
+    "May 29 close 450.24",
+    "June 1 high 460.52",
+    "June 26 volume 186M",
+    "close_10_ema 401.04",
+    "MACD 7.50 / signal 4.18 / histogram +3.32",
+    "RSI 73.62",
+    "Bollinger upper 422.91 / middle 393.15 / lower 363.40",
+    "ATR 15.87"
+  ],
+  "rationale": "The report is substantively on-task: it correctly identifies Microsoft Corporation, the analysis date 2026-07-30, uses the frozen latest close of 451.10, and incorporates the official earnings data (revenue $90B +18%, operating income $40.6B +18%, GAAP EPS 4.81 vs non-GAAP 4.74, cloud $59.3B +27%, Azure +43%, FY revenue $331.8B). The final decision (HOLD) is present and consistent with the evidence. The technical indicators (RSI, MACD, Bollinger, ATR, VWMA, 10-day EMA) are internally consistent with the price data and the observed VWMA of 386.48. No key factual fabrication is evident; the report even correctly flags unavailable data (macro, global news, prediction markets) rather than fabricating it. However, the report does not cite any source_id (src-msft) for its factual claims \u2014 the deterministic check flagged source_id_referenced as FAIL. All factual claims (earnings figures, prices, indicators) are made without source citations, so cited_claim_count is 0. This is a citation/attribution weakness rather than a factual fabrication issue. Relevance is high but slightly reduced by some redundancy (repeated executive summaries and investment theses near the end) and the inclusion of some speculative/qualitative analyst-debate framing that goes beyond the evidence. Support is strong since all key conclusions trace to the available evidence with no fabrication.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Microsoft Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_used",
+      "passed": true,
+      "detail": "frozen latest close 451.10 present in evidence/corpus"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": false,
+      "detail": "report references source_id 'src-msft'"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+Error in EvidenceRecorder.on_chat_model_start callback: BudgetExhausted('LLM call budget exhausted (limit=1); refusing to start next call')
+MSFT  outcome=budget_stopped signal=n/a calls=1 tokens=2273 wall=2.011s
+  run dir: 
+/Users/leeyoma/Downloads/cs5351/work/project/evaluation/budget-stop/MSFT/compact
+/run

@@ -1,0 +1,114 @@
+{
+  "ticker": "AAPL",
+  "arms": {
+    "baseline": {
+      "support": 0.8,
+      "relevance": 0.9,
+      "cited_claim_count": 0,
+      "supported_cited_claim_count": 0,
+      "valid_citation_rate": null,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [
+        "Revenue $109.4B +16% YoY",
+        "Gross margin 50.1% incl ~2pp tariff-refund benefit",
+        "Diluted EPS $2.02 +29% incl $0.11 tariff-refund benefit",
+        "Dividend $0.27/share",
+        "Last close $308.91",
+        "Day range $300.00-$310.69",
+        "Volume 132,489,100",
+        "50 SMA $309.50",
+        "10 EMA $327.24",
+        "MACD 6.70, Signal 7.98, Histogram -1.28",
+        "RSI 45.08",
+        "Bollinger middle $324.37, upper $344.51, lower $304.22",
+        "ATR $9.90",
+        "VWMA $305.23",
+        "July 31 close $308.91 down ~7.4% from $333.43",
+        "July 28 peak $340.08",
+        "June 25 low $275.15"
+      ],
+      "rationale": "The report is substantively on-task: it correctly identifies Apple Inc., the analysis date 2026-07-31, uses the frozen latest close of $308.91, and incorporates the official Q3 FY26 earnings figures (revenue $109.4B +16%, gross margin 50.1% with ~2pp tariff-refund benefit, EPS $2.02 +29% with $0.11 benefit, dividend $0.27). The technical analysis is consistent with the provided market data (price trajectory, volume, single-day drop). The final decision (HOLD) is present and supported by the evidence. \n\nHowever, there are notable issues. First, the deterministic check flagged that the report does NOT reference the source_id 'src-aapl' \u2014 the report cites the earnings data but never attaches the source ID, so none of the factual claims carry a proper source citation (cited_claim_count = 0). Second, the report contains some fabricated technical indicator values (50 SMA $309.50, 10 EMA $327.24, MACD, RSI 45.08, Bollinger bands, ATR $9.90) that are NOT present in the observed tool outputs \u2014 only VWMA (305.23) and last_close were returned by get_indicators. These indicator values appear to be invented/hallucinated rather than retrieved from evidence. This is a fabrication concern, though the core conclusions (HOLD, breakdown, earnings quality) are supported by the real data. The report also contains internal inconsistencies (entry price $296 with stop $300, then stop moved to $289; duplicated sections). \n\nGiven the main conclusions are supported by genuine evidence (earnings, price, volume) but the report fabricates technical indicator values not in the evidence and fails to cite the source ID, support is 0.8 (main conclusions supported with no key fabrication of the core thesis, but with fabricated secondary indicator data and citation failures). Relevance is 0.9 \u2014 fully focused on AAPL/date/task with minor redundancy and duplication.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report references company 'Apple Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-07-31"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_used",
+          "passed": true,
+          "detail": "frozen latest close 308.91 present in evidence/corpus"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": false,
+          "detail": "report references source_id 'src-aapl'"
+        }
+      ]
+    },
+    "compact": {
+      "support": 0.8,
+      "relevance": 0.8,
+      "cited_claim_count": 0,
+      "supported_cited_claim_count": 0,
+      "valid_citation_rate": null,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [
+        "Revenue $109.4B, +16% YoY",
+        "Gross margin 50.1% incl ~2pt tariff-refund benefit",
+        "Diluted EPS $2.02, +29% YoY incl $0.11 benefit",
+        "Dividend $0.27/share",
+        "Last close $308.91",
+        "Day low $300.00, high $310.69, volume 132.5M",
+        "10 EMA $327.24",
+        "Bollinger mid/upper/lower $324.37/$344.51/$304.22",
+        "RSI 45.08",
+        "MACD 6.82/8.14/-1.32",
+        "ATR $9.90",
+        "VWMA $308.54",
+        "EPS ex-benefit ~$1.91",
+        "Underlying gross margin ~48%"
+      ],
+      "rationale": "The report is substantively accurate and well-grounded in the available evidence. All key figures (revenue $109.4B +16%, gross margin 50.1% with ~2pt tariff benefit, EPS $2.02 +29% with $0.11 benefit, dividend $0.27, last close $308.91, day range, volume, Bollinger lower band $304.22) match the frozen source and market data. The technical indicators (10 EMA, RSI, MACD, ATR, VWMA) are internally consistent with the price data provided. The report correctly flags unavailable data sources (global news, macro, prediction markets) rather than fabricating them. The final decision (HOLD) is present and supported by the analysis. No key factual fabrication detected.\n\nHowever, the report does not use source citations (cited_claim_count = 0), so all factual claims are uncited. The report also contains some redundancy (repeated executive summary and investment thesis sections). The instrument identity check failed (report references 'Apple Inc.' rather than the expected identity), and source_id 'src-aapl' is not explicitly referenced, though the news content is drawn from it. These are minor issues that don't undermine the substance. Support 0.8 (main conclusions supported, no key fabrication, but no citations used). Relevance 0.8 (core complete and on-task, minor redundancy from duplicated sections).",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": false,
+          "detail": "report references company 'Apple Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-07-31"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_used",
+          "passed": true,
+          "detail": "frozen latest close 308.91 present in evidence/corpus"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": false,
+          "detail": "report references source_id 'src-aapl'"
+        }
+      ]
+    }
+  }
+}

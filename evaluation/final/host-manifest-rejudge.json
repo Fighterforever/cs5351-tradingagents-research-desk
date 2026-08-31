@@ -1,0 +1,94 @@
+{
+  "started_at": "2026-08-31T13:30:15.190821+00:00",
+  "decision_owner": "leo",
+  "reason": "The judge now receives every real tool_result event; the fallback snapshot omitted earlier observations. Research outputs, rubric, thresholds and model settings are unchanged.",
+  "module_sha256": "ff5e216dd901cadc8e3ae18df81135a28d35f719bc1bda246738fa8b8a301490",
+  "executions": [
+    {
+      "ticker": "META",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "META",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:30:15.193128+00:00",
+      "finished_at": "2026-08-31T13:30:25.064904+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/META-judge-complete-observations.log"
+    },
+    {
+      "ticker": "AMZN",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "AMZN",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:30:15.192808+00:00",
+      "finished_at": "2026-08-31T13:30:26.053848+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/AMZN-judge-complete-observations.log"
+    },
+    {
+      "ticker": "NVDA",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "NVDA",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:30:15.191257+00:00",
+      "finished_at": "2026-08-31T13:30:26.129994+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/NVDA-judge-complete-observations.log"
+    },
+    {
+      "ticker": "GOOGL",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "GOOGL",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:30:15.194431+00:00",
+      "finished_at": "2026-08-31T13:30:26.163488+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/GOOGL-judge-complete-observations.log"
+    },
+    {
+      "ticker": "AAPL",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "AAPL",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:30:15.191147+00:00",
+      "finished_at": "2026-08-31T13:30:27.731639+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/AAPL-judge-complete-observations.log"
+    },
+    {
+      "ticker": "MSFT",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "MSFT",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:30:15.191192+00:00",
+      "finished_at": "2026-08-31T13:30:30.308910+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/MSFT-judge-complete-observations.log"
+    }
+  ],
+  "aggregate_exit_code": 0,
+  "finished_at": "2026-08-31T13:30:30.850333+00:00"
+}

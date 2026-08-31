@@ -1,0 +1,7 @@
+{
+  "calls": 14,
+  "input_tokens": 92283,
+  "output_tokens": 19991,
+  "total_tokens": 112274,
+  "stop_reason": "completed"
+}

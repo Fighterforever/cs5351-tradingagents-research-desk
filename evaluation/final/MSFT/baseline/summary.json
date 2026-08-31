@@ -1,0 +1,16 @@
+{
+  "ticker": "MSFT",
+  "analysis_date": "2026-07-30",
+  "context_mode": "baseline",
+  "outcome": "completed",
+  "signal": "Overweight",
+  "stop_reason": "completed",
+  "calls": 14,
+  "input_tokens": 92283,
+  "output_tokens": 19991,
+  "total_tokens": 112274,
+  "wall_seconds": 177.466,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/MSFT/baseline/run"
+}

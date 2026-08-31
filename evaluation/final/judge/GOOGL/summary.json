@@ -1,0 +1,81 @@
+{
+  "ticker": "GOOGL",
+  "arms": {
+    "baseline": {
+      "support": 0.9,
+      "relevance": 1.0,
+      "cited_claim_count": 30,
+      "supported_cited_claim_count": 30,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [],
+      "rationale": "The report is a multi-role analysis (market analyst, news researcher, bull/bear, research manager, trader, aggressive/conservative/neutral risk analysts, final portfolio decision) that converges on a HOLD recommendation. All key factual claims are directly supported by the frozen evidence: the latest close of $317.69, technical indicators (10 EMA 345.96, MACD -4.80, RSI 29.65, Bollinger bands, ATR 11.84, VWMA 351.57), and the earnings figures (revenue $119.796B +24%, Cloud $24.768B +82%, operating income $40.770B/34% margin, net income $112.107B, EPS $9.11, $97.983B unrealized gains). All cited claims carry the correct source IDs (market-googl for market data, src-googl for earnings) and those sources genuinely support the specific claims. The report correctly notes NO_DATA_AVAILABLE for macro/global news/prediction markets and does not fabricate values. The report is fully focused on GOOGL at the 2026-07-23 analysis date with a clear final decision (HOLD). Minor deductions: the report is somewhat verbose/redundant across the multiple role sections, and some interpretive claims (e.g., 'institutional conviction selling', 'market repricing forward expectations') are analytical inferences rather than directly evidenced facts, though these are framed as analyst interpretation rather than fabricated data. Overall support is strong with no key fabrication.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report references company 'Alphabet Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-07-23"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 317.69 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-googl'"
+        }
+      ]
+    },
+    "compact": {
+      "support": 0.9,
+      "relevance": 1.0,
+      "cited_claim_count": 20,
+      "supported_cited_claim_count": 20,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [],
+      "rationale": "The report is fully focused on GOOGL/Alphabet at the analysis date 2026-07-23, with the correct frozen close of 317.69 and correct source_id references. All cited factual claims (revenue $119.8B +24%, Cloud $24.8B +82%, operating income $40.77B/34% margin, net income $112.1B/EPS $9.11 with $97.98B unrealized gains, price 317.69, 10 EMA 345.96, RSI 29.65, MACD -4.80, ATR 11.84, VWMA 351.57, Bollinger 353.39, prior close 342.09, day range 314.90-324.49, volume 69.4M) are all directly supported by the observed tool outputs. The report appropriately notes NO_DATA for 50/200 SMA, macro, global news, and prediction markets rather than fabricating. The final decision (Hold) is present and consistent across roles. Support is very high; I give 0.9 rather than 1.0 because some interpretive claims (e.g., 'capitulation', '2-3x average volume', 'down ~21% from May high') are reasonable inferences from the data rather than directly stated facts, and the 'roughly 2-3x recent daily volume' is an estimate not directly given. No key fabrication exists.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report references company 'Alphabet Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-07-23"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 317.69 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-googl'"
+        }
+      ]
+    }
+  }
+}

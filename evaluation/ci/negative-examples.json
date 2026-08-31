@@ -1,0 +1,96 @@
+{
+  "demonstration": "AT-08 expected-rejection demonstration",
+  "all_rejections_observed": true,
+  "expected_rejections": [
+    {
+      "gate": "gate1_temporal_order",
+      "expected_message": "approval must predate implementation start",
+      "exit": 1,
+      "matched": true,
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "scripts/check_approval.py",
+        "--root",
+        "/var/folders/kn/yjb514xx4v7c5xwty4thvd740000gn/T/gate1-sju00r_s",
+        "--changed-files",
+        "docs/process/test-approval.yaml"
+      ],
+      "stdout": "read /private/var/folders/kn/yjb514xx4v7c5xwty4thvd740000gn/T/gate1-sju00r_s/docs/process/test-approval.yaml\napproved_at=2026-08-31T12:06:33.695000+00:00\nimplementation_started_at=2026-08-31T12:06:32.695000+00:00\nplan: declared '1.0.0', document '1.0.0'\ntest_plan: declared '1.0.0', document '1.0.0'\napproved tests: ['AT-01', 'AT-02', 'AT-03', 'AT-04', 'AT-05', 'AT-06', 'AT-07', 'AT-08']\nPR changes test specifications/files: 1 file(s)\ntest approval updated in the same change\nRESULT: FAIL\nFAILURES:\n- approval must predate implementation start: approved_at=2026-08-31T12:06:33.695000+00:00 !< implementation_started_at=2026-08-31T12:06:32.695000+00:00\n",
+      "stderr": ""
+    },
+    {
+      "gate": "gate2_safety_path_without_decision",
+      "expected_message": "requires an ADR accepted by leo",
+      "exit": 1,
+      "matched": true,
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "scripts/check_static.py",
+        "--changed-files",
+        "src/research_desk/policy.py"
+      ],
+      "stdout": "ruff check . -> exit 0\nmypy src/research_desk -> exit 0\npip check -> exit 0\ncheck_permissions.py -> exit 0\nRESULT: FAIL\nFAILURES:\n- safety-path change requires an ADR accepted by leo that is changed in this same diff; none present\n- safety-path change requires docs/process/test-approval.yaml changed in this same diff\n- changed safety path src/research_desk/policy.py is not listed among the affected paths of an ADR accepted by leo that is changed in this same diff\n",
+      "stderr": ""
+    },
+    {
+      "gate": "gate3_requirements_fit_missing",
+      "expected_message": "fit.metric is empty",
+      "exit": 1,
+      "matched": true,
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "scripts/check_requirements.py",
+        "--root",
+        "/var/folders/kn/yjb514xx4v7c5xwty4thvd740000gn/T/gate3-09jbxcug"
+      ],
+      "stdout": "read /private/var/folders/kn/yjb514xx4v7c5xwty4thvd740000gn/T/gate3-09jbxcug/docs/req/requirements.yaml\nINH-001: external source accepted -> https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/tradingagents/graph/...\nINH-002: external source accepted -> https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/tradingagents/agents...\nINH-003: external source accepted -> https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/tradingagents/graph/...\nINH-004: external source accepted -> https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/tradingagents/datafl...\nINH-005: external source accepted -> https://github.com/TauricResearch/TradingAgents/blob/v0.4.0/cli/stats_handler.py...\ntrace matrix rows: 23\nrequirement count: 23\nRESULT: FAIL\nFAILURES:\n- registry does not match req-schema.json: 'metric' is a required property\n- FR-001: fit.metric is empty\n",
+      "stderr": ""
+    },
+    {
+      "gate": "gate4_missing_fixed_pack",
+      "expected_message": "required fixed pack missing: aapl_buy_complete",
+      "exit": 1,
+      "matched": true,
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "scripts/check_semantic.py",
+        "--root",
+        "/var/folders/kn/yjb514xx4v7c5xwty4thvd740000gn/T/gate4-1f56i60x",
+        "--packs-dir",
+        "test/fixtures/packs",
+        "--changed-files",
+        "docs/ci-gates.md"
+      ],
+      "stdout": "FIXED_CORPUS_PACKS=3\nREQUIRED_PACKS=4\nAT07_CORPUS_CASES=6\nAT07_SPLIT: development=2, held_out=4\nGATE4_OFFLINE_SCOPE=fixed captured-output replay + deterministic prompt-transform regression (no live model quality claim)\nPADDING=offline fact-retention stress input only; NOT a live token-saving baseline\nexternal network calls attempted: 0\nRESULT: FAIL\nFAILURES:\n- required fixed pack missing: aapl_buy_complete\n",
+      "stderr": ""
+    },
+    {
+      "gate": "gate5_regression_pytest_failure",
+      "expected_message": "regression suite failed: tests",
+      "exit": 1,
+      "matched": true,
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "scripts/check_regression.py",
+        "--root",
+        "/var/folders/kn/yjb514xx4v7c5xwty4thvd740000gn/T/gate5-_kbqd6cl"
+      ],
+      "stdout": "pytest tests -> exit 1 (1 failed in 0.02s)\npytest test/offline -> exit 0 (1 passed in 0.00s)\nRESULT: FAIL\nFAILURES:\n- regression suite failed: tests\n-   command: /Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python -m pytest -q -m not live tests\n-   stderr tail:\n\n-   stdout tail:\nE       assert 1 == 2\n\ntests/test_expected_failure.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_expected_failure.py::test_expected_failure - assert 1 == 2\n1 failed in 0.02s\n",
+      "stderr": ""
+    },
+    {
+      "gate": "gate6_ai_log_not_updated",
+      "expected_message": "was not updated in this change",
+      "exit": 1,
+      "matched": true,
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "scripts/check_ai_use_log.py",
+        "--changed-files",
+        "scripts/check_ai_use_log.py"
+      ],
+      "stdout": "changed files: 1\ncode/prompt changes requiring a log update: 1\nread docs/ai-use-log.yaml\nlog entries: 13 (valid: 13)\nall changed code/prompt files are covered by a log entry scope\nRESULT: FAIL\nFAILURES:\n- docs/ai-use-log.yaml was not updated in this change\n",
+      "stderr": ""
+    }
+  ]
+}

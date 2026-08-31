@@ -1,0 +1,8 @@
+{
+  "recorded_at": "2026-08-31T13:23:32.411278+00:00",
+  "decision_owner": "leo",
+  "session": "ses_fa80b1435ffeLfgOoIjVIDIpKP",
+  "scope": "Role-preserving report assembly and exact output-price check; all judge calls use the corrected module. Analysis graph and judge rubric are unchanged.",
+  "module": "src/research_desk/eval/live.py",
+  "sha256": "63d1111e9eb432674ec55e672678e1ee402af4d9344db45bdae031e82d5a617f"
+}

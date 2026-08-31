@@ -1,0 +1,16 @@
+{
+  "ticker": "AMZN",
+  "analysis_date": "2026-07-31",
+  "context_mode": "compact",
+  "outcome": "completed",
+  "signal": "Overweight",
+  "stop_reason": "completed",
+  "calls": 13,
+  "input_tokens": 45819,
+  "output_tokens": 6212,
+  "total_tokens": 52031,
+  "wall_seconds": 62.525,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/AMZN/compact/run"
+}

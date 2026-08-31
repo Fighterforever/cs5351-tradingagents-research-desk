@@ -1,0 +1,16 @@
+{
+  "ticker": "MSFT",
+  "analysis_date": "2026-07-30",
+  "context_mode": "compact",
+  "outcome": "budget_stopped",
+  "signal": null,
+  "stop_reason": "budget_exhausted",
+  "calls": 1,
+  "input_tokens": 2124,
+  "output_tokens": 149,
+  "total_tokens": 2273,
+  "wall_seconds": 2.011,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/budget-stop/MSFT/compact/run"
+}

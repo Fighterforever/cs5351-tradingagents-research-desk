@@ -1,0 +1,48 @@
+{
+  "support": 0.8,
+  "relevance": 1.0,
+  "cited_claim_count": 30,
+  "supported_cited_claim_count": 30,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "Price target of 300.0 (no source cited)",
+    "10 EMA value of 242.70 (technical indicator not present in observed tool outputs)",
+    "Bollinger middle value of 243.86 (technical indicator not present in observed tool outputs)",
+    "RSI value of 64.04 (technical indicator not present in observed tool outputs)",
+    "MACD value of 0.08 (technical indicator not present in observed tool outputs)",
+    "ATR value of 9.26 (technical indicator not present in observed tool outputs)",
+    "AWS operating income up 43% year-over-year (27.5 vs 19.2 is actually ~43% increase, but this derived claim is uncited)",
+    "Claim that Anthropic gain is ~85% of net income (derived, uncited)",
+    "Stop loss at 226.65 described as 'breakout base' / 2026-07-29 low (derived interpretation)"
+  ],
+  "rationale": "The report is well-grounded in the frozen evidence. All cited claims (net sales $200.6B +20%, AWS $42.2B +37%, AWS operating income $27.5B vs $19.2B, net income $62.6B, pre-tax other income $53.4B Anthropic, TTM FCF -$7.6B, latest close 271.58, volume 129.05M, VWMA 240.96) are directly supported by src-amzn and market-amzn sources. The report correctly notes global/macro/prediction market data is unavailable and does not fabricate it. However, several technical indicator values (10 EMA 242.70, Bollinger middle 243.86, RSI 64.04, MACD 0.08, ATR 9.26) are cited to [market-amzn] but these specific indicator values are NOT present in the observed tool outputs \u2014 only VWMA (240.96) and last_close were returned by get_indicators. These appear to be fabricated/estimated technical values presented as if sourced. Additionally, the price target of 300.0 is uncited, and derived claims (43% AWS growth, ~85% Anthropic share) are uncited. These are important evidence gaps but not core factual fabrication of the fundamental data. Support = 0.8. Relevance is fully on-task for AMZN/2026-07-31 with a complete multi-analyst report and final decision.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Amazon.com, Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-31"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 271.58 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-amzn'"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "ticker": "META",
+  "analysis_date": "2026-07-30",
+  "context_mode": "compact",
+  "outcome": "completed",
+  "signal": "Overweight",
+  "stop_reason": "completed",
+  "calls": 13,
+  "input_tokens": 46696,
+  "output_tokens": 6464,
+  "total_tokens": 53160,
+  "wall_seconds": 64.081,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/META/compact/run"
+}

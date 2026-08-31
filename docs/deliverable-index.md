@@ -9,8 +9,8 @@ Participant and evaluation identifier: leo. Relative contribution:1.0. Execution
 | D3: coding governance | ../AGENTS.md; code-governance/; ../.opencode/; ../.agent/ | Module and function ownership, allowed tools, role permissions, frozen human-owned rules and change process; actual candidate enforcement probe retained |
 | D4: verification | code-governance/verification-constraints.md; review-memo.md; debt-register.md; bug-diary.md; ci-gates.md | Structural, regression and behavioral checks; real defects and review decisions; six gate implementations and a controlled rejection harness, with execution outcomes recorded in ci-gates.md |
 | D5: supervised sessions | ../transcripts/leo-leo.md; ../transcripts/annotations/ | Seven distinct annotated sessions, complete native records, original events and exact prompts; large native records use lossless gzip |
-| D6: single report | ../Report.md; ../Report.pdf | Process report, participant record and one 361-word reflection; final 12pt PDF rendered from the same Markdown |
-| D7: repository | ../README.md; ../.github/; ../evaluation/ci/ | Private Fighterforever/cs5351-tradingagents-research-desk; genuine upstream history and concise extension commits; actual CI and branch-policy status linked in the report |
+| D6: single report | ../Report.md; ../Report.pdf | Process report, participant record and one 300–500-word reflection; final 12pt PDF rendered from the same Markdown |
+| D7: repository | ../README.md; ../.github/; ../evaluation/ci/ | Private Fighterforever/cs5351-tradingagents-research-desk; genuine upstream history and concise extension commits; local checks passed; remote Actions blocked by billing and private branch protection unavailable, so D7 remains incomplete |
 | D8: source and tests | ../src/research_desk/; ../test/offline/; ../test/live/; ../test/fixtures/ | Application extension around the unchanged upstream graph; API-free tests separated from opt-in live evaluation; actual source data and prompt snapshots |
 | D9: launch prompt | ../Prompt.md | Static plan-first execution instruction with scoped approvals and verification stages |
 

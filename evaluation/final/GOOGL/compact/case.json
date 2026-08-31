@@ -1,0 +1,27 @@
+{
+  "ticker": "GOOGL",
+  "analysis_date": "2026-07-23",
+  "announcement_date": "2026-07-22",
+  "split": "held_out",
+  "company_name": "Alphabet Inc.",
+  "sector": "Communication Services",
+  "industry": "Internet Content & Information",
+  "source_url": "https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf",
+  "source_id": "src-googl",
+  "csv": "GOOGL.csv",
+  "csv_path": "/Users/leeyoma/Downloads/cs5351/work/project/test/fixtures/market/GOOGL.csv",
+  "as_of": "2026-07-23",
+  "latest_close": 317.69000244140625,
+  "identity": {
+    "company_name": "Alphabet Inc.",
+    "sector": "Communication Services",
+    "industry": "Internet Content & Information"
+  },
+  "notes": [
+    "Alphabet Q2 2026 revenue USD119.796 billion increased 24%.",
+    "Google Cloud revenue 24.768 billion increased 82%.",
+    "Operating income 40.770 billion and operating margin 34%.",
+    "Net income 112.107 billion and EPS 9.11 were affected by 97.983 billion other income, primarily unrealized equity investment gains."
+  ],
+  "balance": "The evidence supports strong cloud growth but does not support treating the full net-income increase as recurring operating performance."
+}

@@ -1,0 +1,38 @@
+{
+  "support": 0.9,
+  "relevance": 1.0,
+  "cited_claim_count": 30,
+  "supported_cited_claim_count": 30,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [],
+  "rationale": "The report is comprehensive and well-grounded. All cited claims trace to either market-amzn (price, indicators, volume, ranges) or src-amzn (earnings figures), and each citation supports the specific claim made. The earnings figures (net sales $200.6B +20%, AWS $42.2B +37%, operating income $27.5B vs $19.2B, net income $62.6B, pre-tax other income $53.4B Anthropic, TTM FCF outflow $7.6B) all match the frozen source. Technical indicators (50 SMA 246.63, 10 EMA 242.70, MACD -0.89/-2.22/+1.34, RSI 64.04, Bollinger 243.86/264.20/223.51, ATR 9.26, VWMA 248.04, 200 SMA unavailable) all match the observed tool outputs. Derived calculations (10.1% above 50 SMA, 11.9% above 10 EMA, ~85% of net income from gains, AWS op income growth) are correctly computed from sourced operands. The report correctly notes unavailable data (200 SMA, macro, global news, prediction markets) without fabricating. The final decision (Overweight, scaled entry, price target 295) is supported by the analysis. Minor deduction: some interpretive claims (e.g., \"institutional conviction,\" \"distribution vs accumulation\") are framed as analysis rather than facts, and the price target of 295 is an analyst judgment not directly evidenced, but these are reasonable analytical extensions rather than fabrications. Overall support is very high with no key fabrication.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Amazon.com, Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-31"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 271.58 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-amzn'"
+    }
+  ]
+}

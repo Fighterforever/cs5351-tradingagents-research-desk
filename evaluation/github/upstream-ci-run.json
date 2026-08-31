@@ -1,0 +1,82 @@
+{
+  "recorded_at": "2026-08-31T13:39:19.823621+00:00",
+  "command": [
+    "gh",
+    "run",
+    "view",
+    "33397954872",
+    "--repo",
+    "Fighterforever/cs5351-tradingagents-research-desk",
+    "--json",
+    "jobs,conclusion,url,status"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "response": {
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "completedAt": "2026-08-31T13:37:09Z",
+        "conclusion": "failure",
+        "databaseId": 99506936855,
+        "name": "tests (py3.11)",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954872/job/99506936855"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:10Z",
+        "conclusion": "failure",
+        "databaseId": 99506937131,
+        "name": "clean-install smoke",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954872/job/99506937131"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:12Z",
+        "conclusion": "failure",
+        "databaseId": 99506937144,
+        "name": "tests (py3.13)",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954872/job/99506937144"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:10Z",
+        "conclusion": "failure",
+        "databaseId": 99506937153,
+        "name": "tests (py3.12)",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954872/job/99506937153"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:10Z",
+        "conclusion": "failure",
+        "databaseId": 99506937161,
+        "name": "tests (py3.10)",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954872/job/99506937161"
+      },
+      {
+        "completedAt": "2026-08-31T13:37:10Z",
+        "conclusion": "failure",
+        "databaseId": 99506937220,
+        "name": "ruff (strict, full repo)",
+        "startedAt": "2026-08-31T13:37:07Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954872/job/99506937220"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/33397954872"
+  }
+}

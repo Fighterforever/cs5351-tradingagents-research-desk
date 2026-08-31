@@ -12,3 +12,7 @@
 | Human/cognitive debt | Large generated context obscured the next objective | Separate bounded code, CI, documentation and video work | Short prompts, trace matrix, measured milestones |
 
 No item is closed merely because a document exists. The final report identifies evidence-backed closure and any remaining release limitation.
+
+## Final disposition
+
+The final unified suite closes the demonstrated packaging, authority, valid-sale, budget-boundary and replay defects. All12 research packs completed, and the final measured context targets passed. The final mandatory-field result is59/60: META compact did not display the full legal company name. This prompt/output-contract debt remains open and is reflected in the final CHANGES REQUIRED requirements-acceptance verdict. A quarterly-EPS ratio mislabeled as trailing P/E also demonstrates remaining semantic review debt, despite passing judge thresholds. Neither issue is hidden by the passing deterministic software tests. GitHub Actions is blocked before job execution by account payment/spending limits, and private branch protection requires an eligible plan. D7/GOV-004 remains open; the private repository and desired policy are preserved without billing or visibility changes.

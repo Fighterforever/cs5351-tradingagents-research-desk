@@ -1,0 +1,38 @@
+{
+  "support": 1.0,
+  "relevance": 1.0,
+  "cited_claim_count": 45,
+  "supported_cited_claim_count": 45,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [],
+  "rationale": "The report is fully grounded in the frozen evidence. All fundamental figures (Azure +43%, revenue $90.0B +18%, operating income $40.6B +18%, Microsoft Cloud $59.3B +27%, FY revenue $331.8B, GAAP EPS $4.81 vs non-GAAP $4.74) match the official src-msft source. All technical figures (close $451.10, RSI 73.62, MACD 7.50/4.18/3.32, Bollinger 393.15/422.91/363.40, ATR 15.87, VWMA 386.48, 10 EMA 401.04) match the observed market-msft tool outputs. The 50/200 SMA are correctly reported as NO_DATA_AVAILABLE rather than fabricated. Derived calculations (operating margin ~45.1%, cloud ~66% of revenue, +15.5% surge, prior close $390.54, June high $466.32, June low $352.83) are all correctly computed from the cited operands and match the CSV data. Every cited claim is backed by the correct source ID; no invalid citations and no uncited factual claims were found. The report is fully focused on MSFT at the 2026-07-30 analysis date with a coherent Overweight/scale-in BUY decision supported by the evidence.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Microsoft Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 451.10 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-msft'"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "ticker": "MSFT",
+  "arms": {
+    "baseline": {
+      "support": 1.0,
+      "relevance": 1.0,
+      "cited_claim_count": 45,
+      "supported_cited_claim_count": 45,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [],
+      "rationale": "The report is fully grounded in the frozen evidence. All fundamental figures (Azure +43%, revenue $90.0B +18%, operating income $40.6B +18%, Microsoft Cloud $59.3B +27%, FY revenue $331.8B, GAAP EPS $4.81 vs non-GAAP $4.74) match the official src-msft source. All technical figures (close $451.10, RSI 73.62, MACD 7.50/4.18/3.32, Bollinger 393.15/422.91/363.40, ATR 15.87, VWMA 386.48, 10 EMA 401.04) match the observed market-msft tool outputs. The 50/200 SMA are correctly reported as NO_DATA_AVAILABLE rather than fabricated. Derived calculations (operating margin ~45.1%, cloud ~66% of revenue, +15.5% surge, prior close $390.54, June high $466.32, June low $352.83) are all correctly computed from the cited operands and match the CSV data. Every cited claim is backed by the correct source ID; no invalid citations and no uncited factual claims were found. The report is fully focused on MSFT at the 2026-07-30 analysis date with a coherent Overweight/scale-in BUY decision supported by the evidence.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report references company 'Microsoft Corporation'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-07-30"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 451.10 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-msft'"
+        }
+      ]
+    },
+    "compact": {
+      "support": 0.9,
+      "relevance": 1.0,
+      "cited_claim_count": 30,
+      "supported_cited_claim_count": 30,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [
+        "Cloud represents ~66% of total revenue (59.3/90.0) - derived calculation, presented as calculation",
+        "Operating margin held at ~45% (40.6/90.0) - derived calculation",
+        "Trailing P/E ~93.8x (451.10/4.81) - derived calculation, presented as operands",
+        "Price gapped up ~15% from $390.54 close to $451.10 - derived from market data",
+        "Prior close $390.54 on 7/29 - derived from market CSV",
+        "Pre-gap consolidation zone built at $390"
+      ],
+      "rationale": "The report is fully focused on MSFT, analysis date 2026-07-30, with correct identity, price ($451.10), and source references. All cited claims (src-msft for earnings figures, market-msft for price/technical indicators) are directly supported by the evidence. The report correctly handles unavailable data (50/200 SMA, macro, global news, prediction markets) by not fabricating. Derived calculations (66% cloud share, 45% margin, ~93.8x P/E, ~15.5% gap) are clearly labeled as calculations/operands rather than sourced facts, which is appropriate. The final decision (Overweight/Buy) is present and supported by the evidence. Minor deduction: some derived figures (e.g., $390.54 prior close, pre-gap consolidation zone at $390) are presented without explicit citation, though they are derivable from the market CSV. Overall main conclusions are well-supported with no key fabrication.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report references company 'Microsoft Corporation'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-07-30"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 451.10 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-msft'"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "support": 0.4,
+  "relevance": 1.0,
+  "cited_claim_count": 23,
+  "supported_cited_claim_count": 13,
+  "valid_citation_rate": 0.5652,
+  "invalid_citation_explanations": [
+    "50 SMA value of 246.63 cited to [market-amzn] is fabricated \u2014 the observed get_indicators output only contained macdh (1.34) and last_close (271.58); no 50 SMA was retrieved.",
+    "10 EMA value of 242.70 cited to [market-amzn] is fabricated \u2014 no 10 EMA was present in the observed tool output.",
+    "MACD line value of -0.89 cited to [market-amzn] is fabricated \u2014 only macdh (1.34) was retrieved, not the MACD line.",
+    "Signal line value of -2.22 cited to [market-amzn] is fabricated \u2014 no signal value was retrieved.",
+    "RSI value of 64.04 cited to [market-amzn] is fabricated \u2014 no RSI was retrieved.",
+    "Bollinger band values (middle 243.86, upper 264.20, lower 223.51) cited to [market-amzn] are fabricated \u2014 no Bollinger data was retrieved.",
+    "ATR value of 9.26 cited to [market-amzn] is fabricated \u2014 no ATR was retrieved.",
+    "VWMA value of 248.04 cited to [market-amzn] is fabricated \u2014 no VWMA was retrieved.",
+    "Derived claims such as 'price ~10.1% above the 50 SMA' and '~11.9% above the 10 EMA' rest on the fabricated 50 SMA/10 EMA values and are therefore unsupported."
+  ],
+  "uncited_factual_claims": [
+    "Price target of 295.0 in the Final Portfolio Decision is an analyst projection with no supporting source citation.",
+    "Derived figure that 'roughly 85% of net income is non-recurring' is presented as a factual quantification without a direct source citation (though derived from cited operands).",
+    "Claim that volume on 07-31 was '~2.5-3x normal' is a derived comparison without a specific citation."
+  ],
+  "rationale": "The report is fully on-task and focused on AMZN at the 2026-07-31 analysis date, with accurate fundamental earnings data correctly cited to src-amzn and accurate market snapshot data (close 271.58, OHLC, volume) cited to market-amzn. However, the report fabricates a large set of technical indicator values (50 SMA, 10 EMA, MACD line, signal, RSI, Bollinger bands, ATR, VWMA) and attributes them to market-amzn, even though the observed get_indicators output contained only macdh (1.34) and last_close (271.58). These fabricated indicators form the core of the technical/breakout thesis, the support levels, and the price target, constituting key factual fabrication. The fundamental data is accurate, so support is not zero, but the substantial fabrication of central technical data warrants a low support score.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Amazon.com, Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-31"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 271.58 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-amzn'"
+    }
+  ]
+}

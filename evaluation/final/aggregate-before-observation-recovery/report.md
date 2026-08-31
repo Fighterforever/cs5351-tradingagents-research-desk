@@ -1,0 +1,66 @@
+# Baseline / Compact Aggregate (six paired metrics)
+
+Read from existing run outputs; no model calls. Judge scores are attached when present.
+
+| ticker | metric | baseline | compact | delta |
+|---|---|---|---|---|
+| AAPL | calls | 14 | 14 | +0.0% |
+| AAPL | input_tokens | 82636 | 54523 | -34.0% |
+| AAPL | output_tokens | 17846 | 6926 | -61.2% |
+| AAPL | total_tokens | 100482 | 61449 | -38.8% |
+| AAPL | wall_seconds | 160.5 | 62.5 | -61.0% |
+| AAPL | outcome | completed | completed | — |
+| AMZN | calls | 14 | 13 | -7.1% |
+| AMZN | input_tokens | 79749 | 45819 | -42.5% |
+| AMZN | output_tokens | 15384 | 6212 | -59.6% |
+| AMZN | total_tokens | 95133 | 52031 | -45.3% |
+| AMZN | wall_seconds | 143.8 | 62.5 | -56.5% |
+| AMZN | outcome | completed | completed | — |
+| GOOGL | calls | 16 | 13 | -18.8% |
+| GOOGL | input_tokens | 89244 | 46453 | -47.9% |
+| GOOGL | output_tokens | 17770 | 7220 | -59.4% |
+| GOOGL | total_tokens | 107014 | 53673 | -49.8% |
+| GOOGL | wall_seconds | 168.5 | 68.2 | -59.5% |
+| GOOGL | outcome | completed | completed | — |
+| META | calls | 15 | 13 | -13.3% |
+| META | input_tokens | 83946 | 46696 | -44.4% |
+| META | output_tokens | 15917 | 6464 | -59.4% |
+| META | total_tokens | 99863 | 53160 | -46.8% |
+| META | wall_seconds | 148.9 | 64.1 | -57.0% |
+| META | outcome | completed | completed | — |
+| MSFT | calls | 14 | 13 | -7.1% |
+| MSFT | input_tokens | 92283 | 47809 | -48.2% |
+| MSFT | output_tokens | 19991 | 7259 | -63.7% |
+| MSFT | total_tokens | 112274 | 55068 | -51.0% |
+| MSFT | wall_seconds | 177.5 | 67.7 | -61.8% |
+| MSFT | outcome | completed | completed | — |
+| NVDA | calls | 15 | 14 | -6.7% |
+| NVDA | input_tokens | 90199 | 55703 | -38.2% |
+| NVDA | output_tokens | 18305 | 7166 | -60.9% |
+| NVDA | total_tokens | 108504 | 62869 | -42.1% |
+| NVDA | wall_seconds | 171.9 | 67.4 | -60.8% |
+| NVDA | outcome | completed | completed | — |
+| AAPL | baseline judge support | 0.90 | — | — |
+| AAPL | baseline judge relevance | 1.00 | — | — |
+| AAPL | compact judge support | 0.90 | — | — |
+| AAPL | compact judge relevance | 1.00 | — | — |
+| AMZN | baseline judge support | 0.40 | — | — |
+| AMZN | baseline judge relevance | 1.00 | — | — |
+| AMZN | compact judge support | 0.80 | — | — |
+| AMZN | compact judge relevance | 1.00 | — | — |
+| GOOGL | baseline judge support | 0.90 | — | — |
+| GOOGL | baseline judge relevance | 1.00 | — | — |
+| GOOGL | compact judge support | 0.90 | — | — |
+| GOOGL | compact judge relevance | 1.00 | — | — |
+| META | baseline judge support | 0.90 | — | — |
+| META | baseline judge relevance | 1.00 | — | — |
+| META | compact judge support | 0.80 | — | — |
+| META | compact judge relevance | 1.00 | — | — |
+| MSFT | baseline judge support | 0.90 | — | — |
+| MSFT | baseline judge relevance | 1.00 | — | — |
+| MSFT | compact judge support | 0.90 | — | — |
+| MSFT | compact judge relevance | 1.00 | — | — |
+| NVDA | baseline judge support | 0.90 | — | — |
+| NVDA | baseline judge relevance | 1.00 | — | — |
+| NVDA | compact judge support | 0.90 | — | — |
+| NVDA | compact judge relevance | 1.00 | — | — |

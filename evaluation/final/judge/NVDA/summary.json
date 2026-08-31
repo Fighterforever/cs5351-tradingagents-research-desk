@@ -1,0 +1,86 @@
+{
+  "ticker": "NVDA",
+  "arms": {
+    "baseline": {
+      "support": 0.9,
+      "relevance": 1.0,
+      "cited_claim_count": 30,
+      "supported_cited_claim_count": 30,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [],
+      "rationale": "The report is fully focused on NVDA, analysis date 2026-08-27, latest close 227.98, and the earnings catalyst. All key conclusions are directly supported by the frozen evidence: revenue $96.2B (+18% seq, +106% YoY), Data Center $89.0B (+117% YoY), 75% gross margins, GAAP EPS 2.46 / non-GAAP 2.22, all from src-nvda; technical indicators (10-EMA 217.08, MACD 2.68, MACDs 3.22, MACDh -0.54, RSI 53.50, Bollinger 217.21/231.57/202.85, ATR 6.51, VWMA 211.91) all match the observed tool outputs from market-nvda. The report correctly notes 50-SMA and 200-SMA were unavailable and does not fabricate them. Derived calculations (92.5% Data Center share, 4.7% drawdown, 7% stop distance, etc.) are correctly labeled as calculations from cited operands. The final decision (Overweight, staged entry, stop at 211.91, price target 231.57) is present and consistent with the evidence. No uncited factual claims or invalid citations were identified. Minor deduction from 1.0 only because some interpretive claims (e.g., 'institutional participation', 'distribution vs accumulation') are analytical inferences rather than strictly evidenced facts, but these are clearly framed as interpretations and do not constitute fabrication.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report references company 'NVIDIA Corporation'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-08-27"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-nvda'"
+        }
+      ]
+    },
+    "compact": {
+      "support": 0.9,
+      "relevance": 1.0,
+      "cited_claim_count": 30,
+      "supported_cited_claim_count": 30,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [
+        "Price target of 250.0 (no source cited)",
+        "Stop loss at 215.0 (trader plan, internal)",
+        "Stop loss at 220.0 (final decision, internal)",
+        "Limit order at 218.00 and stop at 212.00 (conservative plan, internal)"
+      ],
+      "rationale": "The report is highly grounded in the frozen evidence. All cited claims (earnings figures from src-nvda, technical indicators and price data from market-nvda) are directly supported by the observed tool outputs. The earnings numbers (revenue $96.2B, +106% YoY, +18% QoQ, Data Center $89.0B +117%, 75% margins, EPS 2.46/2.22) match the official source exactly. Technical indicators (10 EMA 217.08, Bollinger mid 217.21, upper 231.57, VWMA 211.91, RSI 53.50, MACD 2.68/3.22, histogram -0.54, ATR 6.51) all match the observed tool outputs. The report correctly notes 50/200 SMA unavailable and macro/global news unavailable rather than fabricating. The derived calculation 89.0/96.2 = ~92.5% is arithmetically correct. Minor deductions: the price target of 250.0 is an analyst projection (not a factual claim needing citation, but it is an unsupported number), and internal stop-loss/limit levels are plan parameters rather than sourced facts. No key fabrication exists; the report is fully on-task for NVDA on 2026-08-27 with a clear final BUY/Overweight decision.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report references company 'NVIDIA Corporation'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report references analysis date 2026-08-27"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-nvda'"
+        }
+      ]
+    }
+  }
+}

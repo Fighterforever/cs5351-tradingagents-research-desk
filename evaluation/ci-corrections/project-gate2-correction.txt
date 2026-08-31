@@ -1,0 +1,6 @@
+safety-path change carries a changed ADR accepted by leo + updated approval evidence
+ruff check . -> exit 0
+mypy src/research_desk -> exit 0
+pip check -> exit 0
+check_permissions.py -> exit 0
+RESULT: PASS

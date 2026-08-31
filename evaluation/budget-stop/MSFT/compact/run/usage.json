@@ -1,0 +1,7 @@
+{
+  "calls": 1,
+  "input_tokens": 2124,
+  "output_tokens": 149,
+  "total_tokens": 2273,
+  "stop_reason": "budget_exhausted"
+}

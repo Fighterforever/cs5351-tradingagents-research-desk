@@ -1,0 +1,10 @@
+
+Neutral Analyst: **Role: Neutral Risk Analyst**
+
+Both sides are overreaching. The Aggressive Analyst calls the 7% drop a "shakeout" and the 300–304 zone a "fortress"—but that's hope, not evidence. Price closed at 308.91, just above the lower Bollinger band (304.22) and at VWMA (308.54) [market-aapl]. That's equilibrium, yes, but equilibrium after a record-volume distribution day (132.5M) [market-aapl] is fragile, not a launchpad. The 10 EMA at 327.24 is a 6% gap above price [market-aapl]; a reclaim is possible but unconfirmed. Calling HOLD "aggressive" ignores that the trend is broken short-term.
+
+The Conservative Analyst is equally flawed. RSI at 45.08 is neutral, not oversold [market-aapl]—so there's room to fall, but also room to bounce. The "distribution" label ignores that the earnings were genuinely strong: revenue +16%, EPS +29% [src-aapl]. Strip the 0.11 tariff benefit and organic EPS growth is ~22% [calculation from src-aapl]; ex-benefit gross margin is ~48% [calculation from src-aapl]. That's not a deteriorating business. The fear of a 10% drawdown to 280 is speculative—there's no data supporting that target.
+
+The balanced path is the trader's HOLD, but with discipline, not dogma. The stop at 300.0 is sensible—it's just below the day low (300.00) and lower band (304.22) [market-aapl]. The upgrade trigger at 327.24 (10 EMA) with volume is a reasonable confirmation, not a gamble. The trim trigger below 300 on sustained volume protects capital without dumping into support.
+
+The key insight both miss: the tariff-refund benefit (~2pp margin, 0.11 EPS) [src-aapl] is transitory. The market repriced on that, but the underlying ~22% organic growth [calculation from src-aapl] justifies holding. Neither adding nor exiting is supported by the data. Maintain current size, respect the 300 stop, and let the 327 reclaim or 300 break decide direction. That's not passive—it's evidence-based patience.

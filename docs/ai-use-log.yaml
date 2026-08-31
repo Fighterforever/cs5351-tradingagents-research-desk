@@ -12,7 +12,7 @@ entries:
   - scripts/check_permissions.py
   review: docs/ci-gates.md
   evidence: transcripts/project-ci-offline-schema.full.json
-  outcome: Registered the coordinator-archived official dependency in a local JSON Schema registry; permission definitions and application behavior remain unchanged
+  outcome: Registered the coordinator-archived official dependency in a local JSON Schema registry. The previously failed static gate then passed offline, followed by the complete six-gate run. Permission definitions and application behavior remain unchanged.
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
@@ -57,8 +57,9 @@ entries:
   - docs/req/req-schema.json
   review: docs/ci-gates.md
   evidence: transcripts/project-ci.full.json
-  outcome: Six gates generated; coordinator requested concrete approval, diff and semantic-interface
-    corrections before the complete local run
+  outcome: Six gates generated and corrected against the approved contracts. The final committed
+    implementation passed all six gates and all six AT-08 expected rejections; initial failures
+    and the final complete output are preserved in evaluation/ci-initial and evaluation/ci.
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
@@ -105,8 +106,10 @@ entries:
   - scripts/run_gates.py
   review: docs/ci-gates.md
   evidence: transcripts/project-ci-runner.full.json
-  outcome: Runner generated; focused lint and help invocation passed. Actual complete gate run
-    awaits the final committed source scope.
+  outcome: Runner generated and used on the final committed implementation. All six gates and
+    the AT-08 demonstration returned exit zero; upstream tests reported 649 passed plus 71
+    passing subtests and 2 skips, and the application suite reported 98 passed. Complete
+    command provenance and output are preserved in evaluation/ci.
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash

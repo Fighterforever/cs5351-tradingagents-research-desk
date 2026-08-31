@@ -1,0 +1,42 @@
+{
+  "support": 0.9,
+  "relevance": 1.0,
+  "cited_claim_count": 30,
+  "supported_cited_claim_count": 30,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "Price target 250.0 (no source cited)",
+    "Stop loss 215.0 / 220.0 / 212.0 (trader/conservative/neutral plans, no market source)",
+    "Position sizing percentages (~3%, ~2%, ~5%) are analyst plan constructs, not sourced"
+  ],
+  "rationale": "The report is highly grounded. All key factual claims (revenue $96.2B +106% YoY +18% QoQ, Data Center $89.0B +117% YoY, 75.0% gross margins, GAAP EPS 2.46 / non-GAAP 2.22, close 227.98, technical indicators RSI 53.50, MACD 2.68/3.22, histogram -0.54, ATR 6.51, Bollinger 217.21/231.57/202.85, VWMA 211.91, 10 EMA 217.08) are directly supported by the cited sources (src-nvda and market-nvda). The ~92.5% Data Center concentration is a correct calculation from 89.0/96.2. The report correctly notes unavailable data (50/200 SMA, macro, global news, prediction markets) without fabricating. The price target of 250.0 is an analyst judgment/forecast, not a factual claim requiring a source. Minor: the intraday +8.7% calculation from 209.66 to 227.98 is correct. No key fabrication found; main conclusions are supported. Relevance is fully on-task for NVDA on 2026-08-27 with a clear final BUY/Overweight decision.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'NVIDIA Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-08-27"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-nvda'"
+    }
+  ]
+}

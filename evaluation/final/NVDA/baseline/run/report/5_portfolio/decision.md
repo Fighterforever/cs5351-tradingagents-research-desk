@@ -1,0 +1,13 @@
+**Rating**: Overweight
+
+**Executive Summary**: Establish a long position in NVDA with disciplined, staged entry rather than chasing the full position at the current 227.98 close. Deploy a reduced first tranche (~1/6 of target) at current levels to participate in the volume-confirmed breakout, then add on either a pullback into the 217-220 support confluence (Bollinger middle/10-EMA) or a confirmed close above 231.57 with the MACD histogram turning positive. Set a hard stop at 211.91 (below VWMA) to invalidate the breakout thesis, representing roughly 7% risk from entry. Target full position at ~60-70% of a Buy-rating size, built over 2-3 tranches within a 3-6 month horizon.
+
+**Investment Thesis**: The fundamental case is exceptional and verified: revenue of USD 96.2B grew 106% YoY and 18% sequentially, Data Center revenue rose 117% YoY, and gross margins held at 75.0% on both GAAP and non-GAAP bases [src-nvda]. This is a confirmed inflection point, not narrative. The technical picture is constructive — price at 227.98 sits above all available moving averages, RSI at 53.50 has headroom before overbought, and the volume surge to 298.9M shares (66% above prior session) confirms institutional participation [market-nvda].
+
+However, the entry point carries genuine risk that argues against maximum conviction at this exact price. The negative MACD histogram at -0.54 with the signal line above the MACD line [market-nvda] signals momentum deceleration even as price surges. Price is within 1.6% of the 231.57 upper Bollinger band, and the day's high of 230.47 closed below it — a rejection at resistance [market-nvda]. The +8.7% single-day spike [market-nvda] has already priced in much of the immediate reaction, and the immediate reward-to-risk is asymmetric against us (~7% downside to the 211.91 stop vs. ~1.6% upside to resistance).
+
+The Neutral analyst's balanced framework is the most defensible synthesis: participate in a high-conviction fundamental story with a reduced initial footprint that respects the momentum deceleration and resistance proximity. This aligns with the Research Manager's Overweight stance and the Trader's tranche structure. The bear won the timing argument; the bull won the fundamental argument. Overweight — constructive on the thesis, disciplined on the entry. The single most important catalyst to monitor is the next earnings print, since the corpus contains no forward guidance [src-nvda]; if sequential growth fails to maintain the 18% pace, the position should be trimmed.
+
+**Price Target**: 231.57
+
+**Time Horizon**: 3-6 months

@@ -1,0 +1,20 @@
+{
+  "proposal_id": "prop-07bc6160cf4d",
+  "run_id": "run-1afcf4fd02e2",
+  "ticker": "AMZN",
+  "trade_date": "2026-07-31",
+  "signal": "Overweight",
+  "rating": "Overweight",
+  "side": "buy",
+  "price": 271.5799865722656,
+  "shares": null,
+  "evidence_id": null,
+  "status": "PENDING_REVIEW",
+  "proposal_version": "054a7d924ee18342",
+  "operator": null,
+  "created_at": "2026-08-31T13:28:31.996597Z",
+  "approved_at": null,
+  "approved_version": null,
+  "reason": null,
+  "execution": null
+}

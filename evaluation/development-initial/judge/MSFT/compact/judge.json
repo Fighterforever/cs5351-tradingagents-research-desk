@@ -1,0 +1,58 @@
+{
+  "support": 0.8,
+  "relevance": 0.8,
+  "cited_claim_count": 0,
+  "supported_cited_claim_count": 0,
+  "valid_citation_rate": null,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "Revenue $90.0B up 18% YoY",
+    "Operating income $40.6B up 18%",
+    "GAAP EPS $4.81 vs non-GAAP $4.74",
+    "Microsoft Cloud revenue $59.3B up 27%",
+    "Azure & other cloud revenue up 43%",
+    "Full FY2026 revenue $331.8B",
+    "Close $451.10 on 2026-07-30",
+    "Open 437.90, high 458.69, volume 110.2M shares",
+    "10 EMA = 401.04",
+    "MACD = 7.50 vs Signal = 4.18, histogram +3.32",
+    "RSI = 73.62",
+    "Bollinger Upper = 422.91, Lower = 363.40",
+    "ATR = 15.87",
+    "Stock fell from ~$450 (May 29) to ~$352 (June 25), ~22% correction",
+    "Cloud represents ~66% of total revenue",
+    "Stock trades at ~38x forward earnings",
+    "Price target $500",
+    "Entry price 410.0",
+    "Stop loss 363.0"
+  ],
+  "rationale": "The report is substantively on-task for MSFT as of 2026-07-30, correctly using the frozen close of $451.10 and the official earnings figures (revenue $90B +18%, operating income $40.6B +18%, GAAP EPS $4.81, cloud $59.3B +27%, Azure +43%, FY revenue $331.8B). The technical indicators (10 EMA 401.04, MACD 7.50/4.18, RSI 73.62, Bollinger 422.91/363.40, ATR 15.87) are internally consistent with the data. However, the report contains NO source citations at all (cited_claim_count = 0), so none of the factual claims carry a supporting source ID. Additionally, several claims are not directly supported by the evidence pack: \"cloud represents ~66% of total revenue\" (59.3/90 = 65.9%, a derived calculation not stated in the source), \"~38x forward earnings\" (no earnings/valuation data in the pack), and the price target of $500 (analyst judgment). The report also has internal inconsistency (multiple FINAL TRANSACTION PROPOSAL sections: HOLD, BUY, HOLD) and redundant repeated sections, which slightly reduces relevance. Overall main conclusions are supported with no key fabrication, but the complete absence of citations and some unsupported derived claims prevent a 1.0.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Microsoft Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_used",
+      "passed": true,
+      "detail": "frozen latest close 451.10 present in evidence/corpus"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": false,
+      "detail": "report references source_id 'src-msft'"
+    }
+  ]
+}

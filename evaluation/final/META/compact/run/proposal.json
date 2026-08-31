@@ -1,0 +1,20 @@
+{
+  "proposal_id": "prop-b9bd0c47a37c",
+  "run_id": "run-546d8ae1e4e5",
+  "ticker": "META",
+  "trade_date": "2026-07-30",
+  "signal": "Overweight",
+  "rating": "Overweight",
+  "side": "buy",
+  "price": 539.030029296875,
+  "shares": null,
+  "evidence_id": null,
+  "status": "PENDING_REVIEW",
+  "proposal_version": "beddc5a4c3cad3e6",
+  "operator": null,
+  "created_at": "2026-08-31T13:28:38.462054Z",
+  "approved_at": null,
+  "approved_version": null,
+  "reason": null,
+  "execution": null
+}

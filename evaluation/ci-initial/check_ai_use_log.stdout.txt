@@ -1,0 +1,8 @@
+changed files: 216
+code/prompt changes requiring a log update: 76
+read docs/ai-use-log.yaml
+log entries: 12 (valid: 12)
+RESULT: FAIL
+FAILURES:
+- changed code/prompt files not covered by any log entry scope:
+-   test/__init__.py

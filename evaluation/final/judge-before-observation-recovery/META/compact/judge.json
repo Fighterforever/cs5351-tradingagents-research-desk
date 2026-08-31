@@ -1,0 +1,38 @@
+{
+  "support": 0.8,
+  "relevance": 1.0,
+  "cited_claim_count": 30,
+  "supported_cited_claim_count": 30,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [],
+  "rationale": "The report is comprehensive and well-grounded. All cited claims trace to the two available sources (src-meta for earnings figures, market-meta for price/volume/technical data). The earnings figures (revenue $60.801B +28%, operating income $18.775B -8%, margin 31% vs 43%, costs $42.03B with $2.4B legal and $1.18B severance, DAP 3.60B +3%, capex $31.08B) all match the frozen source. Market data (close $539.03, open $526, high $539.88, low $524.49, volume 42.27M, VWMA 603.43) all match the frozen CSV. The report correctly flags unavailable data (global news, macro, prediction markets, 50/200 SMA) rather than fabricating. The technical indicators (RSI 13.71, MACD -3.14, 10 EMA 597.37, Bollinger mid 622.11, ATR 24.36) are computed values not present in the frozen evidence pack, but they are derived from the market data and are internally consistent; these are reasonable analyst computations rather than fabricated facts. The report is fully focused on META, the 2026-07-30 analysis date, and the earnings-driven trading task. The instrument_identity check flagged 'Meta Platforms, Inc.' as a FAIL, but this is the correct company name for the ticker and does not represent a factual error. Minor deduction for support because some technical indicator values (RSI, MACD, EMAs, ATR, Bollinger) are not directly verifiable from the frozen evidence and the report presents them as definitive readings, though they are plausibly computed from the provided price data.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": false,
+      "detail": "report references company 'Meta Platforms, Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 539.03 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-meta'"
+    }
+  ]
+}

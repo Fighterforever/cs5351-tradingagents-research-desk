@@ -1,0 +1,142 @@
+{
+  "started_at": "2026-08-31T13:03:56.913179+00:00",
+  "decision_owner": "leo",
+  "model": "deepseek-v4-flash",
+  "provider": "https://api.deepseek.com",
+  "tickers": [
+    "AAPL",
+    "MSFT"
+  ],
+  "stage": "development",
+  "cases_in_parallel": 2,
+  "graph_max_calls": 32,
+  "source_sha256": {
+    "src/research_desk/__init__.py": "92194d26dea05b89632dbc5d9b3b073f7654f59f555ec0e891e31b48ba7993d6",
+    "src/research_desk/__main__.py": "0b5867a538d13604f1affc8f13488d5a11cd35c5687ca04963a33f64c171e794",
+    "src/research_desk/budget.py": "9a7416792e35fe401d1b4b59df8810dbaf29bdd768e583a128fbff2fb01a4841",
+    "src/research_desk/cli.py": "d10c4468a5d36e7f42724c30171de869df1f6072def23aebd5f0ad524a21b677",
+    "src/research_desk/config.py": "20aa0ed2db7bddeeda098b34a05aa7bc060218126883719b667415f813bb0147",
+    "src/research_desk/context.py": "990ca9321c637b7cf1d1d47c7f89b482ab64cde036fb4a35b63da434bc0f9b54",
+    "src/research_desk/eval/case_registry.py": "dc6c4fc5d55e5d2632afd5f478614a5ae605284c3c26ad83dfeaf1ae1b584f95",
+    "src/research_desk/eval/compact_delegate.py": "b62a6b9426625ee4c62488459064f7867ead79b1636b8338672753b743e9d016",
+    "src/research_desk/eval/frozen_provider.py": "9f244e16fe833c041beb2a7d3dcedeeca2a5bfd9be6b81caa8e529c2c8aabadb",
+    "src/research_desk/eval/live.py": "5c82da0b0a8434a408d2fcfb9bc31d535c796fa4e819ff6eb80180da1de740f6",
+    "src/research_desk/evidence.py": "04c268d4604dc93e11492a5825757e70f8093ffae5922b5d6c46b8cea186c194",
+    "src/research_desk/graph_adapter.py": "24da001b65327a3e8edf3461ae74307ddd355db33f1865c1db8046a935a04358",
+    "src/research_desk/models.py": "e171556a7b3450f3a6ccdb7d907d2113b0c6ed4929f4e9a741847887b4859774",
+    "src/research_desk/policy.py": "22cffeaafc7f008237922c481024ea6e9a46a23cdec2ae96be23b96149af66c6",
+    "src/research_desk/replay.py": "5ab9954b27946688b7622b90ac0b1c43fc464dcd84b70b2a90f9a6b6e6ea9931",
+    "src/research_desk/report.py": "75b56bd0ce58eae3180443bf8737528fc46d8b4e20f23955ba8bc18411737d1e",
+    "src/research_desk/review.py": "41374107bbcd881ddc5702d9e5a2532a421f6cedc9f134ab933cbc2ffe4a8c91",
+    "src/research_desk/storage.py": "0853daa3cef323da576b6270904a7a3a16d1ac0cd7c39400ae382e16ec602c07"
+  },
+  "executions": [
+    {
+      "ticker": "MSFT",
+      "stage": "baseline",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "MSFT",
+        "--mode",
+        "baseline",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:03:56.915554+00:00",
+      "finished_at": "2026-08-31T13:06:24.311812+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/MSFT-baseline.log"
+    },
+    {
+      "ticker": "MSFT",
+      "stage": "compact",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "MSFT",
+        "--mode",
+        "compact",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:06:24.312078+00:00",
+      "finished_at": "2026-08-31T13:07:42.878479+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/MSFT-compact.log"
+    },
+    {
+      "ticker": "MSFT",
+      "stage": "judge",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "MSFT",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:07:42.878799+00:00",
+      "finished_at": "2026-08-31T13:07:56.583928+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/MSFT-judge.log"
+    },
+    {
+      "ticker": "AAPL",
+      "stage": "baseline",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "AAPL",
+        "--mode",
+        "baseline",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:03:56.915565+00:00",
+      "finished_at": "2026-08-31T13:06:36.906152+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/AAPL-baseline.log"
+    },
+    {
+      "ticker": "AAPL",
+      "stage": "compact",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "evaluate-case",
+        "AAPL",
+        "--mode",
+        "compact",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final",
+        "--max-calls",
+        "32"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:06:36.906383+00:00",
+      "finished_at": "2026-08-31T13:08:01.800913+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/AAPL-compact.log"
+    },
+    {
+      "ticker": "AAPL",
+      "stage": "judge",
+      "command": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/research-desk",
+        "judge-case",
+        "AAPL",
+        "--out",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-08-31T13:08:01.801002+00:00",
+      "finished_at": "2026-08-31T13:08:15.949659+00:00",
+      "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/host-logs/AAPL-judge.log"
+    }
+  ],
+  "finished_at": "2026-08-31T13:08:15.950497+00:00"
+}

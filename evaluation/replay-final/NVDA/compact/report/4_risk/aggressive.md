@@ -1,0 +1,12 @@
+
+Aggressive Analyst: As the Aggressive Risk Analyst, I’m championing the trader’s BUY at 227.98 [market-nvda]. The conservative and neutral voices haven’t spoken yet, so let me preempt their predictable caution: “overbought,” “concentration risk,” and “MACD divergence.” All are excuses to miss the strongest AI-infrastructure momentum trade of the year.
+
+First, the “extended” argument. Yes, price is near the upper Bollinger Band at 231.57 [market-nvda]. But RSI is only 53.50—not 70 [market-nvda]. That’s the definition of room to run. The 8.7% post-earnings surge on 298.9M volume (double the recent average) is volume-confirmed [market-nvda]. VWMA at 211.91 sits far below price, meaning the rally is broad-based, not a thin spike [market-nvda]. A pullback to 217–220 is a gift, not a warning—the trader’s plan to add 2% there is exactly right.
+
+Second, the “Data Center concentration” fear. ~92.5% of revenue from Data Center (calc: 89.0/96.2) [src-nvda] is not a risk—it’s a moat. That segment grew 117% YoY [src-nvda]. Total revenue grew 106% YoY [src-nvda]. Gross margins held at 75.0% on both GAAP and non-GAAP [src-nvda]. This is pricing power and scale that no competitor matches. The neutral analyst will call it “undiversified”; I call it “focused on the fastest-growing market on earth.”
+
+Third, the MACD histogram at -0.54 [market-nvda] is a lagging artifact of the pre-earnings consolidation. It will flip positive within days as the 10 EMA (217.08) and 20 SMA (217.21) catch up to price [market-nvda]. ATR of 6.51 means volatility—but volatility is the aggressive trader’s friend when the trend is up.
+
+The stop at 215.0 sits just below the 20 SMA [market-nvda], capping downside to ~5.7% while upside to the day-high 230.47 and beyond is open [market-nvda]. That’s a favorable risk/reward asymmetry. The starter position at 3% with a 2% add on pullback is disciplined, not reckless.
+
+Conservative analysts will demand a pullback to the 50-day or a MACD crossover confirmation. By then, the stock will be at 250. The earnings print is the catalyst; the technicals confirm it. Waiting for perfection is how you miss 100% YoY growers. I side with the trader: BUY now, add on weakness, and let the AI supercycle compound.

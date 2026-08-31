@@ -1,0 +1,112 @@
+safety-path change carries a changed ADR accepted by leo + updated approval evidence
+ruff check . -> exit 0
+mypy src/research_desk -> exit 0
+pip check -> exit 0
+check_permissions.py -> exit 1
+RESULT: FAIL
+FAILURES:
+- permission configuration check failed:
+-   Traceback (most recent call last):
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py", line 1344, in do_open
+-       h.request(req.get_method(), req.selector, req.data, headers,
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 1358, in request
+-       self._send_request(method, url, body, headers, encode_chunked)
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 1404, in _send_request
+-       self.endheaders(body, encode_chunked=encode_chunked)
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 1353, in endheaders
+-       self._send_output(message_body, encode_chunked=encode_chunked)
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 1113, in _send_output
+-       self.send(msg)
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 1057, in send
+-       self.connect()
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 1492, in connect
+-       super().connect()
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py", line 1023, in connect
+-       self.sock = self._create_connection(
+-                   ^^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 841, in create_connection
+-       for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py", line 978, in getaddrinfo
+-       for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-   socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+-   
+-   During handling of the above exception, another exception occurred:
+-   
+-   Traceback (most recent call last):
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/referencing/_core.py", line 428, in get_or_retrieve
+-       resource = registry._retrieve(uri)
+-                  ^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/jsonschema/validators.py", line 112, in _warn_for_remote_retrieve
+-       with urlopen(request) as response:  # noqa: S310
+-            ^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py", line 215, in urlopen
+-       return opener.open(url, data, timeout)
+-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py", line 515, in open
+-       response = self._open(req, data)
+-                  ^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py", line 532, in _open
+-       result = self._call_chain(self.handle_open, protocol, protocol +
+-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py", line 492, in _call_chain
+-       result = func(*args)
+-                ^^^^^^^^^^^
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py", line 1392, in https_open
+-       return self.do_open(http.client.HTTPSConnection, req,
+-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/urllib/request.py", line 1347, in do_open
+-       raise URLError(err)
+-   urllib.error.URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+-   
+-   The above exception was the direct cause of the following exception:
+-   
+-   Traceback (most recent call last):
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/referencing/_core.py", line 682, in lookup
+-       retrieved = self._registry.get_or_retrieve(uri)
+-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/referencing/_core.py", line 435, in get_or_retrieve
+-       raise exceptions.Unretrievable(ref=uri) from error
+-   referencing.exceptions.Unretrievable: 'https://models.dev/model-schema.json'
+-   
+-   The above exception was the direct cause of the following exception:
+-   
+-   Traceback (most recent call last):
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/jsonschema/validators.py", line 462, in _validate_reference
+-       resolved = self._resolver.lookup(ref)
+-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/referencing/_core.py", line 686, in lookup
+-       raise exceptions.Unresolvable(ref=ref) from error
+-   referencing.exceptions.Unresolvable: https://models.dev/model-schema.json#/$defs/Model
+-   
+-   The above exception was the direct cause of the following exception:
+-   
+-   Traceback (most recent call last):
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_permissions.py", line 389, in <module>
+-       sys.exit(main())
+-                ^^^^^^
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_permissions.py", line 289, in main
+-       _check_schema(config, "effective config", schema_path, failures)
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_permissions.py", line 234, in _check_schema
+-       for error in sorted(validator.iter_errors(instance), key=lambda e: list(e.path)):
+-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/jsonschema/validators.py", line 383, in iter_errors
+-       for error in errors:
+-                    ^^^^^^
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/jsonschema/_keywords.py", line 275, in ref
+-       yield from validator._validate_reference(ref=ref, instance=instance)
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/jsonschema/validators.py", line 431, in descend
+-       for error in errors:
+-                    ^^^^^^
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/jsonschema/_keywords.py", line 296, in properties
+-       yield from validator.descend(
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/jsonschema/validators.py", line 431, in descend
+-       for error in errors:
+-                    ^^^^^^
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/jsonschema/_keywords.py", line 275, in ref
+-       yield from validator._validate_reference(ref=ref, instance=instance)
+-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-     File "/Users/leeyoma/Downloads/cs5351/work/project/.venv/lib/python3.12/site-packages/jsonschema/validators.py", line 464, in _validate_reference
+-       raise exceptions._WrappedReferencingError(err) from err
+-   jsonschema.exceptions._WrappedReferencingError: Unresolvable: https://models.dev/model-schema.json#/$defs/Model

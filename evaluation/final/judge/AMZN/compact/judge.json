@@ -1,0 +1,43 @@
+{
+  "support": 0.9,
+  "relevance": 1.0,
+  "cited_claim_count": 20,
+  "supported_cited_claim_count": 20,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "AWS operating income up 43% year-over-year (27.5 vs 19.2 = 43.2% increase, computed but stated as fact)",
+    "Anthropic gain is roughly 85% of the $62.6B net income (53.4/62.6 = 85.3%, computed)",
+    "Price target 300.0 (analyst projection, not sourced)",
+    "255-260 zone described as prior 07-15 high area (market data supports 07-15 high 256.48, but the zone is an analyst construct)"
+  ],
+  "rationale": "The report is highly focused on AMZN, analysis date 2026-07-31, and the earnings/market task. All key conclusions (post-earnings breakout, AWS growth, FCF outflow, Anthropic gain, technical overextension) are directly supported by the cited sources (src-amzn and market-amzn). All cited claims are supported by their cited sources. The uncited factual claims are minor computed figures (43% AWS OI growth, 85% of net income) and analyst constructs (price target, pullback zone) that are reasonable derivations rather than fabrications. Support is slightly below 1.0 because a few computed/derived figures are presented without explicit citation, but there is no key fabrication and all main conclusions are evidence-backed.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Amazon.com, Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-31"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 271.58 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-amzn'"
+    }
+  ]
+}

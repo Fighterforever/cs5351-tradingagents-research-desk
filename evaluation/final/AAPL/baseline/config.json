@@ -1,0 +1,59 @@
+{
+  "project_dir": "/Users/leeyoma/Downloads/cs5351/work/project/tradingagents",
+  "results_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/AAPL/baseline/.home/logs",
+  "data_cache_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/AAPL/baseline/.home/cache",
+  "memory_log_path": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/AAPL/baseline/.home/memory/trading_memory.md",
+  "memory_log_max_entries": null,
+  "llm_provider": "deepseek",
+  "deep_think_llm": "deepseek-v4-flash",
+  "quick_think_llm": "deepseek-v4-flash",
+  "backend_url": "https://api.deepseek.com",
+  "google_thinking_level": null,
+  "openai_reasoning_effort": null,
+  "anthropic_effort": null,
+  "temperature": 0,
+  "llm_max_retries": 2,
+  "max_tokens": 1800,
+  "checkpoint_enabled": false,
+  "output_language": "English",
+  "max_debate_rounds": 1,
+  "max_risk_discuss_rounds": 1,
+  "max_recur_limit": 100,
+  "news_article_limit": 20,
+  "global_news_article_limit": 10,
+  "global_news_lookback_days": 7,
+  "global_news_queries": [
+    "Federal Reserve interest rates inflation",
+    "S&P 500 earnings GDP economic outlook",
+    "geopolitical risk trade war sanctions",
+    "ECB Bank of England BOJ central bank policy",
+    "oil commodities supply chain energy"
+  ],
+  "data_vendors": {
+    "core_stock_apis": "yfinance",
+    "technical_indicators": "yfinance",
+    "fundamental_data": "yfinance",
+    "news_data": "yfinance",
+    "macro_data": "fred",
+    "prediction_markets": "polymarket"
+  },
+  "tool_vendors": {},
+  "benchmark_ticker": null,
+  "benchmark_map": {
+    ".NS": "^NSEI",
+    ".BO": "^BSESN",
+    ".T": "^N225",
+    ".HK": "^HSI",
+    ".L": "^FTSE",
+    ".TO": "^GSPTSE",
+    ".AX": "^AXJO",
+    ".SS": "000001.SS",
+    ".SZ": "399001.SZ",
+    "": "SPY"
+  },
+  "extra_body": {
+    "thinking": {
+      "type": "disabled"
+    }
+  }
+}

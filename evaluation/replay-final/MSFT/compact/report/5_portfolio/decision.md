@@ -1,0 +1,9 @@
+**Rating**: Overweight
+
+**Executive Summary**: Establish a starter position of one-third of intended size at the current $451.10 close, then add the second third on a pullback toward the $420-430 support zone (only if price holds above the $432.44 day low on retest), and the final third on confirmed Azure/cloud momentum or a dip toward the 10 EMA. Use a wider stop at $405 (below the pre-gap consolidation and 10 EMA) to accommodate the $15.87 ATR, rather than the tighter $415. Total position meaningfully above benchmark weight but not maximum-conviction allocation, given the elevated valuation multiple.
+
+**Investment Thesis**: The bull case is fundamentally decisive: Azure grew 43% [src-msft], Microsoft Cloud hit $59.3B up 27% [src-msft], and operating income grew 18% to $40.6B [src-msft], matching revenue growth and refuting the bear's margin-crushing AI capex claim. However, the technical setup demands discipline: RSI at 73.62, price ~12.5% above the 10 EMA ($401.04), and a 15.5% single-day gap on 110.2M shares [market-msft] signal short-term exhaustion. The Neutral Analyst's adjustments are correct: buy one-third now to capture the catalyst, but widen the stop to $405 (below the $390 pre-gap zone and 10 EMA) to respect the $15.87 ATR [market-msft], and require price to hold above the $432.44 day low on any retest before adding. The trailing P/E operands (451.10/4.81) [market-msft, src-msft] are rich, supporting Overweight rather than a full Buy. Ticker MSFT, analysis date 2026-07-30, latest close $451.10 [market-msft].
+
+**Price Target**: 500.0
+
+**Time Horizon**: 6-12 months

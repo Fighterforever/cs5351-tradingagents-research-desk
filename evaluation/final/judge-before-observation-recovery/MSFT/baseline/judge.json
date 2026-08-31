@@ -1,0 +1,38 @@
+{
+  "support": 0.9,
+  "relevance": 1.0,
+  "cited_claim_count": 30,
+  "supported_cited_claim_count": 30,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [],
+  "rationale": "The report is fully focused on MSFT, analysis date 2026-07-30, and the earnings/market task. All key conclusions (fundamental strength from earnings, technical overextension, scale-in BUY/Overweight recommendation) are directly supported by the cited evidence (src-msft for earnings figures, market-msft for price/technical data). All cited claims are backed by the correct source IDs. Derived calculations (operating margin, cloud % of revenue, percentage moves) are clearly labeled as calculations from cited operands and are arithmetically correct. The report appropriately flags unavailable data (macro, global news, prediction markets) rather than fabricating it. No key factual fabrication found. Minor deduction: some interpretive claims (e.g., 'institutional accumulation', 'failed breakout' characterization) are analyst inference rather than direct evidence, but these are clearly framed as interpretation and do not constitute fabrication. Support is strong at 0.9.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Microsoft Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 451.10 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-msft'"
+    }
+  ]
+}

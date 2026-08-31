@@ -1,0 +1,8 @@
+
+Aggressive Analyst: As the Aggressive Risk Analyst, I’m championing the trader’s BUY. The conservative and neutral voices haven’t spoken yet, so let me preempt their predictable caution: they’ll cite the negative TTM FCF of -$7.6B and the one-off Anthropic gain [src-amzn]. That’s short-sighted. AWS operating income surged to $27.5B from $19.2B [src-amzn]—that’s the real engine, up 43% year-over-year, and it’s recurring. The Anthropic gain is a bonus, not the thesis.
+
+The technicals are screaming momentum. Close at $271.58, volume at 129M shares versus ~40M typical [market-amzn]—that’s institutional conviction, not retail noise. Price is 12% above VWMA at $240.96 [market-amzn], confirming the breakout is volume-backed. RSI at 64.04 [market-amzn] leaves 6 points of headroom before overbought—there’s room to run. MACD just turned positive at 0.08 [market-amzn], signaling fresh upside, not exhaustion.
+
+The trader’s plan is brilliant: half position now, scale in on a pullback to 255–260, stop at 226.65 below the breakout base. That’s not reckless—that’s disciplined aggression. The conservative crowd will call the 11% extension above the Bollinger middle [market-amzn] a risk. I call it confirmation of a new trend. Waiting for a “safer” entry means missing the move; the market doesn’t reward hesitation.
+
+FCF outflow? That’s AI infrastructure investment—the very thing driving AWS +37% [src-amzn]. Strip out the Anthropic gain and you still have a 20% revenue grower with a cloud monopoly. The upside dwarfs the pullback risk. This is a high-reward moment. Buy.

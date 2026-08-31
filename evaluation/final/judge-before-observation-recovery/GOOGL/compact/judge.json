@@ -1,0 +1,38 @@
+{
+  "support": 0.9,
+  "relevance": 1.0,
+  "cited_claim_count": 20,
+  "supported_cited_claim_count": 20,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [],
+  "rationale": "The report is comprehensive and well-supported. All cited claims trace to the correct sources: market-googl supports price action (317.69 close, 342.09 prior close, 314.90-324.49 range, 69.4M volume, 10 EMA 345.96, RSI 29.65, MACD -4.80, ATR 11.84, Bollinger 353.39, VWMA 351.57, May high 402.62) and src-googl supports fundamentals (revenue $119.8B +24%, Cloud $24.8B +82%, operating income $40.77B/34% margin, net income $112.1B/EPS $9.11 with $97.98B unrealized gains). All numbers match the frozen evidence exactly. The report correctly notes NO_DATA for 50/200 SMA and macro/global/prediction sources rather than fabricating. The final decision (Hold) is supported by the balanced evidence. Minor deduction: the report makes some interpretive claims (e.g., \"capitulation,\" \"2-3x average volume,\" \"profit-taking\") that are reasonable inferences from the data rather than fabrications, and the 21% drawdown calculation (402.62 to 317.69 = ~21%) is accurate. No key fabrication or unsupported factual claims found. Relevance is fully on-task for GOOGL/2026-07-23.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Alphabet Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-23"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 317.69 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-googl'"
+    }
+  ]
+}

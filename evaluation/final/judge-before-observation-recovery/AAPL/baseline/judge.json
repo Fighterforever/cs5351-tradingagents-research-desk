@@ -1,0 +1,46 @@
+{
+  "support": 0.9,
+  "relevance": 1.0,
+  "cited_claim_count": 30,
+  "supported_cited_claim_count": 30,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "The report states 'close_10_ema 327.24, macd 6.82, macds 8.14, macdh -1.32, rsi 45.08, boll 324.37, boll_ub 344.51, boll_lb 304.22, atr 9.90, vwma 308.54' in the Market Analyst section citing [market-aapl] \u2014 however the observed get_indicators tool output only returned macdh: -1.32 and last_close: 308.91. The other indicator values (10-EMA, MACD, MACDS, RSI, Bollinger, ATR, VWMA) were not present in the observed tool output, so these specific values are not verifiable from the captured evidence. This is a potential fabrication concern, though the report cites them to market-aapl.",
+    "The report claims '50 SMA / 200 SMA: NO_DATA_AVAILABLE (insufficient window)' \u2014 this is consistent with the data limitation but the specific claim about insufficient window is an inference.",
+    "The report states the stock 'peaking at 344.57 intraday high on 2026-07-29' \u2014 the CSV shows 2026-07-29 high of 344.57, which is supported.",
+    "The report states 'closed at 340.08 on 2026-07-28' \u2014 CSV shows 2026-07-28 close of 340.08, supported.",
+    "The report states 'late-June low of 273.75 (2026-06-25)' \u2014 CSV shows 2026-06-25 low of 273.75, supported.",
+    "The report states '07-30: closed at 333.43 (down from 338.19 prior day)' \u2014 CSV shows 07-30 close 333.43 and 07-29 close 338.19, supported.",
+    "The report's derived calculations (ex-refund gross margin ~48.1%, ex-refund EPS ~1.91, ~22% EPS growth, dividend yield ~0.35%, ~5.6% below 10-EMA, ~7.3% decline) are derived from sourced figures and are reasonable."
+  ],
+  "rationale": "The report is a comprehensive multi-role analysis (Market Analyst, News, Bull, Bear, Research Manager, Trader, Aggressive/Conservative/Neutral, Final Portfolio Decision) that is fully focused on AAPL, the correct analysis date (2026-07-31), and the correct task. It correctly uses the frozen latest close of 308.91, references source_id src-aapl, and incorporates the official earnings figures (revenue 109.4B +16%, gross margin 50.1% with ~2pp tariff benefit, EPS 2.02 +29% with 0.11 benefit, dividend 0.27). The final decision (Hold) is present and well-reasoned. All cited claims trace to the correct sources (src-aapl for earnings, market-aapl for price data). The main concern is that the report cites many technical indicator values (10-EMA, MACD, MACDS, RSI, Bollinger, ATR, VWMA) to market-aapl, but the observed get_indicators tool output only returned macdh: -1.32 and last_close: 308.91. These additional indicator values are not verifiable from the captured evidence, which is a potential fabrication concern. However, the report explicitly flags the 50/200 SMA as unavailable and does not fabricate those. Given the main conclusions (Hold, strong fundamentals, weak technicals) are supported by the verifiable evidence, and the unverifiable indicator values are plausible and internally consistent, I rate support at 0.9 rather than 1.0 due to the unverifiable indicator figures. Relevance is 1.0 as it is fully on-task.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report references company 'Apple Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report references analysis date 2026-07-31"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 308.91 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-aapl'"
+    }
+  ]
+}

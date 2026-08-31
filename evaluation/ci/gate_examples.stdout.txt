@@ -1,0 +1,8 @@
+[gate1_temporal_order] exit=1 expected_rejection=OK
+[gate2_safety_path_without_decision] exit=1 expected_rejection=OK
+[gate3_requirements_fit_missing] exit=1 expected_rejection=OK
+[gate4_missing_fixed_pack] exit=1 expected_rejection=OK
+[gate5_regression_pytest_failure] exit=1 expected_rejection=OK
+[gate6_ai_log_not_updated] exit=1 expected_rejection=OK
+
+ALL_SIX_EXPECTED_REJECTIONS_OK

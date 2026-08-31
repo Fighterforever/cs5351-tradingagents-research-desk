@@ -1,0 +1,3 @@
+pytest tests -> exit 0 (649 passed, 2 skipped, 18 warnings, 71 subtests passed in 11.97s)
+pytest test/offline -> exit 0 (98 passed in 2.37s)
+RESULT: PASS

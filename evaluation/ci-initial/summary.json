@@ -1,0 +1,122 @@
+{
+  "runner": "scripts/run_gates.py",
+  "resolved": {
+    "base_ref": "v0.4.0",
+    "base_sha": "c95f83dfafa748801ab2be4855e6fcffc93804e4",
+    "head_ref": "HEAD",
+    "head_sha": "ad20488baaba30e90c225a303b3fff9a4b2ec680"
+  },
+  "success": false,
+  "records": [
+    {
+      "gate": "check_approval",
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_approval.py",
+        "--base-ref",
+        "c95f83dfafa748801ab2be4855e6fcffc93804e4",
+        "--head-ref",
+        "ad20488baaba30e90c225a303b3fff9a4b2ec680"
+      ],
+      "start_utc": "2026-08-31T13:24:39.285659+00:00",
+      "end_utc": "2026-08-31T13:24:39.321013+00:00",
+      "elapsed_seconds": 0.035,
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "gate": "check_static",
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_static.py",
+        "--base-ref",
+        "c95f83dfafa748801ab2be4855e6fcffc93804e4",
+        "--head-ref",
+        "ad20488baaba30e90c225a303b3fff9a4b2ec680"
+      ],
+      "start_utc": "2026-08-31T13:24:39.321309+00:00",
+      "end_utc": "2026-08-31T13:24:40.222212+00:00",
+      "elapsed_seconds": 0.901,
+      "exit_code": 1,
+      "error": null
+    },
+    {
+      "gate": "check_requirements",
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_requirements.py",
+        "--base-ref",
+        "c95f83dfafa748801ab2be4855e6fcffc93804e4",
+        "--head-ref",
+        "ad20488baaba30e90c225a303b3fff9a4b2ec680"
+      ],
+      "start_utc": "2026-08-31T13:24:40.222567+00:00",
+      "end_utc": "2026-08-31T13:24:40.282911+00:00",
+      "elapsed_seconds": 0.06,
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "gate": "check_semantic",
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_semantic.py",
+        "--base-ref",
+        "c95f83dfafa748801ab2be4855e6fcffc93804e4",
+        "--head-ref",
+        "ad20488baaba30e90c225a303b3fff9a4b2ec680"
+      ],
+      "start_utc": "2026-08-31T13:24:40.283253+00:00",
+      "end_utc": "2026-08-31T13:24:40.829310+00:00",
+      "elapsed_seconds": 0.546,
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "gate": "check_regression",
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_regression.py",
+        "--base-ref",
+        "c95f83dfafa748801ab2be4855e6fcffc93804e4",
+        "--head-ref",
+        "ad20488baaba30e90c225a303b3fff9a4b2ec680"
+      ],
+      "start_utc": "2026-08-31T13:24:40.829791+00:00",
+      "end_utc": "2026-08-31T13:24:56.530834+00:00",
+      "elapsed_seconds": 15.701,
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "gate": "check_ai_use_log",
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_ai_use_log.py",
+        "--base-ref",
+        "c95f83dfafa748801ab2be4855e6fcffc93804e4",
+        "--head-ref",
+        "ad20488baaba30e90c225a303b3fff9a4b2ec680"
+      ],
+      "start_utc": "2026-08-31T13:24:56.531187+00:00",
+      "end_utc": "2026-08-31T13:24:56.571671+00:00",
+      "elapsed_seconds": 0.04,
+      "exit_code": 1,
+      "error": null
+    },
+    {
+      "gate": "gate_examples",
+      "args": [
+        "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+        "/Users/leeyoma/Downloads/cs5351/work/project/scripts/check_gate_examples.py",
+        "--output",
+        "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/ci/negative-examples.json"
+      ],
+      "start_utc": "2026-08-31T13:24:56.571946+00:00",
+      "end_utc": "2026-08-31T13:24:58.141185+00:00",
+      "elapsed_seconds": 1.569,
+      "exit_code": 0,
+      "error": null
+    }
+  ]
+}

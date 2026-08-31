@@ -1,0 +1,727 @@
+{
+  "paired": [
+    {
+      "ticker": "AAPL",
+      "baseline": {
+        "ticker": "AAPL",
+        "analysis_date": "2026-07-31",
+        "context_mode": "baseline",
+        "outcome": "completed",
+        "signal": "Hold",
+        "stop_reason": "completed",
+        "calls": 14,
+        "input_tokens": 82636,
+        "output_tokens": 17846,
+        "total_tokens": 100482,
+        "wall_seconds": 160.488,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/AAPL/baseline/run",
+        "present": true,
+        "judge": {
+          "support": 0.9,
+          "relevance": 1.0,
+          "cited_claim_count": 30,
+          "supported_cited_claim_count": 30,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [
+            "The report states 'close_10_ema 327.24, macd 6.82, macds 8.14, macdh -1.32, rsi 45.08, boll 324.37, boll_ub 344.51, boll_lb 304.22, atr 9.90, vwma 308.54' in the Market Analyst section citing [market-aapl] \u2014 however the observed get_indicators tool output only returned macdh: -1.32 and last_close: 308.91. The other indicator values (10-EMA, MACD, MACDS, RSI, Bollinger, ATR, VWMA) were not present in the observed tool output, so these specific values are not verifiable from the captured evidence. This is a potential fabrication concern, though the report cites them to market-aapl.",
+            "The report claims '50 SMA / 200 SMA: NO_DATA_AVAILABLE (insufficient window)' \u2014 this is consistent with the data limitation but the specific claim about insufficient window is an inference.",
+            "The report states the stock 'peaking at 344.57 intraday high on 2026-07-29' \u2014 the CSV shows 2026-07-29 high of 344.57, which is supported.",
+            "The report states 'closed at 340.08 on 2026-07-28' \u2014 CSV shows 2026-07-28 close of 340.08, supported.",
+            "The report states 'late-June low of 273.75 (2026-06-25)' \u2014 CSV shows 2026-06-25 low of 273.75, supported.",
+            "The report states '07-30: closed at 333.43 (down from 338.19 prior day)' \u2014 CSV shows 07-30 close 333.43 and 07-29 close 338.19, supported.",
+            "The report's derived calculations (ex-refund gross margin ~48.1%, ex-refund EPS ~1.91, ~22% EPS growth, dividend yield ~0.35%, ~5.6% below 10-EMA, ~7.3% decline) are derived from sourced figures and are reasonable."
+          ],
+          "rationale": "The report is a comprehensive multi-role analysis (Market Analyst, News, Bull, Bear, Research Manager, Trader, Aggressive/Conservative/Neutral, Final Portfolio Decision) that is fully focused on AAPL, the correct analysis date (2026-07-31), and the correct task. It correctly uses the frozen latest close of 308.91, references source_id src-aapl, and incorporates the official earnings figures (revenue 109.4B +16%, gross margin 50.1% with ~2pp tariff benefit, EPS 2.02 +29% with 0.11 benefit, dividend 0.27). The final decision (Hold) is present and well-reasoned. All cited claims trace to the correct sources (src-aapl for earnings, market-aapl for price data). The main concern is that the report cites many technical indicator values (10-EMA, MACD, MACDS, RSI, Bollinger, ATR, VWMA) to market-aapl, but the observed get_indicators tool output only returned macdh: -1.32 and last_close: 308.91. These additional indicator values are not verifiable from the captured evidence, which is a potential fabrication concern. However, the report explicitly flags the 50/200 SMA as unavailable and does not fabricate those. Given the main conclusions (Hold, strong fundamentals, weak technicals) are supported by the verifiable evidence, and the unverifiable indicator values are plausible and internally consistent, I rate support at 0.9 rather than 1.0 due to the unverifiable indicator figures. Relevance is 1.0 as it is fully on-task.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'Apple Inc.'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-31"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 308.91 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-aapl'"
+            }
+          ]
+        }
+      },
+      "compact": {
+        "ticker": "AAPL",
+        "analysis_date": "2026-07-31",
+        "context_mode": "compact",
+        "outcome": "completed",
+        "signal": "Hold",
+        "stop_reason": "completed",
+        "calls": 14,
+        "input_tokens": 54523,
+        "output_tokens": 6926,
+        "total_tokens": 61449,
+        "wall_seconds": 62.515,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/AAPL/compact/run",
+        "present": true,
+        "judge": {
+          "support": 0.9,
+          "relevance": 1.0,
+          "cited_claim_count": 30,
+          "supported_cited_claim_count": 30,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [],
+          "rationale": "The report is well-supported by the frozen evidence. All key figures (revenue 109.4B +16%, EPS 2.02 +29%, gross margin 50.1% with ~2pp tariff benefit, dividend 0.27, latest close 308.91, day range 300-310.69, volume 132.5M, 10 EMA 327.24, MACD 6.82/8.14, RSI 45.08, Bollinger 304.22/324.37/344.51, ATR 9.90, VWMA 308.54) are directly supported by the cited sources (market-aapl and src-aapl). The derived calculations (ex-refund EPS ~1.91/~22% growth, ex-refund margin ~48%) are clearly labeled as calculations from src-aapl data and are arithmetically correct. The report properly notes unavailable data (macro, global news, prediction markets) rather than fabricating. The final decision (Hold) is consistent with the evidence presented. No key fabrication found. Minor deduction: some derived figures (e.g., ~22% organic growth, ~48% ex-refund margin) are labeled as 'calculation from src-aapl' which is a reasonable derivation rather than a direct citation, but these are transparent and correct. Relevance is fully on-task for AAPL on 2026-07-31 with a clear final decision.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'Apple Inc.'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-31"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 308.91 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-aapl'"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "AMZN",
+      "baseline": {
+        "ticker": "AMZN",
+        "analysis_date": "2026-07-31",
+        "context_mode": "baseline",
+        "outcome": "completed",
+        "signal": "Overweight",
+        "stop_reason": "completed",
+        "calls": 14,
+        "input_tokens": 79749,
+        "output_tokens": 15384,
+        "total_tokens": 95133,
+        "wall_seconds": 143.778,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/AMZN/baseline/run",
+        "present": true,
+        "judge": {
+          "support": 0.4,
+          "relevance": 1.0,
+          "cited_claim_count": 23,
+          "supported_cited_claim_count": 13,
+          "valid_citation_rate": 0.5652,
+          "invalid_citation_explanations": [
+            "50 SMA value of 246.63 cited to [market-amzn] is fabricated \u2014 the observed get_indicators output only contained macdh (1.34) and last_close (271.58); no 50 SMA was retrieved.",
+            "10 EMA value of 242.70 cited to [market-amzn] is fabricated \u2014 no 10 EMA was present in the observed tool output.",
+            "MACD line value of -0.89 cited to [market-amzn] is fabricated \u2014 only macdh (1.34) was retrieved, not the MACD line.",
+            "Signal line value of -2.22 cited to [market-amzn] is fabricated \u2014 no signal value was retrieved.",
+            "RSI value of 64.04 cited to [market-amzn] is fabricated \u2014 no RSI was retrieved.",
+            "Bollinger band values (middle 243.86, upper 264.20, lower 223.51) cited to [market-amzn] are fabricated \u2014 no Bollinger data was retrieved.",
+            "ATR value of 9.26 cited to [market-amzn] is fabricated \u2014 no ATR was retrieved.",
+            "VWMA value of 248.04 cited to [market-amzn] is fabricated \u2014 no VWMA was retrieved.",
+            "Derived claims such as 'price ~10.1% above the 50 SMA' and '~11.9% above the 10 EMA' rest on the fabricated 50 SMA/10 EMA values and are therefore unsupported."
+          ],
+          "uncited_factual_claims": [
+            "Price target of 295.0 in the Final Portfolio Decision is an analyst projection with no supporting source citation.",
+            "Derived figure that 'roughly 85% of net income is non-recurring' is presented as a factual quantification without a direct source citation (though derived from cited operands).",
+            "Claim that volume on 07-31 was '~2.5-3x normal' is a derived comparison without a specific citation."
+          ],
+          "rationale": "The report is fully on-task and focused on AMZN at the 2026-07-31 analysis date, with accurate fundamental earnings data correctly cited to src-amzn and accurate market snapshot data (close 271.58, OHLC, volume) cited to market-amzn. However, the report fabricates a large set of technical indicator values (50 SMA, 10 EMA, MACD line, signal, RSI, Bollinger bands, ATR, VWMA) and attributes them to market-amzn, even though the observed get_indicators output contained only macdh (1.34) and last_close (271.58). These fabricated indicators form the core of the technical/breakout thesis, the support levels, and the price target, constituting key factual fabrication. The fundamental data is accurate, so support is not zero, but the substantial fabrication of central technical data warrants a low support score.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'Amazon.com, Inc.'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-31"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 271.58 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-amzn'"
+            }
+          ]
+        }
+      },
+      "compact": {
+        "ticker": "AMZN",
+        "analysis_date": "2026-07-31",
+        "context_mode": "compact",
+        "outcome": "completed",
+        "signal": "Overweight",
+        "stop_reason": "completed",
+        "calls": 13,
+        "input_tokens": 45819,
+        "output_tokens": 6212,
+        "total_tokens": 52031,
+        "wall_seconds": 62.525,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/AMZN/compact/run",
+        "present": true,
+        "judge": {
+          "support": 0.8,
+          "relevance": 1.0,
+          "cited_claim_count": 30,
+          "supported_cited_claim_count": 30,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [
+            "Price target of 300.0 (no source cited)",
+            "10 EMA value of 242.70 (technical indicator not present in observed tool outputs)",
+            "Bollinger middle value of 243.86 (technical indicator not present in observed tool outputs)",
+            "RSI value of 64.04 (technical indicator not present in observed tool outputs)",
+            "MACD value of 0.08 (technical indicator not present in observed tool outputs)",
+            "ATR value of 9.26 (technical indicator not present in observed tool outputs)",
+            "AWS operating income up 43% year-over-year (27.5 vs 19.2 is actually ~43% increase, but this derived claim is uncited)",
+            "Claim that Anthropic gain is ~85% of net income (derived, uncited)",
+            "Stop loss at 226.65 described as 'breakout base' / 2026-07-29 low (derived interpretation)"
+          ],
+          "rationale": "The report is well-grounded in the frozen evidence. All cited claims (net sales $200.6B +20%, AWS $42.2B +37%, AWS operating income $27.5B vs $19.2B, net income $62.6B, pre-tax other income $53.4B Anthropic, TTM FCF -$7.6B, latest close 271.58, volume 129.05M, VWMA 240.96) are directly supported by src-amzn and market-amzn sources. The report correctly notes global/macro/prediction market data is unavailable and does not fabricate it. However, several technical indicator values (10 EMA 242.70, Bollinger middle 243.86, RSI 64.04, MACD 0.08, ATR 9.26) are cited to [market-amzn] but these specific indicator values are NOT present in the observed tool outputs \u2014 only VWMA (240.96) and last_close were returned by get_indicators. These appear to be fabricated/estimated technical values presented as if sourced. Additionally, the price target of 300.0 is uncited, and derived claims (43% AWS growth, ~85% Anthropic share) are uncited. These are important evidence gaps but not core factual fabrication of the fundamental data. Support = 0.8. Relevance is fully on-task for AMZN/2026-07-31 with a complete multi-analyst report and final decision.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'Amazon.com, Inc.'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-31"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 271.58 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-amzn'"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "GOOGL",
+      "baseline": {
+        "ticker": "GOOGL",
+        "analysis_date": "2026-07-23",
+        "context_mode": "baseline",
+        "outcome": "completed",
+        "signal": "Hold",
+        "stop_reason": "completed",
+        "calls": 16,
+        "input_tokens": 89244,
+        "output_tokens": 17770,
+        "total_tokens": 107014,
+        "wall_seconds": 168.453,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/GOOGL/baseline/run",
+        "present": true,
+        "judge": {
+          "support": 0.9,
+          "relevance": 1.0,
+          "cited_claim_count": 30,
+          "supported_cited_claim_count": 30,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [],
+          "rationale": "The report is a multi-role analysis (market analyst, news researcher, bull/bear, research manager, trader, aggressive/conservative/neutral risk analysts, final portfolio decision) that converges on a HOLD recommendation. All key factual claims are directly supported by the frozen evidence: the latest close of $317.69, technical indicators (10 EMA 345.96, MACD -4.80, RSI 29.65, Bollinger bands, ATR 11.84, VWMA 351.57), and the earnings figures (revenue $119.796B +24%, Cloud $24.768B +82%, operating income $40.770B/34% margin, net income $112.107B, EPS $9.11, other income $97.983B). All cited claims carry correct source IDs (market-googl for market data, src-googl for earnings) that genuinely support the specific claims. The report correctly notes NO_DATA_AVAILABLE for macro/global news/prediction markets and does not fabricate those. The report is fully focused on GOOGL at the 2026-07-23 analysis date. Minor deductions: the report is somewhat verbose/redundant across the multiple role sections, and some derived calculations (e.g., ~20.7% cloud share, ~21% decline from May peak, ~7% single-day drop) are arithmetic derivations from cited data rather than independently sourced, but these are reasonable and correctly grounded. Overall support is high with no key fabrication.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'Alphabet Inc.'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-23"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 317.69 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-googl'"
+            }
+          ]
+        }
+      },
+      "compact": {
+        "ticker": "GOOGL",
+        "analysis_date": "2026-07-23",
+        "context_mode": "compact",
+        "outcome": "completed",
+        "signal": "Hold",
+        "stop_reason": "completed",
+        "calls": 13,
+        "input_tokens": 46453,
+        "output_tokens": 7220,
+        "total_tokens": 53673,
+        "wall_seconds": 68.227,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/GOOGL/compact/run",
+        "present": true,
+        "judge": {
+          "support": 0.9,
+          "relevance": 1.0,
+          "cited_claim_count": 20,
+          "supported_cited_claim_count": 20,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [],
+          "rationale": "The report is comprehensive and well-supported. All cited claims trace to the correct sources: market-googl supports price action (317.69 close, 342.09 prior close, 314.90-324.49 range, 69.4M volume, 10 EMA 345.96, RSI 29.65, MACD -4.80, ATR 11.84, Bollinger 353.39, VWMA 351.57, May high 402.62) and src-googl supports fundamentals (revenue $119.8B +24%, Cloud $24.8B +82%, operating income $40.77B/34% margin, net income $112.1B/EPS $9.11 with $97.98B unrealized gains). All numbers match the frozen evidence exactly. The report correctly notes NO_DATA for 50/200 SMA and macro/global/prediction sources rather than fabricating. The final decision (Hold) is supported by the balanced evidence. Minor deduction: the report makes some interpretive claims (e.g., \"capitulation,\" \"2-3x average volume,\" \"profit-taking\") that are reasonable inferences from the data rather than fabrications, and the 21% drawdown calculation (402.62 to 317.69 = ~21%) is accurate. No key fabrication or unsupported factual claims found. Relevance is fully on-task for GOOGL/2026-07-23.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'Alphabet Inc.'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-23"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 317.69 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-googl'"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "META",
+      "baseline": {
+        "ticker": "META",
+        "analysis_date": "2026-07-30",
+        "context_mode": "baseline",
+        "outcome": "completed",
+        "signal": "Hold",
+        "stop_reason": "completed",
+        "calls": 15,
+        "input_tokens": 83946,
+        "output_tokens": 15917,
+        "total_tokens": 99863,
+        "wall_seconds": 148.863,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/META/baseline/run",
+        "present": true,
+        "judge": {
+          "support": 0.9,
+          "relevance": 1.0,
+          "cited_claim_count": 20,
+          "supported_cited_claim_count": 20,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [],
+          "rationale": "The report is a comprehensive multi-role analysis converging on a HOLD decision for META as of 2026-07-30. All key earnings figures (revenue $60.801B +28%, operating income $18.775B -8%, margin 31% vs 43%, costs $42.03B with $2.40B legal and $1.18B severance, DAP 3.60B +3%, capex $31.08B) are cited to src-meta and match the frozen source exactly. Market data (close $539.03, open/high/low, volume 42.27M) cited to market-meta match the verified snapshot. Technical indicators (10 EMA, MACD, RSI 13.71, Bollinger, ATR, VWMA) are derived from the market-meta price data; the Bollinger lower band (549.26) is directly confirmed by the observed get_indicators output. The report is transparent about unavailable data (50/200 SMA, global news, macro, prediction markets) and does not fabricate those. The final decision (HOLD) is present and supported by the evidence. All cited claims are supported by their cited sources. Minor deduction on support only because several technical indicator values (10 EMA, MACD, RSI, ATR, VWMA, Bollinger middle/upper) are presented as sourced facts but were not present in the observed get_indicators tool output (only boll_lb and last_close were returned), though they are plausibly computed from the underlying price data. Relevance is perfect: fully focused on META, the correct analysis date, and the trading task.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'Meta Platforms, Inc.'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-30"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 539.03 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-meta'"
+            }
+          ]
+        }
+      },
+      "compact": {
+        "ticker": "META",
+        "analysis_date": "2026-07-30",
+        "context_mode": "compact",
+        "outcome": "completed",
+        "signal": "Overweight",
+        "stop_reason": "completed",
+        "calls": 13,
+        "input_tokens": 46696,
+        "output_tokens": 6464,
+        "total_tokens": 53160,
+        "wall_seconds": 64.081,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/META/compact/run",
+        "present": true,
+        "judge": {
+          "support": 0.8,
+          "relevance": 1.0,
+          "cited_claim_count": 30,
+          "supported_cited_claim_count": 30,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [],
+          "rationale": "The report is comprehensive and well-grounded. All cited claims trace to the two available sources (src-meta for earnings figures, market-meta for price/volume/technical data). The earnings figures (revenue $60.801B +28%, operating income $18.775B -8%, margin 31% vs 43%, costs $42.03B with $2.4B legal and $1.18B severance, DAP 3.60B +3%, capex $31.08B) all match the frozen source. Market data (close $539.03, open $526, high $539.88, low $524.49, volume 42.27M, VWMA 603.43) all match the frozen CSV. The report correctly flags unavailable data (global news, macro, prediction markets, 50/200 SMA) rather than fabricating. The technical indicators (RSI 13.71, MACD -3.14, 10 EMA 597.37, Bollinger mid 622.11, ATR 24.36) are computed values not present in the frozen evidence pack, but they are derived from the market data and are internally consistent; these are reasonable analyst computations rather than fabricated facts. The report is fully focused on META, the 2026-07-30 analysis date, and the earnings-driven trading task. The instrument_identity check flagged 'Meta Platforms, Inc.' as a FAIL, but this is the correct company name for the ticker and does not represent a factual error. Minor deduction for support because some technical indicator values (RSI, MACD, EMAs, ATR, Bollinger) are not directly verifiable from the frozen evidence and the report presents them as definitive readings, though they are plausibly computed from the provided price data.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": false,
+              "detail": "report references company 'Meta Platforms, Inc.'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-30"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 539.03 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-meta'"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "baseline": {
+        "ticker": "MSFT",
+        "analysis_date": "2026-07-30",
+        "context_mode": "baseline",
+        "outcome": "completed",
+        "signal": "Overweight",
+        "stop_reason": "completed",
+        "calls": 14,
+        "input_tokens": 92283,
+        "output_tokens": 19991,
+        "total_tokens": 112274,
+        "wall_seconds": 177.466,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/MSFT/baseline/run",
+        "present": true,
+        "judge": {
+          "support": 0.9,
+          "relevance": 1.0,
+          "cited_claim_count": 30,
+          "supported_cited_claim_count": 30,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [],
+          "rationale": "The report is fully focused on MSFT, analysis date 2026-07-30, and the earnings/market task. All key conclusions (fundamental strength from earnings, technical overextension, scale-in BUY/Overweight recommendation) are directly supported by the cited evidence (src-msft for earnings figures, market-msft for price/technical data). All cited claims are backed by the correct source IDs. Derived calculations (operating margin, cloud % of revenue, percentage moves) are clearly labeled as calculations from cited operands and are arithmetically correct. The report appropriately flags unavailable data (macro, global news, prediction markets) rather than fabricating it. No key factual fabrication found. Minor deduction: some interpretive claims (e.g., 'institutional accumulation', 'failed breakout' characterization) are analyst inference rather than direct evidence, but these are clearly framed as interpretation and do not constitute fabrication. Support is strong at 0.9.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'Microsoft Corporation'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-30"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 451.10 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-msft'"
+            }
+          ]
+        }
+      },
+      "compact": {
+        "ticker": "MSFT",
+        "analysis_date": "2026-07-30",
+        "context_mode": "compact",
+        "outcome": "completed",
+        "signal": "Overweight",
+        "stop_reason": "completed",
+        "calls": 13,
+        "input_tokens": 47809,
+        "output_tokens": 7259,
+        "total_tokens": 55068,
+        "wall_seconds": 67.709,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/MSFT/compact/run",
+        "present": true,
+        "judge": {
+          "support": 0.9,
+          "relevance": 1.0,
+          "cited_claim_count": 30,
+          "supported_cited_claim_count": 30,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [
+            "Cloud represents ~66% of total revenue (59.3/90.0) - derived calculation, presented as calculation not sourced fact",
+            "Operating margin held at ~45% (40.6/90.0) - derived calculation",
+            "Trailing P/E ~93.8x (451.10/4.81) - derived calculation, presented as operands only",
+            "RSI = 73.62 - cited to market-msft but this value is not present in the observed market data (computed indicator not in frozen CSV)",
+            "MACD = 7.50 - cited to market-msft but not present in observed data",
+            "10 EMA = $401.04 - cited to market-msft but not present in observed data",
+            "Bollinger middle (20 SMA) = $393.15 - cited to market-msft but not present in observed data",
+            "ATR = $15.87 - cited to market-msft but not present in observed data"
+          ],
+          "rationale": "The report is highly relevant, fully focused on MSFT, analysis date 2026-07-30, and the earnings catalyst. All key conclusions (bullish fundamental thesis, Overweight rating, staged accumulation, technical extension) are directly supported by the evidence: earnings figures from src-msft and price/volume data from market-msft. The fundamental claims (revenue $90B +18%, op income $40.6B +18%, EPS 4.81, Cloud $59.3B +27%, Azure +43%, FY revenue $331.8B, close $451.10, volume 110.2M) are all accurately cited and supported. However, several technical indicator values (RSI 73.62, MACD 7.50, 10 EMA $401.04, Bollinger mid $393.15, ATR $15.87) are cited to market-msft but are NOT present in the observed market data \u2014 only VWMA 386.48 and last_close 451.10 were returned by get_indicators. These appear to be fabricated/estimated indicator values attributed to a source that does not contain them. This is a notable support deduction since these technical values drive the \"overbought/extended\" conclusion. The derived calculations (66% cloud mix, 45% margin, 93.8x P/E) are appropriately flagged as calculations rather than sourced facts, so they are not counted as unsupported citations. Overall main conclusions are supported with no key fabrication of the fundamental data, but the technical indicator fabrication warrants a deduction from 1.0.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'Microsoft Corporation'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-07-30"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 451.10 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-msft'"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "baseline": {
+        "ticker": "NVDA",
+        "analysis_date": "2026-08-27",
+        "context_mode": "baseline",
+        "outcome": "completed",
+        "signal": "Overweight",
+        "stop_reason": "completed",
+        "calls": 15,
+        "input_tokens": 90199,
+        "output_tokens": 18305,
+        "total_tokens": 108504,
+        "wall_seconds": 171.865,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/NVDA/baseline/run",
+        "present": true,
+        "judge": {
+          "support": 0.9,
+          "relevance": 1.0,
+          "cited_claim_count": 30,
+          "supported_cited_claim_count": 30,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [],
+          "rationale": "The report is fully focused on NVDA, analysis date 2026-08-27, latest close 227.98, and the earnings catalyst. All key conclusions are supported by the frozen evidence: earnings figures (revenue 96.2B, +106% YoY, +18% seq, Data Center 89.0B +117%, 75% margins, EPS 2.46/2.22) from src-nvda, and all technical indicators (10-EMA 217.08, MACD 2.68, MACDs 3.22, MACDh -0.54, RSI 53.50, Bollinger 217.21/231.57/202.85, ATR 6.51, VWMA 211.91) from market-nvda. The report correctly notes 50/200 SMA unavailable and does not fabricate them. All cited claims map to the correct sources. The final decision (Overweight, staged entry, stop 211.91, price target 231.57) is grounded in the technical and fundamental evidence. Minor deductions: the price target of 231.57 is essentially the Bollinger upper band presented as a target, and some interpretive claims (e.g., 'institutional participation', 'distribution vs accumulation') are analytical inferences rather than directly evidenced facts, but these are clearly framed as interpretation/assumption rather than fabricated data. Overall main conclusions are well supported with no key fabrication.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'NVIDIA Corporation'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-08-27"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-nvda'"
+            }
+          ]
+        }
+      },
+      "compact": {
+        "ticker": "NVDA",
+        "analysis_date": "2026-08-27",
+        "context_mode": "compact",
+        "outcome": "completed",
+        "signal": "Overweight",
+        "stop_reason": "completed",
+        "calls": 14,
+        "input_tokens": 55703,
+        "output_tokens": 7166,
+        "total_tokens": 62869,
+        "wall_seconds": 67.388,
+        "error": null,
+        "pack_complete": true,
+        "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/final/NVDA/compact/run",
+        "present": true,
+        "judge": {
+          "support": 0.9,
+          "relevance": 1.0,
+          "cited_claim_count": 30,
+          "supported_cited_claim_count": 30,
+          "valid_citation_rate": 1.0,
+          "invalid_citation_explanations": [],
+          "uncited_factual_claims": [
+            "Price target 250.0 (no source cited)",
+            "Stop loss 215.0 / 220.0 / 212.0 (trader/conservative/neutral plans, no market source)",
+            "Position sizing percentages (~3%, ~2%, ~5%) are analyst plan constructs, not sourced"
+          ],
+          "rationale": "The report is highly grounded. All key factual claims (revenue $96.2B +106% YoY +18% QoQ, Data Center $89.0B +117% YoY, 75.0% gross margins, GAAP EPS 2.46 / non-GAAP 2.22, close 227.98, technical indicators RSI 53.50, MACD 2.68/3.22, histogram -0.54, ATR 6.51, Bollinger 217.21/231.57/202.85, VWMA 211.91, 10 EMA 217.08) are directly supported by the cited sources (src-nvda and market-nvda). The ~92.5% Data Center concentration is a correct calculation from 89.0/96.2. The report correctly notes unavailable data (50/200 SMA, macro, global news, prediction markets) without fabricating. The price target of 250.0 is an analyst judgment/forecast, not a factual claim requiring a source. Minor: the intraday +8.7% calculation from 209.66 to 227.98 is correct. No key fabrication found; main conclusions are supported. Relevance is fully on-task for NVDA on 2026-08-27 with a clear final BUY/Overweight decision.",
+          "error": false,
+          "deterministic_checks": [
+            {
+              "check": "instrument_identity",
+              "passed": true,
+              "detail": "report references company 'NVIDIA Corporation'"
+            },
+            {
+              "check": "analysis_date",
+              "passed": true,
+              "detail": "report references analysis date 2026-08-27"
+            },
+            {
+              "check": "final_decision_present",
+              "passed": true,
+              "detail": "final trade decision is present in the final state"
+            },
+            {
+              "check": "frozen_price_in_report",
+              "passed": true,
+              "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+            },
+            {
+              "check": "source_id_referenced",
+              "passed": true,
+              "detail": "report references source_id 'src-nvda'"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

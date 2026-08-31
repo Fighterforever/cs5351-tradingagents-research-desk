@@ -1,0 +1,10 @@
+
+Conservative Analyst: **Role: Conservative Risk Analyst**
+
+I’ll counter the Aggressive Analyst directly. You call the FCF outflow “AI investment” and dismiss the Anthropic gain as a bonus—but that’s precisely the problem. The headline net income of $62.6B is inflated by a $53.4B non-recurring gain [src-amzn]. Strip that out, and operating earnings are far thinner. Meanwhile, TTM free cash flow is a negative $7.6B outflow [src-amzn]. That is not a footnote; it’s a cash-burn signal that undermines the quality of this rally.
+
+You celebrate the 129M share volume spike [market-amzn] as institutional conviction. I see it as a crowded, momentum-chasing stampede into a stock that gapped ~20% in two sessions. Price is ~11% above the Bollinger middle and ~12% above VWMA [market-amzn]—that’s not confirmation, that’s overextension. RSI at 64 [market-amzn] may have headroom, but ATR of 9.26 [market-amzn] means a normal daily swing can wipe out a week of gains. The trader’s stop at 226.65 is ~16.5% below entry—that’s a massive loss per share if triggered, not “protection.”
+
+The trader’s plan to buy half now and scale in on a pullback is the only defensible part. But even that half position at 271.58 is buying the most extended point of the move. A conservative adjustment: wait for the pullback to 255–260 before initiating any position, or reduce the initial half to a quarter. The AWS +37% growth [src-amzn] is real and supports long-term value, but it does not justify chasing a parabolic spike. Negative FCF plus a one-off gain means the earnings quality is poor—this is exactly when volatility spikes and reversals hurt.
+
+The Aggressive Analyst says hesitation misses the move. I say capital preservation beats FOMO. The firm’s assets are better served by a disciplined entry near support, not at the top of a volume spike. I recommend: no buy at 271.58; wait for 255–260, or stand aside entirely until FCF turns positive. That’s the low-risk path.

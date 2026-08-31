@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/TauricResearch/TradingAgents",
+  "tested_snapshot_ref": "refs/heads/v0.4.0",
+  "tested_snapshot_commit": "c95f83dfafa748801ab2be4855e6fcffc93804e4",
+  "official_tag": "v0.4.0",
+  "official_tag_commit": "2448d0a12576f9b2ddcd5980a0630833423d1e1b",
+  "source_trees_identical": true,
+  "verification": "git diff --quiet refs/tags/v0.4.0 refs/heads/upstream-release-branch",
+  "recorded_at": "2026-08-31T13:36:29.065306+00:00",
+  "note": "The starting checkout was the release branch. Fetching the signed annotated release tag revealed a merge commit with the identical source tree. Missing ancestry was fetched before publishing; the private repository retains the genuine tag."
+}
