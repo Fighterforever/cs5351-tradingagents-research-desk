@@ -1,0 +1,153 @@
+name: Research Desk gates
+
+# Six independent, blocking offline gates for the Research Desk extension.
+# They run on every push and pull request. The original upstream CI workflow
+# (ci.yml) is left untouched.
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-desk-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  # Baseline tag preserved by this project: a brand-new branch push reports an
+  # all-zero `before` SHA, so diff against the preserved upstream baseline tag.
+  BASE_TAG: "v0.4.0"
+
+jobs:
+  gate-1-approval:
+    name: Gate 1 - tests approved before implementation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install gate dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev]" -c requirements-lock.txt PyYAML
+      - name: Resolve change base
+        id: base
+        run: |
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            echo "base=$BASE_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          BASE_TAG: ${{ env.BASE_TAG }}
+      - name: Run Gate 1
+        run: python scripts/check_approval.py --base-ref "${{ steps.base.outputs.base }}" --head-ref "${{ github.event.pull_request.head.sha || github.sha }}"
+
+  gate-2-static:
+    name: Gate 2 - lint, types, deps and authority boundary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install gate dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev]" -c requirements-lock.txt mypy jsonschema
+      - name: Resolve change base
+        id: base
+        run: |
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            echo "base=$BASE_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          BASE_TAG: ${{ env.BASE_TAG }}
+      - name: Run Gate 2
+        run: python scripts/check_static.py --base-ref "${{ steps.base.outputs.base }}" --head-ref "${{ github.event.pull_request.head.sha || github.sha }}"
+
+  gate-3-requirements:
+    name: Gate 3 - requirements schema and traceability
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install gate dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev]" -c requirements-lock.txt PyYAML jsonschema
+      - name: Run Gate 3
+        run: python scripts/check_requirements.py
+
+  gate-4-semantic:
+    name: Gate 4 - fixed semantic regression (offline)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install gate dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev]" -c requirements-lock.txt
+      - name: Resolve change base
+        id: base
+        run: |
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            echo "base=$BASE_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          BASE_TAG: ${{ env.BASE_TAG }}
+      - name: Run Gate 4
+        run: python scripts/check_semantic.py --base-ref "${{ steps.base.outputs.base }}" --head-ref "${{ github.event.pull_request.head.sha || github.sha }}"
+
+  gate-5-regression:
+    name: Gate 5 - full regression (tests + test/offline)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install gate dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev]" -c requirements-lock.txt
+      - name: Run Gate 5
+        run: python scripts/check_regression.py
+
+  gate-6-ai-use-log:
+    name: Gate 6 - AI-use log required for code/prompt changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install gate dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -c requirements-lock.txt PyYAML
+      - name: Resolve change base
+        id: base
+        run: |
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            echo "base=$BASE_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          BASE_TAG: ${{ env.BASE_TAG }}
+      - name: Run Gate 6
+        run: python scripts/check_ai_use_log.py --base-ref "${{ steps.base.outputs.base }}" --head-ref "${{ github.event.pull_request.head.sha || github.sha }}"

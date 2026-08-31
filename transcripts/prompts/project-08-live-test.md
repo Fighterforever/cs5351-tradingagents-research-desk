@@ -1,0 +1,9 @@
+# Final D8 layout and actual runtime prompt archive only
+
+The main application is frozen for real evaluation now. DO NOT edit src/, existing test/offline/, evidence.py, CI, model settings, or prompts used by the running graph. Another workstream is running AAPL/MSFT baseline/compact. This tiny task must not change research behavior.
+
+1. Add test/live/test_live_evaluation.py as a thin opt-in integration test of the existing run_evaluate_case entry point for one frozen AAPL baseline. Default skip unless RESEARCH_DESK_LIVE_TESTS=1 and DEEPSEEK_API_KEY are present. Use an isolated pytest tmp output or explicitly supplied RESEARCH_DESK_LIVE_OUT; never overwrite evaluation/final. Assert the actual completed pack can import, has real numeric usage and final decision. Do not mock the model in this live test or duplicate production logic. The host already separately runs the full six-case experiment; do not yourself call the API.
+2. Add test/live/README.md with exact opt-in command, credential env names and relation to the six-case CLI matrix. The default offline invocation should skip cleanly.
+3. Archive actual current runtime prompt text/settings under prompts/ with a version mapping derived from the existing ResearchDeskSettings.prompt_version. Read the real current StandingConstraints and compact _OUTPUT_INSTRUCTION, baseline identity/no-transform behavior, compact thresholds. State that the runtime Python source is authoritative and this YAML is a review snapshot. Do not invent a second historical prompt version just because the course tree gives two illustrative filenames. Include source paths and the two modes; do not change runtime code or create parallel source-of-truth claims.
+
+Run only `.venv/bin/pytest -q test/live` without opt-in (must skip; no API). Stop. All current rules and existing leo approval apply. Scope only test/live/ and prompts/. No broad cleanup or manuscript edits.

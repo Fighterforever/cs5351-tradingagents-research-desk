@@ -1,0 +1,159 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "deepseek/deepseek-v4-flash",
+  "mcp": {
+    "notion": {
+      "enabled": false
+    }
+  },
+  "instructions": [
+    ".opencode/rules.md",
+    ".agent/rules.md"
+  ],
+  "permission": {
+    "*": "deny",
+    "read": {
+      "*": "deny",
+      "AGENTS.md": "allow",
+      "Prompt.md": "allow",
+      "README.md": "allow",
+      "UPSTREAM_README.md": "allow",
+      "Report.md": "allow",
+      "Report.pdf": "allow",
+      "pyproject.toml": "allow",
+      "requirements-lock.txt": "allow",
+      "architecture-blueprint.md": "allow",
+      "docs/**": "allow",
+      "src/**": "allow",
+      "test/**": "allow",
+      "tests/**": "allow",
+      "tradingagents/**": "allow",
+      "cli/**": "allow",
+      "scripts/**": "allow",
+      ".github/**": "allow",
+      ".opencode/**": "allow",
+      ".agent/**": "allow",
+      "transcripts/**": "allow",
+      "evaluation/**": "allow",
+      "proposals/**": "allow",
+      "verification/**": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny"
+    },
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "bash": {
+      "*": "deny"
+    },
+    "webfetch": "deny",
+    "websearch": "deny",
+    "task": "deny",
+    "external_directory": "deny",
+    "doom_loop": "deny",
+    "edit": {
+      "*": "deny"
+    }
+  },
+  "agent": {
+    "plan": {
+      "mode": "primary",
+      "description": "Read project materials and search, propose plans; never modify implementation or approve work.",
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "proposals/**": "allow"
+        },
+        "bash": {
+          "*": "deny"
+        }
+      }
+    },
+    "build": {
+      "mode": "primary",
+      "description": "Write approved application/test/CI paths; protected rules, approvals, frozen upstream CLI/tests and safety owners stay denied.",
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "src/research_desk/**": "allow",
+          "test/**": "allow",
+          "scripts/**": "allow",
+          "pyproject.toml": "allow",
+          ".github/workflows/**": "allow",
+          "cli/**": "deny",
+          "tests/**": "deny",
+          "AGENTS.md": "deny",
+          "Prompt.md": "deny",
+          "README.md": "deny",
+          "UPSTREAM_README.md": "deny",
+          "Report.md": "deny",
+          "Report.pdf": "deny",
+          "architecture-blueprint.md": "deny",
+          "requirements-lock.txt": "deny",
+          ".opencode/rules.md": "deny",
+          ".agent/rules.md": "deny",
+          ".opencode/permissions.jsonc": "deny",
+          ".opencode/config-schema.json": "deny",
+          "opencode.json": "deny",
+          "docs/**": "deny",
+          "tradingagents/**": "deny",
+          "src/research_desk/config.py": "deny",
+          "src/research_desk/policy.py": "deny",
+          "src/research_desk/review.py": "deny",
+          "src/research_desk/storage.py": "deny",
+          "src/research_desk/models.py": "deny"
+        },
+        "bash": {
+          "*": "deny",
+          "pwd": "allow",
+          "ls": "allow",
+          "git status": "allow",
+          "git status --short": "allow",
+          "git diff": "allow",
+          "git diff --stat": "allow",
+          "git diff --name-only": "allow",
+          "git log": "allow",
+          "git log -n 5 --oneline": "allow"
+        }
+      }
+    },
+    "verify": {
+      "mode": "primary",
+      "description": "Read code and artifacts, run exact .venv validation commands; write only verification output.",
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "verification/**": "allow"
+        },
+        "bash": {
+          "*": "deny",
+          "pwd": "allow",
+          "ls": "allow",
+          "git status": "allow",
+          "git status --short": "allow",
+          ".venv/bin/pytest tests": "allow",
+          ".venv/bin/pytest tests -q": "allow",
+          ".venv/bin/pytest test/offline": "allow",
+          ".venv/bin/pytest test/offline -q": "allow",
+          ".venv/bin/pytest tests test/offline": "allow",
+          ".venv/bin/pytest tests test/offline -q": "allow",
+          ".venv/bin/python scripts/check_static.py": "allow",
+          ".venv/bin/python scripts/check_approval.py": "allow",
+          ".venv/bin/python scripts/check_requirements.py": "allow",
+          ".venv/bin/python scripts/check_semantic.py": "allow",
+          ".venv/bin/python scripts/check_regression.py": "allow",
+          ".venv/bin/python scripts/check_gate_examples.py": "allow",
+          ".venv/bin/python scripts/check_ai_use_log.py": "allow",
+          ".venv/bin/python scripts/check_permissions.py": "allow",
+          ".venv/bin/python scripts/check_approval.py --base-ref v0.4.0 --head-ref HEAD": "allow",
+          ".venv/bin/python scripts/check_static.py --base-ref v0.4.0 --head-ref HEAD": "allow",
+          ".venv/bin/python scripts/check_requirements.py --base-ref v0.4.0 --head-ref HEAD": "allow",
+          ".venv/bin/python scripts/check_semantic.py --base-ref v0.4.0 --head-ref HEAD": "allow",
+          ".venv/bin/python scripts/check_regression.py --base-ref v0.4.0 --head-ref HEAD": "allow",
+          ".venv/bin/python scripts/check_ai_use_log.py --base-ref v0.4.0 --head-ref HEAD": "allow",
+          ".venv/bin/python scripts/check_gate_examples.py --output verification/negative-examples.json": "allow"
+        }
+      }
+    }
+  }
+}
