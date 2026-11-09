@@ -10,9 +10,9 @@ The project team uses the working names Alfa, Bravo, Charlie, Delta and Echo. Th
 | Delta | Unit tests and research-quality evaluation | Negative cases and experimental comparisons | 1.0 |
 | Echo | CI, release controls and report integration | Reproducibility and delivery packaging | 1.0 |
 
-For the final review, ownership rotates one row forward: Alfa reviews Bravo's architecture, Bravo reviews Charlie's state contracts, Charlie reviews Delta's tests, Delta reviews Echo's CI evidence, and Echo reviews Alfa's requirements. Record each completed review with its actual author and result in the review memo. This schedule does not retroactively attribute archived development actions to a team member.
+For the final review, ownership rotates one row forward: Alfa reviews Bravo's architecture, Bravo reviews Charlie's state contracts, Charlie reviews Delta's tests, Delta reviews Echo's CI evidence, and Echo reviews Alfa's requirements. Record each completed review with its actual author and result in the review memo. Completed reviews become part of the contribution record.
 
-The historical decision identifier leo refers to Liyu MA. Its mapping to a working team name has not been supplied. Formal names and student numbers are maintained by the team for the Canvas submission roster.
+The recorded decision identifier leo refers to Liyu MA (59072966). The [annotated development record](../../transcripts/59072966-Liyu-MA.md) preserves that identity and the coordinating workflow’s role in sending prompts. The submission roster must connect each working name to its formal name and student number.
 
 ## Five substantial requirement increments
 

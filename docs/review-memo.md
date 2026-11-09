@@ -10,7 +10,7 @@ Architecture alignment: the extension kept the upstream graph and placed source 
 
 Code/test quality: package installation and recovery-state failures were corrected during the first session. The next tests target real omitted boundaries. Baseline/compact must be exercised through full model inputs, not only a local empty-memory transform.
 
-Operational metadata: original upstream suite recorded 649 passed, 2 skipped and 71 subtests passed. Skips concerned an optional AWS dependency and an upstream live DeepSeek test with no key in that test invocation. The extension suite recorded47 passed before the semantic follow-up. No live result was claimed at this checkpoint. Source edits were made by OpenCode; the review supplied concrete corrections. Final release/PR evidence is appended after actual CI and live evaluation.
+Operational metadata: original upstream suite recorded 649 passed, 2 skipped and 71 subtests passed. Skips concerned an optional AWS dependency and an upstream live DeepSeek test with no key in that test invocation. The extension suite recorded 47 passed before the semantic follow-up. No live result was claimed at this checkpoint. Source edits were made by OpenCode; the review supplied concrete corrections. Final release/PR evidence is appended after actual CI and live evaluation.
 
 ## First frozen-result review
 
@@ -28,7 +28,7 @@ Operational metadata: evaluation/final contains the frozen application runs and 
 
 Verdict: **CHANGES REQUIRED for complete requirements acceptance**. The executable submission and its evidence are ready for review, but the strict legal-name presentation requirement has one real held-out failure. A future change should enforce the general company-identity output contract and evaluate it on a newly reserved set. The frozen result must not be retroactively rewritten or passed with a ticker-specific exception.
 
-GitHub release evidence: main and the actual signed upstream v0.4.0 tag were pushed to the private repository. Both Actions runs were blocked before any step by the account payment/spending-limit condition. Private branch protection returned HTTP403 with a plan/public-repository requirement. No account billing or visibility setting was changed. GOV-004/D7 remains incomplete; the desired server policy and actual responses are under evaluation/github. This external gap is additional to the frozen META legal-name omission and does not invalidate the recorded local gate executions.
+GitHub release evidence: main and the actual signed upstream v0.4.0 tag were pushed to the private repository. Both Actions runs were blocked before any step by the account payment/spending-limit condition. Private branch protection returned HTTP 403 with a plan/public-repository requirement. No account billing or visibility setting was changed. GOV-004/D7 remains incomplete; the desired server policy and actual responses are under evaluation/github. This external gap is additional to the frozen META legal-name omission and does not invalidate the recorded local gate executions.
 
 
 ## Release revision review
@@ -53,3 +53,19 @@ Gemini CLI reviewed the original course requirements together with the current s
 The follow-up assessment reports technical_ready true and an empty remaining_technical_issues list. It confirms alignment with the higher-grade directions for architecture, governance and token efficiency. Native review responses are retained in transcripts/gemini-release-review.json and transcripts/gemini-release-followup.json.
 
 The assessment leaves three authentic team actions open: formal identities and contribution evidence, per-student annotated interventions, and independent GitHub/rotating peer review. These remain on the delivery checklist.
+
+## Intervention evidence and report review
+
+Reviewer: coordinating workflow, with an independent Gemini CLI assessment. Scope: all non-video deliverables and 30 annotated directives across 11 native OpenCode sessions. Verdict: **CHANGES REQUIRED for complete submission**; technical acceptance is complete.
+
+Each annotation now links its exact source message and quote to the observed result. The message locators and quotations were checked against the native exports. The participant index records Liyu MA (59072966) as decision owner leo and identifies the workflow that sent the prompts. Original conversations remain available alongside the annotations.
+
+Gemini found stale wording in three reflections. Bravo now describes the implemented context cap. Charlie describes the completed rejected-state repair and its transition test. Echo records the passing revision CI and the pending independent approval. Reference spacing was also corrected. Application source and experiment results are unchanged.
+
+The original requirements leave three areas to complete: formal member identification and contribution confirmation; authentic member interventions across the supervised pipeline; independent peer review and protected merge. Requirements classification and architecture candidate evaluation have design artifacts, but their original supervision record still needs to be linked. The team should add the corresponding conversation or document a new review as a subsequent review.
+
+Two assessment details were checked against the course text. D6 requires relative contributions and suggests productive hours or story points as possible measures; it does not prescribe a sprint-by-sprint table. D5 requires marked team interventions and full pipeline coverage; per-student files follow the supplied repository naming convention. The source revision CI link remains attached to the evaluated implementation. The final package also contains the CI receipt for its documentation update.
+
+Native editorial and assessment responses: `transcripts/gemini-intervention-edit.json` and `transcripts/gemini-intervention-review.json`.
+
+Gemini’s focused follow-up confirmed all corrections resolved and reported no remaining editorial issues. Its response is retained in `transcripts/gemini-intervention-followup.json`. The five reflections remain within 300–500 words, and the rendered report contains 23 pages.

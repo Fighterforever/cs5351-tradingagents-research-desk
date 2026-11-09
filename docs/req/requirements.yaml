@@ -240,7 +240,7 @@ requirements:
   - AT-07
 - id: PERF-001
   type: performance
-  statement: Compact research wall time stays within110 percent of baseline.
+  statement: Compact research wall time stays within 110 percent of baseline.
   priority: Should
   fit:
     metric: compact_to_baseline_wall_ratio

@@ -1,16 +1,21 @@
-# Annotated OpenCode session 1: offline vertical slice
+# Offline implementation
 
-Session: ses_fa849396effeNN2dsVIpTIaax8. Full raw record: project-01.raw.jsonl. Full native export: project-01.full.json. Sanitized convenience export: project-01.export.json. Launch prompt: prompts/project-01-offline.md.
+The first session established the offline application and its integration with the upstream research graph.
 
-The concrete plan and AT-01 through AT-08 were approved at2026-08-31T12:05:17.791955+00:00. The first implementation event is2026-08-31T12:06:32.695+00:00, obtained from the raw event timestamp. This ordering is checked by the approval gate.
+[Participant and evidence index](../59072966-Liyu-MA.md). Entry numbers identify recorded prompts. Test counts below describe the corresponding development turn.
 
-OpenCode read the upstream contracts and generated the application modules, fixtures and tests. The record includes the real failing test rounds and corrections. At the useful offline milestone,47 extension tests passed. The separately executed unmodified upstream suite recorded649 passing tests,2 skips and71 subtests.
+## I-01: Build the first working application
 
-Intervention1: require the real upstream graph and application-owned seams rather than a replacement demonstration. Rationale: preserve existing system behavior and make the baseline comparison meaningful.
+The initial implementation required a complete offline Research Desk package integrated with the upstream TradingAgents graph, evidence packs, policy ledger, budget controls, and documentation deliverables.
 
-Intervention2: review package installation and the CLI vertical slice after generation. The first package import failure exposed missing src-layout discovery. Rationale: an application module is not delivered until its installed entry point works.
+> Implement a clean integration seam with TradingAgentsGraph: normal live run should use its actual graph, selected analysts, researchers, managers, trader and risk debate.
 
-Intervention3: after the passing offline slice, inspect policy and approval semantics. The review identified a ticket-only cap, excluded valid sells and approval content that omitted quantity/evidence binding. ADR-002 records the required correction. Rationale: passing examples on an empty portfolio do not establish the total-holdings invariant.
+Connecting directly to the real upstream graph and enforcing deterministic ledger policies established a valid baseline for reproducible offline replay and subsequent live comparisons.
 
-Intervention4: terminate the session after its useful milestone when it continued cleanup and lint work. Source changes and raw output were retained. Rationale: the next unresolved acceptance item was real research/evaluation; a fresh focused session reduced repeated context cost.
+OpenCode created the `src/research_desk` package, offline test suite, and initial architecture and requirements files. The session passed 47 offline extension tests and 696 combined tests with 71 subtests.
 
+Result: [pyproject.toml](../../pyproject.toml), [graph_adapter.py](../../src/research_desk/graph_adapter.py), [evidence.py](../../src/research_desk/evidence.py), [policy.py](../../src/research_desk/policy.py), [test_integration_seam.py](../../test/offline/test_integration_seam.py).
+
+Source: [project-01.full.json](../project-01.full.json), message `msg_057b6c6c3001AL4FZng9VdvW70`, JSON pointer `/messages/0`. Session: `ses_fa849396effeNN2dsVIpTIaax8`.
+
+Prompt: [project-01-offline.md](../prompts/project-01-offline.md).

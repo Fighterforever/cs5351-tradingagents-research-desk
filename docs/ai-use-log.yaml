@@ -367,3 +367,46 @@ entries:
   evidence: transcripts/gemini-release-followup.json
   outcome: Technical readiness confirmed with no remaining technical findings. Formal roster/contribution
     evidence, per-student annotations and independent human reviews remain pending.
+- date: '2026-11-10'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Polish source-linked development annotations while preserving exact quotations and observed
+    outcomes.
+  session: 4b8b9946-3a17-4910-a912-57bb72151ff0
+  scope:
+  - transcripts/annotations
+  - transcripts/59072966-Liyu-MA.md
+  - transcripts/intervention-index.json
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-intervention-edit.json
+  outcome: Edited 30 directives from 11 native OpenCode sessions. Exact quotes checked against source
+    messages; attribution and source locators added from recorded evidence.
+- date: '2026-11-10'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Review the complete non-video project against the original requirements and check annotation
+    fidelity against native messages.
+  session: 35808525-953e-4aaf-b814-7e4743263fe5
+  scope:
+  - Report.md
+  - docs
+  - transcripts/annotations
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-intervention-review.json
+  outcome: Confirmed technical readiness and source fidelity of all 30 annotations. Identified stale wording
+    in three reflections, corrected in the report. Team identities, authentic supervision evidence and
+    independent reviews remain open.
+- date: '2026-11-10'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Verify the corrected reflections and reassess the outstanding submission work against the exact
+    course wording.
+  session: 2343d49b-c222-4231-bda3-c1db49afa8f6
+  scope:
+  - Report.md
+  - docs/review-memo.md
+  - docs/process/delivery-checklist.md
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-intervention-followup.json
+  outcome: Confirmed all editorial corrections resolved with no remaining editorial issues. Formal team
+    details, authentic pipeline records, independent review and final video remain pending.

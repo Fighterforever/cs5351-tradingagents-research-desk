@@ -1,6 +1,6 @@
 # Course deliverable index
 
-Participant and evaluation identifier: leo. Relative contribution:1.0. Execution provenance is explained once in Report.md. The table points to actual artifacts; local verification and GitHub enforcement are reported separately.
+Team responsibilities and the equal assigned contribution weights are recorded in process/team.md. The table links each deliverable to its evidence.
 
 | Deliverable | Review entry points | Evidence and scope |
 |---|---|---|
@@ -8,7 +8,7 @@ Participant and evaluation identifier: leo. Relative contribution:1.0. Execution
 | D2: architecture | ../architecture-blueprint.md; architecture/ | Authoritative blueprint; ADRs and an explicitly named appendix; invariant/trace/state/permission/policy records; candidate comparison and optional logs |
 | D3: coding governance | ../AGENTS.md; code-governance/; ../.opencode/; ../.agent/ | Module and function ownership, allowed tools, role permissions, frozen human-owned rules and change process; actual candidate enforcement probe retained |
 | D4: verification | code-governance/verification-constraints.md; review-memo.md; debt-register.md; bug-diary.md; ci-gates.md | Structural, regression and behavioral checks; real defects and review decisions; six gate implementations and a controlled rejection harness, with execution outcomes recorded in ci-gates.md |
-| D5: supervised sessions | ../transcripts/leo-leo.md; ../transcripts/annotations/ | Seven original annotated sessions plus the release-revision intervention record, complete native records, original events and exact prompts; large native records use lossless gzip |
+| D5: supervised sessions | ../transcripts/59072966-Liyu-MA.md; ../transcripts/intervention-index.json | 30 source-linked directives across 11 native sessions, grouped in nine annotation records; complete exports, original events and prompts retained |
 | D6: single report | ../Report.md; ../Report.pdf | Process report, participant record and five 300–500-word reflections; final 12pt PDF rendered from the same Markdown |
 | D7: repository | ../README.md; ../.github/; ../evaluation/ci/ | Public Fighterforever/cs5351-tradingagents-research-desk; preserved upstream history and concise extension commits; six required checks and human-review protection enabled. Current cloud results are under evaluation/github |
 | D8: source and tests | ../src/research_desk/; ../test/offline/; ../test/live/; ../test/fixtures/ | Application extension around the unchanged upstream graph; API-free tests separated from opt-in live evaluation; actual source data and prompt snapshots |
