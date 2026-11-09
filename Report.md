@@ -12,7 +12,7 @@ CS5351 Agentic Software Engineering Project. Team: **Alfa, Bravo, Charlie, Delta
 | Delta | Testing and experimental quality | 1.0 |
 | Echo | CI, release and report integration | 1.0 |
 
-The team assigns equal responsibility to these five areas. The weights average 1.0. The closing review rotates each area to another member according to docs/process/team.md. Archived development decisions retain their original operator identifier, leo.
+The team allocates equal responsibility across these five areas, with a mean weight of 1.0. The closing review rotates each area to the next member as set out in docs/process/team.md. Archived development sessions and approvals retain their original operator identifier, leo.
 
 
 This project uses a genuine language-model research graph to investigate a practical software engineering question: how can a user inspect the evidence behind an AI recommendation, reproduce its presentation, and control the consequences of accepting it? The delivered workflow connects research to a portable evidence package, then to an explicitly approved paper transaction. A second workflow compares the cost and quality of two context strategies using the same underlying research system.
@@ -41,7 +41,7 @@ The baseline is the official v0.4.0 code from TauricResearch/TradingAgents. The 
 
 Source analysis identified the actual extension contracts. TradingAgentsGraph accepts selected analysts, configuration and callbacks. Its propagation path returns a terminal graph state and a signal. The report writer consumes that saved state. Instrument resolution and returns reads include direct data paths that are not ordinary model tool calls. The dependency declarations and provider adapters were also examined before selecting how the extension would access DeepSeek.
 
-This inspection prevented several false novelty claims. Structured decisions are inherited. Date-aware memory is inherited. Checkpoint and resume behavior is inherited. The verified market snapshot and token-statistics pattern also belong to the upstream project. Research Desk's contribution is the integrated evidence/review/evaluation workflow around those capabilities. The requirements registry links inherited capabilities directly to upstream source paths and maps new workflows to extension modules.
+Baseline inspection established the extension points provided by TradingAgents. Research Desk reuses its research and persistence contracts, including structured decisions and date-aware memory. Upstream checkpoint and market-data support remain in place, together with callback token accounting. Research Desk connects portable evidence to deterministic proposal review and measures the cost of context control. The requirements registry links inherited capabilities directly to upstream source paths and maps new workflows to extension modules.
 
 The unmodified upstream test run completed with **649 passed, 2 skipped and 71 subtests passed**. The saved log records the invocation and result. The skips concerned an optional AWS dependency and a live DeepSeek integration test that was not given a key in that baseline invocation. The extension retains the full original tests directory. Later regression checks run both the upstream suite and the additional application tests.
 
@@ -162,7 +162,7 @@ The frozen CSVs and official company releases are identical across modes. Compac
 
 A separate evaluator receives the report with role headings and all captured tool observations. It has no baseline/compact label. The rubric requires support and relevance of at least 0.8 and valid-citation rate of at least 0.95. It explicitly rejects wrong earnings periods, unit conversions and unsupported numerical valuation assertions. Each report must also pass five deterministic identity/date/decision/price/source checks. Support and relevance drops are evaluated separately, with a maximum permitted mean decline of 0.05.
 
-Each run and judgment records the actual model configuration and current-source provenance. Gate 4 recomputes the deterministic checks from the saved packages and reads each judgment independently. A changed runtime source, prompt or fixed input invalidates stale evidence.
+Each run and judgment records the actual model configuration and current-source provenance. Gate 4 recomputes the deterministic checks from the saved packages and reads each judgment independently. A changed runtime source, prompt or fixed input invalidates stale evidence. Must quality and retention failures block the release. COST-001 and PERF-001 are Should targets, so a miss produces a warning. The current release meets both targets.
 
 ### Research cost and elapsed time
 
@@ -200,7 +200,7 @@ The final ratings, shown as baseline / compact, were AAPL: Hold / Hold; MSFT: Ov
 | META | 0.90 | 0.90 | 40/42 | 41/42 | 5/5 each |
 | GOOGL | 0.90 | 0.90 | 47/48 | 27/28 | 5/5 each |
 
-All reports passed the semantic validity check with empty semantic-error lists. All relevance scores were 0.95. Mean support increased from **0.9000** to **0.9083**. Every individual valid-citation rate met 0.95. Mandatory fields passed **60/60**, including the full legal company name in both META reports.
+All reports passed the semantic validity check with empty semantic-error lists. All relevance scores were 0.95. Mean support increased from **0.9000** to **0.9083**. Every individual valid-citation rate met 0.95. Mandatory checks passed **60/60**. The report header supplies the legal company name and analysis date from captured evidence. The generated narrative states the frozen closing price and source ID; the saved final state supplies the decision.
 
 Citation counts describe the evaluator's assessed claims. Its raw explanations retain the unsupported and uncited claims it identified. The final twelve judge calls consumed **264,309 tokens**, recorded separately from application research. The release validator passed every Must check and all four numerical optimization targets.
 
@@ -229,7 +229,7 @@ The public GitHub repository runs six required checks from .github/workflows/ci.
 
 Branch protection requires these checks and one approving review. Code-owner review applies to safety paths, stale approvals are dismissed, and review conversations must be resolved. The policy applies to administrators and forbids force pushes and deletion. The accepted server configuration is saved in evaluation/github/branch-protection-current.json.
 
-The first cloud execution after the repository became public passed all six jobs. Current revision runs and the pull request provide the release evidence. The earlier private-repository billing and protection responses remain in the historical records. The final source branch is submitted for the required independent review before merge.
+Both the first public cloud execution and the revised source pull request passed all six jobs. The [revision CI run](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42645314153) and [PR #1](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1) provide the release evidence. The earlier private-repository billing and protection responses remain in the historical records. The final source branch is submitted for the required independent review before merge.
 
 CI installs the existing dependency constraints and runs without provider credentials. Gate 4 verifies saved actual research evidence, including provenance from both generation and judgment, while deterministic replay stays offline. Fresh provider evaluation is the explicit release command documented in README.md. This keeps routine merge checks reproducible and prevents old successful output from validating new runtime code.
 
@@ -249,7 +249,7 @@ Ambiguity resolution is explicit. “No shorting” was interpreted as allowing 
 
 Artifacts co-evolved through the trace matrix. A change to the holdings interpretation affected the policy owner, approval decision, test examples and defect diary. A change to the context strategy affected ADR-001, the runtime adapter and evaluation method. Updating the JSON schema ensured that automated validation checked the committed requirements registry, while the AI-use gate verified that session logs stayed synchronized with source and prompt paths.
 
-The project also separates review authority from outcome evidence. A decision can authorize a plan, but it cannot declare an unrun test successful. An ADR can select an architecture, but it cannot establish measured token savings. A workflow file can define checks, but it cannot prove a server rejected a merge. This separation made the final deliverable more reviewable and prevented documentation from outrunning implementation.
+Governance records specify what an authorized change may do. Test logs and provider metadata show what ran, and GitHub responses show whether the server enforced its release policy.
 
 ### Architecture revisions and process cost
 

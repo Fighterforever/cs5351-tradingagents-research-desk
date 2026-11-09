@@ -19,7 +19,7 @@
 | GOV-001 | .github/workflows/ci.yml, scripts | AT-08; Validate approval timestamps and eight test IDs; changed safety paths require decision evidence. | CI job result |
 | GOV-002 | .github/workflows/ci.yml, scripts | AT-08; Run lint/type/dependency/schema checks and both tests/ and test/offline/ in CI. | CI job result |
 | GOV-003 | .github/workflows/ci.yml, scripts | AT-08; Compare changed paths to the log; recompute fixed evidence quality rather than trusting a hand-written PASS. | CI job result |
-| GOV-004 | .github/workflows/ci.yml, .github/CODEOWNERS | AT-08; Record actual GitHub protection response and failure/recovery checks; do not claim unavailable enforcement. | CI job result |
+| GOV-004 | .github/workflows/ci.yml, .github/CODEOWNERS | AT-08; Inspect actual branch protection and pull-request check results; require an approved review before merge. | CI job result |
 | CTX-001 | research_desk.context, research_desk.eval.compact_delegate, research_desk.budget | AT-06; context budget unit tests | Per-request budget observations and context stop event |
 | INH-001 | tradingagents.graph | upstream-regression, AT-07; Run the complete original tests/ directory; frozen integration preserves public graph contracts. | Run manifest/events and terminal outcome |
 | INH-002 | tradingagents.agents.utils.memory | upstream-regression, AT-07; Run the complete original tests/ directory; frozen integration preserves public graph contracts. | Run manifest/events and terminal outcome |

@@ -15,3 +15,5 @@ Participant and evaluation identifier: leo. Relative contribution:1.0. Execution
 | D9: launch prompt | ../Prompt.md | Static plan-first execution instruction with scoped approvals and verification stages |
 
 The 600-second MP4 is a separate submission artifact. Source ZIP preparation excludes virtual environments, local caches and credential files. The source tree preserves upstream attribution and includes evidence that can be inspected without provider access. Live reruns incur API usage and must use a fresh output root.
+
+Prompt naming: the course layout examples prompt_v1.0.yaml and prompt_v1.1.yaml map to this repository’s first two versioned runtime snapshots, runtime-prompts-v0.1.0.yaml and runtime-prompts-v0.1.1.yaml. The current snapshot is runtime-prompts-v0.1.2.yaml; config.py defines its active version.

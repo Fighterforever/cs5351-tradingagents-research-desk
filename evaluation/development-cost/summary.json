@@ -341,11 +341,11 @@
       "session": "ses_e3f28f99fffeB3EaSGurvf2t3E",
       "artifact": "transcripts/project-revision-transport.full.json",
       "tokens": {
-        "input": 46495,
-        "output": 10815,
+        "input": 90097,
+        "output": 11557,
         "reasoning": 0,
         "cache": {
-          "read": 563584,
+          "read": 705024,
           "write": 0
         }
       },
@@ -353,10 +353,10 @@
     }
   ],
   "totals": {
-    "input": 4123418,
-    "output": 612124,
+    "input": 4167020,
+    "output": 612866,
     "reasoning": 298309,
-    "cache_read": 134938496,
+    "cache_read": 135079936,
     "cache_write": 0
   }
 }

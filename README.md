@@ -19,7 +19,7 @@ Set `RESEARCH_DESK_HOME` to a project-local directory for a separate paper accou
 
 ## Offline demonstration
 
-The committed packages under test/fixtures/packs are labeled deterministic fixtures, not live model runs. For a clean example:
+The packages under `test/fixtures/packs` are deterministic offline fixtures for the evidence and paper-ledger workflows:
 
 ```sh
 export RESEARCH_DESK_HOME="$PWD/demo-home"
@@ -45,7 +45,7 @@ Supply `DEEPSEEK_API_KEY` through the host environment, never a source file. `DE
 
 Run the same pair for MSFT, NVDA, AMZN, META and GOOGL. Source CSVs are under test/fixtures/market, and case facts/source identities are in src/research_desk/eval/case_registry.py. The original experiment reserved four cases after AAPL/MSFT development. The current revision uses all six as a fixed regression corpus. Save failed attempts separately before rerunning a directory, because the run command replaces that arm's output. The final released evidence is immutable and should be copied to a new output root for a new experiment.
 
-Both arms use the same complete selected graph, model, frozen corpus and provider output cap. Runtime prompt version `research-desk-0.1.2` supplies the same evidence-grounding rules to every role in both modes; version snapshots are retained under `prompts/`. Compact requests concise role outputs and removes redundant non-evidence text. `judge-case` uses a separate evaluator role and records its usage outside application totals. `aggregate` reads saved files and makes no provider request. API usage and quality are actual results, not values inferred from output length.
+Both arms use the same complete selected graph, model, frozen corpus and provider output cap. Runtime prompt version `research-desk-0.1.2` supplies the same evidence-grounding rules to every role in both modes; version snapshots are retained under `prompts/`. Compact requests concise role outputs and removes redundant non-evidence text. `judge-case` invokes an isolated evaluator role and logs its token usage separately from application runs, while `aggregate` computes summary metrics offline from saved provider metadata and judge outputs.
 
 The current-source comparison completed all 12 runs, passed **60/60 mandatory-field checks**, and passed every semantic and quality threshold. Compact used **43.00% fewer application tokens**; its elapsed-time sum was **56.52% of baseline**. Complete evidence is in [evaluation/release](evaluation/release), with the failed transport attempt preserved under evaluation/revision-initial.
 
@@ -88,3 +88,10 @@ The public repository has six required CI checks and enforced branch protection.
 | Report.md, Report.pdf | Single process report and 12pt PDF rendering |
 
 The source submission excludes virtual environments, credentials, caches and the separate 600-second demonstration video. Upstream attribution and the original license are retained. The original upstream README is preserved as [UPSTREAM_README.md](UPSTREAM_README.md).
+
+
+## Prompt snapshots and release review
+
+The course structure illustrates versioned prompt files as prompt_v1.0.yaml and prompt_v1.1.yaml. This project uses the established runtime-prompts-v0.1.0.yaml and runtime-prompts-v0.1.1.yaml names for those first two snapshots; runtime-prompts-v0.1.2.yaml is current. config.py owns the active prompt version.
+
+The current source is in [PR #1](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1). Its [six required CI jobs passed](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42645314153). Branch protection keeps the PR blocked until an independent authorized reviewer approves it. The final roster and member-specific annotations are listed in [the delivery checklist](docs/process/delivery-checklist.md).
