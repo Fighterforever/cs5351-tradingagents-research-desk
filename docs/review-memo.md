@@ -69,3 +69,11 @@ Two assessment details were checked against the course text. D6 requires relativ
 Native editorial and assessment responses: `transcripts/gemini-intervention-edit.json` and `transcripts/gemini-intervention-review.json`.
 
 Gemini’s focused follow-up confirmed all corrections resolved and reported no remaining editorial issues. Its response is retained in `transcripts/gemini-intervention-followup.json`. The five reflections remain within 300–500 words, and the rendered report contains 23 pages.
+
+## Requirements and architecture process review
+
+Reviewer: Gemini CLI. Scope: all 24 requirement classifications, three architecture candidates and the five assigned responsibility areas. Verdict: **APPROVE technical assessment**. The requirements review and weighted candidate comparison support the existing application-extension design. No new runtime issue was identified.
+
+Six selected user-message excerpts now document leo's actual scope and governance directions. They are linked separately from the 30 implementation prompts issued by the coordinating workflow. The subsequent review and its exact prompts are preserved under `transcripts/gemini-pipeline-review.json` and `transcripts/gemini-pipeline-integration.json`. The finished review is in `docs/process/pipeline-review.md`.
+
+Team attribution and independent code-owner approval remain on the delivery checklist. This review adds a recorded requirements/architecture assessment to the available development evidence.
