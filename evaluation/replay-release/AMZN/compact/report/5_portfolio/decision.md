@@ -1,0 +1,13 @@
+**Rating**: Overweight
+
+**Executive Summary**: Overweight AMZN (ticker AMZN, analysis date 2026-07-31, latest close 271.58 [market-amzn]), executed in stages rather than at once. Take a starter tranche at the smaller end of the 2-3% band (~2% of equity, integer shares) near 271.58, add the second tranche only on a hold of 262.01 or a confirmed close above 278.56 on above-average volume, and keep the final third in reserve pending a fresh catalyst. Working stop at 255 (an assumption, not a sourced level), sized so a gap through it is survivable; horizon 3-6 months.
+
+**Investment Thesis**: The single highest-quality fact in the corpus is operating, not headline: AWS sales +37% to $42.2B with segment operating income $27.5B vs $19.2B, a derived ~+43% OI growth (calculation from src-amzn operands) [src-amzn]. Accelerating revenue and expanding segment margin in the same quarter is a genuine quality signal, and the +15.3% gap on 129.05M shares vs ~44M average (~2.9x) [market-amzn] reads as institutional repricing, not thin-volume froth — the Aggressive analyst is right on that point, and the Neutral analyst conceded it.
+
+But the Conservative and Neutral analysts win the sizing argument, and I adopt it. Roughly 85% of net income (53.4/62.6, calculation from src-amzn operands) is pre-tax other income, primarily Anthropic investment gains, and TTM FCF is −$7.6B [src-amzn]. That means the AI capex is not yet self-funding and headline EPS is not the operating story — restraint on size, not paralysis. Trailing P/E is UNKNOWN with no TTM EPS in the corpus, so I will not underwrite a multiple-based target; the Neutral analyst is correct that this argues for smaller size rather than the Aggressive's "irrelevant."
+
+On tactics the Conservative has the better read: price at 271.58 sits directly under 274.99/278.56 resistance with the 200-SMA test unresolved [market-amzn], and the 255 stop is ~6% below entry on a name that just moved 15% in a session, so "capped downside" is a label, not a guarantee. I therefore reject the Aggressive's full starter and the Conservative's full deferral: the Neutral's middle path — smaller starter plus confirmation before tranche two — captures the AWS inflection without paying the worst price in the range or surrendering optionality.
+
+Kill switches, per all three analysts: TTM FCF remaining negative or worsening from the −$7.6B baseline [src-amzn], any deceleration in AWS growth or segment operating income from the $27.5B / +37% level [src-amzn], or reversal of investment gains compressing net income [src-amzn]. Any two firing together downgrades to Hold. This is constructive but not aggressive — Overweight, staged, with the cash-flow trend as the kill switch.
+
+**Time Horizon**: 3-6 months

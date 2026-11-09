@@ -1,0 +1,16 @@
+{
+  "ticker": "GOOGL",
+  "analysis_date": "2026-07-23",
+  "context_mode": "baseline",
+  "outcome": "completed",
+  "signal": "Overweight",
+  "stop_reason": "completed",
+  "calls": 13,
+  "input_tokens": 77840,
+  "output_tokens": 17336,
+  "total_tokens": 95176,
+  "wall_seconds": 162.759,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release/GOOGL/baseline/run"
+}

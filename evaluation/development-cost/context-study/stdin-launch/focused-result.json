@@ -1,0 +1,17 @@
+{
+  "condition": "focused",
+  "session": "ses_e3f1f757dffeuZ0OUQTLu7v9cc",
+  "cli_exit": 1,
+  "prompt_chars": 53940,
+  "error": "Expecting value: line 1 column 1 (char 0)",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "reasoning": 0,
+    "cache": {
+      "read": 0,
+      "write": 0
+    }
+  },
+  "native_record": "transcripts/project-coding-context-focused.full.json"
+}

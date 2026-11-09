@@ -1,0 +1,36 @@
+# Runtime prompt & setting review snapshot - v0.1.2
+#
+# Status: REVIEW SNAPSHOT ONLY - the running Python source is authoritative.
+#
+# Records the EPS-period grounding correction and the judge semantic-validity
+# field. If any line here disagrees with the source, the source wins. Earlier
+# snapshots and saved evaluation outputs remain unchanged.
+
+prompt_version: research-desk-0.1.2
+prompt_version_source: research_desk.config.PROMPT_VERSION
+
+model: deepseek-flash
+model_source: research_desk.config.DEFAULT_MODEL
+provider: deepseek
+provider_source: research_desk.config.DEFAULT_PROVIDER
+base_url: https://api.aiohub.org/v1
+base_url_source: research_desk.config.DEFAULT_BASE_URL (host DEEPSEEK_BASE_URL overrides)
+
+source_paths: |
+  - common grounding: src/research_desk/context.py build_common_grounding
+  - authoritative settings: src/research_desk/config.py
+  - evaluator prompt and schema: src/research_desk/eval/live.py _judge_prompt, JudgeScore
+
+common_grounding_eps_rule: |-
+  4. Distinguish quarterly EPS from trailing-twelve-month (TTM) or annual EPS.
+  A single-quarter EPS cannot establish a trailing P/E; calculate a TTM EPS or
+  trailing P/E only from actual TTM evidence, otherwise leave the ratio UNKNOWN.
+  Label every EPS by its period.
+
+judge_semantic_validity: |-
+  semantic_valid is true only when earnings periods and units are correct.
+  A quarterly EPS described as TTM/annual, a trailing P/E computed from quarterly
+  EPS, or a key unsupported numerical valuation assertion must set
+  semantic_valid = false even when citation IDs exist. semantic_errors records
+  each such defect, and a non-empty semantic_errors list forces semantic_valid
+  to false. An absent semantic_valid field defaults to false.

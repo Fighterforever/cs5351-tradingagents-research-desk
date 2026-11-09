@@ -1,0 +1,28 @@
+{
+  "ticker": "META",
+  "analysis_date": "2026-07-30",
+  "announcement_date": "2026-07-29",
+  "split": "held_out",
+  "company_name": "Meta Platforms, Inc.",
+  "sector": "Communication Services",
+  "industry": "Internet Content & Information",
+  "source_url": "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Second-Quarter-2026-Results/default.aspx",
+  "source_id": "src-meta",
+  "csv": "META.csv",
+  "csv_path": "/Users/leeyoma/Downloads/cs5351/work/project/test/fixtures/market/META.csv",
+  "as_of": "2026-07-30",
+  "latest_close": 539.030029296875,
+  "identity": {
+    "company_name": "Meta Platforms, Inc.",
+    "sector": "Communication Services",
+    "industry": "Internet Content & Information"
+  },
+  "notes": [
+    "Meta Q2 2026 revenue USD60.801 billion increased 28%.",
+    "Operating income 18.775 billion decreased 8%, and operating margin 31% compared with 43%.",
+    "Costs and expenses 42.03 billion included 2.40 billion legal charges and 1.18 billion severance.",
+    "Daily active people 3.60 billion increased 3%.",
+    "Capital expenditures 31.08 billion."
+  ],
+  "balance": "Revenue growth and margin compression coexist; neither should be omitted from a balanced conclusion."
+}

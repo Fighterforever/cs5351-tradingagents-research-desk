@@ -1,0 +1,13 @@
+**Rating**: Overweight
+
+**Executive Summary**: Role: Portfolio Manager — FINAL. Initiate NVDA at a reduced starter tranche (~1% of portfolio, roughly half the trader's proposed ~2%) at market near 227.98 [market-nvda], with the remaining exposure reserved for a confirmed hold above 220.9 and a retest of the 10-EMA near 217.08 [market-nvda]. Hard cap total NVDA exposure at ~6% of equity, well inside the 10% single-name limit, and size shares to the 214.5 stop rather than widening it. Time horizon 3–6 months, re-underwritten at the next print.
+
+**Investment Thesis**: The business evidence is verified and one-sided: FQ2 2027 revenue $96.2B, +18% q/q and +106% y/y, Data Center $89.0B +117% y/y, and GAAP and non-GAAP gross margins both 75.0% [src-nvda]. The bear never produced a deceleration datapoint — only an extrapolation (1.18^4−1 ≈ 94% annualized, calc from [src-nvda]) and a hypothesis that 75% margins invite custom silicon. That is a risk to monitor, not evidence of deterioration. The GAAP EPS 2.46 vs non-GAAP 2.22 inversion [src-nvda] is a genuine unexplained disclosure gap and is a re-underwriting item, not a thesis-breaker; it does not touch the gross line.
+
+The entry debate resolves in favor of the Neutral Analyst's synthesis, which is the only position that prices both sides. Price 227.98 sits +10.9 above the 10-EMA of 217.08 (calc) [market-nvda], MACD 2.68 is below signal 3.22 with histogram −0.54 (calc) [market-nvda], and the +8.7% gap (calc: 227.98/209.66−1) [market-nvda] is unconfirmed on 1.66x volume [market-nvda]. RSI 53.50 [market-nvda] is neutral — no overbought exit signal, but equally no buy signal, so the Aggressive Analyst's "coiled spring" is rhetoric, not evidence. Price 3.59 below the upper band of 231.57 [market-nvda] means no breakout confirmation either.
+
+I reject the Conservative Analyst's demand to wait entirely: a 106% grower with 75.0% margins [src-nvda] may not retest, and her 3-ATR stop near 208.5 lands on the 08-24 low close [market-nvda] — donating the position to noise. I equally reject the Aggressive Analyst's full starter into the gap. The correct response to ATR 6.51 (2.86% of close) [market-nvda] is fewer shares, not a looser stop.
+
+Conviction is capped at Overweight, not Buy, because trailing P/E and TTM EPS are UNKNOWN (quarterly GAAP EPS 2.46 cannot establish a multiple) [src-nvda], and 50/200 SMA, hyperscaler capex and export-control visibility are UNKNOWN [market-nvda]. The 92.5% Data Center concentration (calc from [src-nvda]) is real and unhedged — that justifies the 6% cap, not abstention. Ticker NVDA, analysis date 2026-08-27, latest close 227.98 [market-nvda].
+
+**Time Horizon**: 3-6 months

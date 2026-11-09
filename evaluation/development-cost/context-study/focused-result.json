@@ -1,0 +1,17 @@
+{
+  "condition": "focused",
+  "session": "ses_e3f19d6c2ffeLMkWpLUmKFsC5M",
+  "cli_exit": 0,
+  "prompt_chars": 53940,
+  "unit_exit": 0,
+  "tokens": {
+    "input": 8485,
+    "output": 3714,
+    "reasoning": 0,
+    "cache": {
+      "read": 11520,
+      "write": 0
+    }
+  },
+  "native_record": "transcripts/project-coding-context-focused.full.json"
+}

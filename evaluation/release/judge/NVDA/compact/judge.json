@@ -1,0 +1,47 @@
+{
+  "support": 0.9,
+  "relevance": 0.95,
+  "cited_claim_count": 42,
+  "supported_cited_claim_count": 41,
+  "valid_citation_rate": 0.9762,
+  "invalid_citation_explanations": [
+    "Bear Researcher point 3: 'hyperscaler capex and export-control headlines are UNKNOWN this week [NO_DATA_AVAILABLE]' \u2014 the bracketed tag is not a valid source ID; the underlying fact (global news unavailable) is supported by the get_global_news tool output, but the citation as written does not reference a corpus source ID."
+  ],
+  "uncited_factual_claims": [
+    "Prior close 209.66 (2026-08-26) and prior-day volume 179.9M are used in calculations without an explicit source tag in some instances (though derivable from the market-nvda CSV)",
+    "08-14 close 225.16 and 08-24 close 208.48 cited as price history without explicit source tags in the Bear/Neutral sections",
+    "08-21 low 214.5 used as the stop reference without an explicit source tag in the Trader section",
+    "08-19/08-20 congestion zone and 08-24 low close 208.5 used as support levels without explicit source tags"
+  ],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "The report is tightly focused on NVDA at 2026-08-27 and correctly anchors on the frozen close of 227.98. Earnings figures are quoted exactly as in the official source (FQ2 2027, revenue $96.2B +18% q/q +106% y/y, Data Center $89.0B +117% y/y, GM 75.0% both bases, GAAP EPS 2.46 / non-GAAP 2.22). Critically, the report explicitly labels EPS as quarterly and repeatedly refuses to compute a trailing P/E, stating TTM EPS is UNKNOWN \u2014 this satisfies the semantic validity gate. Technical claims (10-EMA 217.08, MACD 2.68/signal 3.22, RSI 53.50, Bollinger 231.57, ATR 6.51) match the observed tool outputs, and the report correctly reports 50/200 SMA as NO_DATA_AVAILABLE rather than fabricating them. Derived arithmetic (8.7% gap, 1.66x volume, 92.5% DC concentration, 1.18^4\u22121) is transparently labeled as calc from sourced operands and checks out. Minor deductions: one bracketed citation uses a non-source tag ([NO_DATA_AVAILABLE]) instead of a source ID, and several historical price levels (209.66, 225.16, 208.48, 214.5) are used without explicit source tags though they are present in the frozen CSV. No key fabrication, no period/unit error, no unsupported valuation multiple.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'NVIDIA Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-08-27"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-nvda'"
+    }
+  ]
+}

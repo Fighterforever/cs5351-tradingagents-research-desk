@@ -1,0 +1,20 @@
+{
+  "proposal_id": "prop-1fcbd3aaa0c2",
+  "run_id": "run-5da9a9f45a6c",
+  "ticker": "GOOGL",
+  "trade_date": "2026-07-23",
+  "signal": "Overweight",
+  "rating": "Overweight",
+  "side": "buy",
+  "price": 317.69000244140625,
+  "shares": null,
+  "evidence_id": null,
+  "status": "PENDING_REVIEW",
+  "proposal_version": "cab0d9c9eccd1776",
+  "operator": null,
+  "created_at": "2026-11-09T15:02:21.435268Z",
+  "approved_at": null,
+  "approved_version": null,
+  "reason": null,
+  "execution": null
+}

@@ -1,0 +1,12 @@
+
+Aggressive Analyst: I'm the Aggressive Risk Analyst, and I'll say this plainly: the trader's SELL is the right call, but I want to reframe why—and preempt the conservative and neutral camps before they even speak.
+
+To the conservative analyst (who hasn't spoken yet, but I know the playbook): your instinct will be to "hold the quality franchise, revenue +28% [src-meta], DAP 3.60B +3% [src-meta], don't sell into weakness." That's exactly the trap. The tape is not ambiguous—539.03 close, −7.96% gap on 42.27M volume vs 22.37M and 12.01M prior [market-meta], below the ~540.18 June floor [market-meta]. That's distribution, not noise. Holding "because the franchise is intact" ignores that the market just re-rated the franchise. Caution here isn't prudence—it's anchoring to a 681.31 July high [market-meta] that no longer reflects reality.
+
+To the neutral analyst: you'll argue "wait for a retest, don't act on the first gap day." But the trader isn't buying the gap—he's trimming into the 560–585 gap-fill zone, which is precisely the disciplined, opportunistic exit. Waiting for confirmation while a 21% drawdown compounds is how you turn a trim into a forced liquidation. The neutral "wait and see" is a decision to absorb more downside with no valuation floor—trailing P/E is UNKNOWN [grounding], so there is literally no multiple to anchor a "cheap enough" thesis.
+
+Now the aggressive case for the SELL as a high-reward move: this isn't defensive retreat—it's redeploying capital from a broken setup into higher-expected-return opportunities. The margin story is real: 31% vs 43% [src-meta], and even adding back the full 3.58B legal+severance (2.40+1.18 [src-meta]) leaves ~37%—still below last year. Capex at ~51% of revenue (31.08/60.801 [src-meta]) is a forward depreciation drag with no disclosed return. That's a structural FCF question, not a one-off.
+
+The trader's structure is smart risk-taking: trim ~1/3 into strength, cap residual at ~50% of normal weight, total META risk under ~1% of book. Entry 560, stop 485 are assumptions, not facts—but they define asymmetric downside. Keeping a residual honors the +28% revenue and 3.60B DAP optionality [src-meta] while cutting exposure to the re-rating.
+
+Bottom line: the conservative "hold" and neutral "wait" both underprice the distribution signal and the absent valuation floor. The SELL is the bold, correct reallocation. Ticker META, analysis date 2026-07-30, latest close 539.03 [market-meta].

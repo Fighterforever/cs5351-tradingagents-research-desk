@@ -41,11 +41,29 @@ Message integrity rules (review finding #1):
 from __future__ import annotations
 
 import logging
-from typing import Any
+from collections.abc import Callable
+from typing import Any, TypedDict
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage, ToolMessage
 
+from ..budget import ContextBudgetExceeded, estimate_input_units
+from ..config import DEFAULT_CONTEXT_MAX_TOKENS, DEFAULT_CONTEXT_TRIGGER_TOKENS
+
 logger = logging.getLogger(__name__)
+
+
+class BudgetObservation(TypedDict):
+    """Conservative whole-input budget observation emitted per request."""
+
+    before_units: int
+    after_units: int
+    trigger: int
+    cap: int
+    compacted: bool
+    metric: str
+
+
+BudgetObserver = Callable[[BudgetObservation], None]
 
 # Content markers that carry the facts which must survive compaction. A message
 # containing any marker is kept (not trimmed below the fact floor).
@@ -176,11 +194,88 @@ def compact_transform(
     return kept
 
 
-def _measure_chars(input: Any) -> int:
-    messages = _to_messages(input)
-    if messages is None:
-        return 0
-    return sum(len(_content_of(m)) for m in messages)
+_COMPACTED_MARKER = "\n[... context compacted ...]"
+_BUDGET_PROSE_CHARS = 240
+
+
+def _is_expendable_old_prose(
+    msg: BaseMessage, index: int, latest_human: int
+) -> bool:
+    """Whether an old, non-fact plain prose message may be compacted/removed.
+
+    System constraints, the latest user/task, fact-bearing evidence and every
+    assistant/tool-call group member are never expendable.
+    """
+    if index == latest_human:
+        return False
+    if not isinstance(msg, (HumanMessage, AIMessage)):
+        return False
+    if isinstance(msg, AIMessage) and getattr(msg, "tool_calls", None):
+        return False
+    return not _has_fact_marker(_content_of(msg))
+
+
+def enforce_context_budget(
+    messages: list[BaseMessage],
+    *,
+    trigger_tokens: int,
+    max_tokens: int,
+    prose_chars: int = _BUDGET_PROSE_CHARS,
+) -> tuple[list[BaseMessage], bool, int]:
+    """Bound a complete message list, preserving mandatory material.
+
+    Below ``trigger_tokens`` the input is returned unchanged. Above it, older
+    expendable non-fact prose is first shortened and then dropped oldest-first.
+    System constraints, the latest user/task, fact-bearing evidence and entire
+    assistant tool-call / ToolMessage groups are never removed. If the required
+    material still exceeds ``max_tokens``, raise :class:`ContextBudgetExceeded`
+    before the provider is invoked.
+
+    Returns ``(messages, compacted, before_units)``.
+    """
+    before = estimate_input_units(messages)
+    if before <= trigger_tokens and before <= max_tokens:
+        return list(messages), False, before
+
+    latest_human = max(
+        (i for i, m in enumerate(messages) if isinstance(m, HumanMessage)),
+        default=-1,
+    )
+    expendable = [
+        i
+        for i, m in enumerate(messages)
+        if _is_expendable_old_prose(m, i, latest_human)
+    ]
+
+    compacted_messages: list[BaseMessage] = []
+    for i, msg in enumerate(messages):
+        if i in expendable:
+            content = _content_of(msg)
+            if len(content) > prose_chars:
+                content = content[:prose_chars].rstrip() + _COMPACTED_MARKER
+            compacted_messages.append(_rebuild(msg, content))
+        else:
+            compacted_messages.append(msg)
+
+    after = estimate_input_units(compacted_messages)
+    if after > max_tokens:
+        dropped: set[int] = set()
+        for i in expendable:
+            dropped.add(i)
+            candidate = [m for j, m in enumerate(compacted_messages) if j not in dropped]
+            after = estimate_input_units(candidate)
+            if after <= max_tokens:
+                compacted_messages = candidate
+                break
+        else:
+            compacted_messages = [
+                m for j, m in enumerate(compacted_messages) if j not in dropped
+            ]
+            after = estimate_input_units(compacted_messages)
+
+    if after > max_tokens:
+        raise ContextBudgetExceeded(after, max_tokens)
+    return compacted_messages, True, before
 
 
 def delegate_transform(
@@ -240,6 +335,9 @@ class GroundingDelegate:
         common_grounding: str,
         max_output_tokens: int = 600,
         max_msg_chars: int = 1500,
+        context_max_tokens: int = DEFAULT_CONTEXT_MAX_TOKENS,
+        context_trigger_tokens: int = DEFAULT_CONTEXT_TRIGGER_TOKENS,
+        budget_observer: BudgetObserver | None = None,
     ):
         from langchain_core.runnables import RunnableLambda
 
@@ -248,10 +346,12 @@ class GroundingDelegate:
         self.common_grounding = common_grounding
         self.max_output_tokens = max_output_tokens
         self.max_msg_chars = max_msg_chars
+        self.context_max_tokens = context_max_tokens
+        self.context_trigger_tokens = context_trigger_tokens
+        self.budget_observer = budget_observer
         self._pre = RunnableLambda(self._transform)
 
     def _transform(self, input: Any) -> Any:
-        before = _measure_chars(input)
         transformed = delegate_transform(
             input,
             context_mode=self.context_mode,
@@ -259,14 +359,38 @@ class GroundingDelegate:
             max_output_tokens=self.max_output_tokens,
             max_msg_chars=self.max_msg_chars,
         )
-        after = _measure_chars(transformed)
+        complete = _to_messages(transformed)
+        if complete is None:
+            return transformed
+
+        bounded, compacted, before = enforce_context_budget(
+            complete,
+            trigger_tokens=self.context_trigger_tokens,
+            max_tokens=self.context_max_tokens,
+        )
+        after = estimate_input_units(bounded)
         logger.info(
-            "common grounding context chars before=%d after=%d (mode=%s)",
+            "context budget conservative_units before=%d after=%d trigger=%d cap=%d "
+            "compacted=%s mode=%s",
             before,
             after,
+            self.context_trigger_tokens,
+            self.context_max_tokens,
+            compacted,
             self.context_mode,
         )
-        return transformed
+        if self.budget_observer is not None:
+            self.budget_observer(
+                {
+                    "before_units": before,
+                    "after_units": after,
+                    "trigger": self.context_trigger_tokens,
+                    "cap": self.context_max_tokens,
+                    "compacted": compacted,
+                    "metric": "utf8_upper_bound",
+                }
+            )
+        return bounded
 
     def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
         return self.llm.invoke(self._pre.invoke(input, config), config, **kwargs)
@@ -287,12 +411,17 @@ def wrap_for_mode(
     common_grounding: str,
     max_output_tokens: int = 600,
     max_msg_chars: int = 1500,
+    context_max_tokens: int = DEFAULT_CONTEXT_MAX_TOKENS,
+    context_trigger_tokens: int = DEFAULT_CONTEXT_TRIGGER_TOKENS,
+    budget_observer: BudgetObserver | None = None,
 ) -> Any:
     """Wrap ``llm`` with a :class:`GroundingDelegate` for BOTH modes.
 
     The delegate injects the identical COMMON grounding layer into every
     request; baseline leaves the substantive history untouched while compact
-    also trims/de-duplicates and appends the concise-output instruction.
+    also trims/de-duplicates and appends the concise-output instruction. Every
+    request is then bounded by the whole-input context budget, and an optional
+    observer receives the conservative before/after units.
     """
     return GroundingDelegate(
         llm,
@@ -300,4 +429,7 @@ def wrap_for_mode(
         common_grounding=common_grounding,
         max_output_tokens=max_output_tokens,
         max_msg_chars=max_msg_chars,
+        context_max_tokens=context_max_tokens,
+        context_trigger_tokens=context_trigger_tokens,
+        budget_observer=budget_observer,
     )

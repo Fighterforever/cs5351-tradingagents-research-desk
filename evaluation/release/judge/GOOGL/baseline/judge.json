@@ -1,0 +1,45 @@
+{
+  "support": 0.9,
+  "relevance": 0.95,
+  "cited_claim_count": 48,
+  "supported_cited_claim_count": 47,
+  "valid_citation_rate": 0.9792,
+  "invalid_citation_explanations": [
+    "Minor: the report attributes the 2026-07-23 decline to the Q2 2026 earnings announcement ('This coincides with the Q2 2026 earnings announcement dated 2026-07-22 [src-googl]'). The earnings release supports the announcement date but not a causal link to the price move; the citation supports the date only, and the causal framing is an inference. Elsewhere the report is careful to label the sell-off explanation as unsourced, so this is a small overreach rather than a fabrication."
+  ],
+  "uncited_factual_claims": [
+    "Derived ratios (Cloud ~20.7% of revenue, other income ~87.4% of net income, net income ~2.75x operating income, 82/24 \u2248 3.4x, 40.770/119.796 \u2248 34.0%) are labeled as calculations from src-googl operands \u2014 acceptable, but they are computed figures rather than sourced facts.",
+    "Analyst-defined levels (stop at 300.0, ~293-294 two-ATR alternative, ~1% starter tranche, ~300 shares) are explicitly flagged as assumptions, not sourced facts."
+  ],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "Support 0.9: every key conclusion traces to the frozen evidence. Earnings figures (revenue 119.796bn +24%, Cloud 24.768bn +82%, operating income 40.770bn / 34% margin, net income 112.107bn, EPS 9.11, other income 97.983bn) are quoted correctly and cited to src-googl; all technical values (close 317.69, prior close 342.09, 10-EMA 345.96, VWMA 351.57, MACD -4.80 / signal -1.29, RSI 29.65, ATR 11.84, Bollinger 353.39/329.21, volume 69.4M, June low 337.39, May high 402.62/408.61) match the frozen CSV, and the 50/200 SMA NO_DATA_AVAILABLE gaps are honestly reported rather than fabricated. Derived arithmetic checks out (7.1% drop, 8.2%/9.6% below averages, 3.5% below lower band, 1.49 ATR stop distance, 5.6% stop risk). Only blemish: the market analyst's implicit causal linkage of the drop to the earnings release, which the source does not establish \u2014 though the report elsewhere explicitly flags the sell-off explanation as unsourced. Relevance 0.95: tightly focused on GOOGL at 2026-07-23, full pipeline (technical, news, bull/bear, risk seats, final decision) with only mild repetition across the risk-seat sections. Semantic validity: the report is exemplary on period/unit discipline \u2014 it repeatedly states EPS 9.11 is a Q2 2026 single-quarter figure, refuses to annualize it, and declares trailing P/E and all valuation multiples UNKNOWN for lack of TTM EPS evidence. No trailing ratio is computed from quarterly EPS and no unsupported numerical valuation assertion is made.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'Alphabet Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-07-23"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 317.69 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-googl'"
+    }
+  ]
+}

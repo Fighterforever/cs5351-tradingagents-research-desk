@@ -1,0 +1,16 @@
+FIXED_CORPUS_PACKS=4
+REQUIRED_PACKS=4
+AT07_CORPUS_CASES=6
+AT07_SPLIT: development=2, held_out=4
+GATE4_OFFLINE_SCOPE=fixed captured-output replay + deterministic prompt-transform regression (no live model quality claim)
+PADDING=offline fact-retention stress input only; NOT a live token-saving baseline
+external network calls attempted: 0
+prompt/model change detected (38 file(s)); fixed captured-output + prompt-transform gate applies (live quality requires the recorded release experiment)
+RELEASE_SOURCE_FINGERPRINT=sha256:dfc822121885f6e088b73d312032dc787f9239f46071db73d94400705d7e7ab9
+RELEASE_CASES=6
+RELEASE_SHOULD token_reduction=0.43003709832752335 target >=0.2 PASS
+RELEASE_SHOULD mean_support_drop=-0.008333333333333304 target <=0.05 PASS
+RELEASE_SHOULD mean_relevance_drop=0.0 target <=0.05 PASS
+RELEASE_SHOULD wall_ratio=0.5652037678564478 target <=1.1 PASS
+RELEASE_EVIDENCE=validated independently from per-case/per-arm files; aggregate PASS is not trusted
+RESULT: PASS

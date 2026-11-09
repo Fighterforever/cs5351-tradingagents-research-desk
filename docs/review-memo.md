@@ -12,7 +12,7 @@ Code/test quality: package installation and recovery-state failures were correct
 
 Operational metadata: original upstream suite recorded 649 passed, 2 skipped and 71 subtests passed. Skips concerned an optional AWS dependency and an upstream live DeepSeek test with no key in that test invocation. The extension suite recorded47 passed before the semantic follow-up. No live result was claimed at this checkpoint. Source edits were made by OpenCode; the review supplied concrete corrections. Final release/PR evidence is appended after actual CI and live evaluation.
 
-## Final frozen-result review
+## First frozen-result review
 
 Reviewer: leo. Recorded at 2026-08-31T13:34:52.198947+00:00. Scope: the three application features, AT-01 through AT-08, the final six-case matrix and its complete evidence.
 
@@ -29,3 +29,18 @@ Operational metadata: evaluation/final contains the frozen application runs and 
 Verdict: **CHANGES REQUIRED for complete requirements acceptance**. The executable submission and its evidence are ready for review, but the strict legal-name presentation requirement has one real held-out failure. A future change should enforce the general company-identity output contract and evaluate it on a newly reserved set. The frozen result must not be retroactively rewritten or passed with a ticker-specific exception.
 
 GitHub release evidence: main and the actual signed upstream v0.4.0 tag were pushed to the private repository. Both Actions runs were blocked before any step by the account payment/spending-limit condition. Private branch protection returned HTTP403 with a plan/public-repository requirement. No account billing or visibility setting was changed. GOV-004/D7 remains incomplete; the desired server policy and actual responses are under evaluation/github. This external gap is additional to the frozen META legal-name omission and does not invalidate the recorded local gate executions.
+
+
+## Release revision review
+
+Decision identifier: leo. Scope: ADR-004, five requirement increments, and the current paired research matrix. This technical review accompanies the source pull request; the required independent GitHub approval is a separate review action.
+
+Specification alignment: all twelve current research runs completed. Mandatory fields passed 60/60; all semantic checks and individual quality thresholds passed. Mean support increased from 0.9000 to 0.9083, and relevance remained 0.95. Compact used 43.00% fewer application tokens, with an elapsed-time ratio of 0.5652.
+
+Architecture alignment: the original graph remains intact. The model has no approval or ledger authority. Complete-input bounds apply at plain, tool-bound and structured request boundaries. Evidence-derived report identity is generic. The release gate validates actual per-arm evidence against current source.
+
+Code and test quality: rejected status remains terminal; current-state policy and exact approvals remain intact. Request serialization now carries the verified provider setting. The current local full suite passed 790 tests and 71 subtests. Required cloud checks are recorded separately in evaluation/github. All twelve CLI replays preserve the original signal with zero external calls, and the slowest takes 0.9119 seconds.
+
+Security and efficiency: temporary implementation permissions were removed. Secrets are supplied through host environment variables. Public branch protection enforces required checks and human review, including for administrators. Native coding sessions and both successful and failed experiments remain available.
+
+Verdict: **APPROVE technical requirements acceptance** for the current-source application and research evidence. The final delivery checklist records the team roster and independent merge review required to complete submission administration.

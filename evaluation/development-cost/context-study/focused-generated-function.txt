@@ -1,0 +1,121 @@
+def execute(
+    store, proposal: ProposalRecord, *, operator: str,
+) -> tuple[ProposalRecord, ExecutionRecord]:
+    """Re-evaluate the current ledger and simulate the approved buy (or reject).
+
+    Steps (each observable, none partial):
+    1. Idempotence: an already-SIMULATED proposal returns its stored execution.
+    2. A REJECTED proposal is terminal: return unexecuted without changing its
+       status or touching the store, so it can never be reopened for approval.
+    3. Version binding: the current proposal content must match the approved
+       version; otherwise REVIEW_REQUIRED (AT-05).
+    4. Re-read the current ledger and run the deterministic policy.
+    5. On any failure: return REVIEW_REQUIRED / BLOCKED with reasons; ledger
+       unchanged. On success: apply the transaction atomically.
+    """
+    if proposal.status == ProposalStatus.SIMULATED:
+        existing = proposal.execution or ExecutionRecord(executed=True)
+        existing.reason = "already executed"
+        return proposal, existing
+
+    if proposal.status == ProposalStatus.REJECTED:
+        return proposal, ExecutionRecord(
+            executed=False, reason="proposal rejected", policy_checks=[]
+        )
+
+    current_version = _proposal_content_version(proposal)
+    # A stale approval for different content is checked before status: an
+    # approved proposal whose run inputs changed must not execute the new
+    # version (AT-05), even though the row now carries the new content.
+    if proposal.approved_version is not None and proposal.approved_version != current_version:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = (
+            "approval no longer matches the proposal content (version changed "
+            f"approved={proposal.approved_version!r} current={current_version!r}); "
+            "re-review against the current ledger"
+        )
+        store.update_proposal_status(
+            proposal.proposal_id,
+            ProposalStatus.REVIEW_REQUIRED,
+            operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False, reason=proposal.reason, policy_checks=[]
+        )
+    if proposal.status != ProposalStatus.APPROVED:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = (
+            f"proposal is not APPROVED (status={proposal.status.value}) and cannot "
+            "execute; approve it against the current ledger first"
+        )
+        store.update_proposal_status(
+            proposal.proposal_id,
+            ProposalStatus.REVIEW_REQUIRED,
+            operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False, reason=proposal.reason, policy_checks=[]
+        )
+
+    if proposal.shares is None or proposal.price is None:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "proposal missing shares or evidence price; cannot execute"
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(executed=False, reason=proposal.reason, policy_checks=[])
+
+    ledger = store.get_ledger()
+    if ledger is None:
+        raise ReviewError("ledger is not initialised")
+
+    if proposal.side == "sell":
+        return _execute_sell(store, proposal, ledger, operator=operator)
+    verdict = evaluate_buy(ledger, proposal.ticker, proposal.shares, proposal.price)
+    if not verdict.allowed:
+        reasons = [f"{c['check']}: {c['detail']}" for c in verdict.checks if not c["passed"]]
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "policy failed at execution time: " + "; ".join(reasons)
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False,
+            reason=proposal.reason,
+            policy_checks=verdict.checks,
+            equity_before=ledger.equity,
+        )
+
+    tx_id = f"tx-{uuid.uuid4().hex[:12]}"
+    execution = ExecutionRecord(
+        executed=True,
+        tx_id=tx_id,
+        policy_checks=verdict.checks,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        cash_delta=-proposal.shares * proposal.price,
+    )
+    tx = TransactionRecord(
+        tx_id=tx_id,
+        proposal_id=proposal.proposal_id,
+        ticker=proposal.ticker,
+        side="buy",
+        shares=proposal.shares,
+        price=proposal.price,
+        cash_delta=execution.cash_delta,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        status=TransactionStatus.SIMULATED,
+        policy_checks=verdict.checks,
+        operator=operator,
+        created_at=utcnow_iso(),
+    )
+    store.apply_transaction(tx, execution)
+    proposal.status = ProposalStatus.SIMULATED
+    proposal.execution = execution
+    updated = store.get_proposal(proposal.proposal_id)
+    return updated or proposal, proposal.execution

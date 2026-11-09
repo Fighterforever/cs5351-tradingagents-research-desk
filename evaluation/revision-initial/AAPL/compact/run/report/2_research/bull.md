@@ -1,0 +1,14 @@
+
+Bull Analyst: **Role: Bull Analyst (nonbinding role analysis — not a transaction proposal). Ticker AAPL, analysis date 2026-07-31, latest close 308.91 [market-aapl].**
+
+Bear hasn't spoken yet, so let me pre-empt the three arguments I know are coming.
+
+**1. "The beat is fake — it's tariff refunds."** Let's do the math instead of the vibe. Refund contributed 0.11 of the 2.02 quarterly diluted EPS [src-aapl] — that's 5.4% (calculation: 0.11/2.02). Strip it out and you still have ~1.91 of quarterly EPS [src-aapl]. Implied prior-year Q3 EPS is ~1.57 (calculation: 2.02/1.29) [src-aapl], so ex-refund growth is still ~+22% (calculation: 1.91/1.57). Same on margin: 50.1% reported less ~2pp refund leaves ~48.1% [src-aapl] — a structurally elite margin, not a refund artifact. A one-time item that small doesn't invalidate a +16% revenue quarter [src-aapl]; it slightly discounts it. The bear needs the refund to be the *whole* story, and the arithmetic says it's a rounding-error-sized slice.
+
+**2. "The stock broke down."** What actually broke is the 10-EMA at 327.24 [market-aapl] — a short-term line. What didn't break: the close of 308.91 sits essentially on the VWMA of 308.54 [market-aapl], meaning the volume-weighted average buyer is flat, not trapped. RSI 45.08 is neutral [market-aapl] — there's no distribution extreme, no blow-off top confirmation. And critically, the 50- and 200-SMA returned NO_DATA_AVAILABLE [market-aapl], so the bear cannot claim a long-term trend break; that structure is UNKNOWN, and I won't let an unknown be spun as bearish. Context matters too: AAPL ran from 275.15 on 2026-06-25 to 340.08 on 2026-07-28 [market-aapl], so even after a −7.36% day (calculation: (308.91−333.43)/333.43) [market-aapl] holders from late June are still up ~12% (calculation). That's profit-taking into an event, not thesis destruction.
+
+**3. "Valuation is stretched."** Trailing P/E is UNKNOWN — only one quarter of EPS exists in the corpus [src-aapl], and I refuse to fabricate a multiple. So does the bear. That argument is off the table for both of us.
+
+**The bull case in one line:** a business compounding revenue +16% and EPS +29% [src-aapl], holding ~48% ex-refund gross margin [src-aapl], paying a 0.27 dividend [src-aapl], trading at its volume-weighted cost basis [market-aapl] after a sentiment flush — that's a reset, not a reversal.
+
+**What I'd watch (analyst judgment, not sourced):** reclaim of 327.24 repairs the trend; a close below the 300.00 low [market-aapl] would make me wrong, and I'd size accordingly given ATR 9.90 [market-aapl]. I'm not asking anyone to catch a falling knife — I'm asking them to notice the knife landed on the VWMA.

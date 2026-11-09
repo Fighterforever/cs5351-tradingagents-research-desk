@@ -6,14 +6,30 @@ the provider. Enforcement happens in the evidence recorder's
 call raises :class:`BudgetExhausted` so the graph aborts and no further LLM
 request is started (NFR-003). A budget-stopped run returns incomplete research
 and is never turned into an approvable recommendation.
+
+This module also owns the whole-input context bound (ADR-004): a conservative
+UTF-8 byte-based token upper bound estimates the complete request; when the
+mandatory material still exceeds the cap the caller raises
+:class:`ContextBudgetExceeded` before the provider is invoked.
 """
 
 from __future__ import annotations
 
+import json
 import threading
+from collections.abc import Sequence
 from dataclasses import dataclass, field
+from typing import Any
+
+from langchain_core.messages import BaseMessage
 
 from .models import CallUsage, UsageSummary
+
+# Conservative fixed per-message/per-tool-call overhead added to the UTF-8 byte
+# count. This keeps the estimate an *upper bound* on provider tokens; it is not
+# measured token usage (provider usage remains the measured-cost source).
+CONTEXT_MESSAGE_OVERHEAD = 8
+CONTEXT_TOOL_CALL_OVERHEAD = 16
 
 
 class BudgetExhausted(Exception):
@@ -22,6 +38,73 @@ class BudgetExhausted(Exception):
     def __init__(self, limit: int):
         self.limit = limit
         super().__init__(f"LLM call budget exhausted (limit={limit}); refusing to start next call")
+
+
+class ContextBudgetExceeded(Exception):
+    """Raised when the complete model input cannot fit under the context cap.
+
+    Raised at the request boundary *before* the provider is invoked, so the run
+    stops with an incomplete, non-approvable outcome while evidence remains
+    inspectable.
+    """
+
+    stop_reason = "context_budget_exhausted"
+
+    def __init__(self, estimated_tokens: int, limit: int):
+        self.estimated_tokens = estimated_tokens
+        self.limit = limit
+        super().__init__(
+            f"context budget exhausted (estimated={estimated_tokens} > limit={limit}); "
+            "refusing to start LLM call"
+        )
+
+
+def _content_units(content: Any) -> int:
+    """Conservative UTF-8 byte count for a message content value."""
+    if content is None:
+        return 0
+    if isinstance(content, str):
+        return len(content.encode("utf-8"))
+    if isinstance(content, (list, tuple)):
+        total = 0
+        for part in content:
+            if isinstance(part, str):
+                total += len(part.encode("utf-8"))
+            elif isinstance(part, dict):
+                total += len(
+                    json.dumps(part, ensure_ascii=False, default=str).encode("utf-8")
+                )
+            else:
+                total += len(str(part).encode("utf-8"))
+        return total
+    return len(str(content).encode("utf-8"))
+
+
+def estimate_input_units(messages: Sequence[BaseMessage]) -> int:
+    """Conservative token upper bound for a complete message list.
+
+    Counts every message's role/type, content, name, tool-call structure and
+    ``tool_call_id`` as UTF-8 bytes plus fixed overhead. This deliberately does
+    not call a provider tokenizer and must not be reported as measured usage.
+    """
+    total = 0
+    for msg in messages:
+        total += CONTEXT_MESSAGE_OVERHEAD
+        total += len(str(getattr(msg, "type", "")).encode("utf-8"))
+        total += _content_units(getattr(msg, "content", None))
+        name = getattr(msg, "name", None)
+        if name:
+            total += len(str(name).encode("utf-8"))
+        tool_call_id = getattr(msg, "tool_call_id", None)
+        if tool_call_id:
+            total += len(str(tool_call_id).encode("utf-8"))
+        tool_calls = getattr(msg, "tool_calls", None)
+        if tool_calls:
+            total += CONTEXT_TOOL_CALL_OVERHEAD * len(tool_calls)
+            total += len(
+                json.dumps(tool_calls, ensure_ascii=False, default=str).encode("utf-8")
+            )
+    return total
 
 
 @dataclass

@@ -22,3 +22,17 @@ scope:
 - F3 context budget and evaluation
 evidence: transcripts/project-01.full.json
 approval_record: docs/process/APPROVAL_PACKET.md
+revision:
+  decision: APPROVED
+  approver: leo
+  authorization: docs/process/revision-authorization.md
+  architecture_decision: docs/architecture/adr/004-release-quality-and-context-budget.md
+  tests:
+  - AT-04 rejection terminal-state unit cases
+  - AT-06 complete-input budget unit cases
+  - AT-07 generic output contract and earnings-period assessment
+  - AT-08 current-source semantic evidence and approval gate cases
+  scope: User-requested completion of all audited non-video project requirements
+  approved_at: '2026-11-09T14:14:13.562174+00:00'
+  implementation_started_at: '2026-11-09T14:22:11.409000+00:00'
+  evidence: transcripts/project-revision-runtime.raw.jsonl

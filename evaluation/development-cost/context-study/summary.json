@@ -1,0 +1,64 @@
+{
+  "task": "Repair the rejected-proposal terminal state in an isolated copy",
+  "model": "course-revision/deepseek-flash",
+  "conditions": [
+    {
+      "condition": "full",
+      "session": "ses_e3f1a9a6affeOPzAFEi2UqnARB",
+      "cli_exit": 0,
+      "prompt_chars": 179433,
+      "unit_exit": 0,
+      "tokens": {
+        "input": 50475,
+        "output": 7758,
+        "reasoning": 0,
+        "cache": {
+          "read": 2176,
+          "write": 0
+        }
+      },
+      "native_record": "transcripts/project-coding-context-full.full.json",
+      "regression_exit": 0,
+      "regression_files": [
+        "test/offline/test_at03_ledger_approve.py",
+        "test/offline/test_at04_reject_boundaries.py",
+        "test/offline/test_at05_version_recheck.py",
+        "test/offline/test_revision_contracts.py"
+      ],
+      "input_including_cache": 52651,
+      "total_observed_tokens": 60409
+    },
+    {
+      "condition": "focused",
+      "session": "ses_e3f19d6c2ffeLMkWpLUmKFsC5M",
+      "cli_exit": 0,
+      "prompt_chars": 53940,
+      "unit_exit": 0,
+      "tokens": {
+        "input": 8485,
+        "output": 3714,
+        "reasoning": 0,
+        "cache": {
+          "read": 11520,
+          "write": 0
+        }
+      },
+      "native_record": "transcripts/project-coding-context-focused.full.json",
+      "regression_exit": 0,
+      "regression_files": [
+        "test/offline/test_at03_ledger_approve.py",
+        "test/offline/test_at04_reject_boundaries.py",
+        "test/offline/test_at05_version_recheck.py",
+        "test/offline/test_revision_contracts.py"
+      ],
+      "input_including_cache": 20005,
+      "total_observed_tokens": 23719
+    }
+  ],
+  "acceptance": "Same existing rejected-state unit cases; production source unchanged",
+  "input_reduction": 0.6200452033199749,
+  "total_token_reduction": 0.6073598304888345,
+  "scope": "One paired reproduction of the same recorded maintenance defect. The broad context adds surrounding modules and architecture; focused context retains changed-owner dependencies and the same acceptance cases.",
+  "failed_launches": "Initial isolated-launch attempts made zero provider calls; their records are archived. Both successful conditions ran through the established project configuration, and generated patches were applied only to isolated copies.",
+  "regression_setup_recovery": "Both broader unit runs initially lacked the unchanged prompt snapshot in the isolated directory. The fixture was copied and all 26 cases rerun without regenerating either patch."
+}

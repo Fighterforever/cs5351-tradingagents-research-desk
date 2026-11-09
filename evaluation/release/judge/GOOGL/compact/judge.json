@@ -1,0 +1,46 @@
+{
+  "support": 0.9,
+  "relevance": 0.95,
+  "cited_claim_count": 28,
+  "supported_cited_claim_count": 27,
+  "valid_citation_rate": 0.9643,
+  "invalid_citation_explanations": [
+    "'Trailing P/E is UNKNOWN (no TTM EPS) [src-googl]' \u2014 the earnings release does not state anything about TTM EPS or a trailing P/E; the citation is decorative. The conclusion (no TTM EPS available) is correct and conservative, but it is not supported by the cited source, which only gives Q2 figures."
+  ],
+  "uncited_factual_claims": [
+    "Prior-day volume ~39M (2026-07-22) is used repeatedly as the comparison base for the 1.8x volume claim but carries no source ID in most instances",
+    "June low of 330.20 (2026-06-26) is cited to market-googl in some places but appears unsourced in the Bull/News sections",
+    "~1.8x volume multiple and \u22127.1% move are labeled 'calc' but the underlying prior-day volume figure is not sourced"
+  ],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "Support: The report's key conclusions are directly grounded in the two available evidence sources. Every market figure (close 317.69, open 321.13, high 324.49, low 314.90, volume 69.42M, prior close 342.09, the 402.62\u2192373.25\u2192370.92\u2192317.69 lower-highs sequence, the 330.20 June low) is verifiable in the frozen CSV, and every earnings figure (revenue 119.796B +24%, Cloud 24.768B +82%, operating income 40.770B / 34% margin, net income 112.107B, EPS 9.11, other income 97.983B) matches the official release. Derived ratios (20.7% Cloud share, 34.0% margin, 87% of net income from equity gains) are arithmetically correct. The report also correctly refuses to fabricate the unavailable macro/global-news/prediction-market data and explicitly labels all entry/stop levels as assumptions. Minor deductions: the ~39M prior-day volume base is used repeatedly without a source tag, and the 'trailing P/E UNKNOWN [src-googl]' citation is decorative rather than genuinely supported by the earnings release. Relevance: Fully on-task for GOOGL / 2026-07-23, with a clear final decision (SELL / Underweight) and coherent bull-bear-risk debate; some redundancy across the four risk-analyst sections and repeated restatement of the same tape facts, but no off-topic drift. Semantic validity: The report is exemplary on period/unit discipline \u2014 EPS 9.11 is repeatedly and explicitly labeled a single-quarter figure, never TTM or annual; it explicitly declines to compute a trailing P/E because no TTM EPS exists; and no numerical valuation assertion is made without evidence. No period/unit errors or unsupported valuation claims found.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'Alphabet Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-07-23"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 317.69 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-googl'"
+    }
+  ]
+}

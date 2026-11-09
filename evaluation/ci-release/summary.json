@@ -1,0 +1,32 @@
+{
+  "approval": {
+    "passed": true,
+    "output": "evaluation/ci-release/approval.txt"
+  },
+  "static": {
+    "passed": true,
+    "output": "evaluation/ci-release/static.txt"
+  },
+  "requirements": {
+    "passed": true,
+    "output": "evaluation/ci-release/requirements.txt"
+  },
+  "semantic": {
+    "passed": true,
+    "output": "evaluation/ci-release/semantic.txt"
+  },
+  "ai-log": {
+    "passed": true,
+    "output": "evaluation/ci-release/ai-log.txt"
+  },
+  "regression": {
+    "passed": true,
+    "passed_tests": 790,
+    "skipped": 1,
+    "deselected": 1,
+    "passed_subtests": 71,
+    "command": ".venv/bin/pytest -q tests test/offline -m 'not integration and not live and not smoke'",
+    "output": "evaluation/ci-release/unit.txt",
+    "path_normalization": "Local interpreter and project prefixes replaced with $PYTHON_RUNTIME and $PROJECT."
+  }
+}

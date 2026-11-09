@@ -15,8 +15,9 @@ inferred from the existence of the old AT identifiers.
 from __future__ import annotations
 
 import argparse
+import json
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
@@ -49,6 +50,20 @@ REQUIRED_KEYS = (
     "approval_record",
 )
 
+REVISION_KEYS = (
+    "decision",
+    "approver",
+    "authorization",
+    "architecture_decision",
+    "tests",
+    "scope",
+    "approved_at",
+    "implementation_started_at",
+    "evidence",
+)
+EDIT_WRITE_TOOLS = ("edit", "write")
+IMPLEMENTATION_START_TOLERANCE_SECONDS = 1.0
+
 
 def _parse_iso(value: str) -> datetime:
     dt = datetime.fromisoformat(value)
@@ -69,6 +84,112 @@ def _resolve_changes(root: Path, args) -> list[str]:
         return changed_files(root, args.base_ref, args.head_ref, args.changed_files)
     except RuntimeError as exc:
         fail([], [f"could not resolve changed files: {exc}"])
+
+
+def _earliest_edit_write_event(path: Path) -> datetime | None:
+    """Earliest ``edit``/``write`` tool event in a raw JSONL transcript."""
+    earliest: datetime | None = None
+    for line in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(event, dict) or event.get("type") != "tool_use":
+            continue
+        part = event.get("part")
+        if not isinstance(part, dict) or part.get("tool") not in EDIT_WRITE_TOOLS:
+            continue
+        timestamp = event.get("timestamp")
+        if not isinstance(timestamp, (int, float)):
+            continue
+        event_at = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+        if earliest is None or event_at < earliest:
+            earliest = event_at
+    return earliest
+
+
+def _validate_revision(root: Path, data: dict) -> list[str]:
+    """Validate the optional revision approval block against its raw evidence."""
+    revision = data.get("revision")
+    if revision is None:
+        return []  # the original historical approval record stays valid
+    failures: list[str] = []
+    if not isinstance(revision, dict):
+        return ["revision must be a YAML mapping"]
+
+    for key in REVISION_KEYS:
+        if key not in revision:
+            failures.append(f"revision missing required key: {key}")
+
+    if revision.get("decision") != "APPROVED":
+        failures.append(
+            f"revision decision must be APPROVED, got {revision.get('decision')!r}"
+        )
+    if revision.get("approver") != APPROVER:
+        failures.append(
+            f"revision approver must be {APPROVER!r}, got {revision.get('approver')!r}"
+        )
+
+    approved_at: datetime | None = None
+    implemented_at: datetime | None = None
+    try:
+        approved_at = _parse_iso(revision["approved_at"])
+        implemented_at = _parse_iso(revision["implementation_started_at"])
+        if not (approved_at < implemented_at):
+            failures.append(
+                "revision approval must predate implementation start: "
+                f"approved_at={approved_at.isoformat()} !< "
+                f"implementation_started_at={implemented_at.isoformat()}"
+            )
+    except KeyError:
+        failures.append("revision timestamps are missing")
+    except ValueError as exc:
+        failures.append(f"revision timestamp parse error: {exc}")
+
+    for name in ("authorization", "architecture_decision", "evidence"):
+        ref = revision.get(name)
+        if not isinstance(ref, str) or not ref:
+            failures.append(f"revision {name} reference is empty")
+            continue
+        if not (root / ref).exists():
+            failures.append(f"revision {name} artifact does not exist: {ref}")
+
+    if not revision.get("scope"):
+        failures.append("revision scope is empty")
+    tests = revision.get("tests")
+    if not isinstance(tests, list) or not tests:
+        failures.append("revision tests must be a non-empty list")
+    else:
+        for test in tests:
+            if not isinstance(test, str) or not test.strip():
+                failures.append(f"revision test entry is malformed: {test!r}")
+
+    evidence_ref = revision.get("evidence")
+    if isinstance(evidence_ref, str) and evidence_ref and (root / evidence_ref).exists():
+        earliest = _earliest_edit_write_event(root / evidence_ref)
+        if earliest is None:
+            failures.append(
+                f"revision evidence has no edit/write tool event: {evidence_ref}"
+            )
+        else:
+            if approved_at is not None and earliest < approved_at:
+                failures.append(
+                    "revision implementation edit predates recorded approval: "
+                    f"earliest_edit={earliest.isoformat()} < "
+                    f"approved_at={approved_at.isoformat()}"
+                )
+            if implemented_at is not None:
+                delta = abs((earliest - implemented_at).total_seconds())
+                if delta > IMPLEMENTATION_START_TOLERANCE_SECONDS:
+                    failures.append(
+                        "revision earliest edit/write does not match declared "
+                        "implementation start: "
+                        f"earliest_edit={earliest.isoformat()} vs "
+                        f"implementation_started_at={implemented_at.isoformat()}"
+                    )
+    return failures
 
 
 def main() -> None:
@@ -170,6 +291,10 @@ def main() -> None:
     missing = REQUIRED_TESTS - test_set
     if missing:
         failures.append(f"approval does not cover all acceptance tests; missing: {sorted(missing)}")
+
+    if data.get("revision") is not None:
+        checks.append("revision approval record present and validated")
+        failures.extend(_validate_revision(root, data))
 
     changed = _resolve_changes(root, args)
     if changed:

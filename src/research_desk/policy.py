@@ -1,10 +1,11 @@
 """Deterministic teaching-policy engine for the simulated ledger.
 
-The policy is decided by leo (the simulated student), never by an LLM. Every
-check returns a plain list of human-readable results; the review layer turns a
-non-empty list of failures into a business rejection and leaves the ledger
-untouched (INV-002). Boundary behaviour is explicit: a position value exactly
-equal to 10% of equity is allowed (<=), one share more is rejected.
+The deterministic policy constants are defined in ``research_desk.config``;
+policy is never decided by an LLM. Every check returns a plain list of
+human-readable results; the review layer turns a non-empty list of failures into
+a business rejection and leaves the ledger untouched (INV-002). Boundary
+behaviour is explicit: a position value exactly equal to 10% of equity is
+allowed (<=), one share more is rejected.
 """
 
 from __future__ import annotations

@@ -4,13 +4,13 @@ Participant and evaluation identifier: leo. Relative contribution:1.0. Execution
 
 | Deliverable | Review entry points | Evidence and scope |
 |---|---|---|
-| D1: requirements | req/prd.yaml; req/requirements.yaml; req/req-schema.json | 23 classified requirements with fit criteria, MoSCoW priority, inherited sources and test mappings |
+| D1: requirements | req/prd.yaml; req/requirements.yaml; req/req-schema.json | 24 classified requirements with fit criteria, MoSCoW priority, inherited sources and test mappings |
 | D2: architecture | ../architecture-blueprint.md; architecture/ | Authoritative blueprint; ADRs and an explicitly named appendix; invariant/trace/state/permission/policy records; candidate comparison and optional logs |
 | D3: coding governance | ../AGENTS.md; code-governance/; ../.opencode/; ../.agent/ | Module and function ownership, allowed tools, role permissions, frozen human-owned rules and change process; actual candidate enforcement probe retained |
 | D4: verification | code-governance/verification-constraints.md; review-memo.md; debt-register.md; bug-diary.md; ci-gates.md | Structural, regression and behavioral checks; real defects and review decisions; six gate implementations and a controlled rejection harness, with execution outcomes recorded in ci-gates.md |
-| D5: supervised sessions | ../transcripts/leo-leo.md; ../transcripts/annotations/ | Seven distinct annotated sessions, complete native records, original events and exact prompts; large native records use lossless gzip |
-| D6: single report | ../Report.md; ../Report.pdf | Process report, participant record and one 300–500-word reflection; final 12pt PDF rendered from the same Markdown |
-| D7: repository | ../README.md; ../.github/; ../evaluation/ci/ | Private Fighterforever/cs5351-tradingagents-research-desk; genuine upstream history and concise extension commits; local checks passed; remote Actions blocked by billing and private branch protection unavailable, so D7 remains incomplete |
+| D5: supervised sessions | ../transcripts/leo-leo.md; ../transcripts/annotations/ | Seven original annotated sessions plus the release-revision intervention record, complete native records, original events and exact prompts; large native records use lossless gzip |
+| D6: single report | ../Report.md; ../Report.pdf | Process report, participant record and five 300–500-word reflections; final 12pt PDF rendered from the same Markdown |
+| D7: repository | ../README.md; ../.github/; ../evaluation/ci/ | Public Fighterforever/cs5351-tradingagents-research-desk; preserved upstream history and concise extension commits; six required checks and human-review protection enabled. Current cloud results are under evaluation/github |
 | D8: source and tests | ../src/research_desk/; ../test/offline/; ../test/live/; ../test/fixtures/ | Application extension around the unchanged upstream graph; API-free tests separated from opt-in live evaluation; actual source data and prompt snapshots |
 | D9: launch prompt | ../Prompt.md | Static plan-first execution instruction with scoped approvals and verification stages |
 

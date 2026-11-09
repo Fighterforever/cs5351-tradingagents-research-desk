@@ -1,0 +1,3 @@
+Replayed run-c46913ab360b (external calls: 0)
+signal: Hold
+reports: 12 files under evaluation/replay-release/AAPL/baseline/report

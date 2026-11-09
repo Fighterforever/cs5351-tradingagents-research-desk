@@ -1,0 +1,14 @@
+
+Conservative Analyst: I'm the Conservative Risk Analyst. Let me be clear about what I'm defending and what I'm not.
+
+The Aggressive Analyst has preemptively caricatured my position as "hold the quality franchise, don't sell into weakness." That's not my argument. I support reducing exposure—but I reject the framing that this is a "bold reallocation" with "asymmetric downside." That's where the aggressive case becomes dangerous to the firm's assets.
+
+First, the aggressive analyst claims the trader's structure defines "asymmetric downside" with entry 560 and stop 485. But look at the actual tape: latest close 539.03 [market-meta]. The proposed entry of 560 is *above* the current price—an assumption, not a fact. If price is already at 539, a "trim into the 560–585 gap-fill zone" may never fill. The aggressive analyst is treating a hoped-for bounce as a guaranteed exit liquidity. That's not discipline; that's a plan that fails if the market keeps falling. A conservative approach trims at market, not at a level that may not print.
+
+Second, the aggressive analyst says "no valuation floor, so there's no reason to hold." But that cuts both ways—with trailing P/E UNKNOWN [grounding], there's also no evidence META is expensive. Selling a franchise with revenue +28% [src-meta] and DAP 3.60B +3% [src-meta] on a single gap day, with no valuation anchor in either direction, is not risk reduction—it's reacting to volatility. The conservative path is to size down to a level where the drawdown cannot hurt the book, not to make a directional bet on further decline.
+
+Third, the aggressive analyst calls capex at ~51% of revenue (31.08/60.801 [src-meta]) a "structural FCF question." Agreed it's a risk. But the source discloses no forward guidance—outlook is UNKNOWN. Building a bear thesis on undisclosed forward returns is speculation, not analysis. The conservative response to uncertainty is smaller position size and a wider margin of safety, not a confident call that the re-rating continues.
+
+Fourth, on the neutral "wait for a retest"—I partly agree, but waiting while fully exposed is the real risk. The safest path: reduce now to a hard-capped residual (the trader's ~50% of normal weight is reasonable), set the stop as a *risk limit* not a prediction, and keep total META risk under ~1% of book. That protects assets whether the tape stabilizes or keeps falling.
+
+The aggressive analyst wants credit for "boldness." My job is to ensure the firm survives being wrong. Ticker META, analysis date 2026-07-30, latest close 539.03 [market-meta]. I endorse the SELL direction but reject the aggressive framing—trim at market, cap the residual, and treat 560/485 as assumptions, not a plan that depends on a bounce.

@@ -1,0 +1,4585 @@
+Repair this actual proposal lifecycle bug. A rejected proposal passed to execute currently enters REVIEW_REQUIRED and can later be approved. REJECTED must remain terminal after any execution attempt, including when previously approved before rejection. Return without store or ledger mutation and with executed=False. Keep all other semantics. Return ONLY JSON {"execute_source":"...complete replacement def execute function..."}. Use no tools. All needed code follows. This is an isolated coding experiment, not a production edit. The same acceptance tests are used for both context conditions.
+
+FILE src/research_desk/review.py
+"""Proposal review state machine and simulated-ledger execution.
+
+Flow: research produces a PENDING_REVIEW proposal. A trusted CLI operator
+approves or rejects it. Execution re-evaluates the *current* ledger against the
+deterministic policy before writing; the approval binds the exact proposal
+version, so a changed proposal cannot ride an old approval. Re-executing an
+already-simulated proposal is a no-op (idempotence).
+
+No LLM path reaches this module: the research graph only ever writes a proposal
+in PENDING_REVIEW, and only the CLI review/execute/ledger commands touch it.
+"""
+
+from __future__ import annotations
+
+import uuid
+from datetime import datetime, timezone
+
+from .models import (
+    ExecutionRecord,
+    ProposalRecord,
+    ProposalStatus,
+    TransactionRecord,
+    TransactionStatus,
+    make_proposal_version,
+    utcnow_iso,
+)
+from .policy import evaluate_buy, evaluate_sell
+
+# Signals that map to a tradeable buy action; everything else is a sell or
+# non-tradeable (Hold / REVIEW).
+BUY_SIGNALS = {"Buy", "Overweight", "Strong Buy"}
+SELL_SIGNALS = {"Sell", "Underweight", "Reduce"}
+
+
+def _side_for_signal(signal: str) -> str:
+    if signal in BUY_SIGNALS:
+        return "buy"
+    if signal in SELL_SIGNALS:
+        return "sell"
+    raise ReviewError(f"signal {signal!r} is not tradeable in v1 (Hold/REVIEW do not trade)")
+
+
+class ReviewError(Exception):
+    """Business rejection with a stable message; the ledger stays unchanged."""
+
+
+def _proposal_content_version(proposal: ProposalRecord) -> str:
+    """Fingerprint of the proposal's tradeable inputs, independent of status."""
+    return make_proposal_version(
+        proposal.ticker,
+        proposal.trade_date,
+        proposal.signal,
+        proposal.price,
+        side=proposal.side,
+        shares=proposal.shares,
+        evidence_id=proposal.evidence_id,
+    )
+
+
+def create_proposal(
+    *,
+    run_id: str,
+    ticker: str,
+    trade_date: str,
+    signal: str,
+    rating: str | None,
+    price: float | None,
+    proposal_id: str | None = None,
+    evidence_id: str | None = None,
+) -> ProposalRecord:
+    """Create a PENDING_REVIEW proposal from a completed research run.
+
+    Only tradeable signals become proposals: Buy-family signals are buys, Sell-
+    family signals are sells (up to owned shares, enforced at execution). Hold
+    and REVIEW never produce a tradeable recommendation.
+    """
+    if signal in ("Hold", "REVIEW"):
+        raise ReviewError(
+            f"signal {signal!r} is not tradeable in v1; no proposal is created "
+            "(REVIEW and Hold do not trade)"
+        )
+    side = _side_for_signal(signal)
+    pid = proposal_id or f"prop-{uuid.uuid4().hex[:12]}"
+    return ProposalRecord(
+        proposal_id=pid,
+        run_id=run_id,
+        ticker=ticker,
+        trade_date=trade_date,
+        signal=signal,
+        rating=rating,
+        side=side,
+        price=price,
+        evidence_id=evidence_id,
+        status=ProposalStatus.PENDING_REVIEW,
+        proposal_version=_proposal_content_version(
+            ProposalRecord(
+                proposal_id=pid,
+                run_id=run_id,
+                ticker=ticker,
+                trade_date=trade_date,
+                signal=signal,
+                rating=rating,
+                side=side,
+                price=price,
+                evidence_id=evidence_id,
+            )
+        ),
+        created_at=utcnow_iso(),
+    )
+
+
+def approve(
+    proposal: ProposalRecord,
+    *,
+    shares: int,
+    operator: str,
+) -> ProposalRecord:
+    """Approve an exact proposal version with an operator-supplied share count.
+
+    The approval is bound to the proposal's *content* version, so if the run's
+    material inputs (ticker/date/signal/price) later change, the old approval
+    no longer matches and execution requires review.
+    """
+    if proposal.status == ProposalStatus.SIMULATED:
+        raise ReviewError(f"proposal {proposal.proposal_id} is already simulated")
+    if proposal.status == ProposalStatus.REJECTED:
+        raise ReviewError(f"proposal {proposal.proposal_id} is rejected and cannot be approved")
+    # REVIEW_REQUIRED is a safe-fail state, not a dead end: after the operator
+    # reviews the current evidence, they may approve the corrected version.
+    if not operator:
+        raise ReviewError("approval requires an operator identity")
+    if not isinstance(shares, int) or shares <= 0:
+        raise ReviewError(f"shares must be a positive integer, got {shares!r}")
+    if proposal.price is None or proposal.price <= 0:
+        raise ReviewError(
+            f"proposal {proposal.proposal_id} has no evidence price; cannot approve without price"
+        )
+    proposal.shares = shares
+    proposal.operator = operator
+    proposal.status = ProposalStatus.APPROVED
+    proposal.approved_at = utcnow_iso()
+    proposal.approved_version = _proposal_content_version(proposal)
+    return proposal
+
+
+def reject(proposal: ProposalRecord, *, operator: str, reason: str = "rejected by operator") -> ProposalRecord:
+    if proposal.status == ProposalStatus.SIMULATED:
+        raise ReviewError(f"proposal {proposal.proposal_id} is already simulated")
+    proposal.status = ProposalStatus.REJECTED
+    proposal.operator = operator
+    proposal.reason = reason
+    return proposal
+
+
+def execute(
+    store, proposal: ProposalRecord, *, operator: str,
+) -> tuple[ProposalRecord, ExecutionRecord]:
+    """Re-evaluate the current ledger and simulate the approved buy (or reject).
+
+    Steps (each observable, none partial):
+    1. Idempotence: an already-SIMULATED proposal returns its stored execution.
+    2. A REJECTED proposal is terminal: return unexecuted without changing its
+       status or touching the store, so it can never be reopened for approval.
+    3. Version binding: the current proposal content must match the approved
+       version; otherwise REVIEW_REQUIRED (AT-05).
+    4. Re-read the current ledger and run the deterministic policy.
+    5. On any failure: return REVIEW_REQUIRED / BLOCKED with reasons; ledger
+       unchanged. On success: apply the transaction atomically.
+    """
+    if proposal.status == ProposalStatus.SIMULATED:
+        existing = proposal.execution or ExecutionRecord(executed=True)
+        existing.reason = "already executed"
+        return proposal, existing
+
+    current_version = _proposal_content_version(proposal)
+    # A stale approval for different content is checked before status: an
+    # approved proposal whose run inputs changed must not execute the new
+    # version (AT-05), even though the row now carries the new content.
+    if proposal.approved_version is not None and proposal.approved_version != current_version:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = (
+            "approval no longer matches the proposal content (version changed "
+            f"approved={proposal.approved_version!r} current={current_version!r}); "
+            "re-review against the current ledger"
+        )
+        store.update_proposal_status(
+            proposal.proposal_id,
+            ProposalStatus.REVIEW_REQUIRED,
+            operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False, reason=proposal.reason, policy_checks=[]
+        )
+    if proposal.status != ProposalStatus.APPROVED:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = (
+            f"proposal is not APPROVED (status={proposal.status.value}) and cannot "
+            "execute; approve it against the current ledger first"
+        )
+        store.update_proposal_status(
+            proposal.proposal_id,
+            ProposalStatus.REVIEW_REQUIRED,
+            operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False, reason=proposal.reason, policy_checks=[]
+        )
+
+    if proposal.shares is None or proposal.price is None:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "proposal missing shares or evidence price; cannot execute"
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(executed=False, reason=proposal.reason, policy_checks=[])
+
+    ledger = store.get_ledger()
+    if ledger is None:
+        raise ReviewError("ledger is not initialised")
+
+    if proposal.side == "sell":
+        return _execute_sell(store, proposal, ledger, operator=operator)
+    verdict = evaluate_buy(ledger, proposal.ticker, proposal.shares, proposal.price)
+    if not verdict.allowed:
+        reasons = [f"{c['check']}: {c['detail']}" for c in verdict.checks if not c["passed"]]
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "policy failed at execution time: " + "; ".join(reasons)
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False,
+            reason=proposal.reason,
+            policy_checks=verdict.checks,
+            equity_before=ledger.equity,
+        )
+
+    tx_id = f"tx-{uuid.uuid4().hex[:12]}"
+    execution = ExecutionRecord(
+        executed=True,
+        tx_id=tx_id,
+        policy_checks=verdict.checks,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        cash_delta=-proposal.shares * proposal.price,
+    )
+    tx = TransactionRecord(
+        tx_id=tx_id,
+        proposal_id=proposal.proposal_id,
+        ticker=proposal.ticker,
+        side="buy",
+        shares=proposal.shares,
+        price=proposal.price,
+        cash_delta=execution.cash_delta,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        status=TransactionStatus.SIMULATED,
+        policy_checks=verdict.checks,
+        operator=operator,
+        created_at=utcnow_iso(),
+    )
+    store.apply_transaction(tx, execution)
+    proposal.status = ProposalStatus.SIMULATED
+    proposal.execution = execution
+    updated = store.get_proposal(proposal.proposal_id)
+    return updated or proposal, proposal.execution
+
+
+def _execute_sell(store, proposal: ProposalRecord, ledger, *, operator: str):
+    """Execute an approved sell up to owned shares; apply the transaction atomically."""
+    shares = proposal.shares
+    price = proposal.price
+    if shares is None or price is None:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "proposal missing shares or evidence price; cannot execute"
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(executed=False, reason=proposal.reason, policy_checks=[])
+
+    verdict = evaluate_sell(ledger, proposal.ticker, shares, price)
+    if not verdict.allowed:
+        reasons = [f"{c['check']}: {c['detail']}" for c in verdict.checks if not c["passed"]]
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "policy failed at execution time: " + "; ".join(reasons)
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False,
+            reason=proposal.reason,
+            policy_checks=verdict.checks,
+            equity_before=ledger.equity,
+        )
+
+    tx_id = f"tx-{uuid.uuid4().hex[:12]}"
+    execution = ExecutionRecord(
+        executed=True,
+        tx_id=tx_id,
+        policy_checks=verdict.checks,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        cash_delta=shares * price,
+    )
+    tx = TransactionRecord(
+        tx_id=tx_id,
+        proposal_id=proposal.proposal_id,
+        ticker=proposal.ticker,
+        side="sell",
+        shares=shares,
+        price=price,
+        cash_delta=execution.cash_delta,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        status=TransactionStatus.SIMULATED,
+        policy_checks=verdict.checks,
+        operator=operator,
+        created_at=utcnow_iso(),
+    )
+    store.apply_transaction(tx, execution)
+    proposal.status = ProposalStatus.SIMULATED
+    proposal.execution = execution
+    updated = store.get_proposal(proposal.proposal_id)
+    return updated or proposal, proposal.execution
+
+
+def evaluate_proposal_legibility(proposal: ProposalRecord) -> list[str]:
+    """Non-mutating advisory checks used by the CLI ledger/report views."""
+    issues: list[str] = []
+    if proposal.status != ProposalStatus.APPROVED:
+        issues.append(f"not APPROVED (status={proposal.status.value})")
+    if proposal.shares is None or proposal.price is None:
+        issues.append("missing shares or evidence price")
+    return issues
+
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
+
+
+FILE src/research_desk/models.py
+"""Pydantic data records for the Research Desk offline slice.
+
+These records are the single source of truth for everything the evidence
+packs, the simulated ledger, and the review state machine store on disk.
+Fields are explicit so a packed evidence bundle is self-describing and can
+be validated by an external JSON schema (see ``docs/req/req-schema.json``).
+
+Conventions enforced here:
+- Amounts are floats in USD; share counts are positive integers.
+- Every proposal and every ledger transaction carries a ``proposal_version``
+  that binds an approval to the exact proposal contents it was granted for.
+- Nothing in these records holds credentials.
+"""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any
+
+from pydantic import BaseModel, Field, field_validator
+
+# ---------------------------------------------------------------------------
+# Shared enums
+# ---------------------------------------------------------------------------
+
+
+class RunOutcome(str, Enum):
+    """How a research run ended."""
+
+    COMPLETED = "completed"
+    BUDGET_STOPPED = "budget_stopped"
+    FAILED = "failed"
+
+
+class ContextMode(str, Enum):
+    """Which context-assembly configuration produced a run's prompts."""
+
+    BASELINE = "baseline"
+    COMPACT = "compact"
+
+
+class RunDataMode(str, Enum):
+    """Where a run's tool data came from."""
+
+    LIVE = "live"  # real vendor fetches through the real graph
+    FROZEN = "frozen"  # controlled rerun on frozen evidence (same graph, no network)
+
+
+class ProposalStatus(str, Enum):
+    PENDING_REVIEW = "PENDING_REVIEW"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    SIMULATED = "SIMULATED"
+    REVIEW_REQUIRED = "REVIEW_REQUIRED"
+
+
+class TransactionStatus(str, Enum):
+    SIMULATED = "SIMULATED"
+    BLOCKED = "BLOCKED"
+
+
+class EventKind(str, Enum):
+    """Event types recorded in an evidence pack's event log."""
+
+    RUN_START = "run_start"
+    LLM_REQUEST = "llm_request"
+    LLM_RESPONSE = "llm_response"
+    TOOL_CALL = "tool_call"
+    TOOL_RESULT = "tool_result"
+    DATA_READ = "data_read"  # direct data paths callbacks cannot see
+    CONTEXT_ASSEMBLED = "context_assembled"
+    BUDGET_STOP = "budget_stop"
+    RUN_END = "run_end"
+
+
+# ---------------------------------------------------------------------------
+# Usage / calls
+# ---------------------------------------------------------------------------
+
+
+class CallUsage(BaseModel):
+    """Actual token usage reported by an LLM provider for one call."""
+
+    input_tokens: int = 0
+    output_tokens: int = 0
+
+
+class UsageSummary(BaseModel):
+    """Aggregated LLM usage across a run or a compare arm."""
+
+    calls: int = 0
+    input_tokens: int = 0
+    output_tokens: int = 0
+    total_tokens: int = 0
+    stop_reason: str | None = None  # "completed" | "budget_exhausted" | "error"
+
+    def add(self, usage: CallUsage) -> None:
+        self.calls += 1
+        self.input_tokens += usage.input_tokens
+        self.output_tokens += usage.output_tokens
+        self.total_tokens += usage.input_tokens + usage.output_tokens
+
+
+class CallRecord(BaseModel):
+    """One LLM or tool call observed during a run."""
+
+    seq: int = 0
+    ts: str = ""
+    kind: str = "llm"  # "llm" | "tool"
+    node: str | None = None  # best-effort graph node attribution (langgraph_node metadata)
+    model: str | None = None
+    name: str = ""  # tool name for tool calls
+    input_tokens: int = 0
+    output_tokens: int = 0
+    args: dict[str, Any] | None = None
+    result: str | None = None
+    prompt: str | None = None  # material input, kept for evidence completeness
+    response: str | None = None
+
+
+# ---------------------------------------------------------------------------
+# Events / manifest / evidence pack
+# ---------------------------------------------------------------------------
+
+
+class EvidenceEvent(BaseModel):
+    seq: int
+    kind: str
+    ts: str
+    node: str | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class RunManifest(BaseModel):
+    """Provenance header of a research run and its evidence pack."""
+
+    run_id: str
+    ticker: str
+    trade_date: str
+    asset_type: str = "stock"
+    analysts: list[str] = Field(default_factory=list)
+    context_mode: str = "baseline"
+    data_mode: str = "live"  # live | frozen
+    outcome: str = "completed"
+    signal: str | None = None
+    prompt_version: str = ""
+    package_schema_version: int = 1
+    created_at: str = ""
+    operator: str = "research-desk"
+    model_quick: str | None = None
+    model_deep: str | None = None
+    budget_max_calls: int | None = None
+    source_pack: str | None = None  # when this pack is a controlled rerun of another pack
+    reason: str | None = None
+
+
+class InputSnapshot(BaseModel):
+    """The material inputs a run consumed, so a rerun can be replayed."""
+
+    instrument_context: str = ""
+    past_context: str = ""
+    initial_state: dict[str, Any] = Field(default_factory=dict)
+    identity: dict[str, Any] = Field(default_factory=dict)
+    data_snapshot: dict[str, dict[str, str]] = Field(
+        default_factory=dict
+    )  # tool_name -> {"canonical args key": result text}
+    memory_used: list[dict[str, Any]] = Field(default_factory=list)
+    memory_sources: list[str] = Field(default_factory=list)
+    # Factual *available* corpus for the case (identity, full market CSV, official
+    # news notes) recorded separately from the tool calls actually made. This is
+    # what makes the evidence-derived price available for proposal/replay even
+    # when a model path did not ask one of the data tools.
+    available_sources: dict[str, Any] = Field(default_factory=dict)
+
+
+class EvidencePack(BaseModel):
+    """A complete, self-contained evidence package for one run.
+
+    ``final_state`` is the graph's merged terminal state; it is the material
+    needed to rebuild reports and derive the signal and policy outputs offline
+    with zero external calls.
+    """
+
+    manifest: RunManifest
+    input: InputSnapshot
+    events: list[EvidenceEvent] = Field(default_factory=list)
+    final_state: dict[str, Any] = Field(default_factory=dict)
+    usage: UsageSummary = Field(default_factory=UsageSummary)
+    calls: list[CallRecord] = Field(default_factory=list)
+    reports_written: list[str] = Field(default_factory=list)
+    proposal: ProposalRecord | None = None
+    complete: bool = False  # set True only when a full pack was exported
+
+    @field_validator("final_state")
+    @classmethod
+    def _final_state_serializable(cls, v):
+        if not v:
+            return v
+        if not isinstance(v, dict):
+            raise ValueError("final_state must be a dict")
+        return v
+
+
+class ProposalRecord(BaseModel):
+    """A single reviewable proposal produced by a research run."""
+
+    proposal_id: str
+    run_id: str
+    ticker: str
+    trade_date: str
+    signal: str
+    rating: str | None = None
+    side: str = "buy"  # "buy" | "sell"; derived from the tradeable signal
+    price: float | None = None  # from evidence only, never operator-typed
+    shares: int | None = None  # from the trusted CLI operator
+    evidence_id: str | None = None  # identity of the frozen evidence that supplied price/signal
+    status: ProposalStatus = ProposalStatus.PENDING_REVIEW
+    proposal_version: str = ""  # binds approvals to this exact content
+    operator: str | None = None
+    created_at: str = ""
+    approved_at: str | None = None
+    approved_version: str | None = None
+    reason: str | None = None
+    execution: ExecutionRecord | None = None
+
+    @field_validator("shares")
+    @classmethod
+    def _shares_positive_int(cls, v):
+        if v is None:
+            return v
+        if not isinstance(v, int) or v <= 0:
+            raise ValueError("shares must be a positive integer")
+        return v
+
+
+class ExecutionRecord(BaseModel):
+    """Result of executing an approved proposal against the current ledger."""
+
+    executed: bool
+    tx_id: str | None = None
+    policy_checks: list[dict[str, Any]] = Field(default_factory=list)
+    equity_before: float | None = None
+    equity_after: float | None = None
+    cash_delta: float | None = None
+    reason: str | None = None
+
+
+class LedgerPosition(BaseModel):
+    ticker: str
+    shares: int = 0
+    avg_price: float | None = None
+
+
+class LedgerState(BaseModel):
+    cash: float = 100000.0
+    positions: dict[str, LedgerPosition] = Field(default_factory=dict)
+    last_updated: str = ""
+
+    @property
+    def equity(self) -> float:
+        """Equity = cash + sum(position market value at avg price)."""
+        total = self.cash
+        for pos in self.positions.values():
+            if pos.avg_price is not None:
+                total += pos.shares * pos.avg_price
+        return total
+
+
+class TransactionRecord(BaseModel):
+    tx_id: str
+    proposal_id: str
+    ticker: str
+    side: str = "buy"
+    shares: int
+    price: float
+    cash_delta: float
+    equity_before: float
+    equity_after: float
+    status: TransactionStatus = TransactionStatus.SIMULATED
+    policy_checks: list[dict[str, Any]] = Field(default_factory=list)
+    operator: str | None = None
+    created_at: str = ""
+
+
+# ---------------------------------------------------------------------------
+# Run result returned by the research runner
+# ---------------------------------------------------------------------------
+
+
+class RunResult(BaseModel):
+    run_id: str
+    ticker: str
+    trade_date: str
+    outcome: str
+    signal: str | None = None
+    usage: UsageSummary = Field(default_factory=UsageSummary)
+    events: list[EvidenceEvent] = Field(default_factory=list)
+    final_state: dict[str, Any] = Field(default_factory=dict)
+    proposal: ProposalRecord | None = None
+    pack_path: str | None = None
+    error: str | None = None
+    stop_reason: str | None = None
+
+
+def utcnow_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
+
+
+def make_proposal_version(
+    ticker: str,
+    trade_date: str,
+    signal: str,
+    price: float | None,
+    *,
+    side: str = "buy",
+    shares: int | None = None,
+    evidence_id: str | None = None,
+) -> str:
+    """Content fingerprint binding an approval to the exact proposal inputs.
+
+    The fingerprint covers every *tradeable* field: ticker, analysis date,
+    action (side), signal, price (from evidence), evidence identity, and the
+    operator-supplied quantity. Changing any of these requires a new approval.
+    """
+    import hashlib
+
+    payload = "|".join(
+        [
+            ticker.upper(),
+            str(trade_date),
+            str(side),
+            str(signal),
+            str(price),
+            str(evidence_id or ""),
+            str(shares if shares is not None else ""),
+        ]
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+
+EvidencePack.model_rebuild()
+
+
+FILE src/research_desk/policy.py
+"""Deterministic teaching-policy engine for the simulated ledger.
+
+The deterministic policy constants are defined in ``research_desk.config``;
+policy is never decided by an LLM. Every check returns a plain list of
+human-readable results; the review layer turns a non-empty list of failures into
+a business rejection and leaves the ledger untouched (INV-002). Boundary
+behaviour is explicit: a position value exactly equal to 10% of equity is
+allowed (<=), one share more is rejected.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from .config import INITIAL_CASH, MAX_POSITION_PCT, NO_SHORTING
+from .models import LedgerState
+
+
+@dataclass
+class PolicyVerdict:
+    allowed: bool
+    checks: list[dict]  # each: {"check": str, "passed": bool, "detail": str}
+    equity: float | None = None
+    position_value: float | None = None
+    cash_after: float | None = None
+    shares_after: int | None = None
+
+
+def _owned_shares(ledger: LedgerState, ticker: str) -> int:
+    pos = ledger.positions.get(ticker.upper())
+    return pos.shares if pos is not None else 0
+
+
+def _revalue_equity(ledger: LedgerState, ticker: str, mark_price: float) -> float:
+    """Equity with the target ticker's holdings re-marked at the evidence price.
+
+    The position cap is expressed as a fraction of equity, so the equity base
+    must mark the ticker under review at the same (frozen evidence) price used
+    for the trade. Other positions keep their recorded average mark, which is
+    made explicit in the check detail rather than silently revalued.
+    """
+    ticker = ticker.upper()
+    total = ledger.cash
+    for t, pos in ledger.positions.items():
+        if t == ticker and mark_price is not None and mark_price > 0:
+            total += pos.shares * mark_price
+        else:
+            total += pos.shares * (pos.avg_price or 0.0)
+    return total
+
+
+class PolicyViolation(Exception):
+    def __init__(self, reasons: list[str]):
+        self.reasons = reasons
+        super().__init__("; ".join(reasons))
+
+
+def evaluate_buy(
+    ledger: LedgerState,
+    ticker: str,
+    shares: int,
+    price: float,
+    *,
+    initial_cash: float = INITIAL_CASH,
+    max_position_pct: float = MAX_POSITION_PCT,
+) -> PolicyVerdict:
+    """Evaluate a buy proposal against the current ledger.
+
+    Rules (v1 teaching policy):
+    1. shares must be a positive integer.
+    2. price must be positive and present (it always comes from evidence).
+    3. cost (shares * price) must not exceed available cash.
+    4. after the buy, the *total* position in this ticker (existing holdings at
+       the evidence price plus the new shares) must be <= 10% of equity.
+    5. no shorting (buys only increase a long position; never negative).
+
+    ``initial_cash`` is recorded for the ledger seed; the effective cash check
+    uses the current ledger's cash, which is ``initial_cash`` plus the sum of
+    prior cash deltas. The position cap is against *total holdings after the
+    purchase*, re-marking this ticker's existing shares at ``price``.
+    """
+    ticker = ticker.upper()
+    checks: list[dict] = []
+
+    def check(name: str, passed: bool, detail: str) -> None:
+        checks.append({"check": name, "passed": passed, "detail": detail})
+
+    if not isinstance(shares, int) or shares <= 0:
+        check("integer_positive_shares", False, f"shares must be a positive integer, got {shares!r}")
+        return PolicyVerdict(False, checks)
+
+    if price is None or not isinstance(price, (int, float)) or price <= 0:
+        check("price_from_evidence", False, f"price must be a positive number from evidence, got {price!r}")
+        return PolicyVerdict(False, checks)
+
+    equity = _revalue_equity(ledger, ticker, price)
+    owned = _owned_shares(ledger, ticker)
+    shares_after = owned + shares
+    position_value = shares_after * price
+    cash_after = ledger.cash - shares * price
+
+    check("cash_sufficient", cash_after >= -1e-9, f"cost={shares * price:.2f}, cash={ledger.cash:.2f}")
+
+    cap_value = max_position_pct * equity
+    check(
+        "position_cap_10pct",
+        position_value <= cap_value + 1e-9,
+        f"total holdings after buy ({owned} existing + {shares} new = {shares_after} sh "
+        f"@ {price:.2f} = {position_value:.2f}) <= {max_position_pct:.0%} * equity={cap_value:.2f}",
+    )
+
+    check("no_shorting", NO_SHORTING, "v1 policy is buy-only; sell proposals use evaluate_sell")
+
+    return PolicyVerdict(
+        allowed=all(c["passed"] for c in checks),
+        checks=checks,
+        equity=equity,
+        position_value=position_value,
+        cash_after=cash_after,
+        shares_after=shares_after,
+    )
+
+
+def evaluate_sell(
+    ledger: LedgerState,
+    ticker: str,
+    shares: int,
+    price: float,
+    *,
+    max_position_pct: float = MAX_POSITION_PCT,
+) -> PolicyVerdict:
+    """Evaluate a sell proposal against the current ledger.
+
+    Sells are allowed only up to the shares actually owned (no shorting means
+    a position can never go negative). The 10% concentration cap applies after a
+    BUY; a valid SELL that reduces an owned position is permitted even if price
+    appreciation means the remaining holding still exceeds 10% of equity.
+    ``price`` comes from evidence; cash increases by ``shares * price``.
+    """
+    ticker = ticker.upper()
+    checks: list[dict] = []
+
+    def check(name: str, passed: bool, detail: str) -> None:
+        checks.append({"check": name, "passed": passed, "detail": detail})
+
+    if not isinstance(shares, int) or shares <= 0:
+        check("integer_positive_shares", False, f"shares must be a positive integer, got {shares!r}")
+        return PolicyVerdict(False, checks)
+
+    if price is None or not isinstance(price, (int, float)) or price <= 0:
+        check("price_from_evidence", False, f"price must be a positive number from evidence, got {price!r}")
+        return PolicyVerdict(False, checks)
+
+    owned = _owned_shares(ledger, ticker)
+    equity = _revalue_equity(ledger, ticker, price)
+    shares_after = owned - shares
+    position_value = shares_after * price
+    cash_after = ledger.cash + shares * price
+
+    check(
+        "sell_not_exceeding_owned",
+        shares_after >= 0,
+        f"cannot sell {shares} sh when {owned} sh are owned (no shorting); "
+        f"sell at most {owned} sh",
+    )
+
+    return PolicyVerdict(
+        allowed=all(c["passed"] for c in checks),
+        checks=checks,
+        equity=equity,
+        position_value=position_value,
+        cash_after=cash_after,
+        shares_after=shares_after,
+    )
+
+
+def raise_for_violations(verdict: PolicyVerdict) -> None:
+    """Raise a PolicyViolation listing every failed check (no partial writes)."""
+    if not verdict.allowed:
+        reasons = [f"{c['check']}: {c['detail']}" for c in verdict.checks if not c["passed"]]
+        raise PolicyViolation(reasons)
+
+
+def reject_reasons(verdict: PolicyVerdict) -> list[str]:
+    return [f"{c['check']}: {c['detail']}" for c in verdict.checks if not c["passed"]]
+
+
+def policy_bounds(
+    ledger: LedgerState,
+    ticker: str,
+    price: float | None,
+    *,
+    max_position_pct: float = MAX_POSITION_PCT,
+) -> dict:
+    """Deterministic policy limits for a proposal price against a ledger.
+
+    Reported by offline replay so the *policy output* (the largest integer
+    share count the teaching policy would allow) is reproduced without needing
+    the operator's eventual share choice. ``max_by_cap`` is the additional
+    shares a *buy* may add given existing holdings must stay within the total
+    position cap.
+    """
+    if price is None or price <= 0:
+        return {
+            "price_present": False,
+            "max_by_cap": None,
+            "max_by_cash": None,
+            "owned": _owned_shares(ledger, ticker),
+            "equity": ledger.equity,
+            "cash": ledger.cash,
+        }
+    cap_value = max_position_pct * _revalue_equity(ledger, ticker, price)
+    owned = _owned_shares(ledger, ticker)
+    max_total = int(cap_value // price)
+    return {
+        "price_present": True,
+        "max_by_cap": max_total - owned,  # additional shares still within total cap
+        "max_by_cash": int(ledger.cash // price),
+        "owned": owned,
+        "equity": _revalue_equity(ledger, ticker, price),
+        "cash": ledger.cash,
+    }
+
+
+FILE src/research_desk/storage.py
+"""SQLite persistence for the simulated ledger and proposals, plus JSON pack IO.
+
+The simulated ledger is deliberately separate from upstream TradingAgents'
+research memory: research memory records decisions for reflection, while this
+ledger records executable, operator-approved transactions. Both live in the
+desk home, and neither stores credentials.
+
+SQLite is used with ``PRAGMA journal_mode=WAL`` and a single writer so the
+approve/execute re-read is atomic; every ledger change is written inside a
+transaction and references the approved proposal version and the deterministic
+policy checks that passed (INV-001).
+"""
+
+from __future__ import annotations
+
+import json
+import sqlite3
+from pathlib import Path
+from typing import Any
+
+from .config import INITIAL_CASH
+from .models import (
+    ExecutionRecord,
+    LedgerPosition,
+    LedgerState,
+    ProposalRecord,
+    ProposalStatus,
+    TransactionRecord,
+    utcnow_iso,
+)
+
+_SCHEMA = """
+CREATE TABLE IF NOT EXISTS ledger_state (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    cash REAL NOT NULL,
+    last_updated TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS positions (
+    ticker TEXT PRIMARY KEY,
+    shares INTEGER NOT NULL,
+    avg_price REAL
+);
+
+CREATE TABLE IF NOT EXISTS proposals (
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL,
+    ticker TEXT NOT NULL,
+    trade_date TEXT NOT NULL,
+    signal TEXT NOT NULL,
+    rating TEXT,
+    side TEXT NOT NULL DEFAULT 'buy',
+    price REAL,
+    shares INTEGER,
+    evidence_id TEXT,
+    status TEXT NOT NULL,
+    proposal_version TEXT NOT NULL,
+    operator TEXT,
+    created_at TEXT NOT NULL,
+    approved_at TEXT,
+    approved_version TEXT,
+    reason TEXT,
+    execution_json TEXT
+);
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id TEXT PRIMARY KEY,
+    proposal_id TEXT NOT NULL,
+    ticker TEXT NOT NULL,
+    side TEXT NOT NULL,
+    shares INTEGER NOT NULL,
+    price REAL NOT NULL,
+    cash_delta REAL NOT NULL,
+    equity_before REAL NOT NULL,
+    equity_after REAL NOT NULL,
+    status TEXT NOT NULL,
+    policy_json TEXT NOT NULL,
+    operator TEXT,
+    created_at TEXT NOT NULL
+);
+"""
+
+
+class ResearchDeskStore:
+    """Thin SQLite wrapper for ledger + proposals.
+
+    Not an ORM: methods are few and map directly to the review/ledger commands
+    so the deterministic policy logic stays readable and testable.
+    """
+
+    def __init__(self, db_path: str | Path):
+        self.db_path = Path(db_path)
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._conn = sqlite3.connect(str(self.db_path))
+        self._conn.row_factory = sqlite3.Row
+        self._conn.execute("PRAGMA journal_mode=WAL")
+        self._conn.executescript(_SCHEMA)
+        self._conn.commit()
+        self._migrate()
+        # Seed the single ledger row on first use.
+        if self.get_ledger() is None:
+            self._conn.execute(
+                "INSERT INTO ledger_state (id, cash, last_updated) VALUES (1, ?, ?)",
+                (INITIAL_CASH, utcnow_iso()),
+            )
+            self._conn.commit()
+
+    # ------------------------------------------------------------------
+    # Ledger
+    # ------------------------------------------------------------------
+
+    def _migrate(self) -> None:
+        """Add columns introduced after the initial schema on pre-existing DBs."""
+        cols = {r["name"] for r in self._conn.execute("PRAGMA table_info(proposals)").fetchall()}
+        if "side" not in cols:
+            self._conn.execute("ALTER TABLE proposals ADD COLUMN side TEXT NOT NULL DEFAULT 'buy'")
+        if "evidence_id" not in cols:
+            self._conn.execute("ALTER TABLE proposals ADD COLUMN evidence_id TEXT")
+        self._conn.commit()
+
+    def get_ledger(self) -> LedgerState | None:
+        row = self._conn.execute("SELECT cash, last_updated FROM ledger_state WHERE id=1").fetchone()
+        if row is None:
+            return None
+        positions: dict[str, LedgerPosition] = {}
+        for p in self._conn.execute("SELECT ticker, shares, avg_price FROM positions").fetchall():
+            positions[p["ticker"]] = LedgerPosition(
+                ticker=p["ticker"], shares=p["shares"], avg_price=p["avg_price"]
+            )
+        return LedgerState(cash=row["cash"], positions=positions, last_updated=row["last_updated"])
+
+    def apply_transaction(self, tx: TransactionRecord, execution: ExecutionRecord) -> None:
+        """Atomically apply a simulated buy transaction and record it.
+
+        Re-reads the current ledger inside the write transaction so a concurrent
+        approve/execute cannot double-apply a stale balance. The caller (review
+        policy) has already re-evaluated the ledger; this is the commit step.
+        """
+        with self._conn:
+            row = self._conn.execute(
+                "SELECT cash FROM ledger_state WHERE id=1"
+            ).fetchone()
+            new_cash = row["cash"] + tx.cash_delta
+            self._conn.execute(
+                "UPDATE ledger_state SET cash=?, last_updated=? WHERE id=1",
+                (new_cash, utcnow_iso()),
+            )
+            pos = self._conn.execute(
+                "SELECT shares, avg_price FROM positions WHERE ticker=?", (tx.ticker,)
+            ).fetchone()
+            if tx.side == "sell":
+                if pos is None:
+                    raise ValueError(
+                        f"cannot sell {tx.ticker}: no position held in the ledger"
+                    )
+                new_shares = pos["shares"] - tx.shares
+                if new_shares < 0:
+                    raise ValueError(
+                        f"cannot sell {tx.shares} of {pos['shares']} owned {tx.ticker} (no shorting)"
+                    )
+                # Average price is unchanged by a sale; shares only decrease.
+                self._conn.execute(
+                    "UPDATE positions SET shares=?, avg_price=? WHERE ticker=?",
+                    (new_shares, pos["avg_price"], tx.ticker),
+                )
+            elif pos is None:
+                self._conn.execute(
+                    "INSERT INTO positions (ticker, shares, avg_price) VALUES (?, ?, ?)",
+                    (tx.ticker, tx.shares, tx.price),
+                )
+            else:
+                new_shares = pos["shares"] + tx.shares
+                total_cost = (pos["shares"] * (pos["avg_price"] or 0.0)) + (tx.shares * tx.price)
+                new_avg = total_cost / new_shares if new_shares else 0.0
+                self._conn.execute(
+                    "UPDATE positions SET shares=?, avg_price=? WHERE ticker=?",
+                    (new_shares, new_avg, tx.ticker),
+                )
+            self._conn.execute(
+                """INSERT INTO transactions
+                   (id, proposal_id, ticker, side, shares, price, cash_delta,
+                    equity_before, equity_after, status, policy_json, operator, created_at)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (
+                    tx.tx_id, tx.proposal_id, tx.ticker, tx.side, tx.shares, tx.price,
+                    tx.cash_delta, tx.equity_before, tx.equity_after, tx.status.value,
+                    json.dumps(tx.policy_checks), tx.operator, tx.created_at,
+                ),
+            )
+            self._conn.execute(
+                "UPDATE proposals SET status=?, execution_json=? WHERE id=?",
+                (
+                    ProposalStatus.SIMULATED.value,
+                    json.dumps(execution.model_dump()),
+                    tx.proposal_id,
+                ),
+            )
+
+    def list_transactions(self) -> list[dict[str, Any]]:
+        rows = self._conn.execute(
+            "SELECT * FROM transactions ORDER BY created_at"
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+    # ------------------------------------------------------------------
+    # Proposals
+    # ------------------------------------------------------------------
+
+    def save_proposal(self, proposal: ProposalRecord) -> None:
+        # Carry over a prior approval binding when content is re-saved: an
+        # approved proposal whose run inputs later change keeps its approved
+        # version so execution detects the stale approval (AT-05). Fresh
+        # (PENDING_REVIEW) proposals keep None.
+        prior = self._conn.execute(
+            "SELECT approved_at, approved_version, operator FROM proposals WHERE id=?",
+            (proposal.proposal_id,),
+        ).fetchone()
+        carry_approved_at = proposal.approved_at
+        carry_approved_version = proposal.approved_version
+        carry_operator = proposal.operator
+        if prior is not None and (prior["approved_version"] is not None):
+            carry_approved_at = proposal.approved_at or prior["approved_at"]
+            carry_approved_version = proposal.approved_version or prior["approved_version"]
+            carry_operator = proposal.operator or prior["operator"]
+        with self._conn:
+            self._conn.execute(
+                """INSERT OR REPLACE INTO proposals
+                   (id, run_id, ticker, trade_date, signal, rating, side, price,
+                    shares, evidence_id, status, proposal_version, operator,
+                    created_at, approved_at, approved_version, reason, execution_json)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (
+                    proposal.proposal_id, proposal.run_id, proposal.ticker,
+                    proposal.trade_date, proposal.signal, proposal.rating,
+                    proposal.side, proposal.price, proposal.shares,
+                    proposal.evidence_id, proposal.status.value,
+                    proposal.proposal_version, carry_operator,
+                    proposal.created_at, carry_approved_at,
+                    carry_approved_version, proposal.reason,
+                    json.dumps(proposal.execution.model_dump()) if proposal.execution else None,
+                ),
+            )
+
+    def get_proposal(self, proposal_id: str) -> ProposalRecord | None:
+        row = self._conn.execute(
+            "SELECT * FROM proposals WHERE id=?", (proposal_id,)
+        ).fetchone()
+        if row is None:
+            return None
+        return self._row_to_proposal(row)
+
+    def list_proposals(self, status: str | None = None) -> list[ProposalRecord]:
+        if status:
+            rows = self._conn.execute(
+                "SELECT * FROM proposals WHERE status=? ORDER BY created_at", (status,)
+            ).fetchall()
+        else:
+            rows = self._conn.execute(
+                "SELECT * FROM proposals ORDER BY created_at"
+            ).fetchall()
+        return [self._row_to_proposal(r) for r in rows]
+
+    def update_proposal_status(
+        self,
+        proposal_id: str,
+        status: ProposalStatus,
+        operator: str | None = None,
+        approved_version: str | None = None,
+        reason: str | None = None,
+    ) -> None:
+        with self._conn:
+            now = utcnow_iso()
+            if status == ProposalStatus.APPROVED:
+                self._conn.execute(
+                    """UPDATE proposals SET status=?, operator=?, approved_at=?,
+                       approved_version=?, reason=? WHERE id=?""",
+                    (status.value, operator, now, approved_version, reason, proposal_id),
+                )
+            else:
+                self._conn.execute(
+                    """UPDATE proposals SET status=?, operator=?, reason=? WHERE id=?""",
+                    (status.value, operator, reason, proposal_id),
+                )
+
+    def _row_to_proposal(self, row: sqlite3.Row) -> ProposalRecord:
+        execution = None
+        if row["execution_json"]:
+            execution = ExecutionRecord(**json.loads(row["execution_json"]))
+        return ProposalRecord(
+            proposal_id=row["id"],
+            run_id=row["run_id"],
+            ticker=row["ticker"],
+            trade_date=row["trade_date"],
+            signal=row["signal"],
+            rating=row["rating"],
+            side=row["side"],
+            price=row["price"],
+            shares=row["shares"],
+            evidence_id=row["evidence_id"],
+            status=ProposalStatus(row["status"]),
+            proposal_version=row["proposal_version"],
+            operator=row["operator"],
+            created_at=row["created_at"],
+            approved_at=row["approved_at"],
+            approved_version=row["approved_version"],
+            reason=row["reason"],
+            execution=execution,
+        )
+
+    def close(self) -> None:
+        self._conn.close()
+
+
+def _json_default(o):
+    if hasattr(o, "model_dump"):
+        return o.model_dump()
+    if hasattr(o, "isoformat"):
+        return o.isoformat()
+    return str(o)
+
+
+def write_json(path: str | Path, data: Any) -> None:
+    Path(path).write_text(json.dumps(data, indent=2, default=_json_default), encoding="utf-8")
+
+
+def read_json(path: str | Path) -> Any:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+FILE test/offline/test_revision_contracts.py
+"""ADR-004 bounded revision contracts: terminal rejection, EPS periods, model
+version and the judge semantic-validity condition.
+
+The review tests use a Mock store so they assert the state transition itself
+(no persistence call, no ledger read) rather than a database implementation.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
+import yaml
+
+from research_desk.context import build_common_grounding
+from research_desk.eval.case_registry import case_for
+from research_desk.models import ProposalStatus, utcnow_iso
+from research_desk.review import ReviewError, approve, create_proposal, execute, reject
+
+
+def _proposal(*, price: float = 100.0, proposal_id: str | None = None):
+    return create_proposal(
+        run_id="run-revision",
+        ticker="AAPL",
+        trade_date="2026-06-10",
+        signal="Buy",
+        rating="Buy",
+        price=price,
+        proposal_id=proposal_id or f"prop-revision-{utcnow_iso()[-9:]}",
+    )
+
+
+def test_rejected_execute_remains_rejected_and_cannot_be_approved():
+    """Execution cannot turn a rejection into an approvable REVIEW_REQUIRED row."""
+    store = MagicMock()
+    proposal = _proposal()
+    reject(proposal, operator="leo")
+    assert proposal.status == ProposalStatus.REJECTED
+
+    updated, execution = execute(store, proposal, operator="leo")
+
+    assert updated.status == ProposalStatus.REJECTED
+    assert execution.executed is False
+    assert execution.reason == "proposal rejected"
+    store.update_proposal_status.assert_not_called()
+    store.apply_transaction.assert_not_called()
+    store.get_ledger.assert_not_called()
+
+    with pytest.raises(ReviewError, match="rejected"):
+        approve(updated, shares=100, operator="leo")
+
+
+def test_previously_approved_then_rejected_stays_rejected_on_execute():
+    """A rejection is terminal even when an earlier approval version is present."""
+    store = MagicMock()
+    proposal = _proposal()
+    approved = approve(proposal, shares=100, operator="leo")
+    assert approved.approved_version
+    reject(approved, operator="leo")
+    assert approved.status == ProposalStatus.REJECTED
+
+    updated, execution = execute(store, approved, operator="leo")
+
+    assert updated.status == ProposalStatus.REJECTED
+    assert execution.executed is False
+    assert execution.reason == "proposal rejected"
+    store.update_proposal_status.assert_not_called()
+    store.apply_transaction.assert_not_called()
+
+    with pytest.raises(ReviewError, match="rejected"):
+        approve(updated, shares=100, operator="leo")
+
+
+def test_common_grounding_names_eps_period_and_ttm_limit():
+    grounding = build_common_grounding("AAPL", "2026-07-31", {})
+    lower = grounding.lower()
+    assert "quarterly eps" in lower
+    assert "trailing-twelve-month (ttm)" in lower
+    assert "trailing p/e" in lower
+    assert "actual ttm evidence" in lower
+    # No fixed stock examples or invented figures in the shared rules.
+    assert "microsoft" not in lower
+    assert "usd90.0b" not in lower
+
+
+def test_authoritative_model_and_prompt_version_are_consistent():
+    from research_desk.config import (
+        DEFAULT_BASE_URL,
+        DEFAULT_MODEL,
+        DEFAULT_PROVIDER,
+        PROMPT_VERSION,
+        ResearchDeskSettings,
+    )
+    from research_desk.eval import live
+
+    assert live.MODEL == DEFAULT_MODEL == "deepseek-flash"
+    assert live.PROVIDER == DEFAULT_PROVIDER == "deepseek"
+    assert DEFAULT_BASE_URL == "https://api.aiohub.org/v1"
+    assert ResearchDeskSettings().prompt_version == PROMPT_VERSION
+
+    snapshot = yaml.safe_load(
+        Path("prompts/runtime-prompts-v0.1.2.yaml").read_text(encoding="utf-8")
+    )
+    assert snapshot["prompt_version"] == PROMPT_VERSION
+    assert snapshot["model"] == DEFAULT_MODEL
+    assert snapshot["provider"] == DEFAULT_PROVIDER
+    assert snapshot["base_url"] == DEFAULT_BASE_URL
+
+
+def test_judge_prompt_requires_semantic_validity():
+    from research_desk.eval.live import _judge_prompt
+
+    prompt = _judge_prompt(
+        case_for("AAPL"),
+        "report text",
+        [],
+        available_sources={},
+        events=[],
+    )
+    assert "semantic_valid" in prompt
+    assert "semantic_errors" in prompt
+    assert "quarterly EPS" in prompt
+    assert "trailing P/E" in prompt
+    assert "Valid citation IDs do NOT rescue" in prompt
+
+
+def test_judge_score_defaults_invalid_and_errors_force_false():
+    from research_desk.eval.live import JudgeScore
+
+    legacy = JudgeScore(
+        support=0.9,
+        relevance=0.9,
+        cited_claim_count=2,
+        supported_cited_claim_count=2,
+    )
+    assert legacy.semantic_valid is False  # absent field is never a pass
+    assert legacy.semantic_errors == []
+
+    flagged = JudgeScore(
+        support=0.9,
+        relevance=0.9,
+        cited_claim_count=2,
+        supported_cited_claim_count=2,
+        semantic_valid=True,
+        semantic_errors=["quarterly EPS labeled as TTM"],
+    )
+    assert flagged.semantic_valid is False
+
+
+def test_llm_judge_records_semantic_fields(monkeypatch):
+    from langchain_core.messages import AIMessage
+
+    from research_desk.eval import live
+
+    class _FakeLLM:
+        def __init__(self):
+            self.extra_body = None
+
+        def with_structured_output(self, schema, include_raw=False):
+            def invoke(_prompt):
+                parsed = live.JudgeScore(
+                    support=0.9,
+                    relevance=0.9,
+                    cited_claim_count=2,
+                    supported_cited_claim_count=2,
+                    semantic_valid=True,
+                    semantic_errors=["quarterly EPS relabeled as TTM"],
+                )
+                return {"raw": AIMessage(content=""), "parsed": parsed, "parsing_error": None}
+
+            return type("SO", (), {"invoke": staticmethod(invoke)})()
+
+    class _FakeClient:
+        def get_llm(self):
+            return _FakeLLM()
+
+    monkeypatch.setattr(
+        "tradingagents.llm_clients.create_llm_client", lambda *a, **k: _FakeClient()
+    )
+
+    _raw, score = live._llm_judge(
+        case_for("AAPL"),
+        "report text",
+        [],
+        available_sources={},
+        events=[],
+    )
+    assert score["semantic_valid"] is False
+    assert score["semantic_errors"] == ["quarterly EPS relabeled as TTM"]
+
+
+def test_deepseek_transport_disables_reasoning_via_extra_body(monkeypatch):
+    """The verified endpoint flag reaches the real DeepSeek request payload."""
+    from langchain_core.messages import HumanMessage
+
+    from research_desk.config import DEFAULT_BASE_URL, DEFAULT_MODEL, DEFAULT_PROVIDER
+    from research_desk.eval import live
+    from tradingagents.llm_clients import create_llm_client
+    from tradingagents.llm_clients.openai_client import DeepSeekChatOpenAI
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key-not-used")
+
+    llm = create_llm_client(
+        DEFAULT_PROVIDER,
+        DEFAULT_MODEL,
+        base_url=DEFAULT_BASE_URL,
+        max_tokens=live.OUTPUT_CAP,
+        temperature=0,
+    ).get_llm()
+    assert isinstance(llm, DeepSeekChatOpenAI)
+    # Same assignment the graph adapter and judge apply before invocation.
+    llm.extra_body = dict(live.THINKING_DISABLED_EXTRA_BODY)
+
+    payload = llm._get_request_payload([HumanMessage(content="ping")])
+    assert payload["extra_body"]["reasoning_effort"] == "none"
+    assert payload["extra_body"]["thinking"] == {"type": "disabled"}
+
+    structured = llm.with_structured_output(live.JudgeScore, include_raw=True)
+    raw_binding = structured.steps[0].steps__["raw"]
+    bound = raw_binding.bound
+    assert isinstance(bound, DeepSeekChatOpenAI)
+    structured_payload = bound._get_request_payload(
+        [HumanMessage(content="ping")], **raw_binding.kwargs
+    )
+    assert structured_payload["extra_body"]["reasoning_effort"] == "none"
+    assert structured_payload["extra_body"]["thinking"] == {"type": "disabled"}
+
+
+FILE src/research_desk/__init__.py
+"""CS5351 TradingAgents Research Desk.
+
+Offline slice: research evidence packs + offline replay, an operator-approved
+simulated ledger, and baseline/compact context assembly with an LLM call budget.
+The live research run uses the real :class:`tradingagents.graph.trading_graph.TradingAgentsGraph`;
+replay is the deterministic offline reproduction path (zero external calls).
+"""
+
+__version__ = "0.1.0"
+
+from .budget import BudgetExhausted, BudgetTracker
+from .context import ContextAssembler, StandingConstraints
+from .evidence import EvidencePackIO, EvidenceRecorder
+from .graph_adapter import ResearchRunner, price_from_evidence
+from .models import EvidencePack, ProposalRecord, RunResult
+from .policy import PolicyVerdict, evaluate_buy, evaluate_sell
+from .replay import ReplayEngine
+from .review import approve, create_proposal, execute, reject
+from .storage import ResearchDeskStore
+
+__all__ = [
+    "BudgetExhausted",
+    "BudgetTracker",
+    "ContextAssembler",
+    "StandingConstraints",
+    "EvidencePackIO",
+    "EvidenceRecorder",
+    "ResearchRunner",
+    "price_from_evidence",
+    "EvidencePack",
+    "ProposalRecord",
+    "RunResult",
+    "PolicyVerdict",
+    "evaluate_buy",
+    "evaluate_sell",
+    "ReplayEngine",
+    "approve",
+    "create_proposal",
+    "execute",
+    "reject",
+    "ResearchDeskStore",
+]
+
+
+FILE src/research_desk/__main__.py
+"""``python -m research_desk`` entry point."""
+
+from .cli import app
+
+if __name__ == "__main__":
+    app()
+
+
+FILE src/research_desk/budget.py
+"""LLM call budget and usage accounting for a research run.
+
+The budget counts *started* LLM calls and the actual token usage reported by
+the provider. Enforcement happens in the evidence recorder's
+``on_chat_model_start``: once the configured call limit is reached, the next
+call raises :class:`BudgetExhausted` so the graph aborts and no further LLM
+request is started (NFR-003). A budget-stopped run returns incomplete research
+and is never turned into an approvable recommendation.
+
+This module also owns the whole-input context bound (ADR-004): a conservative
+UTF-8 byte-based token upper bound estimates the complete request; when the
+mandatory material still exceeds the cap the caller raises
+:class:`ContextBudgetExceeded` before the provider is invoked.
+"""
+
+from __future__ import annotations
+
+import json
+import threading
+from collections.abc import Sequence
+from dataclasses import dataclass, field
+from typing import Any
+
+from langchain_core.messages import BaseMessage
+
+from .models import CallUsage, UsageSummary
+
+# Conservative fixed per-message/per-tool-call overhead added to the UTF-8 byte
+# count. This keeps the estimate an *upper bound* on provider tokens; it is not
+# measured token usage (provider usage remains the measured-cost source).
+CONTEXT_MESSAGE_OVERHEAD = 8
+CONTEXT_TOOL_CALL_OVERHEAD = 16
+
+
+class BudgetExhausted(Exception):
+    """Raised when the configured LLM call budget is exhausted."""
+
+    def __init__(self, limit: int):
+        self.limit = limit
+        super().__init__(f"LLM call budget exhausted (limit={limit}); refusing to start next call")
+
+
+class ContextBudgetExceeded(Exception):
+    """Raised when the complete model input cannot fit under the context cap.
+
+    Raised at the request boundary *before* the provider is invoked, so the run
+    stops with an incomplete, non-approvable outcome while evidence remains
+    inspectable.
+    """
+
+    stop_reason = "context_budget_exhausted"
+
+    def __init__(self, estimated_tokens: int, limit: int):
+        self.estimated_tokens = estimated_tokens
+        self.limit = limit
+        super().__init__(
+            f"context budget exhausted (estimated={estimated_tokens} > limit={limit}); "
+            "refusing to start LLM call"
+        )
+
+
+def _content_units(content: Any) -> int:
+    """Conservative UTF-8 byte count for a message content value."""
+    if content is None:
+        return 0
+    if isinstance(content, str):
+        return len(content.encode("utf-8"))
+    if isinstance(content, (list, tuple)):
+        total = 0
+        for part in content:
+            if isinstance(part, str):
+                total += len(part.encode("utf-8"))
+            elif isinstance(part, dict):
+                total += len(
+                    json.dumps(part, ensure_ascii=False, default=str).encode("utf-8")
+                )
+            else:
+                total += len(str(part).encode("utf-8"))
+        return total
+    return len(str(content).encode("utf-8"))
+
+
+def estimate_input_units(messages: Sequence[BaseMessage]) -> int:
+    """Conservative token upper bound for a complete message list.
+
+    Counts every message's role/type, content, name, tool-call structure and
+    ``tool_call_id`` as UTF-8 bytes plus fixed overhead. This deliberately does
+    not call a provider tokenizer and must not be reported as measured usage.
+    """
+    total = 0
+    for msg in messages:
+        total += CONTEXT_MESSAGE_OVERHEAD
+        total += len(str(getattr(msg, "type", "")).encode("utf-8"))
+        total += _content_units(getattr(msg, "content", None))
+        name = getattr(msg, "name", None)
+        if name:
+            total += len(str(name).encode("utf-8"))
+        tool_call_id = getattr(msg, "tool_call_id", None)
+        if tool_call_id:
+            total += len(str(tool_call_id).encode("utf-8"))
+        tool_calls = getattr(msg, "tool_calls", None)
+        if tool_calls:
+            total += CONTEXT_TOOL_CALL_OVERHEAD * len(tool_calls)
+            total += len(
+                json.dumps(tool_calls, ensure_ascii=False, default=str).encode("utf-8")
+            )
+    return total
+
+
+@dataclass
+class BudgetTracker:
+    """Thread-safe per-run call budget + usage accumulator.
+
+    ``stop_reason`` distinguishes an *actually blocked* next call (a request was
+    refused with :class:`BudgetExhausted`) from a normal completion that simply
+    used at most ``max_calls`` calls. A run that reaches the limit on its final
+    allowed call without ever requesting another is ``completed``; only a run
+    whose next call was refused is ``budget_exhausted``.
+    """
+
+    max_calls: int | None = None
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
+    calls_started: int = 0
+    blocked: bool = False  # a call was actually refused (BudgetExhausted raised)
+    usage: UsageSummary = field(default_factory=UsageSummary)
+
+    def can_start(self) -> bool:
+        """Whether a new LLM call is permitted under the budget."""
+        if self.max_calls is None:
+            return True
+        return self.calls_started < self.max_calls
+
+    def start_call(self) -> None:
+        """Register the start of an LLM call; raise when budget exhausted."""
+        with self._lock:
+            limit = self.max_calls
+            if limit is not None and self.calls_started >= limit:
+                self.blocked = True
+                raise BudgetExhausted(limit)
+            self.calls_started += 1
+
+    def record_usage(self, usage: CallUsage) -> None:
+        with self._lock:
+            self.usage.add(usage)
+
+    def stop_reason(self) -> str:
+        if self.blocked:
+            return "budget_exhausted"
+        return "completed"
+
+    def summary(self) -> UsageSummary:
+        with self._lock:
+            return UsageSummary(
+                calls=self.calls_started,
+                input_tokens=self.usage.input_tokens,
+                output_tokens=self.usage.output_tokens,
+                total_tokens=self.usage.total_tokens,
+                stop_reason=self.stop_reason(),
+            )
+
+    def merge(self, other: BudgetTracker) -> None:
+        """Merge another tracker's counts (used to aggregate baseline/compact arms)."""
+        with self._lock:
+            self.calls_started += other.calls_started
+            self.blocked = self.blocked or other.blocked
+            self.usage.calls += other.usage.calls
+            self.usage.input_tokens += other.usage.input_tokens
+            self.usage.output_tokens += other.usage.output_tokens
+            self.usage.total_tokens += other.usage.total_tokens
+
+
+FILE src/research_desk/cli.py
+"""Research Desk CLI: analyze, export, replay, propose, review, execute, ledger, compare.
+
+Every feature the offline slice needs is reachable here. The review/execute/
+ledger paths are operator-only: an LLM never reaches them.
+"""
+
+from __future__ import annotations
+
+import getpass
+import time
+from pathlib import Path
+
+import typer
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.table import Table
+
+from .config import ResearchDeskSettings
+from .evidence import EvidencePackIO
+from .graph_adapter import ResearchRunner
+from .models import ContextMode, ProposalStatus, RunOutcome, RunResult
+from .replay import ReplayEngine
+from .report import (
+    render_compare_report,
+    render_ledger_report,
+)
+from .review import ReviewError, approve as _approve, execute as _execute, reject as _reject
+from .storage import ResearchDeskStore
+
+app = typer.Typer(
+    name="research-desk",
+    help="CS5351 TradingAgents Research Desk: evidence packs, simulated ledger, compact context.",
+    add_completion=False,
+)
+
+console = Console()
+
+
+def _settings() -> ResearchDeskSettings:
+    return ResearchDeskSettings()
+
+
+def _store(settings: ResearchDeskSettings | None = None) -> ResearchDeskStore:
+    settings = settings or _settings()
+    settings.ensure_dirs()
+    return ResearchDeskStore(settings.db_path)
+
+
+def _default_operator() -> str:
+    try:
+        return getpass.getuser()
+    except Exception:  # noqa: BLE001
+        return "operator"
+
+
+# ---------------------------------------------------------------------------
+# analyze
+# ---------------------------------------------------------------------------
+
+
+@app.command()
+def analyze(
+    ticker: str = typer.Argument(..., help="US equity ticker, e.g. AAPL"),
+    trade_date: str = typer.Argument(..., help="Analysis date YYYY-MM-DD"),
+    context_mode: str = typer.Option("baseline", "--context-mode", help="baseline | compact"),
+    data_mode: str = typer.Option("live", "--data-mode", help="live | frozen"),
+    max_calls: int | None = typer.Option(None, "--max-calls", help="LLM call budget"),
+    fixture: str | None = typer.Option(None, "--fixture", help="Source pack for a frozen rerun"),
+    no_proposal: bool = typer.Option(False, "--no-proposal", help="Do not create a proposal"),
+    analysts: str = typer.Option("market,news", "--analysts", help="Comma-separated analyst keys"),
+):
+    """Run a research session against the real TradingAgentsGraph and capture evidence."""
+    settings = _settings()
+    settings.analysts = tuple(a.strip() for a in analysts.split(",") if a.strip())
+    settings.max_calls = max_calls
+    settings.ensure_dirs()
+
+    source_pack = None
+    if data_mode == "frozen":
+        if not fixture:
+            raise typer.BadParameter("--data-mode frozen requires --fixture <evidence pack>")
+        source_pack = EvidencePackIO().import_pack(fixture)
+
+    runner = ResearchRunner(
+        settings,
+        context_mode=context_mode,
+        data_mode=data_mode,
+        source_pack=source_pack,
+    )
+    with console.status(f"Running research on {ticker} ({trade_date})..."):
+        result = runner.run(ticker, trade_date)
+
+    store = _store(settings)
+    if result.proposal is not None and not no_proposal:
+        store.save_proposal(result.proposal)
+    store.close()
+
+    _print_run_result(result)
+    if result.outcome == RunOutcome.BUDGET_STOPPED.value:
+        console.print(
+            "[yellow]Budget stopped: incomplete research returned, no approvable "
+            "recommendation was created (NFR-003).[/yellow]"
+        )
+
+
+def _print_run_result(result: RunResult) -> None:
+    table = Table(title=f"Run {result.run_id}")
+    table.add_column("field")
+    table.add_column("value")
+    rows = [
+        ("ticker", result.ticker),
+        ("trade_date", result.trade_date),
+        ("outcome", result.outcome),
+        ("signal", result.signal or "n/a"),
+        ("LLM calls", str(result.usage.calls)),
+        ("input tokens", str(result.usage.input_tokens)),
+        ("output tokens", str(result.usage.output_tokens)),
+        ("stop reason", result.stop_reason or "n/a"),
+        ("pack", result.pack_path or "n/a"),
+    ]
+    if result.proposal is not None:
+        rows.append(("proposal", result.proposal.proposal_id))
+        rows.append(("proposal status", result.proposal.status.value))
+        rows.append(("price (evidence)", str(result.proposal.price)))
+    if result.error:
+        rows.append(("error", result.error))
+    for name, value in rows:
+        table.add_row(name, value)
+    console.print(table)
+
+
+# ---------------------------------------------------------------------------
+# export
+# ---------------------------------------------------------------------------
+
+
+@app.command()
+def export(
+    run_id: str = typer.Argument(...),
+    out: str | None = typer.Option(None, "--out", help="Output ZIP path"),
+):
+    """Package a run's evidence pack as a portable ZIP (self-contained)."""
+    settings = _settings()
+    run_dir = settings.runs_dir / run_id
+    if not run_dir.exists():
+        raise typer.BadParameter(f"run {run_id!r} not found under {settings.runs_dir}")
+    io = EvidencePackIO()
+    pack = io.import_pack(run_dir)
+    zip_path = out or str(settings.runs_dir / f"{run_id}.zip")
+    io.export_zip(pack, zip_path)
+    console.print(f"[green]Exported {run_id} to {zip_path}[/green]")
+
+
+# ---------------------------------------------------------------------------
+# replay
+# ---------------------------------------------------------------------------
+
+
+@app.command()
+def replay(
+    source: str = typer.Argument(...),
+    out: str | None = typer.Option(None, "--out", help="Directory to rebuild reports into"),
+    with_ledger: bool = typer.Option(False, "--ledger", help="Evaluate proposal policy against the current ledger"),
+):
+    """Offline replay of a complete evidence pack (zero external calls)."""
+    engine = ReplayEngine()
+    settings = _settings()
+    out_dir = out or str(settings.reports_dir / f"replay-{Path(source).stem}")
+    ledger = None
+    if with_ledger:
+        ledger = _store(settings).get_ledger()
+    result = engine.replay(source, out_dir, ledger=ledger)
+    console.print(f"[green]Replayed {result.pack.manifest.run_id}[/green] (external calls: {result.external_calls})")
+    console.print(f"signal: {result.signal or 'n/a'}")
+    console.print(f"reports: {len(result.report_files)} files under {out_dir}")
+    if result.incomplete:
+        raise typer.Exit(f"incomplete pack: {result.error}")
+    if result.policy_bounds is not None:
+        bounds = result.policy_bounds
+        if bounds.get("price_present"):
+            console.print(
+                f"policy: max {bounds['max_by_cap']} shares by 10% cap, "
+                f"max {bounds['max_by_cash']} by cash, on equity ${bounds['equity']:,.2f}"
+            )
+        else:
+            console.print("policy: price missing from evidence; nothing is executable")
+    if result.policy_verdict is not None:
+        console.print(f"policy allowed: {result.policy_verdict.allowed}")
+        for c in result.policy_verdict.checks:
+            console.print(f"  - {c['check']}: {'PASS' if c['passed'] else 'FAIL'} ({c['detail']})")
+
+
+# ---------------------------------------------------------------------------
+# propose
+# ---------------------------------------------------------------------------
+
+
+@app.command()
+def propose(
+    run_id: str = typer.Argument(...),
+    shares: int | None = typer.Option(None, "--shares", help="Operator share count (positive integer)"),
+    operator: str = typer.Option(None, "--operator", help="Operator identity (defaults to local user)"),
+):
+    """Register a run's PENDING_REVIEW proposal in the ledger store."""
+    settings = _settings()
+    io = EvidencePackIO()
+    pack = io.import_pack(settings.runs_dir / run_id)
+    if pack.proposal is None:
+        raise typer.BadParameter(f"run {run_id!r} has no proposal (signal not tradeable or budget stopped)")
+    store = _store(settings)
+    store.save_proposal(pack.proposal)
+    console.print(f"[green]Proposal {pack.proposal.proposal_id} registered (status {pack.proposal.status.value})[/green]")
+    store.close()
+
+
+# ---------------------------------------------------------------------------
+# review / execute / ledger
+# ---------------------------------------------------------------------------
+
+
+@app.command()
+def review(
+    action: str = typer.Argument(..., help="approve | reject"),
+    proposal_id: str = typer.Argument(...),
+    shares: int | None = typer.Option(None, "--shares", help="Shares to approve (approve only)"),
+    operator: str = typer.Option(None, "--operator", help="Operator identity (defaults to local user)"),
+):
+    """Approve or reject a PENDING_REVIEW proposal (operator-only)."""
+    store = _store()
+    proposal = store.get_proposal(proposal_id)
+    if proposal is None:
+        raise typer.BadParameter(f"no proposal {proposal_id!r}")
+    op = operator or _default_operator()
+    try:
+        if action == "approve":
+            if shares is None:
+                raise typer.BadParameter("approve requires --shares <positive int>")
+            updated = _approve(proposal, shares=shares, operator=op)
+            store.save_proposal(updated)  # persists shares, status, version binding
+            console.print(
+                f"[green]Approved {proposal_id} ({proposal.ticker}, {proposal.signal}) "
+                f"for {shares} shares at ${proposal.price or 'n/a'} by {op}[/green]"
+            )
+        elif action == "reject":
+            updated = _reject(proposal, operator=op)
+            store.update_proposal_status(
+                proposal.proposal_id, ProposalStatus.REJECTED, operator=op, reason=updated.reason
+            )
+            console.print(f"[yellow]Rejected {proposal_id} by {op}[/yellow]")
+        else:
+            raise typer.BadParameter("action must be approve | reject")
+    except ReviewError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from None
+    finally:
+        store.close()
+
+
+@app.command()
+def execute(
+    proposal_id: str = typer.Argument(...),
+    operator: str = typer.Option(None, "--operator", help="Operator identity (defaults to local user)"),
+):
+    """Re-evaluate the current ledger and simulate an approved buy (idempotent)."""
+    store = _store()
+    proposal = store.get_proposal(proposal_id)
+    if proposal is None:
+        raise typer.BadParameter(f"no proposal {proposal_id!r}")
+    op = operator or _default_operator()
+    try:
+        updated, execution = _execute(store, proposal, operator=op)
+        if execution.executed:
+            ledger_state = store.get_ledger()
+            cash = ledger_state.cash if ledger_state is not None else 0.0
+            console.print(
+                f"[green]Simulated {updated.side}: {updated.ticker} {updated.shares} sh @ ${updated.price:.2f} "
+                f"(tx {execution.tx_id}) — cash now ${cash:,.2f}[/green]"
+            )
+        else:
+            console.print(
+                f"[yellow]Not executed: {execution.reason or 'policy failed at execution time'}. "
+                f"Ledger unchanged.[/yellow]"
+            )
+    except ReviewError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from None
+    finally:
+        store.close()
+
+
+@app.command()
+def ledger(report: bool = typer.Option(False, "--report", help="Print full markdown report")):
+    """Show the current simulated ledger, proposals and transactions."""
+    store = _store()
+    state = store.get_ledger()
+    if state is None:
+        store.close()
+        raise typer.BadParameter("ledger is not initialised")
+    proposals = store.list_proposals()
+    txs = store.list_transactions()
+    table = Table(title="Ledger")
+    table.add_column("field")
+    table.add_column("value")
+    table.add_row("cash", f"USD {state.cash:,.2f}")
+    table.add_row("equity", f"USD {state.equity:,.2f}")
+    for ticker, pos in sorted(state.positions.items()):
+        table.add_row(f"position {ticker}", f"{pos.shares} sh @ {pos.avg_price or 'n/a'}")
+    console.print(table)
+    if report:
+        console.print(Markdown(render_ledger_report(state, txs, proposals)))
+    store.close()
+
+
+# ---------------------------------------------------------------------------
+# compare
+# ---------------------------------------------------------------------------
+
+
+@app.command()
+def compare(
+    source: str = typer.Argument(...),
+    max_calls: int | None = typer.Option(None, "--max-calls"),
+    analysts: str = typer.Option("market,news", "--analysts"),
+):
+    """Run baseline and compact arms on the same frozen evidence (FR-003).
+
+    Requires live LLM credentials; it genuinely re-runs the same graph on the
+    same frozen evidence with different context assembly.
+    """
+    settings = _settings()
+    settings.analysts = tuple(a.strip() for a in analysts.split(",") if a.strip())
+    settings.max_calls = max_calls
+    settings.ensure_dirs()
+    pack = EvidencePackIO().import_pack(source)
+
+    arms = {}
+    for mode in (ContextMode.BASELINE.value, ContextMode.COMPACT.value):
+        runner = ResearchRunner(
+            settings, context_mode=mode, data_mode="frozen", source_pack=pack
+        )
+        start = time.time()
+        result = runner.run(pack.manifest.ticker, pack.manifest.trade_date)
+        wall = time.time() - start
+        store = _store(settings)
+        if result.proposal is not None:
+            store.save_proposal(result.proposal)
+        store.close()
+        arms[mode] = {
+            "calls": result.usage.calls,
+            "input_tokens": result.usage.input_tokens,
+            "output_tokens": result.usage.output_tokens,
+            "total_tokens": result.usage.total_tokens,
+            "wall_seconds": round(wall, 3),
+            "stop_reason": result.stop_reason or "n/a",
+            "context_chars": _context_chars(result),
+            "signal": result.signal,
+        }
+    console.print(Markdown(render_compare_report(arms[ContextMode.BASELINE.value], arms[ContextMode.COMPACT.value])))
+
+
+def _context_chars(result: RunResult) -> int:
+    for ev in result.events:
+        if ev.kind == "context_assembled":
+            return int(ev.payload.get("chars", 0))
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# live evaluation: evaluate-case / judge-case / aggregate
+# ---------------------------------------------------------------------------
+
+
+@app.command("evaluate-case")
+def evaluate_case(
+    ticker: str = typer.Argument(..., help="Frozen evaluation ticker, e.g. NVDA"),
+    mode: str = typer.Option("baseline", "--mode", help="baseline | compact"),
+    out: str = typer.Option(..., "--out", help="Output root directory"),
+    max_calls: int | None = typer.Option(None, "--max-calls", help="LLM call budget"),
+):
+    """Run one frozen case through the real graph with real DeepSeek clients."""
+    from .eval.live import run_evaluate_case
+
+    with console.status(f"Running {ticker} {mode} (real DeepSeek)..."):
+        summary = run_evaluate_case(ticker, mode, out, max_calls=max_calls)
+    console.print(
+        f"[green]{ticker} [{mode}] outcome={summary['outcome']} "
+        f"signal={summary['signal'] or 'n/a'} calls={summary['calls']} "
+        f"tokens={summary['total_tokens']} wall={summary['wall_seconds']}s[/green]"
+    )
+    console.print(f"  run dir: {summary['run_dir']}")
+    if summary.get("error"):
+        console.print(f"  [red]error: {summary['error']}[/red]")
+
+
+@app.command("judge-case")
+def judge_case(
+    ticker: str = typer.Argument(..., help="Frozen evaluation ticker"),
+    out: str = typer.Option(..., "--out", help="Output root directory (same as evaluate-case)"),
+    max_calls: int | None = typer.Option(None, "--max-calls", help="Judge LLM call budget"),
+):
+    """Independently judge a completed run's report with a real DeepSeek evaluator."""
+    from .eval.live import run_judge_case
+
+    with console.status(f"Judging {ticker} (real DeepSeek evaluator)..."):
+        result = run_judge_case(ticker, out, max_calls=max_calls)
+    for mode, score in result.get("arms", {}).items():
+        if isinstance(score, dict) and not score.get("error"):
+            console.print(
+                f"[green]{ticker} [{mode}] support={score['support']} "
+                f"relevance={score['relevance']}[/green]"
+            )
+        else:
+            console.print(f"[yellow]{ticker} [{mode}] not judged: {score}[/yellow]")
+
+
+@app.command("aggregate")
+def aggregate(
+    out: str = typer.Argument(..., help="Output root directory containing ticker arms"),
+):
+    """Compute six paired baseline/compact metrics from existing run outputs."""
+    from .eval.live import run_aggregate
+
+    result = run_aggregate(out)
+    console.print(Markdown(result["report"]))
+
+
+if __name__ == "__main__":
+    app()
+
+
+FILE src/research_desk/config.py
+"""Research Desk settings and paths.
+
+The desk keeps its own home (separate from upstream TradingAgents' cache and
+results) for the SQLite ledger, run evidence packs and run records. Everything
+is overridable through ``RESEARCH_DESK_HOME`` so tests can point at a temp dir
+without touching the user's data.
+"""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
+
+DEFAULT_HOME = os.path.join(os.path.expanduser("~"), ".research_desk")
+
+# Authoritative runtime settings. Keep one source of truth so the model,
+# provider endpoint and prompt version are never duplicated as literals.
+DEFAULT_MODEL = "deepseek-flash"
+DEFAULT_PROVIDER = "deepseek"
+DEFAULT_BASE_URL = "https://api.aiohub.org/v1"
+PROMPT_VERSION = "research-desk-0.1.2"
+
+# Whole-input context budget (ADR-004). Conservative UTF-8 byte-based token
+# upper bound: compact above the trigger, refuse to invoke above the hard cap.
+DEFAULT_CONTEXT_MAX_TOKENS = 96000
+DEFAULT_CONTEXT_TRIGGER_TOKENS = 72000
+
+# Simulated teaching policy (deterministic, decided by leo, enforced by code).
+INITIAL_CASH = 100000.0
+MAX_POSITION_PCT = 0.10  # single stock market value <= 10% of equity after buy
+INTEGER_SHARES_ONLY = True
+NO_SHORTING = True
+
+
+@dataclass
+class ResearchDeskSettings:
+    home: str = field(default_factory=lambda: os.environ.get("RESEARCH_DESK_HOME", DEFAULT_HOME))
+    prompt_version: str = PROMPT_VERSION
+    analysts: tuple[str, ...] = ("market", "news")
+    max_calls: int | None = None  # None = no LLM call budget
+    context_max_tokens: int = DEFAULT_CONTEXT_MAX_TOKENS
+    context_trigger_tokens: int = DEFAULT_CONTEXT_TRIGGER_TOKENS
+    policy_version: str = "teaching-v1"
+
+    def __post_init__(self) -> None:
+        self.home = os.path.expanduser(self.home)
+
+    @property
+    def home_path(self) -> Path:
+        return Path(self.home)
+
+    @property
+    def db_path(self) -> Path:
+        return self.home_path / "research_desk.db"
+
+    @property
+    def runs_dir(self) -> Path:
+        return self.home_path / "runs"
+
+    @property
+    def reports_dir(self) -> Path:
+        return self.home_path / "reports"
+
+    def ensure_dirs(self) -> None:
+        self.home_path.mkdir(parents=True, exist_ok=True)
+        self.runs_dir.mkdir(parents=True, exist_ok=True)
+        self.reports_dir.mkdir(parents=True, exist_ok=True)
+
+    def config_snapshot(self) -> dict:
+        """Sanitised, credential-free config recorded in evidence manifests."""
+        return {
+            "home": self.home,
+            "prompt_version": self.prompt_version,
+            "analysts": list(self.analysts),
+            "max_calls": self.max_calls,
+            "context_max_tokens": self.context_max_tokens,
+            "context_trigger_tokens": self.context_trigger_tokens,
+            "policy_version": self.policy_version,
+            "initial_cash": INITIAL_CASH,
+            "max_position_pct": MAX_POSITION_PCT,
+            "integer_shares_only": INTEGER_SHARES_ONLY,
+            "no_shorting": NO_SHORTING,
+        }
+
+
+FILE src/research_desk/context.py
+"""Context assembly for research runs: baseline vs compact.
+
+The upstream graph already injects a ``past_context`` (memory lessons) and an
+``instrument_context`` (resolved identity) into the initial state. This module
+owns the *assembly of that context string* so a compact configuration can
+genuinely shrink the prompt while preserving the invariants the task requires:
+
+- stock identity, analysis date, key prices,
+- standing constraints (the simulated policy numbers), current task,
+- de-duplicated repeated text,
+- bounded earlier history.
+
+Compaction never removes agents or the graph; it only changes the text that is
+assembled into the initial ``past_context``. The honest size metric recorded
+offline is the number of characters assembled; actual LLM token usage comes
+from provider ``usage_metadata`` during a run.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any
+
+from .models import ContextMode
+
+
+@dataclass
+class StandingConstraints:
+    """Identity/date/price/policy facts that must survive compaction."""
+
+    ticker: str = ""
+    trade_date: str = ""
+    identity: dict[str, str] = field(default_factory=dict)
+    prices: dict[str, float] = field(default_factory=dict)  # label -> last price
+    policy: dict[str, Any] = field(default_factory=dict)  # teaching policy numbers
+    current_task: str = ""
+
+    def header_text(self) -> str:
+        lines = ["STANDING ANALYSIS CONSTRAINTS (always true for this run):"]
+        lines.append(f"- Instrument identity: {self.ticker}")
+        if self.identity.get("company_name"):
+            lines.append(f"- Company: {self.identity['company_name']}")
+        if self.identity.get("sector"):
+            lines.append(f"- Sector/industry: {self.identity['sector']} / {self.identity.get('industry', '')}")
+        lines.append(f"- Analysis date: {self.trade_date}")
+        for label, price in self.prices.items():
+            lines.append(f"- Key price ({label}): {price}")
+        for key, value in self.policy.items():
+            lines.append(f"- Standing constraint - {key}: {value}")
+        if self.current_task:
+            lines.append(f"- Current task: {self.current_task}")
+        return "\n".join(lines)
+
+
+def _extract_news_notes(news: str) -> list[str]:
+    """Pull the factual earnings notes (``- `` bullets) out of the provider's
+    official news output so every role can cite them against their source ID."""
+    notes: list[str] = []
+    for line in str(news or "").splitlines():
+        line = line.strip()
+        if line.startswith("- "):
+            notes.append(line[2:].strip())
+    return notes
+
+
+def market_source_id(ticker: str) -> str:
+    """Stable source ID for the market CSV / technical-computation evidence."""
+    return f"market-{ticker.lower()}"
+
+
+def build_common_grounding(
+    ticker: str,
+    trade_date: str,
+    available_sources: dict[str, Any] | None,
+) -> str:
+    """The COMMON grounding layer injected into every real LLM request.
+
+    Built only from the actual per-case provider / ``available_sources`` — the
+    real ticker, legal company identity, analysis date, frozen close, official
+    news notes and their real source IDs. Nothing is fabricated and no source
+    is claimed to exist that the evidence does not actually provide:
+
+    - The official earnings source (``src-<ticker>``, the one the judge uses)
+      is registered ONLY when an actual ``source_id`` with news notes is present.
+    - The market source (``market-<ticker>``) is registered ONLY when market
+      CSV / verified evidence actually exists.
+    - With no frozen registry (ordinary live analyze path), the rules instruct
+      attribution to the actual observed tool results and require unknown facts
+      to be reported as unknown — never a hard-coded ``src-<ticker>`` claim.
+
+    Both arms (baseline and compact) receive the identical text so every role
+    can cite facts accurately.
+    """
+    src = available_sources or {}
+    identity = src.get("identity") or {}
+    source_id = src.get("source_id") or ""
+    notes = _extract_news_notes(str(src.get("news") or ""))
+    has_earnings = bool(source_id) and bool(notes)
+
+    market = str(src.get("market", "") or "")
+    verified = str(src.get("verified_snapshot", "") or "")
+    has_market = bool(market.strip() or verified.strip())
+
+    eff_ticker = (ticker or "").upper()
+    if not eff_ticker and source_id:
+        eff_ticker = source_id.removeprefix("src-").upper()
+    market_id = market_source_id(eff_ticker) if eff_ticker else ""
+    analysis_date = src.get("analysis_date") or trade_date or ""
+    announcement_date = src.get("announcement_date") or ""
+    as_of = src.get("as_of") or ""
+    latest_close = src.get("latest_close")
+
+    company = identity.get("company_name") or ""
+    sector = identity.get("sector") or ""
+    industry = identity.get("industry") or ""
+
+    lines = ["COMMON GROUNDING LAYER (the factual basis for this analysis; every role receives this)"]
+    if eff_ticker:
+        lines.append(f"- Ticker: {eff_ticker}")
+    if company:
+        qualifier = f" ({sector} / {industry})" if sector else ""
+        lines.append(f"- Company (legal identity): {company}{qualifier}")
+    if analysis_date:
+        suffix = f" (announcement date {announcement_date})" if announcement_date else ""
+        lines.append(f"- Analysis date: {analysis_date}{suffix}")
+    if latest_close is not None and market_id:
+        if as_of:
+            lines.append(
+                f"- Frozen latest close: {latest_close} USD [source: {market_id}, market CSV as-of {as_of}]"
+            )
+        else:
+            lines.append(f"- Frozen latest close: {latest_close} USD [source: {market_id}]")
+
+    if has_earnings or has_market:
+        lines.append("")
+        lines.append("SOURCE-ID REGISTRY (cite the matching ID inline for every factual claim):")
+        if has_earnings:
+            lines.append(f"- {source_id} = official earnings news (the only earnings source)")
+        if has_market and market_id:
+            lines.append(
+                f"- {market_id} = market price/volume and technical indicator computations "
+                "from the frozen market CSV"
+            )
+    if notes:
+        lines.append("")
+        lines.append(f"OFFICIAL EARNINGS NOTES [{source_id or 'news source'}]:")
+        for note in notes:
+            lines.append(f"  - {note}")
+
+    lines.append("")
+    lines.append("CITATION & GROUNDING RULES (apply to every claim you make):")
+    if has_earnings or has_market:
+        lines.append(
+            "1. Cite the source ID inline for every factual claim using the format: "
+            "<supported claim> [<actual source ID>]."
+        )
+    else:
+        lines.append(
+            "1. Cite the actual tool result that supports each factual claim (e.g. the "
+            "get_stock_data / get_indicators / get_verified_market_snapshot output you "
+            "observed during this analysis)."
+        )
+    lines.append(
+        "2. A derived number (growth %, ratio, multiple) is a CALCULATION: show its actual "
+        "operands and cite each operand's source, without presenting the result as a "
+        "sourced fact."
+    )
+    lines.append(
+        "3. Any valuation ratio, multiple, target, or estimate NOT present in the observed "
+        "sources is UNKNOWN. Never state it as a fact."
+    )
+    lines.append(
+        "4. Distinguish quarterly EPS from trailing-twelve-month (TTM) or annual EPS. "
+        "A single-quarter EPS cannot establish a trailing P/E; calculate a TTM EPS or "
+        "trailing P/E only from actual TTM evidence, otherwise leave the ratio UNKNOWN. "
+        "Label every EPS by its period."
+    )
+    lines.append(
+        "5. Price targets, entry prices, stop-loss levels and position sizes are "
+        "ASSUMPTIONS or analyst judgments - label them as such, never as sourced facts."
+    )
+    lines.append(
+        "6. State which research role you are (market analyst, bull/bear researcher, "
+        "research manager, trader, risk analyst, or portfolio manager)."
+    )
+    lines.append(
+        "7. Only the final Portfolio Manager may label its output FINAL TRANSACTION "
+        "PROPOSAL; all earlier output is nonbinding role analysis."
+    )
+    lines.append(
+        "8. Use only facts present in the sources (the grounding above OR the actual tool "
+        "results observed during this analysis) and known by the analysis date."
+    )
+    lines.append(
+        "9. In the final research/recommendation rationale, when the ticker, analysis date "
+        "and frozen latest close are present, restate them with market attribution "
+        "(e.g. ticker <T>, analysis date <D>, latest close <P> [market-<T>])."
+    )
+    return "\n".join(lines)
+
+
+def dedup_repeated_blocks(text: str) -> str:
+    """Remove exact duplicate paragraph blocks, keeping first occurrence order.
+
+    Operates on blank-line-separated blocks so repeated analyst reports in a
+    long history collapse to one copy instead of being sent N times.
+    """
+    if not text:
+        return text
+    blocks = list(text.split("\n\n"))
+    seen: set[str] = set()
+    kept: list[str] = []
+    for block in blocks:
+        key = block.strip()
+        if not key:
+            continue
+        if key in seen:
+            continue
+        seen.add(key)
+        kept.append(block)
+    return "\n\n".join(kept)
+
+
+def bound_history(text: str, max_chars: int = 6000) -> str:
+    """Bound total assembled history length by truncating from the tail."""
+    if not text:
+        return text
+    if len(text) <= max_chars:
+        return text
+    # Cut at a block boundary near the limit so we never split mid-paragraph.
+    cut = text.rfind("\n\n", 0, max_chars)
+    if cut == -1:
+        cut = max_chars
+    return text[:cut].rstrip() + "\n\n[... earlier history truncated ...]"
+
+
+def estimate_token_heuristic(text: str) -> int:
+    """Deterministic English-token heuristic for offline comparisons.
+
+    This is a *character-based heuristic*, explicitly NOT claimed as provider
+    token counts; real token numbers come from LLM usage metadata. It exists so
+    offline tests can assert that compact genuinely assembles less context.
+    """
+    if not text:
+        return 0
+    return max(1, (len(text) + 3) // 4)
+
+
+@dataclass
+class AssemblyResult:
+    text: str
+    mode: str
+    chars: int
+    blocks: int
+    token_heuristic: int
+    deduplicated: int = 0
+    truncated: bool = False
+
+
+class ContextAssembler:
+    """Assembles the injected ``past_context`` for baseline or compact runs.
+
+    Baseline preserves the *original* input verbatim: the raw memory text is
+    injected unchanged (plus the standing constraints), with only a hard safety
+    ceiling that never normally fires. Compact genuinely differs: it de-
+    duplicates repeated blocks, bounds earlier history at a tighter cap, and
+    re-appends the constraints. The same assembler, same source material, and
+    same graph are used for both arms — only the assembly differs.
+    """
+
+    # Baseline keeps history whole (hard ceiling is only a safety net that does
+    # not normally fire); compact applies a tighter cap so older discussion is
+    # genuinely compressed.
+    DEFAULT_HARD_MAX_CHARS = 20000
+    DEFAULT_COMPACT_MAX_CHARS = 6000
+    DEFAULT_MAX_ENTRIES = 5
+
+    def __init__(self, constraints: StandingConstraints | None = None, **kwargs):
+        self.constraints = constraints or StandingConstraints()
+        self.hard_max_chars = kwargs.get("hard_max_chars", self.DEFAULT_HARD_MAX_CHARS)
+        self.compact_max_chars = kwargs.get(
+            "compact_max_chars", self.DEFAULT_COMPACT_MAX_CHARS
+        )
+        self.max_entries = kwargs.get("max_entries", self.DEFAULT_MAX_ENTRIES)
+
+    def assemble(self, memory_text: str, mode: str | ContextMode) -> AssemblyResult:
+        mode = ContextMode(mode)
+        constraints = self.constraints.header_text()
+        if mode == ContextMode.BASELINE:
+            # Preserve the original input verbatim; do not de-duplicate or
+            # rewrite it. The hard ceiling is a pure safety net.
+            body = memory_text or ""
+            truncated = len(body) > self.hard_max_chars
+            body = bound_history(body, self.hard_max_chars)
+            deduped = 0
+        else:
+            body = dedup_repeated_blocks(memory_text)
+            deduped = (
+                len([b for b in memory_text.split("\n\n") if b.strip()])
+                - len([b for b in body.split("\n\n") if b.strip()])
+                if memory_text
+                else 0
+            )
+            truncated = len(body) > self.compact_max_chars
+            body = bound_history(body, self.compact_max_chars)
+        text = _join_parts(constraints, body)
+        return AssemblyResult(
+            text=text,
+            mode=mode.value,
+            chars=len(text),
+            blocks=len([b for b in text.split("\n\n") if b.strip()]),
+            token_heuristic=estimate_token_heuristic(text),
+            deduplicated=deduped,
+            truncated=truncated,
+        )
+
+    def assemble_from_entries(
+        self,
+        entries: list[dict[str, Any]],
+        mode: str | ContextMode,
+        as_of: str | None = None,
+    ) -> AssemblyResult:
+        """Assemble from structured memory entries (TradingMemoryLog shape).
+
+        When ``as_of`` (yyyy-mm-dd) is given, entries whose outcome was only
+        resolved after that date are excluded, so a historical run cannot learn
+        from the future (SEC-001/AT-02). Entries with no recorded resolution
+        date are kept but explicitly marked as not suitable for historical
+        evaluation.
+        """
+        if not entries:
+            return self.assemble("", mode)
+        parts = []
+        seen_bodies: set[str] = set()
+        deduplicated = 0
+        for e in entries:
+            resolved = e.get("resolved")
+            if as_of is not None and resolved and resolved > as_of:
+                continue  # outcome not known by the trade date — exclude
+            decision = (e.get("decision") or "").strip()
+            reflection = (e.get("reflection") or "").strip()
+            # De-duplicate repeated report *bodies* regardless of the differing
+            # tag date, keeping the first occurrence for traceability.
+            body = f"{decision}\n{reflection}".strip()
+            if body:
+                if body in seen_bodies:
+                    deduplicated += 1
+                    continue
+                seen_bodies.add(body)
+            tag = (
+                f"[{e.get('date', '')} | {e.get('ticker', '')} | "
+                f"{e.get('rating', '')}]"
+            )
+            if as_of is not None and not resolved:
+                tag += " [availability: unknown — not suitable for historical evaluation]"
+            block = tag
+            if decision:
+                block += f"\nDECISION:\n{decision}"
+            if reflection:
+                block += f"\nREFLECTION:\n{reflection}"
+            parts.append(block)
+        recent = parts[-self.max_entries :]
+        result = self.assemble("\n\n".join(recent), mode)
+        result.deduplicated += deduplicated
+        return result
+
+
+def _join_parts(constraints: str, body: str) -> str:
+    if not body:
+        return constraints
+    return constraints + "\n\n" + body
+
+
+FILE src/research_desk/eval/case_registry.py
+"""The six frozen evaluation cases and their evidence notes.
+
+The corpus is imported from ``../orchestration/project-market-sources/`` (real
+market CSVs) and ``../orchestration/project-evaluation-sources.md`` (factual
+source notes). Prices and notes are preserved verbatim; nothing here is
+model-generated or fabricated. Two cases (AAPL, MSFT) are development cases for
+calibrating the harness; the other four (NVDA, AMZN, META, GOOGL) are held out
+and only ever scored by the live judge, never tuned against.
+
+Every case records:
+- the analysis day (the day after the earnings announcement, so the after-
+  market release does not leak into that day's earlier close),
+- the announcement date and the public source URL (source identity),
+- the real market CSV and its as-of date / latest close from the retrieval
+  manifest,
+- the factual source notes the judge compares final reports against.
+
+``source_id`` is the concise ID embedded in final reports for grounding.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+MARKET_DIR = Path(__file__).resolve().parents[3] / "test" / "fixtures" / "market"
+
+# retrieved_at / as_of / latest_close from orchestration/project-market-sources/manifest.json
+_MARKET_META = {
+    "AAPL": {"as_of": "2026-07-31", "latest_close": 308.9100036621094},
+    "MSFT": {"as_of": "2026-07-30", "latest_close": 451.1000061035156},
+    "NVDA": {"as_of": "2026-08-27", "latest_close": 227.97999572753906},
+    "AMZN": {"as_of": "2026-07-31", "latest_close": 271.5799865722656},
+    "META": {"as_of": "2026-07-30", "latest_close": 539.030029296875},
+    "GOOGL": {"as_of": "2026-07-23", "latest_close": 317.69000244140625},
+}
+
+# Evidence notes preserved from ../orchestration/project-evaluation-sources.md.
+# Each is a concise factual statement from the official announcement; the final
+# ``balance`` string is the rubric guidance the judge uses to weigh a balanced
+# conclusion (it is also part of the evidence, not a grade).
+_CASE_NOTES = {
+    "AAPL": {
+        "notes": [
+            "Apple fiscal Q3 2026 ended June 27.",
+            "Revenue was USD109.4 billion, up 16% year over year.",
+            "Gross margin 50.1% included approximately 2 percentage points of tariff-refund benefit.",
+            "Diluted EPS 2.02, up 29%, included 0.11 of tariff-refund benefit.",
+            "Dividend 0.27 per share.",
+        ],
+        "balance": "Distinguish the one-off tariff-refund benefit from underlying operating growth.",
+    },
+    "MSFT": {
+        "notes": [
+            "Microsoft fiscal Q4 2026 ended June 30.",
+            "Revenue USD90.0 billion increased 18%; operating income 40.6 billion increased 18%.",
+            "GAAP EPS 4.81 compared with non-GAAP 4.74.",
+            "Microsoft Cloud revenue 59.3 billion increased 27%; Azure and other cloud revenue increased 43%.",
+            "Full fiscal year revenue 331.8 billion.",
+        ],
+        "balance": "Investment gains affected reported income and EPS; do not equate all GAAP growth with operating growth.",
+    },
+    "NVDA": {
+        "notes": [
+            "NVIDIA fiscal Q2 2027 ended July 26, 2026.",
+            "Revenue USD96.2 billion increased 18% sequentially and 106% year over year.",
+            "Data Center revenue 89.0 billion increased 117% year over year.",
+            "GAAP and non-GAAP gross margins were both 75.0%.",
+            "GAAP EPS 2.46; non-GAAP EPS 2.22.",
+        ],
+        "balance": "These are quarterly results, not a guarantee of subsequent share performance.",
+    },
+    "AMZN": {
+        "notes": [
+            "Amazon Q2 2026 ended June 30.",
+            "Net sales USD200.6 billion increased 20%.",
+            "AWS sales 42.2 billion increased 37%; operating income 27.5 billion compared with 19.2 billion a year earlier.",
+            "Net income 62.6 billion includes substantial investment-related gains; pre-tax other income 53.4 billion was primarily from investments in Anthropic.",
+            "Trailing-twelve-month free cash flow was an outflow 7.6 billion.",
+        ],
+        "balance": "Distinguish operating improvement from investment gains and capital expenditure pressure.",
+    },
+    "META": {
+        "notes": [
+            "Meta Q2 2026 revenue USD60.801 billion increased 28%.",
+            "Operating income 18.775 billion decreased 8%, and operating margin 31% compared with 43%.",
+            "Costs and expenses 42.03 billion included 2.40 billion legal charges and 1.18 billion severance.",
+            "Daily active people 3.60 billion increased 3%.",
+            "Capital expenditures 31.08 billion.",
+        ],
+        "balance": "Revenue growth and margin compression coexist; neither should be omitted from a balanced conclusion.",
+    },
+    "GOOGL": {
+        "notes": [
+            "Alphabet Q2 2026 revenue USD119.796 billion increased 24%.",
+            "Google Cloud revenue 24.768 billion increased 82%.",
+            "Operating income 40.770 billion and operating margin 34%.",
+            "Net income 112.107 billion and EPS 9.11 were affected by 97.983 billion other income, primarily unrealized equity investment gains.",
+        ],
+        "balance": "The evidence supports strong cloud growth but does not support treating the full net-income increase as recurring operating performance.",
+    },
+}
+
+_CASES = [
+    {
+        "ticker": "AAPL",
+        "analysis_date": "2026-07-31",
+        "announcement_date": "2026-07-30",
+        "split": "development",
+        "company_name": "Apple Inc.",
+        "sector": "Technology",
+        "industry": "Consumer Electronics",
+        "source_url": "https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/",
+    },
+    {
+        "ticker": "MSFT",
+        "analysis_date": "2026-07-30",
+        "announcement_date": "2026-07-29",
+        "split": "development",
+        "company_name": "Microsoft Corporation",
+        "sector": "Technology",
+        "industry": "Software — Infrastructure",
+        "source_url": "https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast",
+    },
+    {
+        "ticker": "NVDA",
+        "analysis_date": "2026-08-27",
+        "announcement_date": "2026-08-26",
+        "split": "held_out",
+        "company_name": "NVIDIA Corporation",
+        "sector": "Technology",
+        "industry": "Semiconductors",
+        "source_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2027/default.aspx",
+    },
+    {
+        "ticker": "AMZN",
+        "analysis_date": "2026-07-31",
+        "announcement_date": "2026-07-30",
+        "split": "held_out",
+        "company_name": "Amazon.com, Inc.",
+        "sector": "Consumer Discretionary",
+        "industry": "Internet Retail",
+        "source_url": "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx",
+    },
+    {
+        "ticker": "META",
+        "analysis_date": "2026-07-30",
+        "announcement_date": "2026-07-29",
+        "split": "held_out",
+        "company_name": "Meta Platforms, Inc.",
+        "sector": "Communication Services",
+        "industry": "Internet Content & Information",
+        "source_url": "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Second-Quarter-2026-Results/default.aspx",
+    },
+    {
+        "ticker": "GOOGL",
+        "analysis_date": "2026-07-23",
+        "announcement_date": "2026-07-22",
+        "split": "held_out",
+        "company_name": "Alphabet Inc.",
+        "sector": "Communication Services",
+        "industry": "Internet Content & Information",
+        "source_url": "https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf",
+    },
+]
+
+
+def all_cases() -> list[dict]:
+    """The six evaluation cases, each fully resolved with evidence notes."""
+    out = []
+    for case in _CASES:
+        meta = _MARKET_META[case["ticker"]]
+        notes = _CASE_NOTES[case["ticker"]]
+        out.append(
+            {
+                **case,
+                "source_id": f"src-{case['ticker'].lower()}",
+                "csv": f"{case['ticker']}.csv",
+                "csv_path": str(MARKET_DIR / f"{case['ticker']}.csv"),
+                "as_of": meta["as_of"],
+                "latest_close": meta["latest_close"],
+                "identity": {
+                    "company_name": case["company_name"],
+                    "sector": case["sector"],
+                    "industry": case["industry"],
+                },
+                "notes": notes["notes"],
+                "balance": notes["balance"],
+            }
+        )
+    return out
+
+
+def case_for(ticker: str) -> dict:
+    for case in all_cases():
+        if case["ticker"].upper() == ticker.upper():
+            return case
+    raise KeyError(f"unknown evaluation case: {ticker!r}")
+
+
+def development_cases() -> list[dict]:
+    return [c for c in all_cases() if c["split"] == "development"]
+
+
+def held_out_cases() -> list[dict]:
+    return [c for c in all_cases() if c["split"] == "held_out"]
+
+
+def load_market_manifest() -> dict:
+    """Read the frozen retrieval manifest that documents provenance."""
+    p = MARKET_DIR / "orchestration-manifest.json"
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+FILE src/research_desk/eval/compact_delegate.py
+"""Per-agent COMMON grounding + prompt compaction on the real LLM inputs.
+
+Fresh evaluation runs have essentially no past memory, so compressing only
+``past_context`` has almost no effect, and that header is not even read by many
+downstream upstream roles. This module fixes the shared grounding/citation
+failure by wrapping the real LangChain chat model with a small plain delegate
+(exposing ``invoke``, ``bind_tools`` and ``with_structured_output``) that
+injects the identical COMMON grounding layer into *every* request in BOTH modes
+(baseline and compact), while retaining the real LangChain client and the
+upstream ``GraphSetup``.
+
+- The common grounding layer carries the real per-case ticker, legal company
+  identity, analysis date, frozen close, the source-ID registry
+  (``src-<ticker>`` = official earnings news, ``market-<ticker>`` = market
+  CSV/technical computations), the short official earnings notes and citation
+  rules. It is the shared correctness fix applied to both arms.
+- For ``context_mode == "baseline"`` the delegate only prepends the common
+  grounding layer; the substantive prompt/history is left uncompressed (no
+  artificial padding, no rewrite).
+- For ``compact`` the delegate additionally trims redundant message text,
+  de-duplicates, and appends a concise-output instruction, while preserving key
+  quoted facts (the standing-constraints and source markers) in every prompt.
+
+Message integrity rules (review finding #1):
+
+- A message is rebuilt with the declared model-copy/update API, changing only
+  ``content``. ``AIMessage.tool_calls``, ``ToolMessage.tool_call_id``,
+  ``id``/``name`` and every other field are preserved — never re-created.
+- A ``ToolMessage`` that answers an assistant tool call is never de-duplicated
+  away and never truncated: dropping or merging it would break the assistant's
+  pending tool call.
+- An ``AIMessage`` that carries ``tool_calls`` (typically with empty ``content``)
+  is kept, never dropped, even though its text is empty.
+- Evidence messages (messages carrying a ``_FACT_MARKERS`` token) are not
+  truncated. Trimming only verbose, non-fact prose is allowed; discarding
+  numbers, identity, dates or sources is not.
+- The concise-output instruction targets ~600 tokens for compact roles while
+  the provider ``max_tokens`` stays 1800 in both arms (set in the graph config).
+"""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import Callable
+from typing import Any, TypedDict
+
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage, ToolMessage
+
+from ..budget import ContextBudgetExceeded, estimate_input_units
+from ..config import DEFAULT_CONTEXT_MAX_TOKENS, DEFAULT_CONTEXT_TRIGGER_TOKENS
+
+logger = logging.getLogger(__name__)
+
+
+class BudgetObservation(TypedDict):
+    """Conservative whole-input budget observation emitted per request."""
+
+    before_units: int
+    after_units: int
+    trigger: int
+    cap: int
+    compacted: bool
+    metric: str
+
+
+BudgetObserver = Callable[[BudgetObservation], None]
+
+# Content markers that carry the facts which must survive compaction. A message
+# containing any marker is kept (not trimmed below the fact floor).
+_FACT_MARKERS = (
+    "STANDING ANALYSIS CONSTRAINTS",
+    "last_close",
+    "NO_DATA_AVAILABLE",
+    "source_id",
+    "src-",
+    "USD",
+    "% of equity",
+    "integer_shares",
+    "no_shorting",
+    "Analysis date",
+    "Company:",
+    "Instrument identity",
+    "trade_date",
+    "past_context",
+)
+
+# Concise-output target for the compact arm (~600 tokens) while the provider
+# ``max_tokens`` cap stays 1800 in both arms.
+_OUTPUT_INSTRUCTION = (
+    "Respond concisely: keep your entire answer within {max_tokens} tokens. "
+    "Do not repeat the input; only output the requested analysis."
+)
+
+
+def _tuple_to_message(role: str, content: Any) -> BaseMessage | None:
+    """Map a ``(role, content)`` pair to a message, or None for an unknown role."""
+    role = (role or "").lower()
+    if role == "system":
+        return SystemMessage(content=content)
+    if role in ("human", "user"):
+        return HumanMessage(content=content)
+    if role in ("ai", "assistant"):
+        return AIMessage(content=content)
+    return None
+
+
+def _to_messages(input: Any) -> list[BaseMessage] | None:
+    """Normalise a model input to a list of messages, or None if not list-like."""
+    if isinstance(input, list) and all(isinstance(m, BaseMessage) for m in input):
+        return list(input)
+    if isinstance(input, str):
+        return [HumanMessage(content=input)]
+    if isinstance(input, (list, tuple)) and input and all(
+        isinstance(p, (list, tuple)) and len(p) == 2 for p in input
+    ):
+        mapped = [_tuple_to_message(role, content) for role, content in input]
+        if all(m is not None for m in mapped):
+            return [m for m in mapped if m is not None]
+        return None  # unknown role: pass through unchanged rather than drop content
+    if hasattr(input, "to_messages"):
+        try:
+            return input.to_messages()
+        except Exception:  # noqa: BLE001 - PromptValue edge cases
+            return None
+    return None
+
+
+def _content_of(msg: BaseMessage) -> str:
+    c = msg.content
+    return c if isinstance(c, str) else str(c)
+
+
+def _has_fact_marker(text: str) -> bool:
+    low = text.lower()
+    return any(marker.lower() in low for marker in _FACT_MARKERS)
+
+
+def _rebuild(msg: BaseMessage, content: str) -> BaseMessage:
+    """Rebuild a message with only ``content`` changed; preserve every other field.
+
+    ``model_copy(update=...)`` keeps ``type``, ``id``, ``name``, ``tool_calls``,
+    ``tool_call_id``, ``additional_kwargs`` and any subclass state intact, so an
+    ``AIMessage`` keeps its tool calls and a ``ToolMessage`` keeps the
+    ``tool_call_id`` the assistant is waiting on.
+    """
+    return msg.model_copy(update={"content": content})
+
+
+def compact_transform(
+    input: Any,
+    *,
+    max_output_tokens: int = 600,
+    max_msg_chars: int = 1500,
+    fact_floor_chars: int = 6000,
+) -> Any:
+    """Transform a per-agent prompt for the compact arm.
+
+    Keeps message roles, trims verbose non-fact prose to ``max_msg_chars``,
+    removes exact duplicate messages (never a tool response), and appends a
+    concise-output instruction. Messages carrying key facts are preserved so no
+    grounding marker is dropped. Every message is rebuilt via
+    :func:`_rebuild`, so tool-call state survives unchanged.
+    """
+    messages = _to_messages(input)
+    if messages is None:
+        return input  # cannot transform; pass through unchanged
+
+    seen: set[str] = set()
+    kept: list[BaseMessage] = []
+    for msg in messages:
+        content = _content_of(msg)
+        if isinstance(msg, ToolMessage):
+            # A tool response answers an assistant tool call: never dedupe,
+            # never truncate, never drop — the assistant is waiting on it.
+            kept.append(msg)
+            continue
+        if isinstance(msg, AIMessage) and getattr(msg, "tool_calls", None):
+            # An assistant message that issued tool calls (text may be empty);
+            # keep it whole so the tool_calls survive to the next turn.
+            kept.append(_rebuild(msg, content))
+            continue
+        if not content:
+            continue
+        if content in seen:
+            continue  # drop exact duplicate prose messages only
+        seen.add(content)
+        if not _has_fact_marker(content) and len(content) > max_msg_chars:
+            content = content[:max_msg_chars].rstrip() + "\n[... compacted ...]"
+        kept.append(_rebuild(msg, content))
+
+    kept.append(
+        SystemMessage(content=_OUTPUT_INSTRUCTION.format(max_tokens=max_output_tokens))
+    )
+    return kept
+
+
+_COMPACTED_MARKER = "\n[... context compacted ...]"
+_BUDGET_PROSE_CHARS = 240
+
+
+def _is_expendable_old_prose(
+    msg: BaseMessage, index: int, latest_human: int
+) -> bool:
+    """Whether an old, non-fact plain prose message may be compacted/removed.
+
+    System constraints, the latest user/task, fact-bearing evidence and every
+    assistant/tool-call group member are never expendable.
+    """
+    if index == latest_human:
+        return False
+    if not isinstance(msg, (HumanMessage, AIMessage)):
+        return False
+    if isinstance(msg, AIMessage) and getattr(msg, "tool_calls", None):
+        return False
+    return not _has_fact_marker(_content_of(msg))
+
+
+def enforce_context_budget(
+    messages: list[BaseMessage],
+    *,
+    trigger_tokens: int,
+    max_tokens: int,
+    prose_chars: int = _BUDGET_PROSE_CHARS,
+) -> tuple[list[BaseMessage], bool, int]:
+    """Bound a complete message list, preserving mandatory material.
+
+    Below ``trigger_tokens`` the input is returned unchanged. Above it, older
+    expendable non-fact prose is first shortened and then dropped oldest-first.
+    System constraints, the latest user/task, fact-bearing evidence and entire
+    assistant tool-call / ToolMessage groups are never removed. If the required
+    material still exceeds ``max_tokens``, raise :class:`ContextBudgetExceeded`
+    before the provider is invoked.
+
+    Returns ``(messages, compacted, before_units)``.
+    """
+    before = estimate_input_units(messages)
+    if before <= trigger_tokens and before <= max_tokens:
+        return list(messages), False, before
+
+    latest_human = max(
+        (i for i, m in enumerate(messages) if isinstance(m, HumanMessage)),
+        default=-1,
+    )
+    expendable = [
+        i
+        for i, m in enumerate(messages)
+        if _is_expendable_old_prose(m, i, latest_human)
+    ]
+
+    compacted_messages: list[BaseMessage] = []
+    for i, msg in enumerate(messages):
+        if i in expendable:
+            content = _content_of(msg)
+            if len(content) > prose_chars:
+                content = content[:prose_chars].rstrip() + _COMPACTED_MARKER
+            compacted_messages.append(_rebuild(msg, content))
+        else:
+            compacted_messages.append(msg)
+
+    after = estimate_input_units(compacted_messages)
+    if after > max_tokens:
+        dropped: set[int] = set()
+        for i in expendable:
+            dropped.add(i)
+            candidate = [m for j, m in enumerate(compacted_messages) if j not in dropped]
+            after = estimate_input_units(candidate)
+            if after <= max_tokens:
+                compacted_messages = candidate
+                break
+        else:
+            compacted_messages = [
+                m for j, m in enumerate(compacted_messages) if j not in dropped
+            ]
+            after = estimate_input_units(compacted_messages)
+
+    if after > max_tokens:
+        raise ContextBudgetExceeded(after, max_tokens)
+    return compacted_messages, True, before
+
+
+def delegate_transform(
+    input: Any,
+    *,
+    context_mode: str,
+    common_grounding: str,
+    max_output_tokens: int = 600,
+    max_msg_chars: int = 1500,
+) -> Any:
+    """Inject the COMMON grounding layer into a request, then compact if needed.
+
+    Both modes prepend the identical ``common_grounding`` SystemMessage so every
+    request (analyst, researcher, trader, risk, portfolio manager, reflection)
+    sees the same source registry, facts and citation rules.
+
+    - baseline: substantive history is left untouched (grounding is the only
+      addition, the shared correctness fix).
+    - compact: the original substantive messages are then de-duplicated/trimmed
+      and a concise-output instruction appended (unchanged 600-token target;
+      provider ``max_tokens`` cap stays 1800 in both arms).
+
+    Un-transformable inputs (None / unknown shapes) pass through unchanged.
+    """
+    messages = _to_messages(input)
+    if messages is None:
+        return input
+    if context_mode == "compact":
+        body = compact_transform(
+            messages,
+            max_output_tokens=max_output_tokens,
+            max_msg_chars=max_msg_chars,
+        )
+    else:
+        body = list(messages)
+    return [SystemMessage(content=common_grounding)] + list(body)
+
+
+class GroundingDelegate:
+    """A small plain delegate around the real LangChain client.
+
+    ``invoke`` transforms and delegates; ``bind_tools`` and
+    ``with_structured_output`` delegate to the *real* client's binding and then
+    compose a ``RunnableLambda`` preprocessor with the returned Runnable, so the
+    common grounding layer reaches every invocation through every path. There is
+    no dynamic ``__class__`` mutation and no dropped tool responses: the real
+    client's returned ``AIMessage.tool_calls`` and ``ToolMessage.tool_call_id``
+    are preserved exactly because the composed runnables hand them through
+    untouched.
+    """
+
+    def __init__(
+        self,
+        llm: Any,
+        *,
+        context_mode: str,
+        common_grounding: str,
+        max_output_tokens: int = 600,
+        max_msg_chars: int = 1500,
+        context_max_tokens: int = DEFAULT_CONTEXT_MAX_TOKENS,
+        context_trigger_tokens: int = DEFAULT_CONTEXT_TRIGGER_TOKENS,
+        budget_observer: BudgetObserver | None = None,
+    ):
+        from langchain_core.runnables import RunnableLambda
+
+        self.llm = llm
+        self.context_mode = context_mode
+        self.common_grounding = common_grounding
+        self.max_output_tokens = max_output_tokens
+        self.max_msg_chars = max_msg_chars
+        self.context_max_tokens = context_max_tokens
+        self.context_trigger_tokens = context_trigger_tokens
+        self.budget_observer = budget_observer
+        self._pre = RunnableLambda(self._transform)
+
+    def _transform(self, input: Any) -> Any:
+        transformed = delegate_transform(
+            input,
+            context_mode=self.context_mode,
+            common_grounding=self.common_grounding,
+            max_output_tokens=self.max_output_tokens,
+            max_msg_chars=self.max_msg_chars,
+        )
+        complete = _to_messages(transformed)
+        if complete is None:
+            return transformed
+
+        bounded, compacted, before = enforce_context_budget(
+            complete,
+            trigger_tokens=self.context_trigger_tokens,
+            max_tokens=self.context_max_tokens,
+        )
+        after = estimate_input_units(bounded)
+        logger.info(
+            "context budget conservative_units before=%d after=%d trigger=%d cap=%d "
+            "compacted=%s mode=%s",
+            before,
+            after,
+            self.context_trigger_tokens,
+            self.context_max_tokens,
+            compacted,
+            self.context_mode,
+        )
+        if self.budget_observer is not None:
+            self.budget_observer(
+                {
+                    "before_units": before,
+                    "after_units": after,
+                    "trigger": self.context_trigger_tokens,
+                    "cap": self.context_max_tokens,
+                    "compacted": compacted,
+                    "metric": "utf8_upper_bound",
+                }
+            )
+        return bounded
+
+    def invoke(self, input: Any, config: Any = None, **kwargs: Any) -> Any:
+        return self.llm.invoke(self._pre.invoke(input, config), config, **kwargs)
+
+    def bind_tools(self, tools: Any, **kwargs: Any) -> Any:
+        bound = self.llm.bind_tools(tools, **kwargs)
+        return self._pre | bound
+
+    def with_structured_output(self, schema: Any, **kwargs: Any) -> Any:
+        structured = self.llm.with_structured_output(schema, **kwargs)
+        return self._pre | structured
+
+
+def wrap_for_mode(
+    llm: Any,
+    context_mode: str,
+    *,
+    common_grounding: str,
+    max_output_tokens: int = 600,
+    max_msg_chars: int = 1500,
+    context_max_tokens: int = DEFAULT_CONTEXT_MAX_TOKENS,
+    context_trigger_tokens: int = DEFAULT_CONTEXT_TRIGGER_TOKENS,
+    budget_observer: BudgetObserver | None = None,
+) -> Any:
+    """Wrap ``llm`` with a :class:`GroundingDelegate` for BOTH modes.
+
+    The delegate injects the identical COMMON grounding layer into every
+    request; baseline leaves the substantive history untouched while compact
+    also trims/de-duplicates and appends the concise-output instruction. Every
+    request is then bounded by the whole-input context budget, and an optional
+    observer receives the conservative before/after units.
+    """
+    return GroundingDelegate(
+        llm,
+        context_mode=context_mode,
+        common_grounding=common_grounding,
+        max_output_tokens=max_output_tokens,
+        max_msg_chars=max_msg_chars,
+        context_max_tokens=context_max_tokens,
+        context_trigger_tokens=context_trigger_tokens,
+        budget_observer=budget_observer,
+    )
+
+
+FILE src/research_desk/eval/frozen_provider.py
+"""Frozen market data provider: serves the real fixed CSVs to the live graph.
+
+Unlike the earlier exact-args snapshot lookup, this provider computes results
+*from the actual fixed CSV* on demand, so it works regardless of which tool
+arguments the (compact) model selects:
+
+- ``get_stock_data`` formats the real CSV rows in the upstream shape, filtered
+  to the requested date range (no fabricated prices).
+- ``get_indicators`` computes the indicators the graph actually supports
+  (MACD/signal/histogram, RSI, Bollinger, EMA/SMA, ATR) directly from the real
+  CSV. Comma-separated indicator requests are handled. An indicator whose full
+  calculation window is not available is reported as unavailable — it is never
+  silently relabelled as a shorter-window average.
+- ``get_verified_market_snapshot`` reads OHLCV directly from the real CSV.
+- ``get_news`` returns the official case notes and source ID when the ticker
+  corresponds to a known case, rather than an always-``NO_DATA`` sentinel.
+  Optional sources absent from the frozen corpus remain ``NO_DATA``.
+
+Every value derives from the immutable CSV and the committed case registry;
+there is no network access anywhere in this module. A requested symbol or date
+that does not correspond to the case returns an honest unavailable sentinel.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pandas as pd
+
+from .case_registry import MARKET_DIR, all_cases
+
+UNAVAILABLE = (
+    "NO_DATA_AVAILABLE: this optional data source is not part of the frozen "
+    "evaluation corpus. Do not estimate or fabricate values — report that this "
+    "data is unavailable."
+)
+
+
+def _market_source_label(ticker: str) -> str:
+    """The explicit stable source ID for market/technical evidence."""
+    return f"market-{ticker.lower()}"
+
+
+def _format_header(symbol: str, start_date: str, end_date: str, n: int) -> str:
+    return (
+        f"# Stock data for {symbol} from {start_date} to {end_date}\n"
+        f"# source_id: {_market_source_label(symbol)} (frozen market CSV)\n"
+        f"# Total records: {n}\n"
+        "# Data retrieved on: frozen corpus (no network)\n\n"
+    )
+
+
+# The exact indicator names the graph's technical-indicator tool supports, with
+# the full look-back window (in trading rows) each needs. A request that cannot
+# satisfy the window is reported unavailable, not recomputed short.
+_INDICATOR_WINDOWS: dict[str, int] = {
+    "close_50_sma": 50,
+    "close_200_sma": 200,
+    "close_10_ema": 10,
+    "macd": 26,  # MACD uses 12/26 EMAs; needs > 26 rows to converge
+    "macds": 26,
+    "macdh": 26,
+    "rsi": 14,
+    "boll": 20,
+    "boll_ub": 20,
+    "boll_lb": 20,
+    "atr": 14,
+    "vwma": 1,
+}
+
+
+class FrozenMarketProvider:
+    """Read-only market provider backed by one immutable CSV + case notes."""
+
+    def __init__(self, ticker: str, csv_path: str | Path | None = None):
+        self.ticker = ticker.upper()
+        self.csv_path = Path(csv_path) if csv_path else MARKET_DIR / f"{self.ticker}.csv"
+        if not self.csv_path.exists():
+            raise FileNotFoundError(f"frozen CSV not found: {self.csv_path}")
+        self.frame = pd.read_csv(self.csv_path, parse_dates=["Date"])
+        self.frame = self.frame.sort_values("Date").reset_index(drop=True)
+        self.case = self._find_case(self.ticker)
+        self.identity: dict = self.case["identity"] if self.case else {}
+
+    @staticmethod
+    def _find_case(ticker: str) -> dict | None:
+        for case in all_cases():
+            if case["ticker"].upper() == ticker.upper():
+                return case
+        return None
+
+    # ------------------------------------------------------------------
+    # stock data
+    # ------------------------------------------------------------------
+
+    def get_stock_data(self, symbol: str, start_date: str, end_date: str) -> str:
+        if symbol.upper() != self.ticker:
+            return UNAVAILABLE.replace("this optional data source", "this ticker's data")
+        rows = self._rows_between(start_date, end_date)
+        if rows.empty:
+            return UNAVAILABLE
+        out = self._to_upstream_csv(rows)
+        header = _format_header(self.ticker, start_date, end_date, len(rows))
+        return header + out
+
+    def _rows_between(self, start_date: str, end_date: str) -> pd.DataFrame:
+        df = self.frame
+        if start_date:
+            df = df[df["Date"] >= pd.Timestamp(start_date)]
+        if end_date:
+            df = df[df["Date"] <= pd.Timestamp(end_date)]
+        return df
+
+    def _to_upstream_csv(self, rows: pd.DataFrame) -> str:
+        out = pd.DataFrame(
+            {
+                "Date": rows["Date"].dt.strftime("%Y-%m-%d"),
+                "Open": rows["Open"],
+                "High": rows["High"],
+                "Low": rows["Low"],
+                "Close": rows["Close"],
+                "Adj Close": rows["Adj Close"],
+                "Volume": rows["Volume"],
+            }
+        )
+        return out.to_csv(index=False)
+
+    # ------------------------------------------------------------------
+    # indicators
+    # ------------------------------------------------------------------
+
+    def get_indicators(self, symbol: str, indicator: str, curr_date: str, look_back_days: int = 30) -> str:
+        if symbol.upper() != self.ticker:
+            return UNAVAILABLE.replace("this optional data source", "this ticker's data")
+        df = self._frame_as_of(curr_date, look_back_days)
+        if df.empty or len(df) < 2:
+            return UNAVAILABLE
+        names = [i.strip().lower() for i in (indicator or "").split(",") if i.strip()]
+        if not names:
+            return UNAVAILABLE
+        lines = [
+            f"# Technical indicator for {self.ticker} as of {curr_date} "
+            f"(source_id: {_market_source_label(self.ticker)}; computed from frozen CSV)"
+        ]
+        for name in names:
+            lines.append(self._indicator(df, name))
+        lines.append(f"last_close: {float(df['Close'].iloc[-1]):.2f}")
+        return "\n".join(lines)
+
+    def _indicator(self, df: pd.DataFrame, name: str) -> str:
+        if name not in _INDICATOR_WINDOWS:
+            return self._unavailable_window(name, reason="not supported by frozen corpus")
+        window = _INDICATOR_WINDOWS[name]
+        if len(df) < window:
+            return self._unavailable_window(
+                name,
+                reason=f"needs {window} rows but only {len(df)} available at {df['Date'].iloc[-1].date()}",
+            )
+        close = df["Close"]
+        if name == "close_50_sma":
+            return f"close_50_sma: {close.tail(50).mean():.2f}"
+        if name == "close_200_sma":
+            return f"close_200_sma: {close.tail(200).mean():.2f}"
+        if name == "close_10_ema":
+            return f"close_10_ema: {close.ewm(span=10, adjust=False).mean().iloc[-1]:.2f}"
+        if name in ("macd", "macds", "macdh"):
+            return self._macd_line(df, name)
+        if name == "rsi":
+            return f"rsi: {_rsi(close):.2f}"
+        if name in ("boll", "boll_ub", "boll_lb"):
+            mid = close.tail(20).mean()
+            std = close.tail(20).std()
+            if name == "boll":
+                return f"boll: {mid:.2f}"
+            if name == "boll_ub":
+                return f"boll_ub: {mid + 2 * std:.2f}"
+            return f"boll_lb: {mid - 2 * std:.2f}"
+        if name == "atr":
+            return f"atr: {_atr(df):.2f}"
+        if name == "vwma":
+            return f"vwma: {_vwma(df):.2f}"
+        return self._unavailable_window(name, reason="not supported by frozen corpus")
+
+    @staticmethod
+    def _macd_line(df: pd.DataFrame, name: str) -> str:
+        close = df["Close"]
+        ema12 = close.ewm(span=12, adjust=False).mean()
+        ema26 = close.ewm(span=26, adjust=False).mean()
+        macd = ema12 - ema26
+        signal = macd.ewm(span=9, adjust=False).mean()
+        hist = macd - signal
+        if name == "macd":
+            return f"macd: {float(macd.iloc[-1]):.2f}"
+        if name == "macds":
+            return f"macds: {float(signal.iloc[-1]):.2f}"
+        return f"macdh: {float(hist.iloc[-1]):.2f}"
+
+    def _unavailable_window(self, name: str, reason: str) -> str:
+        return (
+            f"{name}: NO_DATA_AVAILABLE — the full {name} calculation window is "
+            f"unavailable ({reason}). Do not estimate or fabricate a value."
+        )
+
+    def get_verified_market_snapshot(self, symbol: str, curr_date: str, look_back_days: int = 30) -> str:
+        if symbol.upper() != self.ticker:
+            return UNAVAILABLE.replace("this optional data source", "this ticker's data")
+        df = self._frame_as_of(curr_date, look_back_days)
+        if df.empty:
+            return UNAVAILABLE
+        last = df.iloc[-1]
+        return (
+            f"# Verified market snapshot for {self.ticker} as of {curr_date}\n"
+            f"# source_id: {_market_source_label(self.ticker)} (frozen market CSV)\n"
+            f"last_close: {float(last['Close']):.2f}\n"
+            f"last_open: {float(last['Open']):.2f}\n"
+            f"day_high: {float(last['High']):.2f}\n"
+            f"day_low: {float(last['Low']):.2f}\n"
+            f"volume: {int(last['Volume'])}\n"
+            f"as_of: {last['Date'].strftime('%Y-%m-%d')}\n"
+        )
+
+    def _frame_as_of(self, curr_date: str, look_back_days: int = 30) -> pd.DataFrame:
+        df = self.frame
+        if curr_date:
+            df = df[df["Date"] <= pd.Timestamp(curr_date)]
+        if look_back_days:
+            df = df.tail(max(1, look_back_days))
+        return df
+
+    # ------------------------------------------------------------------
+    # news / unsupported sources
+    # ------------------------------------------------------------------
+
+    def get_news(self, ticker: str, start_date: str = "", end_date: str = "") -> str:
+        """Return the official case notes + source ID when the case is eligible.
+
+        If the ticker is a known case whose announcement/analysis window matches
+        the request, the committed source notes and ``source_id`` are returned.
+        Optional sources absent from the corpus stay ``NO_DATA``.
+        """
+        if ticker.upper() != self.ticker or self.case is None:
+            return UNAVAILABLE.replace("this optional data source", "company news")
+        notes = self.case.get("notes") or []
+        source_id = self.case.get("source_id") or f"src-{self.ticker.lower()}"
+        lines = [
+            f"# Company news for {self.ticker} (frozen official source)",
+            f"source_id: {source_id}",
+            f"announcement_date: {self.case.get('announcement_date', '')}",
+            f"analysis_date: {self.case.get('analysis_date', '')}",
+            f"source_url: {self.case.get('source_url', '')}",
+        ]
+        for note in notes:
+            lines.append(f"- {note}")
+        return "\n".join(lines)
+
+    def get_global_news(self, curr_date: str, look_back_days: int | None = None, limit: int | None = None) -> str:
+        return UNAVAILABLE
+
+    def get_insider_transactions(self, ticker: str) -> str:
+        return UNAVAILABLE
+
+    def get_macro_indicators(self, indicator: str, curr_date: str, look_back_days: int | None = None) -> str:
+        return UNAVAILABLE
+
+    def get_prediction_markets(self, topic: str, limit: int | None = None) -> str:
+        return UNAVAILABLE
+
+
+def _rsi(close: pd.Series, period: int = 14) -> float:
+    delta = close.diff()
+    gain = delta.clip(lower=0.0).rolling(period).mean()
+    loss = (-delta.clip(upper=0.0)).rolling(period).mean()
+    rs = gain / loss
+    return float(100 - (100 / (1 + rs)).iloc[-1])
+
+
+def _atr(df: pd.DataFrame, period: int = 14) -> float:
+    high, low, prev_close = df["High"], df["Low"], df["Close"].shift(1)
+    tr = pd.concat(
+        [
+            high - low,
+            (high - prev_close).abs(),
+            (low - prev_close).abs(),
+        ],
+        axis=1,
+    ).max(axis=1)
+    return float(tr.rolling(period).mean().iloc[-1])
+
+
+def _vwma(df: pd.DataFrame) -> float:
+    close, vol = df["Close"], df["Volume"]
+    return float((close * vol).sum() / vol.sum())
+
+
+FILE src/research_desk/eval/live.py
+"""Live evaluation entry points: ``evaluate-case``, ``judge-case``, ``aggregate``.
+
+These are the real runnable application boundary for the frozen six-case
+comparison (AT-07 / FR-003 / QUALITY-001..003 / COST-001 / PERF-001):
+
+- ``run_evaluate_case`` runs ``ResearchRunner`` against the real
+  ``TradingAgentsGraph`` with real DeepSeek clients on the frozen CSV + case
+  notes for one case in one context mode (baseline/compact). It saves the exact
+  config, the full evidence pack (raw prompts/responses/tools/usage/events,
+  final state, reports), the measured wall time and the outcome.
+- ``run_judge_case`` uses the real DeepSeek client as an *isolated evaluator*
+  (separate role, fixed evidence and rubric, no baseline/compact identity) to
+  score a completed run's report, plus deterministic identity/date/price/state
+  and source-ID checks. Raw judge response and usage are recorded separately.
+- ``run_aggregate`` reads existing output directories and computes six paired
+  (baseline vs compact) metrics without calling any model again.
+
+Only host credentials are used: ``DEEPSEEK_API_KEY`` and optional
+``DEEPSEEK_BASE_URL`` (default ``https://api.aiohub.org/v1``). Each run uses an
+isolated home directory. A completed or
+failed outcome means the actual graph outcome; a failed setup is never reported
+as completed.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+import re
+import time
+from decimal import Decimal, InvalidOperation
+from pathlib import Path
+from typing import Any
+
+from pydantic import BaseModel, Field, model_validator
+
+from ..config import DEFAULT_BASE_URL, DEFAULT_MODEL, DEFAULT_PROVIDER
+from .case_registry import case_for
+from .frozen_provider import FrozenMarketProvider
+
+logger = logging.getLogger(__name__)
+
+MODEL = DEFAULT_MODEL
+PROVIDER = DEFAULT_PROVIDER
+OUTPUT_CAP = 1800  # provider max_tokens cap, identical for both arms
+PROVENANCE_FILENAME = "provenance.json"
+
+
+def _base_url() -> str:
+    """Host-supplied endpoint override, otherwise the authoritative default."""
+    return os.environ.get("DEEPSEEK_BASE_URL") or DEFAULT_BASE_URL
+
+
+def _project_root() -> Path:
+    """Repository root (this module lives in ``src/research_desk/eval``)."""
+    return Path(__file__).resolve().parents[3]
+
+
+def _current_source_fingerprint(root: Path) -> str:
+    """Current runtime source fingerprint from the release-quality contract."""
+    from .quality import source_fingerprint
+
+    return source_fingerprint(root)
+
+
+def _provenance_payload(
+    fingerprint: str, cfg: dict[str, Any], base_url: str
+) -> dict[str, Any]:
+    """Provenance record bound to the actual model/provider/endpoint/config."""
+    return {
+        "source_fingerprint": fingerprint,
+        "model": cfg.get("quick_think_llm") or MODEL,
+        "provider": cfg.get("llm_provider") or PROVIDER,
+        "endpoint": base_url,
+        "deep_think_llm": cfg.get("deep_think_llm") or MODEL,
+        "max_tokens": cfg.get("max_tokens"),
+        "temperature": cfg.get("temperature"),
+    }
+
+
+def _read_source_fingerprint(path: Path) -> str | None:
+    """Read a saved provenance source fingerprint, or None if absent/invalid."""
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    value = data.get("source_fingerprint")
+    return value if isinstance(value, str) else None
+
+
+# Verified AioHub deepseek-flash endpoint contract: ``thinking={"type":
+# "disabled"}`` alone is ignored and the model still emits reasoning, while
+# adding ``reasoning_effort="none"`` yields zero reasoning. Both keys travel as
+# ``extra_body`` (never top-level) because the upstream factory filters a
+# top-level ``reasoning_effort`` for DeepSeek; this gives the graph models and
+# the isolated judge the same effective non-thinking setting.
+THINKING_DISABLED_EXTRA_BODY = {
+    "thinking": {"type": "disabled"},
+    "reasoning_effort": "none",
+}
+
+
+def _graph_config(home: Path, base_url: str | None) -> dict[str, Any]:
+    """Build the evaluation graph config from the real DEFAULT_CONFIG.
+
+    The upstream graph treats the supplied dict as complete, so we start from a
+    deep copy of ``DEFAULT_CONFIG`` (which declares ``data_cache_dir``,
+    ``results_dir`` and ``memory_log_path``) and then override the explicit
+    model/settings. The path fields are pointed inside the arm's isolated home
+    so both arms' effective settings are identical and each run stays isolated.
+    """
+    from copy import deepcopy
+
+    from tradingagents.default_config import DEFAULT_CONFIG
+
+    cfg = deepcopy(DEFAULT_CONFIG)
+    cfg.update(
+        {
+            "llm_provider": PROVIDER,
+            "quick_think_llm": MODEL,
+            "deep_think_llm": MODEL,
+            "max_tokens": OUTPUT_CAP,
+            "temperature": 0,
+            "llm_max_retries": 2,
+            "max_debate_rounds": 1,
+            "max_risk_discuss_rounds": 1,
+            "extra_body": THINKING_DISABLED_EXTRA_BODY,
+            "checkpoint_enabled": False,
+            "results_dir": str(home / "logs"),
+            "data_cache_dir": str(home / "cache"),
+            "memory_log_path": str(home / "memory" / "trading_memory.md"),
+        }
+    )
+    cfg["backend_url"] = base_url or DEFAULT_BASE_URL
+    return cfg
+
+
+def _desk_settings(home: Path, max_calls: int | None):
+    from research_desk.config import ResearchDeskSettings
+
+    s = ResearchDeskSettings(home=str(home))
+    s.analysts = ("market", "news")
+    s.max_calls = max_calls
+    s.ensure_dirs()
+    return s
+
+
+def _dump_json(path: Path, data: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
+
+
+def run_evaluate_case(
+    ticker: str,
+    context_mode: str,
+    out_dir: str | Path,
+    max_calls: int | None = None,
+) -> dict[str, Any]:
+    """Run one frozen case in one mode; write config/evidence/summary/report."""
+    from research_desk.graph_adapter import ResearchRunner
+    from research_desk.report import render_run_report
+
+    ticker = ticker.upper()
+    if context_mode not in ("baseline", "compact"):
+        raise ValueError(f"mode must be baseline|compact, got {context_mode!r}")
+    case = case_for(ticker)
+    out = Path(out_dir)
+    arm_dir = out / ticker / context_mode
+    arm_dir.mkdir(parents=True, exist_ok=True)
+
+    base_url = _base_url()
+    if not os.environ.get("DEEPSEEK_API_KEY"):
+        raise RuntimeError(
+            "DEEPSEEK_API_KEY is not set. Supply it as a host environment variable."
+        )
+
+    provider = FrozenMarketProvider(ticker)
+    # Isolated home for this run; the evidence pack is exported under it and all
+    # graph paths (cache/results/memory) are pointed inside it.
+    home = arm_dir / ".home"
+    cfg = _graph_config(home, base_url)
+    settings = _desk_settings(home, max_calls)
+
+    _dump_json(arm_dir / "config.json", cfg)
+    _dump_json(arm_dir / "case.json", case)
+
+    runner = ResearchRunner(
+        settings,
+        context_mode=context_mode,
+        data_mode="frozen",
+        frozen_provider=provider,
+        graph_config=cfg,
+    )
+
+    root = _project_root()
+    source_before = _current_source_fingerprint(root)
+    _dump_json(
+        arm_dir / PROVENANCE_FILENAME,
+        _provenance_payload(source_before, cfg, base_url),
+    )
+
+    start = time.time()
+    result = runner.run(ticker, case["analysis_date"])
+    wall_seconds = time.time() - start
+    source_after = _current_source_fingerprint(root)
+    source_changed = source_after != source_before
+
+    # The pack is exported by the runner under the isolated home; relocate the
+    # whole run directory into the arm dir for stable aggregate/export paths.
+    run_dir = Path(result.pack_path) if result.pack_path else None
+    dest = arm_dir / "run"
+    if run_dir is not None and run_dir.exists():
+        _replace_dir(run_dir, dest)
+
+    pack = None
+    from research_desk.evidence import EvidencePackIO
+
+    try:
+        pack = EvidencePackIO().import_pack(dest)
+    except Exception as exc:  # noqa: BLE001 - record import failure, keep going
+        logger.warning("failed to import relocated pack %s: %s", dest, exc)
+
+    summary = {
+        "ticker": ticker,
+        "analysis_date": case["analysis_date"],
+        "context_mode": context_mode,
+        "outcome": result.outcome,
+        "signal": result.signal,
+        "stop_reason": result.stop_reason,
+        "calls": result.usage.calls,
+        "input_tokens": result.usage.input_tokens,
+        "output_tokens": result.usage.output_tokens,
+        "total_tokens": result.usage.total_tokens,
+        "wall_seconds": round(wall_seconds, 3),
+        "error": result.error,
+        "pack_complete": pack.complete if pack is not None else False,
+        "run_dir": str(dest),
+    }
+    if source_changed:
+        summary["source_changed"] = True
+        summary["error"] = (
+            "source changed during run; refusing to certify evidence "
+            f"({source_before} != {source_after})"
+        )
+    _dump_json(arm_dir / "summary.json", summary)
+    if pack is not None:
+        (arm_dir / "report.md").write_text(render_run_report(pack), encoding="utf-8")
+    if source_changed:
+        raise RuntimeError(summary["error"])
+    return summary
+
+
+def _replace_dir(src: Path, dest: Path) -> None:
+    """Move ``src`` to ``dest`` (overwriting any previous dest)."""
+    import shutil
+
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(src), str(dest))
+
+
+# ---------------------------------------------------------------------------
+# judge
+# ---------------------------------------------------------------------------
+
+
+# A monetary number token in ordinary report formatting: optional ``$``/spaces,
+# an explicit sign, US thousands separators, and a decimal fraction. Ungrouped
+# integers of any length match, correctly grouped comma amounts match, and the
+# sign stays part of the numeric value so ``-451.10`` is never read as
+# ``451.10``. The boundaries reject a digit/comma/dot directly before and a
+# digit directly after, so the match is never a substring of a larger number
+# like ``1451.10`` for an expected ``451.10``.
+_PRICE_TOKEN_RE = re.compile(
+    r"(?<![\d.,])\$?\s*[+-]?\s*(?:\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)(?!\d)"
+)
+
+
+def _normalize_number_token(token: str) -> Decimal | None:
+    """Parse a matched number token (``$``/commas removed, sign kept) into a Decimal."""
+    cleaned = token.replace(",", "").replace("$", "").strip()
+    try:
+        return Decimal(cleaned)
+    except InvalidOperation:
+        return None
+
+
+def _contains_price(text: str, expected_close: float) -> bool:
+    """True when ``text`` states the expected close as its own number token.
+
+    Ordinary formatting is normalized ($451.10, 451.1, comma thousands, trailing
+    zeros), so the check accepts exactly the expected numerical value and never
+    a different number or a substring of a larger number.
+    """
+    expected = Decimal(f"{expected_close:.2f}")
+    for match in _PRICE_TOKEN_RE.finditer(text):
+        value = _normalize_number_token(match.group(0))
+        if value is not None and value == expected:
+            return True
+    return False
+
+
+def _report_text(final_state: dict[str, Any]) -> str:
+    """Assemble the material report text a run actually produced.
+
+    Stages keep their authentic upstream role titles (``reporting.py``) so the
+    independent judge can distinguish intermediate proposals (bull/bear, research
+    manager, trader, risk analysts) from the final portfolio decision. The
+    Portfolio Manager node writes the same string to both
+    ``risk_debate_state.judge_decision`` and ``final_trade_decision``; when they
+    are exactly equal after whitespace stripping, the identical content is
+    included once as the final decision. Raw model text is preserved; no
+    different or contrary stage is removed.
+    """
+    parts: list[str] = []
+
+    def _add(title: str, value: Any) -> None:
+        if isinstance(value, str) and value.strip():
+            parts.append(f"## {title}\n{value.strip()}")
+
+    for key, title in (
+        ("market_report", "Market Analyst"),
+        ("news_report", "News Analyst"),
+        ("sentiment_report", "Sentiment Analyst"),
+        ("fundamentals_report", "Fundamentals Analyst"),
+    ):
+        _add(title, final_state.get(key))
+
+    debate = final_state.get("investment_debate_state")
+    if isinstance(debate, dict):
+        _add("Bull Researcher", debate.get("bull_history"))
+        _add("Bear Researcher", debate.get("bear_history"))
+        _add("Research Manager", debate.get("judge_decision"))
+
+    _add("Trader", final_state.get("trader_investment_plan"))
+
+    risk_judge: str | None = None
+    risk = final_state.get("risk_debate_state")
+    if isinstance(risk, dict):
+        _add("Aggressive Analyst", risk.get("aggressive_history"))
+        _add("Conservative Analyst", risk.get("conservative_history"))
+        _add("Neutral Analyst", risk.get("neutral_history"))
+        judge = risk.get("judge_decision")
+        if isinstance(judge, str) and judge.strip():
+            risk_judge = judge.strip()
+
+    final = final_state.get("final_trade_decision")
+    final = final.strip() if isinstance(final, str) and final.strip() else None
+
+    if risk_judge is not None and final is not None and risk_judge == final:
+        _add("Final Portfolio Decision", final)
+    else:
+        _add("Portfolio Manager", risk_judge)
+        _add("Final Portfolio Decision", final)
+
+    return "\n\n".join(parts)
+
+
+def _report_text_with_identity(pack) -> str:
+    """The judge input: the shared deterministic header plus raw generated text."""
+    from research_desk.report import render_research_identity
+
+    return render_research_identity(pack) + "\n\n" + _report_text(pack.final_state)
+
+
+def _deterministic_checks(case: dict, pack, ticker: str) -> list[dict[str, Any]]:
+    """Deterministic identity/date/price/state and source-ID checks (QUALITY-001)."""
+    checks: list[dict[str, Any]] = []
+    fs = pack.final_state if pack is not None else {}
+    text = _report_text(fs)
+
+    from research_desk.report import render_research_identity
+
+    # Identity/date are presentation-contract checks over the same deterministic
+    # header the user-visible report and judge input carry. The raw narrative
+    # price check below stays independent and stronger.
+    contract_text = render_research_identity(pack) if pack is not None else ""
+
+    def check(name: str, passed: bool, detail: str) -> None:
+        checks.append({"check": name, "passed": passed, "detail": detail})
+
+    expected_company = case.get("identity", {}).get("company_name", "")
+    check(
+        "instrument_identity",
+        bool(expected_company) and expected_company.lower() in contract_text.lower(),
+        f"report contract references company '{expected_company}'",
+    )
+    check(
+        "analysis_date",
+        case["analysis_date"] in contract_text,
+        f"report contract references analysis date {case['analysis_date']}",
+    )
+    check("final_decision_present", bool(fs.get("final_trade_decision")),
+          "final trade decision is present in the final state")
+    # Price must be supported by evidence (observed tool result or the factual
+    # available corpus), never fabricated, AND the report itself must state the
+    # expected close. Case metadata alone is not output evidence.
+    expected_close = case["latest_close"]
+    evidence_supports_price = False
+    if pack is not None:
+        for bucket in pack.input.data_snapshot.values():
+            for res in bucket.values():
+                if isinstance(res, str) and _contains_price(res, expected_close):
+                    evidence_supports_price = True
+        avail = pack.input.available_sources or {}
+        for source in (avail.get("market"), avail.get("verified_snapshot")):
+            if isinstance(source, str) and _contains_price(source, expected_close):
+                evidence_supports_price = True
+    reported_price = _contains_price(text, expected_close)
+    check(
+        "frozen_price_in_report",
+        evidence_supports_price and reported_price,
+        f"frozen latest close {expected_close:.2f} is supported by evidence and stated in the report",
+    )
+    source_id = case.get("source_id", "")
+    check("source_id_referenced", bool(source_id) and source_id in text,
+          f"report references source_id '{source_id}'")
+    return checks
+
+
+def run_judge_case(
+    ticker: str,
+    out_dir: str | Path,
+    max_calls: int | None = None,
+) -> dict[str, Any]:
+    """Judge a completed run's report with a real isolated DeepSeek evaluator.
+
+    Deterministic checks are computed first. Then the real DeepSeek client
+    (same model, separate role, fixed evidence and rubric) scores support,
+    relevance and citations with a structured rationale. Raw response and usage
+    are recorded separately. A score is never auto-assigned for nonempty text.
+    """
+    from research_desk.evidence import EvidencePackIO
+
+    ticker = ticker.upper()
+    if not os.environ.get("DEEPSEEK_API_KEY"):
+        raise RuntimeError(
+            "DEEPSEEK_API_KEY is not set. Supply it as a host environment variable."
+        )
+    case = case_for(ticker)
+    out = Path(out_dir)
+    root = _project_root()
+    judged: dict[str, Any] = {"ticker": ticker, "arms": {}}
+    source_failure = False
+    for mode in ("baseline", "compact"):
+        run_dir = out / ticker / mode / "run"
+        if not run_dir.exists():
+            continue
+        current = _current_source_fingerprint(root)
+        run_fingerprint = _read_source_fingerprint(
+            out / ticker / mode / PROVENANCE_FILENAME
+        )
+        if run_fingerprint is None:
+            judged["arms"][mode] = {
+                "error": "run provenance missing; refusing to judge",
+            }
+            source_failure = True
+            continue
+        if run_fingerprint != current:
+            judged["arms"][mode] = {
+                "error": "run provenance is stale; refusing to judge",
+                "run_source_fingerprint": run_fingerprint,
+                "current_source_fingerprint": current,
+            }
+            source_failure = True
+            continue
+        try:
+            pack = EvidencePackIO().import_pack(run_dir)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("cannot import run for %s/%s: %s", ticker, mode, exc)
+            judged["arms"][mode] = {"error": str(exc)}
+            continue
+        if pack.manifest.outcome != "completed" or not pack.final_state:
+            judged["arms"][mode] = {
+                "outcome": pack.manifest.outcome,
+                "note": "skipped judge: run not completed",
+            }
+            continue
+        report_text = _report_text_with_identity(pack)
+        deterministic = _deterministic_checks(case, pack, ticker)
+        judge_cfg = {
+            "llm_provider": PROVIDER,
+            "quick_think_llm": MODEL,
+            "deep_think_llm": MODEL,
+            "max_tokens": OUTPUT_CAP,
+            "temperature": 0,
+        }
+        arm_judge_dir = out / "judge" / ticker / mode
+        arm_judge_dir.mkdir(parents=True, exist_ok=True)
+        _dump_json(
+            arm_judge_dir / PROVENANCE_FILENAME,
+            _provenance_payload(current, judge_cfg, _base_url()),
+        )
+        raw, score = _llm_judge(
+            case,
+            report_text,
+            deterministic,
+            available_sources=pack.input.available_sources or {},
+            events=pack.events,
+        )
+        source_after = _current_source_fingerprint(root)
+        if source_after != current:
+            judged["arms"][mode] = {
+                "error": "source changed during judge; refusing to certify",
+                "judge_source_fingerprint": current,
+                "current_source_fingerprint": source_after,
+            }
+            source_failure = True
+            continue
+        _dump_json(arm_judge_dir / "raw.json", raw)
+        _dump_json(arm_judge_dir / "judge.json", score)
+        judged["arms"][mode] = score
+    _dump_json(out / "judge" / ticker / "summary.json", judged)
+    if source_failure:
+        raise RuntimeError(
+            "source provenance missing or changed; refusing to certify judge results"
+        )
+    return judged
+
+
+def _observed_tools_text(events) -> str:
+    """Every actual ``tool_result`` payload in the event log, in event order.
+
+    ``input.data_snapshot`` is a lossy fallback projection keyed by tool
+    arguments and keeps only the last output for a repeated tool name, so the
+    judge reads the authoritative event log instead. Each output keeps its
+    tool/source name and event sequence; an exact duplicate (same tool, same
+    result) is not repeated, but different results from the same tool survive.
+    """
+    lines: list[str] = []
+    seen: set[tuple[str, str]] = set()
+    for ev in events:
+        if getattr(ev, "kind", None) != "tool_result":
+            continue
+        payload = getattr(ev, "payload", None) or {}
+        name = payload.get("name") or "unknown"
+        result = payload.get("result")
+        if not isinstance(result, str) or not result.strip():
+            continue
+        if (name, result) in seen:
+            continue
+        seen.add((name, result))
+        lines.append(f"## observed tool output: {name} (event {getattr(ev, 'seq', '?')})")
+        lines.append(result)
+    return "\n".join(lines)
+
+
+def _judge_prompt(
+    case: dict,
+    report_text: str,
+    deterministic: list[dict],
+    available_sources: dict[str, Any],
+    events,
+) -> str:
+    """Build the judge prompt from the *actual* frozen evidence captured in this pack.
+
+    Supplies the official earnings notes, the fixed ticker/date/identity and
+    source IDs, plus the real market evidence (market CSV, verified snapshot and
+    official news) and every observed tool result recorded in the event log — so
+    the judge can validate technical/history claims in the report. No
+    baseline/compact identity is revealed.
+    """
+    identity = available_sources.get("identity") or case.get("identity", {})
+    notes = "\n".join(f"- {n}" for n in case.get("notes", []))
+    facts = "\n".join(
+        f"- {c['check']}: {'PASS' if c['passed'] else 'FAIL'} ({c['detail']})"
+        for c in deterministic
+    )
+    market_evidence = str(available_sources.get("market", "")).strip()
+    verified = str(available_sources.get("verified_snapshot", "")).strip()
+    news = str(available_sources.get("news", "")).strip()
+    observed = _observed_tools_text(events).strip()
+
+    return f"""You are an independent equity-research evaluator (a separate role from the analyst). You are judging a single research report for a single equity case. You have no knowledge of which context configuration produced it.
+
+FIXED CASE (identity, do not contest):
+- ticker: {case['ticker']}
+- company: {identity.get('company_name', '')}
+- analysis date: {case['analysis_date']}
+- source_id: {case.get('source_id', 'n/a')}
+- official source URL: {case.get('source_url', 'n/a')}
+
+Official earnings notes (frozen source):
+{notes}
+
+Frozen latest close (from the actual market CSV): {case['latest_close']:.2f}
+
+Market evidence captured in this pack (actual frozen market data this run had available):
+{market_evidence or '(none present)'}
+
+Verified market snapshot captured in this pack:
+{verified or '(none present)'}
+
+Company news captured in this pack (official source):
+{news or '(none present)'}
+
+Observed tool outputs this report's run actually retrieved:
+{observed or '(none present)'}
+
+Deterministic checks already computed against the report:
+{facts}
+
+Judge the report below. Score support and relevance on 0-1 using the rubric:
+- support 1.0 = every key conclusion has direct support from the evidence; 0.8 = main conclusions supported with no key fabrication; 0.5 = important evidence gaps; 0 = key factual fabrication.
+- relevance 1.0 = fully focused on the requested ticker/date/task; 0.8 = core complete with minor redundancy; 0.5 = missing key parts; 0 = off task.
+
+Citation accounting (count factual claims that carry a source citation):
+- cited_claim_count = number of factual claims that cite a source ID.
+- supported_cited_claim_count = number of those cited claims whose cited source ID is present AND actually supports that particular claim. A source ID merely existing is NOT support; it must back the specific claim.
+- invalid_citation_explanations = for each cited claim whose citation does not support it, explain why.
+- uncited_factual_claims = factual claims (numbers/dates/identity/price) made with no supporting source ID.
+Do NOT give 1.0 just because the report is nonempty.
+
+Semantic validity (dedicated condition):
+- semantic_valid = true only when every earnings-period and unit statement is correct. A quarterly EPS is never described as trailing-twelve-month (TTM) or annual EPS, and a trailing P/E or other trailing ratio is computed only from actual TTM EPS evidence.
+- Set semantic_valid = false if the report converts or relabels a single-quarter figure as TTM/annual, computes a trailing P/E from quarterly EPS, or makes a key numerical valuation assertion unsupported by the evidence. Valid citation IDs do NOT rescue a wrong period/unit or an unsupported numerical claim.
+- semantic_errors = concise explanations of each period/unit error or unsupported numerical valuation claim. Any non-empty semantic_errors list must accompany semantic_valid = false.
+
+Presentation contract:
+- The first section is a deterministic identity/date/evidence-price header rendered from the evidence pack. It is a presentation contract, not model reasoning.
+- A correct header does NOT excuse a contradictory price or identity in the raw reasoning, nor a wrong earnings period or unit. Judge the generated narrative independently.
+
+REPORT:
+{report_text}
+"""
+
+
+def _valid_citation_rate(cited: int, supported: int) -> float | None:
+    """Supported-cited fraction; a zero denominator is NOT an automatic pass."""
+    if cited <= 0:
+        return None
+    return round(supported / cited, 4)
+
+
+class JudgeScore(BaseModel):
+    """Structured judge output, including the dedicated semantic validity gate.
+
+    ``semantic_valid`` defaults to ``False`` when a legacy or incomplete judge
+    response omits it, so absence can never be read as a pass. Any recorded
+    semantic error also forces it to ``False`` regardless of citation counts.
+    """
+
+    support: float = Field(..., ge=0, le=1)
+    relevance: float = Field(..., ge=0, le=1)
+    cited_claim_count: int = Field(..., ge=0)
+    supported_cited_claim_count: int = Field(..., ge=0)
+    invalid_citation_explanations: list[str] = Field(default_factory=list)
+    uncited_factual_claims: list[str] = Field(default_factory=list)
+    semantic_valid: bool = Field(
+        default=False,
+        description=(
+            "True only when earnings periods/units are correct and no key numerical "
+            "valuation assertion is unsupported by the evidence."
+        ),
+    )
+    semantic_errors: list[str] = Field(default_factory=list)
+    rationale: str = ""
+
+    @model_validator(mode="after")
+    def _supported_within_cited(self):
+        if self.supported_cited_claim_count > self.cited_claim_count:
+            raise ValueError(
+                "supported_cited_claim_count cannot exceed cited_claim_count"
+            )
+        return self
+
+    @model_validator(mode="after")
+    def _semantic_errors_invalidate(self):
+        if self.semantic_errors:
+            self.semantic_valid = False
+        return self
+
+
+def _llm_judge(
+    case: dict,
+    report_text: str,
+    deterministic: list[dict],
+    *,
+    available_sources: dict[str, Any],
+    events,
+):
+    """Run the real DeepSeek evaluator; returns (raw, score) without fabrication."""
+    from tradingagents.llm_clients import create_llm_client
+
+    client = create_llm_client(
+        PROVIDER,
+        MODEL,
+        base_url=_base_url(),
+        max_tokens=OUTPUT_CAP,
+        temperature=0,
+    )
+    llm = client.get_llm()
+    if hasattr(llm, "extra_body"):
+        llm.extra_body = dict(THINKING_DISABLED_EXTRA_BODY)
+
+    prompt = _judge_prompt(case, report_text, deterministic, available_sources, events)
+    structured = llm.with_structured_output(JudgeScore, include_raw=True)
+    try:
+        raw_out = structured.invoke(prompt)
+    except Exception as exc:  # noqa: BLE001 - surface judge failures visibly
+        raw_failed: dict[str, Any] = {"prompt": prompt, "invoke_error": str(exc), "usage": {}}
+        score: dict[str, Any] = {
+            "support": None,
+            "relevance": None,
+            "cited_claim_count": 0,
+            "supported_cited_claim_count": 0,
+            "valid_citation_rate": None,
+            "invalid_citation_explanations": [],
+            "uncited_factual_claims": [],
+            "semantic_valid": False,
+            "semantic_errors": [],
+            "rationale": f"judge invoke failed: {exc}",
+            "error": True,
+            "deterministic_checks": deterministic,
+        }
+        return raw_failed, score
+
+    raw_resp = raw_out.get("raw", None)
+    parsed = raw_out.get("parsed", None)
+    parsing_error = raw_out.get("parsing_error", None)
+    usage: dict[str, Any] = {}
+    if hasattr(raw_resp, "usage_metadata"):
+        usage = dict(raw_resp.usage_metadata or {}) if raw_resp.usage_metadata else {}
+
+    # Full raw message: tool-call responses often carry content='' with the
+    # answer in tool_calls, so persist the complete message, not just text.
+    raw_msg_json: Any = None
+    if raw_resp is not None:
+        try:
+            raw_msg_json = raw_resp.model_dump()
+        except Exception:  # noqa: BLE001
+            raw_msg_json = {"content": getattr(raw_resp, "content", None)}
+
+    if parsed is None:
+        score = {
+            "support": None,
+            "relevance": None,
+            "cited_claim_count": 0,
+            "supported_cited_claim_count": 0,
+            "valid_citation_rate": None,
+            "invalid_citation_explanations": [],
+            "uncited_factual_claims": [],
+            "semantic_valid": False,
+            "semantic_errors": [],
+            "rationale": (
+                "judge returned no parseable structured score"
+                + (f": {parsing_error}" if parsing_error else "")
+            ),
+            "error": True,
+            "parse_error": str(parsing_error) if parsing_error else None,
+            "deterministic_checks": deterministic,
+        }
+    else:
+        cited = int(parsed.cited_claim_count)
+        supported = int(parsed.supported_cited_claim_count)
+        valid_citation_rate = _valid_citation_rate(cited, supported)
+        semantic_errors = list(getattr(parsed, "semantic_errors", []) or [])
+        semantic_valid = bool(getattr(parsed, "semantic_valid", False))
+        if semantic_errors:
+            semantic_valid = False  # a recorded semantic defect cannot pass
+        score = {
+            "support": float(parsed.support),
+            "relevance": float(parsed.relevance),
+            "cited_claim_count": cited,
+            "supported_cited_claim_count": supported,
+            "valid_citation_rate": valid_citation_rate,
+            "invalid_citation_explanations": list(parsed.invalid_citation_explanations),
+            "uncited_factual_claims": list(parsed.uncited_factual_claims),
+            "semantic_valid": semantic_valid,
+            "semantic_errors": semantic_errors,
+            "rationale": parsed.rationale,
+            "error": False,
+            "deterministic_checks": deterministic,
+        }
+    raw: dict[str, Any] = {
+        "prompt": prompt,
+        "raw_message": raw_msg_json,
+        "response_text": getattr(raw_resp, "content", None) if raw_resp is not None else None,
+        "usage": usage,
+        "parse_error": str(parsing_error) if parsing_error else None,
+    }
+    return raw, score
+
+
+# ---------------------------------------------------------------------------
+# aggregate
+# ---------------------------------------------------------------------------
+
+
+def run_aggregate(root: str | Path) -> dict[str, Any]:
+    """Compute six paired baseline/compact metrics from existing run dirs.
+
+    No model is called. Completed arms are included; a missing or non-completed
+    arm is recorded as such. Judge scores, when present, are attached separately.
+    """
+    root = Path(root)
+    cases = [c for c in (root.iterdir() if root.exists() else []) if c.is_dir()]
+    paired: list[dict[str, Any]] = []
+    for case_dir in sorted(cases):
+        ticker = case_dir.name
+        arms = {}
+        for mode in ("baseline", "compact"):
+            summary = case_dir / mode / "summary.json"
+            if not summary.exists():
+                arms[mode] = {"present": False}
+                continue
+            data = json.loads(summary.read_text(encoding="utf-8"))
+            data["present"] = True
+            judge_file = root / "judge" / ticker / mode / "judge.json"
+            if judge_file.exists():
+                data["judge"] = json.loads(judge_file.read_text(encoding="utf-8"))
+            arms[mode] = data
+        if not arms.get("baseline", {}).get("present") and not arms.get("compact", {}).get("present"):
+            continue
+        paired.append({"ticker": ticker, "baseline": arms.get("baseline"), "compact": arms.get("compact")})
+    report = _aggregate_report(paired)
+    _dump_json(root / "aggregate" / "summary.json", {"paired": paired})
+    (root / "aggregate" / "report.md").write_text(report, encoding="utf-8")
+    return {"paired": paired, "report": report}
+
+
+def _arm_value(arm: dict | None, key: str, default=None):
+    if arm is None or not arm.get("present"):
+        return default
+    return arm.get(key, default)
+
+
+def _aggregate_report(paired: list[dict]) -> str:
+    lines = [
+        "# Baseline / Compact Aggregate (six paired metrics)",
+        "",
+        "Read from existing run outputs; no model calls. Judge scores are attached when present.",
+        "",
+        "| ticker | metric | baseline | compact | delta |",
+        "|---|---|---|---|---|",
+    ]
+    metrics = [
+        ("calls", "{:.0f}"),
+        ("input_tokens", "{:.0f}"),
+        ("output_tokens", "{:.0f}"),
+        ("total_tokens", "{:.0f}"),
+        ("wall_seconds", "{:.1f}"),
+        ("outcome", "{!s}"),
+    ]
+    for p in paired:
+        t = p["ticker"]
+        for key, fmt in metrics:
+            b = _arm_value(p.get("baseline"), key)
+            c = _arm_value(p.get("compact"), key)
+            b_s = "n/a" if b is None else fmt.format(b)
+            c_s = "n/a" if c is None else fmt.format(c)
+            delta = "—"
+            if isinstance(b, (int, float)) and isinstance(c, (int, float)):
+                delta = _pct(b, c)
+            lines.append(f"| {t} | {key} | {b_s} | {c_s} | {delta} |")
+    for p in paired:
+        for mode in ("baseline", "compact"):
+            judge = _arm_value(p.get(mode), "judge")
+            if isinstance(judge, dict) and not judge.get("error") and judge.get("support") is not None:
+                lines.append(
+                    f"| {p['ticker']} | {mode} judge support | {judge['support']:.2f} | — | — |"
+                )
+                lines.append(
+                    f"| {p['ticker']} | {mode} judge relevance | {judge['relevance']:.2f} | — | — |"
+                )
+    return "\n".join(lines)
+
+
+def _pct(b: float, c: float) -> str:
+    if b == 0:
+        return "—"
+    return f"{(c - b) / b * 100:+.1f}%"
+
+
+FILE src/research_desk/replay.py
+"""Offline replay of a complete evidence pack.
+
+Replay imports a saved pack (directory or ZIP), validates that it is complete,
+then rebuilds the deterministic outputs with **zero external calls**: the
+report tree from the captured final state, the structured signal via the same
+deterministic heuristic the graph uses, and the policy verdict for the pack's
+proposal against a supplied ledger.
+
+This is the *offline reproduction* path. It is deliberately distinct from a
+controlled LLM rerun (``data_mode="frozen"`` in the runner), which re-executes
+the real graph over frozen evidence. Replay never starts an LLM request.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from pathlib import Path
+
+from tradingagents.graph.signal_processing import SignalProcessor
+from tradingagents.reporting import write_report_tree
+
+from .evidence import EvidencePackIO
+from .models import EvidencePack
+from .policy import PolicyVerdict, evaluate_buy, evaluate_sell, policy_bounds
+from .report import apply_research_identity_header, render_research_identity
+
+
+@dataclass
+class ReplayResult:
+    pack: EvidencePack
+    signal: str | None = None
+    report_files: list[str] = field(default_factory=list)
+    policy_verdict: PolicyVerdict | None = None
+    policy_bounds: dict | None = None
+    external_calls: int = 0  # always 0 for offline replay
+    incomplete: bool = False
+    error: str | None = None
+
+
+class ReplayEngine:
+    """Rebuilds reports, signal and policy outputs from a complete evidence pack."""
+
+    def __init__(self, io: EvidencePackIO | None = None):
+        self.io = io or EvidencePackIO()
+        # Deterministic heuristic; the graph constructs it the same way.
+        self._signal_processor = SignalProcessor()
+
+    def load(self, source: str | Path) -> EvidencePack:
+        return self.io.import_pack(source)
+
+    def replay(
+        self,
+        source: str | Path | EvidencePack,
+        out_dir: str | Path,
+        ledger=None,
+    ) -> ReplayResult:
+        """Rebuild the pack's outputs under ``out_dir`` with no network calls."""
+        pack = source if isinstance(source, EvidencePack) else self.load(source)
+        result = ReplayResult(pack=pack)
+
+        if pack.manifest.outcome == "completed" and not pack.final_state:
+            result.incomplete = True
+            result.error = "pack claims completion but has no final_state"
+            return result
+
+        signal = None
+        if pack.final_state.get("final_trade_decision"):
+            signal = self._signal_processor.process_signal(
+                pack.final_state["final_trade_decision"]
+            )
+        result.signal = signal
+
+        out = Path(out_dir)
+        try:
+            complete = write_report_tree(pack.final_state, pack.manifest.ticker, out)
+            apply_research_identity_header(complete, render_research_identity(pack))
+            result.report_files = [str(p) for p in out.rglob("*") if p.is_file()]
+            if complete not in result.report_files:
+                result.report_files.append(str(complete))
+        except Exception as exc:  # noqa: BLE001 - report rebuild is best-effort
+            result.error = f"report rebuild failed: {exc}"
+
+        if ledger is not None and pack.proposal is not None:
+            prop = pack.proposal
+            result.policy_bounds = policy_bounds(ledger, prop.ticker, prop.price)
+            if prop.shares is not None and prop.price is not None:
+                verdict = (
+                    evaluate_sell(ledger, prop.ticker, prop.shares, prop.price)
+                    if prop.side == "sell"
+                    else evaluate_buy(ledger, prop.ticker, prop.shares, prop.price)
+                )
+                result.policy_verdict = verdict
+            else:
+                result.policy_verdict = PolicyVerdict(
+                    allowed=False,
+                    checks=[
+                        {
+                            "check": "proposal_material",
+                            "passed": False,
+                            "detail": "proposal missing operator shares (supplied at approval); "
+                            "policy bounds are reported instead",
+                        }
+                    ],
+                )
+
+        return result
+
+
+FILE docs/architecture/invariants.md
+# Invariant register
+
+| ID | Requirement | Statement | Enforcer | Verification | Operational fallback |
+|---|---|---|---|---|---|
+| I-AUTH | INV-001 | Ledger mutations require exact approved terms | review, storage | AT-03/05 | Keep ledger unchanged; set REVIEW_REQUIRED and request a fresh review |
+| I-POLICY | INV-002 | Cash stays nonnegative and sells never exceed owned shares. A buy must leave total ticker holdings at or below 10% of current equity; a valid sale may reduce an already overweight holding even if it remains above the cap. | policy | AT-04/05 | Reject transaction and retain named failed checks |
+| I-ADVISORY | INV-002 | Research cannot grant itself approval or execute | graph_adapter, CLI boundary | AT-04 | Treat model instructions as report text; never route them to review/execute |
+| I-COMPLETE | FR-001 | A complete package has the records required for replay | evidence | AT-01 | Reject incomplete replay; preserve partial run for diagnosis |
+| I-CUTOFF | SEC-001 | Historical inputs are eligible at the analysis cutoff | context, frozen corpus | AT-02 | Exclude ineligible records and mark unknown availability |
+| I-BUDGET | NFR-003 | No request starts after the configured call limit | budget, actual model boundary | AT-06 | Stop graph, record budget_stopped and produce no tradeable proposal |
+| I-CONTEXT | CTX-001 | Complete model inputs stay within the configured conservative cap | budget, request delegate | AT-06 context unit tests | Stop before the provider request; retain context_budget_exhausted evidence and no proposal |
+| I-USAGE | FR-003 | Cost claims use actual provider usage | evidence, evaluation | AT-07 | Mark missing usage and exclude no failure silently; rerun only with a recorded reason |
+| I-REPLAY | NFR-001 | Replay never initiates an external request | replay | AT-01 | Fail test on any attempted socket/model call |
+
+Zero tolerance applies to safety escapes. A failed quality or performance target is a reported experiment result and does not authorize weakening these invariants.
+
+
+FILE docs/process/TEST_PLAN.md
+# 实施前验收测试计划
+
+版本：1.0.0。状态：**leo已批准，OpenCode正在实现**。以下为验收目标，通过结果以实际测试日志为准。
+
+本次决策对象是具体行为、案例与指标；主线程记录采纳后可以直接指导实现。允许参数化，不能暗中降低阈值或删除失败案例。固定6组股票/日期资料，2组开发、4组在开发前冻结用于比较。离线fixture可以人工或AI构造并明确标识；live结果必须来源于真实调用。
+
+| ID | 需求 | 输入与步骤 | 验收结果 |
+|---|---|---|---|
+| AT-01 | FR-001/NFR-001 | 导出研究；新进程禁止网络再生成报告/策略；另删除必须记录 | 完整包外部调用0，决策/策略一致，<2秒；缺记录明确拒绝完整复现 |
+| AT-02 | SEC-001/QUALITY-001 | 资料含截止日前后事实、未来才知道的记忆、重复来源 | 历史可用集合不含未来事实；去重后来源可追踪；分别记录截止日和采集日；不明可用时间的资料标为不适合历史评估 |
+| AT-03 | FR-002/INV-001 | 现金100000、零持仓、价格100；人批准100股；重复执行同一ID | 首次记账后现金90000、100股，记录批准者/版本/策略；再次执行不重复扣款 |
+| AT-04 | NFR-002/INV-002 | 未批准、已拒绝、上游REVIEW、101股超10%上限、资金不足、卖超持仓、价格缺失、模型正文要求绕过 | 所有禁止情况账本不变；明确业务拒绝/需补资料；确定性裁决不调LLM；模型不能获得批准权 |
+| AT-05 | FR-002/INV-001 | 批准后改变建议版本，或其他已批准操作改变余额/持仓 | 旧批准不执行新建议；重新核对当前账本，不满足政策则REVIEW_REQUIRED，无部分写入 |
+| AT-06 | FR-003/NFR-003 | 伪LLM轨迹设3次调用上限，第三次后仍提出继续；上下文有长历史和重复报告 | 不开始第4次请求；预算停止不可成为可批准建议；身份/日期/价格/约束保留；usage覆盖实际调用 |
+| AT-07 | QUALITY-001/COST-001/PERF-001 | 同DeepSeek模型、6组冻结资料分别跑baseline/compact，完整记录样本与重试 | 强制事实正确率100%，有效引用>=95%，支持度/相关性>=0.8；tokens目标下降>=20%、质量均值下降<=0.05、wall<=110% baseline；未达目标如实记录 |
+| AT-08 | D1/D3/D4/D7 | 构造无事先测试批准、静态错误、无效schema、语义阈值失败、回归、缺AI-use log六类PR，再修正 | 对应required check分别失败并阻止合并；安全路径还需人review+ADR；修正后全部旧/新测试通过；保存真实GitHub证据 |
+
+## 评分定义与数据
+
+- 强制事实：股票身份、分析日期、冻结价格、策略数值、建议状态。与资料逐项比较，不能用LLM判断数字真伪。
+- 有效引用率：存在且支持相应事实主张的证据引用数/全部事实引用数。同时报告无引用的事实主张数，避免通过删引用提高指标。
+- 支持度0–1：1.0为关键结论全部有直接支持；0.8为主要结论支持充分且无关键虚构；0.5为重要证据缺口；0为关键事实虚构。
+- 相关性0–1：1.0完整聚焦指定股票/日期/任务；0.8核心完整、少量冗余；0.5遗漏关键部分；0偏离任务。
+- 语义评分使用冻结rubric的judge加人工抽样；策略安全和数字由确定性测试裁决。judge调用成本单列，不能混入应用优化收益。
+
+## 执行策略
+
+日常跑受影响的有意义验收，合并前跑全部已有与新增离线测试。Live先用2组验证方法，再对完整6组作成对比较；不重复调用直到挑出理想结果。prompt/model PR的语义门禁必须运行固定评估并验证结果，手填PASS不算完成。
+
+AT-08本地先准备实际门禁机制；GitHub账户的联网认证已确认，待本地成果完成后验证远端合并阻断。未实现远端保护时报告待完成，不能将本地测试声称为已部署门禁。
+
+leo的决策记录统一写入 `APPROVAL_PACKET.md`。该文件1.0.0和本文1.0.0已获采纳，按计划推进实现，不等待再次批准。执行来源统一见 `../orchestration/README.md`。
+

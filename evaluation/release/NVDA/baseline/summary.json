@@ -1,0 +1,16 @@
+{
+  "ticker": "NVDA",
+  "analysis_date": "2026-08-27",
+  "context_mode": "baseline",
+  "outcome": "completed",
+  "signal": "Overweight",
+  "stop_reason": "completed",
+  "calls": 14,
+  "input_tokens": 84356,
+  "output_tokens": 18069,
+  "total_tokens": 102425,
+  "wall_seconds": 171.538,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release/NVDA/baseline/run"
+}

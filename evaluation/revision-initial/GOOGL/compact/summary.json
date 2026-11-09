@@ -1,0 +1,16 @@
+{
+  "ticker": "GOOGL",
+  "analysis_date": "2026-07-23",
+  "context_mode": "compact",
+  "outcome": "completed",
+  "signal": "Overweight",
+  "stop_reason": "completed",
+  "calls": 13,
+  "input_tokens": 54313,
+  "output_tokens": 14370,
+  "total_tokens": 68683,
+  "wall_seconds": 151.841,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release/GOOGL/compact/run"
+}

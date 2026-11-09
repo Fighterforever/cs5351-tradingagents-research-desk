@@ -1,0 +1,3 @@
+Replayed run-f1b499eba15d (external calls: 0)
+signal: Overweight
+reports: 12 files under evaluation/replay-release/MSFT/compact/report

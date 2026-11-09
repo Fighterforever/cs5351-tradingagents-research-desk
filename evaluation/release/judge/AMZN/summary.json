@@ -1,0 +1,94 @@
+{
+  "ticker": "AMZN",
+  "arms": {
+    "baseline": {
+      "support": 0.9,
+      "relevance": 0.95,
+      "cited_claim_count": 28,
+      "supported_cited_claim_count": 28,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [
+        "News Analyst \u00a73 states 'Price reaction to the 2026-07-30 print: UNKNOWN. I have a single frozen close for 2026-07-31 [market-amzn] but no prior close' \u2014 the prior close (235.50 on 2026-07-30) is present in the same frozen market CSV and is used elsewhere in the report, so this is an internally inconsistent factual assertion (though it errs toward caution, not fabrication).",
+        "Derived arithmetic (15.32% gap, 1.27x volume, 65.2% AWS margin, 43.2% op income growth, 85.3% other-income share, 11.90% above 10-EMA, 0.16% retest, +1.24% three-month change) is presented without a source ID; it is correctly labeled as calculation from sourced operands, so it is not a fabrication, but it is uncited arithmetic."
+      ],
+      "semantic_valid": true,
+      "semantic_errors": [],
+      "rationale": "Support: The report's key conclusions rest on directly verifiable evidence. Every earnings figure (Q2 2026 ended June 30; net sales 200.6B +20%; AWS 42.2B +37%; AWS operating income 27.5B vs 19.2B; net income 62.6B with 53.4B pre-tax other income primarily from Anthropic; TTM FCF outflow 7.6B) matches the frozen src-amzn notes exactly. Every price/volume claim (271.58 close, 235.50 prior close, 262.01\u2013273.23 range, 239.82 prior high, 129.05M vs 101.84M volume, 226.65/227.01 retest, 274.99/278.56 May supply, 10-EMA 242.70) matches the frozen market CSV and observed indicator outputs. The report correctly reports close_50_sma/close_200_sma as NO_DATA_AVAILABLE and does not fabricate them, and correctly reports global news, macro and prediction markets as unavailable. Derived ratios are explicitly labeled as calculations from sourced operands. Minor blemishes: the News Analyst claims it has 'no prior close' and therefore cannot compute the post-earnings move, which is contradicted by the same CSV it cites (the prior close 235.50 is used by every other section) \u2014 an internal inconsistency that errs conservative rather than fabricating; and the derived arithmetic carries no source ID (though it is transparently labeled as derived). No key fabrication found. Relevance: fully on-task for AMZN at 2026-07-31, with a complete decision chain (technical, news, bull/bear, manager, trader, three risk seats, final decision) and only mild redundancy from the multi-seat debate format. Semantic validity: earnings period and units are handled correctly throughout \u2014 Q2 2026 is never relabeled as TTM or annual, the 62.6B net income is explicitly flagged as investment-gain-distorted, and the report repeatedly and correctly refuses to compute a trailing P/E because no TTM EPS or share count exists in the sources. No trailing multiple is derived from quarterly EPS, and no unsupported numerical valuation assertion is made; all price levels, tranche weights and stops are explicitly labeled as analyst judgment/assumptions rather than sourced facts.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report contract references company 'Amazon.com, Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report contract references analysis date 2026-07-31"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 271.58 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-amzn'"
+        }
+      ]
+    },
+    "compact": {
+      "support": 0.9,
+      "relevance": 0.95,
+      "cited_claim_count": 28,
+      "supported_cited_claim_count": 28,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [
+        "30-day average volume ~44M (labeled a calculation from market-amzn rows, but no source ID attached to the derived figure)",
+        "Derived ~+43% AWS operating income growth (labeled 'calculation from src-amzn operands' but the derived number itself carries no citation tag)",
+        "Derived ~85% of net income from pre-tax other income (53.4/62.6) \u2014 arithmetic on cited operands, but the derived ratio is uncited",
+        "\u221217.6% drawdown from 274.99 to 226.65 (labeled calculation, market-amzn, but no citation tag on the derived percentage)",
+        "Stop level 255.0 and position sizing weights (explicitly flagged as analyst assumptions, not sourced facts)"
+      ],
+      "semantic_valid": true,
+      "semantic_errors": [],
+      "rationale": "Support: All key conclusions trace to the frozen evidence. Earnings figures (net sales $200.6B +20%, AWS $42.2B +37%, AWS OI $27.5B vs $19.2B, net income $62.6B, pre-tax other income $53.4B Anthropic, TTM FCF \u2212$7.6B) match src-amzn exactly. Market figures (close 271.58, prior close 235.50, high 273.23, low 262.01, volume 129.05M, resistance 274.99/278.56) match market-amzn rows. Derived ratios (+43% OI growth, ~85% of net income, +15.3% gap, ~2.9x volume, \u221217.6% drawdown) are arithmetically correct from cited operands. Assumptions (255 stop, sizing) are explicitly labeled as unsourced. Minor deduction: derived figures are presented as 'calculations' without citation tags, and the ~44M 30-day average is a rough approximation rather than a precise computed mean. Relevance: Fully on-task \u2014 AMZN, 2026-07-31, correct source IDs, explicit handling of NO_DATA_AVAILABLE sources without fabrication, and a clear final BUY/Overweight decision with staged execution. Some redundancy across the four risk-analyst sections, but no off-task drift. Semantic validity: No period or unit errors. Quarterly figures are consistently labeled quarterly; TTM FCF is correctly labeled TTM; the report explicitly refuses to compute a trailing P/E because no TTM EPS exists in the corpus, and repeatedly flags trailing P/E as UNKNOWN. No single-quarter figure is relabeled as TTM/annual, and no trailing ratio is computed from quarterly EPS. The one nuance \u2014 the ~85% ratio divides pre-tax other income by net income (mixing pre-tax and after-tax bases) \u2014 is a minor analytical imprecision, not a period/unit error, and does not rise to a key unsupported valuation assertion.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report contract references company 'Amazon.com, Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report contract references analysis date 2026-07-31"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 271.58 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-amzn'"
+        }
+      ]
+    }
+  }
+}

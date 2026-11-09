@@ -1,0 +1,53 @@
+$ /Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python -m research_desk.cli aggregate /Users/leeyoma/Downloads/cs5351/work/project/evaluation/release
+
+[exit 0]
+
+--- stdout ---
+               Baseline / Compact Aggregate (six paired metrics)                
+
+Read from existing run outputs; no model calls. Judge scores are attached when  
+present.                                                                        
+
+                                                     
+ ticker  metric         baseline   compact    delta  
+ ─────────────────────────────────────────────────── 
+ AAPL    calls          16         13         -18.8% 
+ AAPL    input_tokens   59108      53318      -9.8%  
+ AAPL    output_tokens  24372      12911      -47.0% 
+ AAPL    total_tokens   83480      66229      -20.7% 
+ AAPL    wall_seconds   224.0      132.4      -40.9% 
+ AAPL    outcome        completed  completed  —      
+ AMZN    calls          16         13         -18.8% 
+ AMZN    input_tokens   54560      55019      +0.8%  
+ AMZN    output_tokens  22837      13395      -41.3% 
+ AMZN    total_tokens   77397      68414      -11.6% 
+ AMZN    wall_seconds   216.2      138.5      -35.9% 
+ AMZN    outcome        completed  completed  —      
+ GOOGL   calls          15         13         -13.3% 
+ GOOGL   input_tokens   44471      54313      +22.1% 
+ GOOGL   output_tokens  22660      14370      -36.6% 
+ GOOGL   total_tokens   67131      68683      +2.3%  
+ GOOGL   wall_seconds   210.1      151.8      -27.7% 
+ GOOGL   outcome        completed  completed  —      
+ META    calls          16         13         -18.8% 
+ META    input_tokens   47150      53657      +13.8% 
+ META    output_tokens  22624      13401      -40.8% 
+ META    total_tokens   69774      67058      -3.9%  
+ META    wall_seconds   214.7      130.5      -39.2% 
+ META    outcome        completed  completed  —      
+ MSFT    calls          16         13         -18.8% 
+ MSFT    input_tokens   51721      54015      +4.4%  
+ MSFT    output_tokens  22752      15446      -32.1% 
+ MSFT    total_tokens   74473      69461      -6.7%  
+ MSFT    wall_seconds   220.7      143.1      -35.2% 
+ MSFT    outcome        completed  completed  —      
+ NVDA    calls          15         13         -13.3% 
+ NVDA    input_tokens   46106      55802      +21.0% 
+ NVDA    output_tokens  22272      12721      -42.9% 
+ NVDA    total_tokens   68378      68523      +0.2%  
+ NVDA    wall_seconds   197.8      126.6      -36.0% 
+ NVDA    outcome        completed  completed  —      
+                                                     
+
+--- stderr ---
+

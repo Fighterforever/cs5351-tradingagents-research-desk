@@ -1,0 +1,14 @@
+$ /Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python -m research_desk.cli evaluate-case AMZN --mode baseline --out /Users/leeyoma/Downloads/cs5351/work/project/evaluation/release --max-calls 32
+
+[exit 0]
+
+--- stdout ---
+AMZN  outcome=completed signal=Overweight calls=13 tokens=98011 wall=174.9s
+  run dir: 
+/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release/AMZN/baseline/ru
+n
+
+--- stderr ---
+/Users/leeyoma/Downloads/cs5351/work/project/tradingagents/llm_clients/openai_client.py:278: RuntimeWarning: Model 'deepseek-flash' is not in the known model list for provider 'deepseek'. Continuing anyway.
+  self.warn_if_unknown_model()
+

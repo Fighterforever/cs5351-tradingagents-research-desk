@@ -1,8 +1,9 @@
 """Gate 5: full regression.
 
 Runs both the original upstream ``tests`` suite and the new ``test/offline``
-suite. Live API tests are excluded via the registered ``live`` marker. A silent
-pass or continue-on-error is not permitted: any non-zero exit fails the gate.
+suite. Tests marked ``integration``, ``live`` or ``smoke`` are excluded so CI
+makes no external-service or runtime model calls. A silent pass or
+continue-on-error is not permitted: any non-zero exit fails the gate.
 """
 
 from __future__ import annotations
@@ -13,7 +14,8 @@ from pathlib import Path
 from _gate_lib import add_change_args, fail, resolve_root, run, tool_path
 
 TARGETS = ("tests", "test/offline")
-EXCLUDE_MARKER = "live"
+EXCLUDE_MARKERS = ("integration", "live", "smoke")
+MARKER_EXPRESSION = " and ".join(f"not {marker}" for marker in EXCLUDE_MARKERS)
 
 
 def main() -> None:
@@ -27,7 +29,7 @@ def main() -> None:
 
     py = tool_path(root, "python") or "python"
     for target in TARGETS:
-        cmd = [py, "-m", "pytest", "-q", "-m", f"not {EXCLUDE_MARKER}", target]
+        cmd = [py, "-m", "pytest", "-q", "-m", MARKER_EXPRESSION, target]
         proc = run(cmd, root)
         tail = "\n".join((proc.stdout or "").splitlines()[-6:])
         summary = _summary_line(proc.stdout)

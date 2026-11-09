@@ -1,0 +1,31 @@
+{
+  "application": {
+    "baseline": {
+      "input_tokens": 481193,
+      "output_tokens": 108591,
+      "total_tokens": 589784,
+      "calls": 80,
+      "wall_seconds": 1027.64
+    },
+    "compact": {
+      "input_tokens": 288214,
+      "output_tokens": 47941,
+      "total_tokens": 336155,
+      "calls": 75,
+      "wall_seconds": 580.826
+    }
+  },
+  "quality": {
+    "token_reduction": 0.43003709832752335,
+    "mean_support_baseline": 0.9,
+    "mean_support_compact": 0.9083333333333333,
+    "mean_support_drop": -0.008333333333333304,
+    "mean_relevance_baseline": 0.9499999999999998,
+    "mean_relevance_compact": 0.9499999999999998,
+    "mean_relevance_drop": 0.0,
+    "wall_ratio": 0.5652037678564478
+  },
+  "mandatory_passed": 60,
+  "judge_tokens": 264309,
+  "replay_max_seconds": 0.9119
+}

@@ -1,0 +1,462 @@
+{
+  "out": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+  "logs": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs",
+  "attempts": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-attempts",
+  "source_fingerprint": "sha256:dfc822121885f6e088b73d312032dc787f9239f46071db73d94400705d7e7ab9",
+  "workers": 6,
+  "resume": false,
+  "cases": [
+    {
+      "ticker": "GOOGL",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "GOOGL",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/GOOGL/baseline-evaluate-20261109T150708254845Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "GOOGL",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/GOOGL/compact-evaluate-20261109T150952476146Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "GOOGL",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/GOOGL/judge-20261109T151122988047Z.log"
+        }
+      ],
+      "problems": []
+    },
+    {
+      "ticker": "MSFT",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "MSFT",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/MSFT/baseline-evaluate-20261109T150708246030Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "MSFT",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/MSFT/compact-evaluate-20261109T150955998110Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "MSFT",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/MSFT/judge-20261109T151131185334Z.log"
+        }
+      ],
+      "problems": []
+    },
+    {
+      "ticker": "AMZN",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "AMZN",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AMZN/baseline-evaluate-20261109T150708252623Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "AMZN",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AMZN/compact-evaluate-20261109T151005068028Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "AMZN",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AMZN/judge-20261109T151137758102Z.log"
+        }
+      ],
+      "problems": []
+    },
+    {
+      "ticker": "NVDA",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "NVDA",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/NVDA/baseline-evaluate-20261109T150708252352Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "NVDA",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/NVDA/compact-evaluate-20261109T151001236204Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "NVDA",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/NVDA/judge-20261109T151141576666Z.log"
+        }
+      ],
+      "problems": []
+    },
+    {
+      "ticker": "AAPL",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "AAPL",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AAPL/baseline-evaluate-20261109T150708245589Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "AAPL",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AAPL/compact-evaluate-20261109T151000055152Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "AAPL",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AAPL/judge-20261109T151146190693Z.log"
+        }
+      ],
+      "problems": []
+    },
+    {
+      "ticker": "META",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "META",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/META/baseline-evaluate-20261109T150708252740Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "META",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/META/compact-evaluate-20261109T151011470061Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "META",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/META/judge-20261109T151154312204Z.log"
+        }
+      ],
+      "problems": []
+    }
+  ],
+  "aggregate": {
+    "command": [
+      "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+      "-m",
+      "research_desk.cli",
+      "aggregate",
+      "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+    ],
+    "returncode": 0,
+    "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/aggregate/aggregate-20261109T151214230371Z.log"
+  },
+  "gate": {
+    "failures": [],
+    "checks": [
+      "RELEASE_SOURCE_FINGERPRINT=sha256:dfc822121885f6e088b73d312032dc787f9239f46071db73d94400705d7e7ab9",
+      "RELEASE_CASES=6",
+      "RELEASE_SHOULD token_reduction=0.43003709832752335 target >=0.2 PASS",
+      "RELEASE_SHOULD mean_support_drop=-0.008333333333333304 target <=0.05 PASS",
+      "RELEASE_SHOULD mean_relevance_drop=0.0 target <=0.05 PASS",
+      "RELEASE_SHOULD wall_ratio=0.5652037678564478 target <=1.1 PASS"
+    ],
+    "warnings": [],
+    "metrics": {
+      "cases": {
+        "AAPL": {
+          "baseline_tokens": 97897,
+          "compact_tokens": 60512,
+          "baseline_wall_seconds": 170.401,
+          "compact_wall_seconds": 105.167,
+          "baseline_support": 0.9,
+          "compact_support": 0.9,
+          "baseline_relevance": 0.95,
+          "compact_relevance": 0.95
+        },
+        "MSFT": {
+          "baseline_tokens": 97759,
+          "compact_tokens": 61013,
+          "baseline_wall_seconds": 166.172,
+          "compact_wall_seconds": 94.243,
+          "baseline_support": 0.9,
+          "compact_support": 0.95,
+          "baseline_relevance": 0.95,
+          "compact_relevance": 0.95
+        },
+        "NVDA": {
+          "baseline_tokens": 102425,
+          "compact_tokens": 64517,
+          "baseline_wall_seconds": 171.538,
+          "compact_wall_seconds": 99.396,
+          "baseline_support": 0.9,
+          "compact_support": 0.9,
+          "baseline_relevance": 0.95,
+          "compact_relevance": 0.95
+        },
+        "AMZN": {
+          "baseline_tokens": 98011,
+          "compact_tokens": 50738,
+          "baseline_wall_seconds": 174.9,
+          "compact_wall_seconds": 90.754,
+          "baseline_support": 0.9,
+          "compact_support": 0.9,
+          "baseline_relevance": 0.95,
+          "compact_relevance": 0.95
+        },
+        "META": {
+          "baseline_tokens": 98516,
+          "compact_tokens": 50153,
+          "baseline_wall_seconds": 181.87,
+          "compact_wall_seconds": 101.936,
+          "baseline_support": 0.9,
+          "compact_support": 0.9,
+          "baseline_relevance": 0.95,
+          "compact_relevance": 0.95
+        },
+        "GOOGL": {
+          "baseline_tokens": 95176,
+          "compact_tokens": 49222,
+          "baseline_wall_seconds": 162.759,
+          "compact_wall_seconds": 89.33,
+          "baseline_support": 0.9,
+          "compact_support": 0.9,
+          "baseline_relevance": 0.95,
+          "compact_relevance": 0.95
+        }
+      },
+      "aggregate": {
+        "token_reduction": 0.43003709832752335,
+        "mean_support_baseline": 0.9,
+        "mean_support_compact": 0.9083333333333333,
+        "mean_support_drop": -0.008333333333333304,
+        "mean_relevance_baseline": 0.9499999999999998,
+        "mean_relevance_compact": 0.9499999999999998,
+        "mean_relevance_drop": 0.0,
+        "wall_ratio": 0.5652037678564478
+      },
+      "should_targets": {
+        "token_reduction": {
+          "value": 0.43003709832752335,
+          "target": ">=0.2",
+          "passed": true
+        },
+        "mean_support_drop": {
+          "value": -0.008333333333333304,
+          "target": "<=0.05",
+          "passed": true
+        },
+        "mean_relevance_drop": {
+          "value": 0.0,
+          "target": "<=0.05",
+          "passed": true
+        },
+        "wall_ratio": {
+          "value": 0.5652037678564478,
+          "target": "<=1.1",
+          "passed": true
+        }
+      }
+    },
+    "source_fingerprint": "sha256:dfc822121885f6e088b73d312032dc787f9239f46071db73d94400705d7e7ab9"
+  },
+  "problems": [],
+  "passed": true
+}

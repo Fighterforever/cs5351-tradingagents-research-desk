@@ -4,8 +4,8 @@ product:
   decision_owner: leo
   evaluation_identifier: leo
   baseline: TradingAgents v0.4.0
-  purpose: Make multi-agent equity research inspectable, reproducible and subject
-    to deterministic approval before paper execution.
+  purpose: Make multi-agent equity research inspectable, reproducible and subject to deterministic approval
+    before paper execution.
 users:
 - Single local research operator
 scope:
@@ -37,6 +37,15 @@ features:
   - QUALITY-003
   - COST-001
   - PERF-001
+  F4:
+  - CTX-001
+  - NFR-003
+  F5:
+  - GOV-003
+  - GOV-004
+  - QUALITY-001
+  - QUALITY-002
+  - QUALITY-003
 policy:
   initial_cash_usd: 100000
   max_total_single_position_fraction: 0.1
@@ -44,11 +53,19 @@ policy:
   shorting: false
   price_owner: Frozen research evidence
   quantity_owner: Approved operator
-tradeoff: Must behavior and complete evidence take priority. Token and latency gains
-  are Should targets measured without dropping graph roles or padding baseline. A
-  compact improvement is accepted only when quality is retained.
+tradeoff: Must behavior and complete evidence take priority. Token and latency gains are Should targets
+  measured without dropping graph roles or padding baseline. A compact improvement is accepted only when
+  quality is retained.
 participants:
-- name: leo
-  evaluation_identifier: leo
+- name: Alfa
+  relative_contribution: 1.0
+- name: Bravo
+  relative_contribution: 1.0
+- name: Charlie
+  relative_contribution: 1.0
+- name: Delta
+  relative_contribution: 1.0
+- name: Echo
   relative_contribution: 1.0
 registry: requirements.yaml
+team_responsibilities: docs/process/team.md

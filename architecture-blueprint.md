@@ -38,7 +38,11 @@ flowchart LR
 | Portfolio policy | `policy.py` | Cash, total-position cap and no-short checks without an LLM |
 | Persistent ledger | `storage.py` | SQLite proposal/position/transaction persistence |
 | Replay | `replay.py` | Rebuild reports from captured state without creating a model client |
-| Presentation | `cli.py`, `report.py` | Commands and inspectable Markdown/HTML outputs |
+| Operator interface | `cli.py` | Research, review and replay commands |
+| Report rendering | `report.py` | Evidence-derived identity header and inspectable Markdown/HTML output |
+| Per-request context control | `eval/compact_delegate.py` | Uniform grounding, complete-input compaction and hard cap |
+| Live evaluation | `eval/live.py` | Real graph runs and isolated semantic judgments |
+| Release evidence validation | `eval/quality.py` | Current-source provenance and fixed quality thresholds |
 
 The new modules reuse upstream public declarations rather than reimplement agent reasoning. Any additional frozen-corpus or evaluation modules remain application owned and do not change vendor routing.
 
@@ -53,3 +57,7 @@ One research run executes sequentially within a process because upstream configu
 Structural checks preserve import/module boundaries and governance records. Regression runs include the complete original upstream suite plus the extension tests. Behavioral verification evaluates exact safety examples and six frozen research cases. Events record context decisions, request counts, provider tokens, tool reads, terminal outcome and stop reason. A successful provider response is evidence of execution, not evidence of factual quality.
 
 Change policy: new requirements update the registry, trace matrix, tests and affected ADR in the same change. Runtime context changes require fixed-set semantic replay and saved live comparison evidence. Failed or budget-stopped runs remain available and cannot become approved research. See the runtime policy catalog for operational actions.
+
+## Release revision
+
+ADR-004 adds a complete-input ceiling of 96,000 conservative units and a compaction trigger of 72,000. The request delegate measures the complete message sequence before each provider invocation, records the transformation, and stops if required content still exceeds the cap. Critical constraints and tool-call/result relationships survive compaction. Rejection remains terminal in the approval lifecycle. The release validator binds saved research and judgments to the current runtime source and checks each quality dimension separately.

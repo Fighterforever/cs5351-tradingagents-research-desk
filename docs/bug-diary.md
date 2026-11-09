@@ -45,3 +45,24 @@ Review found that frozen_price_used checked the existence of the price in input 
 ## Observation projection omitted earlier tool results from judging
 
 The completed packages retained every tool event, but their convenience data_snapshot projection stored only the final fallback result for repeated tool names. The initial judge therefore saw the last technical indicator result and described some earlier real observations as missing. This was a measurement-input defect, not missing canonical evidence. The repair passes the saved tool_result event stream to the judge and removes only exact duplicate output text. Research graph outputs and the rubric remain unchanged. A regression checks that two distinct indicator observations survive, and the combined focused suite passed41 tests. Earlier judgments are archived before one uniform six-case rejudgment; their additional provider usage remains visible.
+
+
+## Rejected proposal reopened by execution
+
+Symptom and reproduction: reject a proposal, attempt execute, then attempt approve. The generic non-approved branch changed rejection to REVIEW_REQUIRED. Root cause: the state machine treated a terminal rejection as a recoverable review state. The fix returns an unexecuted result before any version or store operation. Both fresh rejection and previously approved-then-rejected cases preserve status and ledger. Invariant: INV-001.
+
+## Complete context exceeded the intended boundary
+
+The earlier call limit bounded request count but left whole-input size unbounded. ADR-004 adds a per-request conservative estimate, early compaction and a hard refusal above the cap. Critical constraints and complete tool pairs survive. Tests cover below-trigger preservation, actual compaction and irreducible excess. Invariant: I-CONTEXT; requirement CTX-001.
+
+## Identity and financial-period output defects
+
+The first META compact report omitted its legal name; an MSFT report called a price/quarterly-EPS ratio trailing P/E. The identity contract now renders from actual captured instrument metadata, while the financial-period rule reaches every request. The judge evaluates untouched narrative and rejects wrong periods or unsupported numerical valuation claims. The current full matrix passes 60/60 fields and all semantic checks.
+
+## Stale quality evidence could accompany new source
+
+Offline replay alone could validate old outputs after a runtime change. The revised gate binds both research and judgments to current runtime source and fixed inputs, recomputes deterministic facts from packages, and checks support and relevance separately. Unit cases reject stale provenance and a decline hidden by a combined average.
+
+## Provider ignored the requested thinking mode
+
+Reproduction: the first revision matrix sent the standard thinking-disabled body, but returned reasoning and exhausted the judge output cap. All twelve judges failed to produce structured scores. The host parameter diagnosis found reasoning_effort none effective at the authorized endpoint. The application evaluation adapter now sends both settings through extra_body; a unit test inspects actual plain and structured request payloads. The complete corrected matrix passes. The first matrix remains in evaluation/revision-initial.
