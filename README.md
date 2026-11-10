@@ -2,7 +2,7 @@
 
 Research Desk extends **TradingAgents v0.4.0** with portable research evidence, zero-network replay, an explicitly approved paper ledger and a measured baseline/compact context experiment. The real upstream market/news, research, trader, risk and portfolio graph remains the research engine. The language model advises; deterministic application code controls paper execution.
 
-Course repository: [Fighterforever/cs5351-tradingagents-research-desk](https://github.com/Fighterforever/cs5351-tradingagents-research-desk), public. Team: **Alfa, Bravo, Charlie, Delta and Echo**, each assigned a relative contribution of **1.0**. Responsibilities and rotating review assignments are in [docs/process/team.md](docs/process/team.md). The report maps five requirement increments to the delivered workflows.
+Course repository: [Fighterforever/cs5351-tradingagents-research-desk](https://github.com/Fighterforever/cs5351-tradingagents-research-desk), public. Team: **Alfa, Bravo, Charlie and Delta**, each assigned a relative contribution of **1.0**. Responsibilities and rotating review assignments are in [docs/process/team.md](docs/process/team.md). The report maps five requirement increments to the delivered workflows.
 
 ## Run locally
 

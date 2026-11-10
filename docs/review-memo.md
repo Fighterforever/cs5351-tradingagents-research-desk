@@ -68,7 +68,7 @@ Two assessment details were checked against the course text. D6 requires relativ
 
 Native editorial and assessment responses: `transcripts/gemini-intervention-edit.json` and `transcripts/gemini-intervention-review.json`.
 
-Gemini’s focused follow-up confirmed all corrections resolved and reported no remaining editorial issues. Its response is retained in `transcripts/gemini-intervention-followup.json`. The five reflections remain within 300–500 words, and the rendered report contains 23 pages.
+Gemini’s focused follow-up confirmed all corrections resolved and reported no remaining editorial issues. Its response is retained in `transcripts/gemini-intervention-followup.json`. That reviewed version contained five reflections of 300–500 words and a 23-page PDF.
 
 ## Requirements and architecture process review
 
@@ -81,3 +81,7 @@ Team attribution and independent code-owner approval remain on the delivery chec
 ## Reviewer configuration
 
 The user supplied `wangsaorui` as the review account. A write-access invitation was issued, and the `add-code-owner` branch prepares the owner entry on `main`. The branch reuses the existing six-gate workflow. The activation sequence is recorded in `docs/process/reviewer-onboarding.md`; write access is now confirmed, while the configuration PR and actual review decisions remain pending.
+
+## Four-member allocation
+
+The user revised the team to Alfa, Bravo, Charlie and Delta. Alfa now owns report integration and submission checks. Bravo owns GitHub release governance. Charlie owns reproducible packaging. Delta owns CI. The reflection material has been integrated into four paragraphs, one per current member. The four-person rotation and assigned weights are recorded in `docs/process/team.md`.

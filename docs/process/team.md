@@ -1,16 +1,17 @@
 # Team responsibilities
 
-The project team uses the working names Alfa, Bravo, Charlie, Delta and Echo. The team has assigned equal responsibility for completing and reviewing the delivery. Relative contributions are 1.0 each, with an average of 1.0. These weights record the team's allocation rather than measured working hours.
+The project team uses the working names Alfa, Bravo, Charlie and Delta. The team has assigned equal responsibility for completing and reviewing the delivery. Relative contributions are 1.0 each, with an average of 1.0. These weights record the team's allocation rather than measured working hours.
 
 | Member | Primary responsibility | Review responsibility | Relative contribution |
 |---|---|---|---:|
-| Alfa | Requirements, scope and acceptance criteria | Traceability and final submission checklist | 1.0 |
-| Bravo | Architecture, context layers and input budget | Evidence and runtime boundary design | 1.0 |
-| Charlie | Evidence packages and proposal state machine | Integration and persistent-state contracts | 1.0 |
-| Delta | Unit tests and research-quality evaluation | Negative cases and experimental comparisons | 1.0 |
-| Echo | CI, release controls and report integration | Reproducibility and delivery packaging | 1.0 |
+| Alfa | Requirements, acceptance criteria and report integration | Architecture and release governance | 1.0 |
+| Bravo | Architecture, context budgets and GitHub release governance | Evidence, state contracts and packaging | 1.0 |
+| Charlie | Evidence, proposal state and reproducible packaging | Evaluation and CI gates | 1.0 |
+| Delta | Unit tests, research evaluation and CI gates | Requirements, report consistency and submission completeness | 1.0 |
 
-For the final review, ownership rotates one row forward: Alfa reviews Bravo's architecture, Bravo reviews Charlie's state contracts, Charlie reviews Delta's tests, Delta reviews Echo's CI evidence, and Echo reviews Alfa's requirements. Record each completed review with its actual author and result in the review memo. Completed reviews become part of the contribution record.
+The four-person review rotation is Alfa → Bravo → Charlie → Delta → Alfa. Each reviewer checks the next member’s area and records the actual findings and decision in the review memo.
+
+Report integration and the submission checklist belong to Alfa. Bravo owns GitHub permissions and release coordination. Charlie owns installation packaging and reproducibility materials. Delta owns the six CI gates. Each member retains an equal assigned weight of 1.0.
 
 The recorded decision identifier leo refers to Liyu MA (59072966). The [annotated development record](../../transcripts/59072966-Liyu-MA.md) preserves that identity and the coordinating workflow’s role in sending prompts. The submission roster must connect each working name to its formal name and student number.
 

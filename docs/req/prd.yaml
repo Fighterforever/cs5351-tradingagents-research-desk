@@ -65,7 +65,5 @@ participants:
   relative_contribution: 1.0
 - name: Delta
   relative_contribution: 1.0
-- name: Echo
-  relative_contribution: 1.0
 registry: requirements.yaml
 team_responsibilities: docs/process/team.md

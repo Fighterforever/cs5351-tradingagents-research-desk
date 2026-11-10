@@ -35,4 +35,4 @@ Approved at: 2026-08-31T12:05:17.791955+00:00
 
 ## 当前团队与修订
 
-团队由 Alfa、Bravo、Charlie、Delta、Echo 组成，职责和贡献分配见 [team.md](team.md)。原始实现决定与历史事件保留其记录身份。当前非视频修订由 [revision-authorization.md](revision-authorization.md) 授权，具体修订见 ADR-004。
+团队由 Alfa、Bravo、Charlie、Delta 组成，职责和贡献分配见 [team.md](team.md)。原始实现决定与历史事件保留其记录身份。当前非视频修订由 [revision-authorization.md](revision-authorization.md) 授权，具体修订见 ADR-004。
