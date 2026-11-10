@@ -240,7 +240,7 @@ requirements:
   - AT-07
 - id: PERF-001
   type: performance
-  statement: Compact research wall time stays within110 percent of baseline.
+  statement: Compact research wall time stays within 110 percent of baseline.
   priority: Should
   fit:
     metric: compact_to_baseline_wall_ratio
@@ -268,7 +268,7 @@ requirements:
   source:
   - docs/process/TEST_PLAN.md
   components:
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - scripts
   tests:
   - AT-08
@@ -286,7 +286,7 @@ requirements:
   source:
   - docs/process/TEST_PLAN.md
   components:
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - scripts
   tests:
   - AT-08
@@ -304,25 +304,25 @@ requirements:
   source:
   - docs/process/TEST_PLAN.md
   components:
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - scripts
   tests:
   - AT-08
 - id: GOV-004
   type: governance
-  statement: The private GitHub branch requires CI and approval for safety-critical
-    changes when account capabilities permit enforcement.
+  statement: The public GitHub main branch requires passing CI and a code-owner review
+    for safety-critical changes.
   priority: Must
   fit:
     metric: unprotected_safety_merges
     operator: ==
     threshold: 0
-    verification: Record actual GitHub protection response and failure/recovery checks;
-      do not claim unavailable enforcement.
+    verification: Inspect actual branch protection and pull-request check results;
+      require an approved review before merge.
   source:
   - docs/process/TEST_PLAN.md
   components:
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - .github/CODEOWNERS
   tests:
   - AT-08
@@ -412,3 +412,22 @@ requirements:
   tests:
   - upstream-regression
   - AT-07
+- id: CTX-001
+  type: cost
+  statement: Every complete model input obeys a configured context cap, with compaction
+    triggered before the cap and mandatory constraints preserved.
+  priority: Must
+  fit:
+    metric: requests_started_over_context_cap
+    operator: ==
+    threshold: 0
+    verification: Unit tests exercise below-threshold input, compaction, mandatory-fact
+      overflow and assistant/tool pairing; require no model invocation on overflow.
+  source:
+  - docs/architecture/adr/004-release-quality-and-context-budget.md
+  components:
+  - research_desk.context
+  - research_desk.eval.compact_delegate
+  - research_desk.budget
+  tests:
+  - AT-06

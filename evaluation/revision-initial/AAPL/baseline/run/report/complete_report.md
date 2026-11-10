@@ -1,0 +1,188 @@
+# Research Desk Analysis Report
+
+- Company (legal identity): Apple Inc.
+- Ticker: AAPL
+- Analysis date: 2026-07-31
+- Evidence latest close: 308.91 USD [source: market-aapl, market CSV as-of 2026-07-31]
+- Official earnings source: src-aapl
+- Contract: identity, date, evidence close and source above are rendered deterministically from the evidence pack; the generated narrative below is unmodified model output.
+
+## I. Analyst Team Reports
+
+### News Analyst
+# News & Macro Research Report — AAPL (Apple Inc.)
+**Role:** News Researcher (nonbinding role analysis — not a transaction proposal)
+**Analysis date:** 2026-07-31 | **Instrument:** AAPL | **Latest close:** 308.91 USD [market-aapl]
+
+---
+
+## 1. Data availability statement (read first)
+
+Of the four tool families available to me, only the company-news source returned data. Every macro and prediction-market query returned an explicit unavailability notice, and I will not estimate or fabricate substitutes:
+
+| Tool | Query | Result |
+|---|---|---|
+| `get_news` (AAPL, 2026-07-24 → 2026-07-31) | company news | **Returned** — official earnings release only [src-aapl] |
+| `get_global_news` (2026-07-31, 7d) | global macro news | **NO_DATA_AVAILABLE** — not in frozen corpus |
+| `get_macro_indicators` | cpi, fed_funds_rate, 10y_treasury, yield_curve, unemployment | **NO_DATA_AVAILABLE** (all five) |
+| `get_prediction_markets` | "Fed rate cut", "recession 2026" | **NO_DATA_AVAILABLE** (both) |
+
+**Consequence for the desk:** I cannot ground any claim about inflation, policy rates, the curve, labor conditions, or market-implied probabilities of Fed action/recession. Any such statement in downstream reports would be unsourced. The macro backdrop is **UNKNOWN** as of 2026-07-31 in this corpus. The only two usable evidence streams are (a) the official Apple earnings release [src-aapl] and (b) the frozen market close [market-aapl].
+
+---
+
+## 2. The single hard catalyst: fiscal Q3 2026 results (announced 2026-07-30)
+
+Apple's fiscal Q3 2026 ended June 27 [src-aapl]. The release is one day old relative to the analysis date, so the market's reaction window is essentially a single session — the frozen close of 308.91 USD [market-aapl] is the post-announcement print available to us.
+
+**Headline figures [src-aapl]:**
+- Revenue: **USD 109.4 billion**, up **16% year over year** [src-aapl]
+- Gross margin: **50.1%**, including **~2 percentage points of tariff-refund benefit** [src-aapl]
+- Diluted EPS: **2.02** (quarterly, fiscal Q3 2026), up **29%**, including **0.11 of tariff-refund benefit** [src-aapl]
+- Dividend: **0.27 per share** [src-aapl]
+
+### 2.1 Derived calculations (arithmetic on sourced operands — not sourced facts)
+
+| Derived metric | Operands (both [src-aapl]) | Result |
+|---|---|---|
+| Prior-year Q3 revenue (implied) | 109.4 ÷ 1.16 | ≈ **94.3 bn** |
+| Prior-year Q3 diluted EPS (implied) | 2.02 ÷ 1.29 | ≈ **1.57** |
+| EPS excluding tariff-refund benefit | 2.02 − 0.11 | ≈ **1.91** |
+| YoY EPS growth ex-refund | 1.91 ÷ 1.57 − 1 | ≈ **+22%** |
+| Gross margin ex-refund | 50.1% − ~2.0pp | ≈ **48.1%** |
+| Refund share of quarterly EPS | 0.11 ÷ 2.02 | ≈ **5.4%** |
+| Implied annualized dividend | 0.27 × 4 | ≈ **1.08 / share** |
+
+**Interpretation:** the quality of the beat matters more than the headline. Roughly 5.4% of quarterly EPS and ~2pp of gross margin are a **one-time tariff-refund item**, not operating momentum [src-aapl]. Even stripping it out, EPS growth of ~22% on revenue growth of 16% implies operating leverage — but the *reported* 29% and 50.1% margin overstate the run-rate. Traders should model the ex-refund ~48.1% margin and ~1.91 EPS as the cleaner base.
+
+### 2.2 What the release does NOT tell us
+- **No TTM or annual EPS** is provided [src-aapl]. A single quarter's 2.02 cannot establish a trailing P/E. **Trailing P/E for AAPL is UNKNOWN** in this corpus. Any P/E, forward P/E, EV/EBITDA, or price target quoted downstream would be fabricated.
+- **No revenue mix** (iPhone / Services / Mac / Wearables), **no Greater China figure**, **no guidance**, **no buyback authorization**, **no cash/balance-sheet data**, and **no installed-base or AI-related commentary** [src-aapl]. Segment-level rotation calls are therefore unsupported.
+- **No volume or technical indicator data** was returned to me; I can cite the close level [market-aapl] but not RSI, moving averages, or relative volume.
+
+---
+
+## 3. Actionable read for the desk
+
+1. **Treat the beat as "good but partly non-recurring."** The tariff-refund contribution (0.11 of 2.02 EPS; ~2pp of margin) [src-aapl] is the key adjustment. A trader anchoring on 50.1% gross margin or 29% EPS growth is anchoring on a number that will not repeat. Use ~48.1% / ~1.91 as the normalized base (derived above from [src-aapl]).
+2. **The 16% revenue growth is the strongest signal in the release** [src-aapl] — it is a top-line figure and is not flagged as refund-affected. That is the cleanest evidence of demand strength available.
+3. **Do not build a valuation case.** With no TTM EPS [src-aapl] and only a price level of 308.91 USD [market-aapl], no multiple can be computed. Valuation must be left **UNKNOWN** pending a TTM EPS source.
+4. **Do not build a macro overlay.** CPI, policy rate, 10Y, curve, unemployment, Fed-cut odds and recession odds are all unavailable. Position sizing and rate-sensitivity arguments cannot be evidenced today; flag them as assumptions if used.
+5. **Event-risk framing:** the announcement is 2026-07-30 and the analysis date is 2026-07-31 [src-aapl], so post-earnings drift/analyst-revision flow is still ahead. The absence of any follow-up news in the corpus means I cannot confirm sell-side reaction, guidance commentary, or supply-chain/tariff policy developments.
+
+---
+
+## 4. Key points summary
+
+| Category | Item | Value / Status | Source |
+|---|---|---|---|
+| Identity | Company / sector | Apple Inc. — Technology / Consumer Electronics | resolved identity |
+| Market | Latest close (frozen) | 308.91 USD | [market-aapl] |
+| Event | Fiscal Q3 2026 period end | June 27, 2026; announced 2026-07-30 | [src-aapl] |
+| Earnings | Revenue | USD 109.4 bn
+
+## II. Research Team Decision
+
+### Bull Researcher
+
+Bull Analyst: ## Bull Analyst — Opening Statement (nonbinding role analysis, not a transaction proposal)
+
+**Role:** Bull Analyst. **Instrument:** AAPL. **Analysis date:** 2026-07-31. **Frozen latest close:** 308.91 USD [market-aapl].
+
+The bear hasn't spoken yet, so let me put a marker down first — and let me start by conceding the one thing that will be the bear's entire case, because I'd rather defuse it than have it thrown at me later.
+
+---
+
+### 1. The number the bear will lead with — and why it doesn't work
+
+The bear is going to say: *"50.1% gross margin and 29% EPS growth are fake — there's a tariff refund in there."* Correct. And I'll say it louder than they will: **~2 percentage points of the 50.1% gross margin and 0.11 of the 2.02 quarterly diluted EPS are a tariff-refund benefit** [src-aapl]. That's roughly **5.4% of quarterly EPS** (0.11 ÷ 2.02, derived from [src-aapl]).
+
+Now strip it out. Do the arithmetic on the sourced operands:
+
+| Normalized metric | Operands [src-aapl] | Result |
+|---|---|---|
+| EPS ex-refund | 2.02 − 0.11 | ≈ **1.91** |
+| Prior-year Q3 EPS (implied) | 2.02 ÷ 1.29 | ≈ **1.57** |
+| EPS growth ex-refund | 1.91 ÷ 1.57 − 1 | ≈ **+22%** |
+| Gross margin ex-refund | 50.1% − ~2.0pp | ≈ **48.1%** |
+| Prior-year Q3 revenue (implied) | 109.4 ÷ 1.16 | ≈ **94.
+
+### Bear Researcher
+
+Bear Analyst: 
+
+### Research Manager
+## Research Manager — Debate Evaluation & Investment Plan
+
+**Role:** Research Manager / debate facilitator. **Instrument:** AAPL. **Analysis date:** 2026-07-31. **Frozen latest close:** 308.91 USD [market-aapl].
+
+**Status of this output:** nonbinding role analysis. It is *not* a FINAL TRANSACTION PROPOSAL — that label is reserved for the Portfolio Manager.
+
+---
+
+## 1. Process audit: this was not a debate
+
+Before evaluating substance, I have to record a serious procedural defect, because it constrains how much weight I can put on anything below.
+
+- **The Bull Analyst's opening statement is truncated mid-sentence**, cut off inside its own normalization table (at "≈ 94."). Several of its derived figures are therefore not verifiable in the record as delivered.
+- **The Bear Analyst's statement is empty.** No bear argument was submitted at all.
+
+Consequences I will not paper over:
+
+1. I cannot credit *or* dismiss any bear argument, because none exists in the record. The bear side is **UNKNOWN**, not "weak."
+2. The bull's case has not been stress-tested. An untested thesis is not a validated thesis, no matter how clean the arithmetic.
+3. I will not manufacture a bear case myself and then knock it down — that is the classic facilitation failure mode, and it would inflate the bull's apparent win.
+
+So my rating below is driven by the **sourced fundamentals alone**, not by a debate outcome. The debate contributed nothing to the bear side and only partially delivered the bull side.
+
+---
+
+## 2. Evidence ledger
+
+**Sourced facts (the entire factual basis available):**
+
+| Item | Value | Source |
+|---|---|---|
+| Fiscal Q3 2026 period end | June 27 | [src-aapl] |
+| Revenue | USD 109.4bn, +16% YoY | [src-aapl] |
+| Gross margin | 50.1%, incl. ~2pp tariff-refund benefit | [src-aapl] |
+| Diluted EPS (
+
+## III. Trading Team Plan
+
+### Trader
+**Action**: Hold
+
+**Reasoning**: The sourced fundamentals are genuinely constructive — Q3 2026 revenue of USD 109.4bn (+16% YoY) and a 50.1% gross margin (even after stripping the ~2pp tariff-refund benefit) rule out a Sell. But the evidence base is too thin to justify committing new capital at the 308.91 close: the bull statement is truncated mid-table, the bear statement is entirely absent (so the downside is UNKNOWN, not disproven), and there is no valuation multiple, technical level, or risk data in the record. With the thesis untested and no way to size or anchor a stop against real levels, the disciplined action is to hold and wait for a complete bear case plus valuation/technical confirmation before adding.
+
+**Position Sizing**: No new capital at current levels; revisit sizing only after a complete bear case and valuation/technical data are supplied.
+
+FINAL TRANSACTION PROPOSAL: **HOLD**
+
+## IV. Risk Management Team Decision
+
+### Aggressive Analyst
+
+Aggressive Analyst: 
+
+### Conservative Analyst
+
+Conservative Analyst: I'm the Conservative Risk Analyst, and everything I say here is nonbinding role analysis, not a transaction proposal — only the Portfolio Manager can issue a FINAL TRANSACTION PROPOSAL.
+
+Before I argue, one procedural point that matters for risk: the Aggressive Analyst's statement in the record is truncated mid-table and the Neutral Analyst hasn't spoken at all. So I'm going to engage the strongest version of the case I expect them to make, and I'll happily be corrected on specifics. But I want to flag the asymmetry right away, because it's the heart of my objection: the bear statement is entirely absent from this record. Absence of a bear case is not evidence that the downside has been disproven. It means the downside is UNKNOWN. An aggressive or neutral analyst who reads a missing bear case as a green light is mistaking missing data for favorable data, and that is exactly the kind of error that costs a firm real money.
+
+Now, the aggressive case almost certainly rests on three numbers: revenue of USD 109.4 billion up 16% year over year, gross margin of 50.1%, and diluted EPS of 2.02 up 29% [src-aapl]. Two of those three are contaminated. The release itself says the 50.1% gross margin includes approximately 2 percentage points of tariff-refund benefit, and the 2.02 EPS includes 0.11 of tariff-refund benefit [src-aapl]. Do the arithmetic on the sourced operands: 2.02 minus 0.11 is about 1.91, and 50.1% minus roughly 2 points is about 48.1%. The refund is 0.11 divided by 2.02, roughly 5.4% of quarterly EPS. So the "29% growth" and the "50.1% margin" that the aggressive camp will wave around are not the run-rate. They are a one-time item. If the market re-rates this name on normalized numbers, the aggressive buyer is the one holding the bag. The only clean signal in the release is the 16% top-line growth [src-aapl], which is genuinely good — and I'll grant it. But one clean number is not a thesis.
+
+Second, and this is where I part company with any neutral "compromise" of adding a little: we have no valuation anchor whatsoever. The release gives no trailing-twelve-month or annual EPS [src-aapl], and a single quarter's 2.02 cannot establish a trailing P/E. With a frozen close of 308.91 USD [market-aapl] and no TTM EPS, the trailing multiple for AAPL is UNKNOWN. Any claim that this
+
+### Neutral Analyst
+
+Neutral Analyst: I'm the Neutral Risk Analyst, and everything I say here is nonbinding role analysis, not a transaction proposal — only the Portfolio Manager can issue a FINAL TRANSACTION PROPOSAL. For the record, the instrument is AAPL, the analysis date is 2026-07-31, and the frozen latest close is 308.91 USD [market-aapl].
+
+Let me start with the aggressive side, because I think it's making a real error and I want to be precise about which one. The aggressive case, as far as I can reconstruct it from a statement that is truncated mid-table — and I'll say plainly that I cannot verify claims I can't read — leans on the headline trio: revenue of 109.4 billion up 16%, gross margin of 50.1%, and diluted EPS of 2.02 up 29% [src-aapl]. Two of those three are not run-rate numbers. The release itself tells us the 50.1% margin includes roughly 2 percentage points of tariff-refund benefit and the 2.02 EPS includes 0.11 of the same [src-aapl]. Run the arithmetic on those sourced operands and you get about 1.91 of EPS ex-refund and about 48.1% margin ex-refund, with the refund representing roughly 5.4% of quarterly EPS. That's a calculation, not a sourced fact, but the operands are sourced and the math is not controversial. So when the aggressive camp quotes 29% growth, they are quoting a number that will not repeat. That's not a fatal objection to owning Apple — it's a fatal objection to owning Apple *because of that number*.
+
+But here's where I break with the aggressive side more fundamentally: it has no anchor. There is no trailing-twelve-month or annual EPS in the release [src-aapl], and a single quarter's 2.02 cannot establish a trailing P/E. So the trailing multiple for AAPL is UNKNOWN. There is also no volume or technical indicator data in this record, so no moving average, no RSI, no relative-volume confirmation of the post-earnings print. And the announcement was 2026-07-30 against an analysis date of 2026-07-31 [src-aapl], which means the 308.91 close [market-aapl] is essentially a single post-announcement session — one print is not a trend, and post-earnings revision flow is still ahead of us. An aggressive buyer at this level is buying a good top-line story with no valuation floor and no technical reference point. That's not conviction, that's a leap.
+
+Now the conservative side, which I think is right on the accounting and wrong on the inference. The refund adjustment is correct and I'll defend it all day: 0.11 of 2.02 is about 5.4% of quarterly EPS, and 50.1% minus roughly 2 points is about 48.1% [src-aapl]. Where the conservative over-corrects is in calling the 16% revenue growth "one clean number" and dismissing it as not a thesis. It's actually stronger than that. The 16% top-line growth is not flagged as refund-affected [src-aapl], and if you take the implied prior-year quarter of about 94.3 billion and the implied prior-year EPS of about 1.57 — both derived from the sourced growth rates — you get ex-refund EPS growth of roughly 22% on 16% revenue growth. That's a calculation from sourced operands, but it points to genuine operating leverage, not a one-time artifact. So we have two clean derived facts, not one, and the conservative's framing understates the quality of the underlying quarter.
+
+The bigger problem with the conservative argument is a symmetry error. It correctly says the bear case is absent

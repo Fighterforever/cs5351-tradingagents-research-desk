@@ -1,0 +1,16 @@
+{
+  "ticker": "AAPL",
+  "analysis_date": "2026-07-31",
+  "context_mode": "baseline",
+  "outcome": "completed",
+  "signal": "REVIEW",
+  "stop_reason": "completed",
+  "calls": 16,
+  "input_tokens": 59108,
+  "output_tokens": 24372,
+  "total_tokens": 83480,
+  "wall_seconds": 224.014,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release/AAPL/baseline/run"
+}

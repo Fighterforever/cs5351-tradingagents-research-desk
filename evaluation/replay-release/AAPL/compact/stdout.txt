@@ -1,0 +1,3 @@
+Replayed run-d43681ab558b (external calls: 0)
+signal: Hold
+reports: 12 files under evaluation/replay-release/AAPL/compact/report

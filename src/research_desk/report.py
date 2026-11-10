@@ -7,12 +7,136 @@ the proposal review trail. They are pure rendering (no calls).
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from .models import EvidencePack, LedgerState, ProposalRecord
+
+RESEARCH_IDENTITY_TITLE = "# Research Desk Analysis Report"
+
+
+def _identity_value(identity: dict, key: str) -> str:
+    value = identity.get(key)
+    return value.strip() if isinstance(value, str) else ""
+
+
+def render_research_identity(pack: EvidencePack) -> str:
+    """Render the deterministic identity/date/evidence-price report contract.
+
+    Every value comes from the actual ``EvidencePack``: the legal company name
+    from ``input.identity`` or the actual ``available_sources.identity``, the
+    ticker/date from the manifest, the close from ``price_from_evidence`` over
+    the pack's own snapshot/corpus, and source IDs from the actual registry.
+    Missing facts are rendered as explicitly unavailable; no case registry is
+    imported and no identity or price is invented.
+    """
+    manifest = pack.manifest
+    identity = dict(pack.input.identity or {})
+    sources = dict(pack.input.available_sources or {})
+    source_identity = dict(sources.get("identity") or {})
+    merged_identity = {
+        **source_identity,
+        **{key: value for key, value in identity.items() if value},
+    }
+    company = _identity_value(merged_identity, "company_name")
+    ticker = (manifest.ticker or "").upper()
+    trade_date = manifest.trade_date or ""
+
+    from .graph_adapter import price_from_evidence
+
+    price: float | None = price_from_evidence(
+        pack.input.data_snapshot or {},
+        ticker,
+        available_sources=sources,
+    )
+    if price is None:
+        candidate = sources.get("latest_close")
+        if isinstance(candidate, (int, float)):
+            price = float(candidate)
+
+    source_id = _identity_value(sources, "source_id")
+    market_id = _identity_value(sources, "market_source_id")
+    as_of = _identity_value(sources, "as_of")
+
+    # Only claim the canonical market-<ticker> ID when the pack actually carries
+    # market/verified corpus. Otherwise name the actual recorded tool/evidence.
+    attribution = market_id
+    if not attribution:
+        has_market_corpus = bool(
+            str(sources.get("market", "")).strip()
+            or str(sources.get("verified_snapshot", "")).strip()
+        )
+        if has_market_corpus and ticker:
+            attribution = f"market-{ticker.lower()}"
+        else:
+            tool_names = [
+                name
+                for name, results in (pack.input.data_snapshot or {}).items()
+                if name in ("get_stock_data", "get_verified_market_snapshot")
+                and any(str(value).strip() for value in results.values())
+            ]
+            if tool_names:
+                attribution = f"observed {'/'.join(sorted(tool_names))} tool result"
+            elif price is not None:
+                attribution = "pack case metadata"
+
+    lines = [RESEARCH_IDENTITY_TITLE, ""]
+    lines.append(f"- Company (legal identity): {company or 'unavailable'}")
+    lines.append(f"- Ticker: {ticker or 'unavailable'}")
+    lines.append(f"- Analysis date: {trade_date or 'unavailable'}")
+    if price is not None:
+        if attribution and as_of:
+            lines.append(
+                f"- Evidence latest close: {price:.2f} USD "
+                f"[source: {attribution}, market CSV as-of {as_of}]"
+            )
+        elif attribution:
+            lines.append(f"- Evidence latest close: {price:.2f} USD [source: {attribution}]")
+        else:
+            lines.append(f"- Evidence latest close: {price:.2f} USD [source: unavailable]")
+    else:
+        lines.append("- Evidence latest close: unavailable (no price evidence in this pack)")
+    lines.append(f"- Official earnings source: {source_id or 'unavailable'}")
+    lines.append(
+        "- Contract: identity, date, evidence close and source above are rendered "
+        "deterministically from the evidence pack; the generated narrative below is "
+        "unmodified model output."
+    )
+    return "\n".join(lines)
+
+
+def _strip_existing_header(text: str) -> str:
+    """Drop a previous deterministic or upstream report header, keep the body."""
+    marker = "\n## "
+    idx = text.find(marker)
+    if idx != -1:
+        return text[idx + 1 :]
+    lines = text.splitlines()
+    start = 0
+    while start < len(lines):
+        line = lines[start]
+        if not line.strip() or line.startswith("# ") or line.startswith("Generated:"):
+            start += 1
+            continue
+        break
+    return "\n".join(lines[start:])
+
+
+def apply_research_identity_header(complete_report_path: str | Path, header: str) -> Path:
+    """Write ``header`` ahead of the generated report body, never duplicating it."""
+    path = Path(complete_report_path)
+    body = _strip_existing_header(path.read_text(encoding="utf-8"))
+    path.write_text(
+        header + ("\n\n" + body if body.strip() else "") + "\n",
+        encoding="utf-8",
+    )
+    return path
 
 
 def render_run_report(pack: EvidencePack) -> str:
     m = pack.manifest
     lines = [
+        render_research_identity(pack),
+        "",
         f"# Research Desk Run Report: {m.ticker} on {m.trade_date}",
         "",
         f"- run_id: `{m.run_id}`",

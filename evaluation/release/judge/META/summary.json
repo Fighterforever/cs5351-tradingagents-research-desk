@@ -1,0 +1,97 @@
+{
+  "ticker": "META",
+  "arms": {
+    "baseline": {
+      "support": 0.9,
+      "relevance": 0.95,
+      "cited_claim_count": 42,
+      "supported_cited_claim_count": 40,
+      "valid_citation_rate": 0.9524,
+      "invalid_citation_explanations": [
+        "News Analyst \u00a73 states 'The frozen corpus provides no prior-close, no volume, and no technical indicator series' \u2014 this is contradicted by the observed tool outputs (get_stock_data returned 62 rows including 2026-07-29 close 585.61 and volume 22.37M; get_indicators returned 10 EMA, MACD, RSI, ATR, Bollinger, VWMA). The market-meta citation does not support the claim of absence.",
+        "News Analyst \u00a73: 'I cannot compute the post-earnings reaction (gap, % move, volume surge)' \u2014 the cited market-meta data does contain the prior close and volume needed for exactly that computation, so the citation undercuts rather than supports the claim."
+      ],
+      "uncited_factual_claims": [
+        "Aggressive Analyst: 'it opened at 526.00 and CLOSED at 539.03, near the day's high of 539.88' \u2014 price figures stated without a source ID tag in that sentence (though sourced elsewhere in the report).",
+        "Conservative Analyst: 'a 13-point bounce off a 46-point gap down' \u2014 derived figures presented without explicit source attribution in that sentence."
+      ],
+      "semantic_valid": true,
+      "semantic_errors": [],
+      "rationale": "The report is tightly focused on META at 2026-07-30 and correctly anchors on the frozen close of 539.03 and the Q2 2026 release. Earnings figures are quoted with correct period and units (quarterly revenue 60.801B, operating income 18.775B, margin 31% vs 43%, capex 31.08B), and the report explicitly refuses to compute any trailing P/E or TTM EPS, repeatedly labeling valuation UNKNOWN \u2014 so the semantic gate passes cleanly. Derived arithmetic (3.58B one-offs, ~5.9% of revenue, ~51% capex/revenue, prior-year operating income ~20.41B, gap \u221210.18%, close-to-close \u22127.95%, 1.89x volume, 10.23 points below lower band) is all traceable to cited operands and is correctly labeled as calculation rather than sourced fact. The one substantive defect is in the News Analyst section, which asserts the corpus provides 'no prior-close, no volume, and no technical indicator series' and that the post-earnings reaction cannot be computed \u2014 directly contradicted by the observed get_stock_data and get_indicators outputs, and inconsistent with the rest of the report which uses those very figures. That is a self-inflicted evidence-availability error rather than a fabrication of numbers, so support lands at 0.9 rather than 1.0. Minor uncited price restatements in the Aggressive/Conservative sections are cosmetic since the same figures are cited elsewhere. Overall the report is well-grounded, appropriately hedged, and the HOLD decision is supported by the evidence.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report contract references company 'Meta Platforms, Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report contract references analysis date 2026-07-30"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 539.03 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-meta'"
+        }
+      ]
+    },
+    "compact": {
+      "support": 0.9,
+      "relevance": 0.95,
+      "cited_claim_count": 42,
+      "supported_cited_claim_count": 41,
+      "valid_citation_rate": 0.9762,
+      "invalid_citation_explanations": [
+        "Minor: the 'five down sessions in six' / 'five of the last six sessions' trend claim is cited to market-meta, but the cited series actually shows the decline spanning roughly 11 sessions from the 7/15 peak (681.31) to 7/30 (539.03), with 7/16 and 7/20 essentially flat \u2014 the directional read is supported but the specific 'five of six' count is not verifiable from the cited data."
+      ],
+      "uncited_factual_claims": [
+        "Prior close 585.61 on 2026-07-29 is cited to market-meta and is correct, but the derived gap of ~46.6 points / -7.96% is a calculation (labeled as such) \u2014 acceptable.",
+        "The '21% drawdown from the 681.31 July high' is a calculation from cited data (labeled calc) \u2014 acceptable.",
+        "No material uncited factual claims identified: all prices, volumes, and earnings figures carry market-meta or src-meta citations."
+      ],
+      "semantic_valid": true,
+      "semantic_errors": [],
+      "rationale": "Support: The report's key conclusions are directly grounded in the two available sources. Every earnings figure (revenue 60.801B +28%, operating income 18.775B -8%, margin 31% vs 43%, 2.40B legal + 1.18B severance, DAP 3.60B +3%, capex 31.08B) matches the frozen src-meta notes exactly. Every market figure (539.03 close, 526.00 open, 539.88 high, 524.49 low, 42.27M volume, 585.61 prior close, 681.31 July high, ~540.18 June low) matches the frozen market CSV. Derived figures (gap -7.96%, capex/revenue ~51%, pro-forma operating income ~22.36B / ~37% margin, 3.58B add-back) are correctly labeled as calculations and arithmetically sound. The report explicitly refuses to fabricate unavailable data (macro, prediction markets, TTM EPS) and marks valuation as UNKNOWN \u2014 a strength, not a gap. Only minor imprecision: the 'five of six down sessions' count is loosely supported by the cited series. Relevance: Fully on-task for META / 2026-07-30, with a coherent multi-role structure culminating in a clear Underweight rating and SELL proposal; some redundancy across the four risk-analyst sections but no off-topic drift. Semantic validity: No period/unit errors \u2014 the report never converts a quarterly figure to TTM/annual, never computes a trailing P/E from quarterly EPS, and explicitly flags trailing P/E as UNKNOWN for lack of TTM EPS evidence. The pro-forma margin is correctly framed as a derived calculation, not a reported figure. No unsupported numerical valuation assertion.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report contract references company 'Meta Platforms, Inc.'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report contract references analysis date 2026-07-30"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 539.03 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-meta'"
+        }
+      ]
+    }
+  }
+}

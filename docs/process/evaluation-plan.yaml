@@ -32,8 +32,8 @@ development_restart:
   previous_results: evaluation/development-initial
   cause: Initial shared context did not reach all roles; both arms had zero cited claims despite36.07%
     token reduction.
-  scope: Identical evidence-grounding request layer in both modes; report stage labels and stronger
-    report-price check.
+  scope: Identical evidence-grounding request layer in both modes; report stage labels and stronger report-price
+    check.
   unchanged:
   - fixed data
   - model and inference settings
@@ -42,3 +42,21 @@ development_restart:
   - quality thresholds
   - held-out split
   source_session: ses_fa80e5e8bffei1CBiJ8vadPRtm
+current_revision:
+  model: deepseek-flash
+  provider_endpoint: https://api.aiohub.org/v1
+  authorization: docs/process/revision-authorization.md
+  prompt_version: research-desk-0.1.2
+  output: evaluation/release
+  context_max_conservative_units: 96000
+  context_trigger_conservative_units: 72000
+  corpus_role: Fixed regression corpus; original development/held-out split describes the first evaluation
+    only.
+  semantic_valid_required: true
+  source_binding: Every new run and judgment records current runtime source provenance.
+  provider_body:
+    thinking:
+      type: disabled
+    reasoning_effort: none
+  workers: 6
+  failed_transport_matrix: evaluation/revision-initial

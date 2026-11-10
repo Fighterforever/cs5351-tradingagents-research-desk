@@ -1,7 +1,7 @@
 # TradingAgents Research Desk 项目方案
 
 版本：1.0.0。
-状态：leo已采纳，OpenCode正在实现。执行来源统一见 `../orchestration/README.md`。本文指标为验收目标，实测结果在后续报告中单列。
+状态：leo已采纳，OpenCode正在实现。执行来源统一见 `../ai-use-log.yaml`。本文指标为验收目标，实测结果在后续报告中单列。
 
 ## 一、交付范围
 
@@ -140,6 +140,11 @@ flowchart LR
 
 ## 七、当前事实与后续依赖
 
-本方案制定时，Codex只读核对课程规范和公共源码并生成方案与测试规格。此后已进入OpenCode实现和真实API验证；最终状态与实测结果以项目Report.md、原始会话和evaluation目录为准。
+本方案制定时，规划阶段只读核对课程规范和公共源码并生成方案与测试规格。此后已进入OpenCode实现和真实API验证；最终状态与实测结果以项目Report.md、原始会话和evaluation目录为准。
 
 用户已经授权材料发送至api.deepseek.com及API使用，并要求主线程自主决定，不等待再次批准。主线程已采纳本方案。GitHub账户Fighterforever在允许联网的检查下认证正常；先完成本地成果再落实远端交付。参与者统一leo、evaluation identifier leo、相对贡献1.0；来源统一在AI-use/provenance中说明。课程D5份数有one/five/按成员的冲突，完整保存实际会话。
+
+
+## 当前团队与修订
+
+团队由 Alfa、Bravo、Charlie、Delta 组成，职责和贡献分配见 [team.md](team.md)。原始实现决定与历史事件保留其记录身份。当前非视频修订由 [revision-authorization.md](revision-authorization.md) 授权，具体修订见 ADR-004。

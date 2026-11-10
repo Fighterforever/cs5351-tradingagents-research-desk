@@ -1,0 +1,362 @@
+{
+  "method": "Distinct native session counters; categories retained separately. Billing totals are not inferred from tool estimates.",
+  "sessions": [
+    {
+      "session": "ses_fa849396effeNN2dsVIpTIaax8",
+      "artifact": "transcripts/project-01.full.json",
+      "tokens": {
+        "input": 126134,
+        "output": 81270,
+        "reasoning": 53363,
+        "cache": {
+          "read": 32027264,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.14503233920000005
+    },
+    {
+      "session": "ses_fa83026e7ffe84kFIOlxvQB3aB",
+      "artifact": "transcripts/project-02.full.json",
+      "tokens": {
+        "input": 237006,
+        "output": 45233,
+        "reasoning": 26045,
+        "cache": {
+          "read": 13726976,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.09157421280000001
+    },
+    {
+      "session": "ses_fa825e6e8fferDOiutg4e8ECO8",
+      "artifact": "transcripts/project-04.full.json",
+      "tokens": {
+        "input": 502056,
+        "output": 65513,
+        "reasoning": 39159,
+        "cache": {
+          "read": 26929536,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.17499870079999993
+    },
+    {
+      "session": "ses_fa80e5e8bffei1CBiJ8vadPRtm",
+      "artifact": "transcripts/project-09.full.json.gz",
+      "tokens": {
+        "input": 193858,
+        "output": 19536,
+        "reasoning": 28550,
+        "cache": {
+          "read": 5544704,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.056129371200000014
+    },
+    {
+      "session": "ses_fa8062ac3ffeKfXEYAXA7301Hn",
+      "artifact": "transcripts/project-ci-lint-finish.full.json",
+      "tokens": {
+        "input": 13838,
+        "output": 1677,
+        "reasoning": 758,
+        "cache": {
+          "read": 275200,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.0033896800000000004
+    },
+    {
+      "session": "ses_fa7ffd8cfffeKu8F0XdeWcNGv9",
+      "artifact": "transcripts/project-ci-offline-schema.full.json",
+      "tokens": {
+        "input": 12174,
+        "output": 1948,
+        "reasoning": 311,
+        "cache": {
+          "read": 81920,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.0025662560000000003
+    },
+    {
+      "session": "ses_fa80bcfeaffesU8pYhL8W33pWk",
+      "artifact": "transcripts/project-ci-runner.full.json",
+      "tokens": {
+        "input": 17493,
+        "output": 2441,
+        "reasoning": 269,
+        "cache": {
+          "read": 204544,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.0037805432000000004
+    },
+    {
+      "session": "ses_fa82cafc9ffeeAkOozPwPQ41De",
+      "artifact": "transcripts/project-ci.full.json",
+      "tokens": {
+        "input": 782307,
+        "output": 50106,
+        "reasoning": 62136,
+        "cache": {
+          "read": 17614336,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.1902708808
+    },
+    {
+      "session": "ses_e3f19d6c2ffeLMkWpLUmKFsC5M",
+      "artifact": "transcripts/project-coding-context-focused.full.json",
+      "tokens": {
+        "input": 8485,
+        "output": 3714,
+        "reasoning": 0,
+        "cache": {
+          "read": 11520,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f1a9a6affeOPzAFEi2UqnARB",
+      "artifact": "transcripts/project-coding-context-full.full.json",
+      "tokens": {
+        "input": 50475,
+        "output": 7758,
+        "reasoning": 0,
+        "cache": {
+          "read": 2176,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f223eacffedlkn1H0ER23Wf6",
+      "artifact": "transcripts/project-coding-context-initial.full.json",
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f1ba798ffe4RTSd2RQ1GrihV",
+      "artifact": "transcripts/project-coding-context-isolated-focused.full.json",
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f1bb544ffe2KJKnKIiKMSs2L",
+      "artifact": "transcripts/project-coding-context-isolated-full.full.json",
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f1f757dffeuZ0OUQTLu7v9cc",
+      "artifact": "transcripts/project-coding-context-stdin-focused.full.json",
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f1f849effe8bJx3S8rw7KbWx",
+      "artifact": "transcripts/project-coding-context-stdin-full.full.json",
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_fa817dbb4ffescaq14SFvAqA2I",
+      "artifact": "transcripts/project-evidence-fix.full.json",
+      "tokens": {
+        "input": 47985,
+        "output": 7470,
+        "reasoning": 15247,
+        "cache": {
+          "read": 1579264,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.0175005992
+    },
+    {
+      "session": "ses_fa80c9b43ffeQxAOOAzm0TfP7m",
+      "artifact": "transcripts/project-permission-probe.full.json",
+      "tokens": {
+        "input": 5462,
+        "output": 141,
+        "reasoning": 30,
+        "cache": {
+          "read": 9088,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.0008380064
+    },
+    {
+      "session": "ses_fa8181668ffeCa1wxagTDCdSli",
+      "artifact": "transcripts/project-permissions.full.json",
+      "tokens": {
+        "input": 201213,
+        "output": 29014,
+        "reasoning": 31555,
+        "cache": {
+          "read": 4511104,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.0577602312
+    },
+    {
+      "session": "ses_fa80b1435ffeLfgOoIjVIDIpKP",
+      "artifact": "transcripts/project-report-check.full.json.gz",
+      "tokens": {
+        "input": 280235,
+        "output": 16864,
+        "reasoning": 40886,
+        "cache": {
+          "read": 6762368,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0.07433753039999995
+    },
+    {
+      "session": "ses_e3f4e729affepTXL7uidfzUkEm",
+      "artifact": "transcripts/project-revision-context.full.json",
+      "tokens": {
+        "input": 298969,
+        "output": 72646,
+        "reasoning": 0,
+        "cache": {
+          "read": 4708416,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f41e4c3ffePb0Q8P4fk877uH",
+      "artifact": "transcripts/project-revision-gates.full.json",
+      "tokens": {
+        "input": 318345,
+        "output": 56242,
+        "reasoning": 0,
+        "cache": {
+          "read": 5669120,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f4bd4e6ffelT24d1n6YZVvbS",
+      "artifact": "transcripts/project-revision-quality.full.json",
+      "tokens": {
+        "input": 193471,
+        "output": 61478,
+        "reasoning": 0,
+        "cache": {
+          "read": 2937600,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f53febfffeJxqxKnMdRFfCgx",
+      "artifact": "transcripts/project-revision-runtime.full.json",
+      "tokens": {
+        "input": 757956,
+        "output": 70970,
+        "reasoning": 0,
+        "cache": {
+          "read": 11645184,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f3210baffeLJWTFA8V7sYmYV",
+      "artifact": "transcripts/project-revision-static.full.json",
+      "tokens": {
+        "input": 29461,
+        "output": 7288,
+        "reasoning": 0,
+        "cache": {
+          "read": 134592,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    },
+    {
+      "session": "ses_e3f28f99fffeB3EaSGurvf2t3E",
+      "artifact": "transcripts/project-revision-transport.full.json",
+      "tokens": {
+        "input": 90097,
+        "output": 11557,
+        "reasoning": 0,
+        "cache": {
+          "read": 705024,
+          "write": 0
+        }
+      },
+      "cost_reported_by_tool": 0
+    }
+  ],
+  "totals": {
+    "input": 4167020,
+    "output": 612866,
+    "reasoning": 298309,
+    "cache_read": 135079936,
+    "cache_write": 0
+  }
+}

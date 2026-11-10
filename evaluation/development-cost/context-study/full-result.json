@@ -1,0 +1,17 @@
+{
+  "condition": "full",
+  "session": "ses_e3f1a9a6affeOPzAFEi2UqnARB",
+  "cli_exit": 0,
+  "prompt_chars": 179433,
+  "unit_exit": 0,
+  "tokens": {
+    "input": 50475,
+    "output": 7758,
+    "reasoning": 0,
+    "cache": {
+      "read": 2176,
+      "write": 0
+    }
+  },
+  "native_record": "transcripts/project-coding-context-full.full.json"
+}

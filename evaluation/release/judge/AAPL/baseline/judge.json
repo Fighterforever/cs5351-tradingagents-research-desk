@@ -1,0 +1,43 @@
+{
+  "support": 0.9,
+  "relevance": 0.95,
+  "cited_claim_count": 40,
+  "supported_cited_claim_count": 40,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "News Analyst states the corpus contains no volume data and no technical indicator values in its tool output, while the same report's Market Analyst section cites volume of 132,489,100 and multiple indicators from market-aapl \u2014 an internal inconsistency in the narrative (the underlying data does exist in the pack).",
+    "Trader's stop loss of 298.00 and position sizing guidance are analyst assumptions, explicitly labeled as such, not sourced facts."
+  ],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "Support: Every key conclusion traces to the two live sources. Earnings figures (revenue 109.4bn +16%, GM 50.1% with ~2pp tariff refund, diluted quarterly EPS 2.02 +29% with 0.11 refund, dividend 0.27) are cited to src-aapl and match the frozen release exactly. All market figures (close 308.91, prior close 333.43, OHLC 304.81/310.69/300.00, volume 132,489,100, 10 EMA 327.24, 20 SMA/Boll middle 324.37, bands 304.22/344.51, MACD 6.82/signal 8.14/hist -1.32, RSI 45.08, ATR 9.90, VWMA 308.54) match the observed tool outputs. Derived arithmetic checks out: -24.52/-7.35%, 8.91pt/2.97% off low, 0.37pt/0.12% above VWMA, 4.69pt/1.54% above lower band, 15.46pt/4.77% below 20 SMA, 18.33pt/5.60% below 10 EMA, 64.93pt/+23.60% rally, 48.0% retracement, 3.20% ATR/price, 10.69pt true range = 1.08x ATR, 48.1% ex-refund GM, 1.91 ex-refund EPS, 5.4% and 4.0% refund shares, 1.08 annualized dividend / 0.35% yield. The report correctly refuses to fabricate 50/200 SMA, TTM EPS, trailing P/E, macro data, and prediction markets, and explicitly labels NO_DATA_AVAILABLE. Minor blemish: the News Analyst section claims the corpus has no volume or technical data, contradicting the Market Analyst section that uses them \u2014 an internal inconsistency, not a fabrication of external facts. Relevance: tightly focused on AAPL at 2026-07-31, with a clear final HOLD decision, symmetric branch triggers, and no off-topic drift; some redundancy across the four risk-seat sections but core complete. Semantic validity: the report is scrupulous about period and unit \u2014 it repeatedly labels 2.02 as quarterly (not TTM), explicitly states no TTM EPS exists and therefore no trailing P/E can be computed, and never converts a single-quarter figure into an annual/TTM metric. No unsupported numerical valuation assertion is made; all multiples are labeled UNKNOWN.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'Apple Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-07-31"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 308.91 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-aapl'"
+    }
+  ]
+}

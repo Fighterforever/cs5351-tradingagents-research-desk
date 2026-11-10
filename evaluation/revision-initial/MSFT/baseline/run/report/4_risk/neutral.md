@@ -1,0 +1,6 @@
+
+Neutral Analyst: I'm the Neutral Risk Analyst, and I want to be clear up front that nothing I say here is a transaction proposal — it's role analysis, and the Portfolio Manager owns the final call.
+
+Let me start with where I think the Aggressive Analyst is simply correct, because it matters for the rest of this. The trader's stated rationale was wrong. The claim that there were "no actual results, growth/margin figures" is false on the record: revenue of USD 90.0 billion up 18%, operating income of USD 40.6 billion up 18%, quarterly GAAP EPS 4.81 against non-GAAP 4.74, Microsoft Cloud at USD 59.3 billion up 27%, Azure and other cloud up 43%, full-year revenue USD 331.8 billion [src-msft]. A formatting failure in the upstream notes is not an evidentiary void, and the Aggressive Analyst is right to refuse to let that harden into policy. He's also right that a trailing P/E is UNKNOWN here — we have one quarter of EPS and one annual revenue figure, no TTM EPS [src-msft], so anyone quoting a trailing multiple is inventing it.
+
+But that's where I get off his bus, because he then does exactly what he accused the trader of doing: he substitutes conviction for evidence. He says the 45.1% operating margin — which is arithmetic on 40.

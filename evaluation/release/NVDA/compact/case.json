@@ -1,0 +1,28 @@
+{
+  "ticker": "NVDA",
+  "analysis_date": "2026-08-27",
+  "announcement_date": "2026-08-26",
+  "split": "held_out",
+  "company_name": "NVIDIA Corporation",
+  "sector": "Technology",
+  "industry": "Semiconductors",
+  "source_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2027/default.aspx",
+  "source_id": "src-nvda",
+  "csv": "NVDA.csv",
+  "csv_path": "/Users/leeyoma/Downloads/cs5351/work/project/test/fixtures/market/NVDA.csv",
+  "as_of": "2026-08-27",
+  "latest_close": 227.97999572753906,
+  "identity": {
+    "company_name": "NVIDIA Corporation",
+    "sector": "Technology",
+    "industry": "Semiconductors"
+  },
+  "notes": [
+    "NVIDIA fiscal Q2 2027 ended July 26, 2026.",
+    "Revenue USD96.2 billion increased 18% sequentially and 106% year over year.",
+    "Data Center revenue 89.0 billion increased 117% year over year.",
+    "GAAP and non-GAAP gross margins were both 75.0%.",
+    "GAAP EPS 2.46; non-GAAP EPS 2.22."
+  ],
+  "balance": "These are quarterly results, not a guarantee of subsequent share performance."
+}

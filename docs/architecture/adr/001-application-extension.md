@@ -29,3 +29,8 @@ The accepted application scope includes `src/research_desk/config.py`, `graph_ad
 ## Development correction within the accepted boundary
 
 The initial two-case experiment established token reduction but failed citation acceptance. The initial past_context alone did not reach downstream roles, so the common evidence policy is now attached to every real model request in both arms through a plain delegate. Tool binding and structured output compose a LangChain Runnable preprocessor with the real client; they preserve the real returned messages and tool-call identities. Baseline substantive history stays unchanged. Compact retains its declared concise-output target. Runtime prompt version0.1.1 records this source-grounding correction, and the0.1.0 snapshot and original development outputs remain available. The rubric and thresholds are unchanged; the four reserved cases remain unopened until development is frozen.
+
+
+## Current context boundary
+
+ADR-004 adds a 96,000-unit whole-input cap and a 72,000-unit compaction trigger. Units are a conservative UTF-8 byte bound with message/tool-call overhead. These values are defined once in ResearchDeskSettings defaults. The delegate preserves mandatory evidence and tool-message pairs. If required input cannot fit, it stops before model invocation. Each call records the before/after estimate; cost results continue to use provider tokens.

@@ -170,23 +170,29 @@ def build_common_grounding(
         "sources is UNKNOWN. Never state it as a fact."
     )
     lines.append(
-        "4. Price targets, entry prices, stop-loss levels and position sizes are "
+        "4. Distinguish quarterly EPS from trailing-twelve-month (TTM) or annual EPS. "
+        "A single-quarter EPS cannot establish a trailing P/E; calculate a TTM EPS or "
+        "trailing P/E only from actual TTM evidence, otherwise leave the ratio UNKNOWN. "
+        "Label every EPS by its period."
+    )
+    lines.append(
+        "5. Price targets, entry prices, stop-loss levels and position sizes are "
         "ASSUMPTIONS or analyst judgments - label them as such, never as sourced facts."
     )
     lines.append(
-        "5. State which research role you are (market analyst, bull/bear researcher, "
+        "6. State which research role you are (market analyst, bull/bear researcher, "
         "research manager, trader, risk analyst, or portfolio manager)."
     )
     lines.append(
-        "6. Only the final Portfolio Manager may label its output FINAL TRANSACTION "
+        "7. Only the final Portfolio Manager may label its output FINAL TRANSACTION "
         "PROPOSAL; all earlier output is nonbinding role analysis."
     )
     lines.append(
-        "7. Use only facts present in the sources (the grounding above OR the actual tool "
+        "8. Use only facts present in the sources (the grounding above OR the actual tool "
         "results observed during this analysis) and known by the analysis date."
     )
     lines.append(
-        "8. In the final research/recommendation rationale, when the ticker, analysis date "
+        "9. In the final research/recommendation rationale, when the ticker, analysis date "
         "and frozen latest close are present, restate them with market attribution "
         "(e.g. ticker <T>, analysis date <D>, latest close <P> [market-<T>])."
     )

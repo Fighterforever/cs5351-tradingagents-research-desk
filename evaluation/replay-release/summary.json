@@ -1,0 +1,210 @@
+{
+  "runs": [
+    {
+      "ticker": "AAPL",
+      "mode": "baseline",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/AAPL/baseline/run",
+        "--out",
+        "evaluation/replay-release/AAPL/baseline/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.9119,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "AAPL",
+      "mode": "compact",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/AAPL/compact/run",
+        "--out",
+        "evaluation/replay-release/AAPL/compact/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.5803,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "MSFT",
+      "mode": "baseline",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/MSFT/baseline/run",
+        "--out",
+        "evaluation/replay-release/MSFT/baseline/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.6025,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "MSFT",
+      "mode": "compact",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/MSFT/compact/run",
+        "--out",
+        "evaluation/replay-release/MSFT/compact/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.6821,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "NVDA",
+      "mode": "baseline",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/NVDA/baseline/run",
+        "--out",
+        "evaluation/replay-release/NVDA/baseline/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.6387,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "NVDA",
+      "mode": "compact",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/NVDA/compact/run",
+        "--out",
+        "evaluation/replay-release/NVDA/compact/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.5743,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "AMZN",
+      "mode": "baseline",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/AMZN/baseline/run",
+        "--out",
+        "evaluation/replay-release/AMZN/baseline/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.5573,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "AMZN",
+      "mode": "compact",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/AMZN/compact/run",
+        "--out",
+        "evaluation/replay-release/AMZN/compact/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.5594,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "META",
+      "mode": "baseline",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/META/baseline/run",
+        "--out",
+        "evaluation/replay-release/META/baseline/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.5945,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "META",
+      "mode": "compact",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/META/compact/run",
+        "--out",
+        "evaluation/replay-release/META/compact/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.5768,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "GOOGL",
+      "mode": "baseline",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/GOOGL/baseline/run",
+        "--out",
+        "evaluation/replay-release/GOOGL/baseline/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.5698,
+      "zero_external_calls": true,
+      "signal_matches": true
+    },
+    {
+      "ticker": "GOOGL",
+      "mode": "compact",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "research_desk.cli",
+        "replay",
+        "evaluation/release/GOOGL/compact/run",
+        "--out",
+        "evaluation/replay-release/GOOGL/compact/report"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.5731,
+      "zero_external_calls": true,
+      "signal_matches": true
+    }
+  ],
+  "max_wall_seconds": 0.9119,
+  "all_pass": true
+}

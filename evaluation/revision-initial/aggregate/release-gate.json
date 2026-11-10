@@ -1,0 +1,594 @@
+{
+  "out": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+  "logs": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs",
+  "attempts": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-attempts",
+  "source_fingerprint": "sha256:d457d150a8e57e112e2e19f89cda589df19deb8786c2b2e19d0173291098a0ed",
+  "workers": 6,
+  "resume": false,
+  "cases": [
+    {
+      "ticker": "NVDA",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "NVDA",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/NVDA/baseline-evaluate-20261109T145616454895Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "NVDA",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/NVDA/compact-evaluate-20261109T145935693291Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "NVDA",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/NVDA/judge-20261109T150143377823Z.log"
+        }
+      ],
+      "problems": [
+        "NVDA/baseline: judge is missing, errored, or semantically invalid",
+        "NVDA/compact: judge is missing, errored, or semantically invalid"
+      ]
+    },
+    {
+      "ticker": "META",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "META",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/META/baseline-evaluate-20261109T145616467735Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "META",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/META/compact-evaluate-20261109T145952818417Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "META",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/META/judge-20261109T150204256979Z.log"
+        }
+      ],
+      "problems": [
+        "META/baseline: judge is missing, errored, or semantically invalid",
+        "META/compact: judge is missing, errored, or semantically invalid"
+      ]
+    },
+    {
+      "ticker": "AMZN",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "AMZN",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AMZN/baseline-evaluate-20261109T145616467409Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "AMZN",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AMZN/compact-evaluate-20261109T145954083879Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "AMZN",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AMZN/judge-20261109T150213971217Z.log"
+        }
+      ],
+      "problems": [
+        "AMZN/baseline: judge is missing, errored, or semantically invalid",
+        "AMZN/compact: judge is missing, errored, or semantically invalid"
+      ]
+    },
+    {
+      "ticker": "AAPL",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "AAPL",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AAPL/baseline-evaluate-20261109T145616454537Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "AAPL",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AAPL/compact-evaluate-20261109T150001905656Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "AAPL",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/AAPL/judge-20261109T150215208850Z.log"
+        }
+      ],
+      "problems": [
+        "AAPL/baseline: judge is missing, errored, or semantically invalid",
+        "AAPL/compact: judge is missing, errored, or semantically invalid"
+      ]
+    },
+    {
+      "ticker": "MSFT",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "MSFT",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/MSFT/baseline-evaluate-20261109T145616454794Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "MSFT",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/MSFT/compact-evaluate-20261109T145958893005Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "MSFT",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/MSFT/judge-20261109T150222978621Z.log"
+        }
+      ],
+      "problems": [
+        "MSFT/baseline: judge is missing, errored, or semantically invalid",
+        "MSFT/compact: judge is missing, errored, or semantically invalid"
+      ]
+    },
+    {
+      "ticker": "GOOGL",
+      "resumed_arms": [],
+      "resumed_judge": false,
+      "commands": [
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "GOOGL",
+            "--mode",
+            "baseline",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/GOOGL/baseline-evaluate-20261109T145616468265Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "evaluate-case",
+            "GOOGL",
+            "--mode",
+            "compact",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release",
+            "--max-calls",
+            "32"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/GOOGL/compact-evaluate-20261109T145947933266Z.log"
+        },
+        {
+          "command": [
+            "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+            "-m",
+            "research_desk.cli",
+            "judge-case",
+            "GOOGL",
+            "--out",
+            "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+          ],
+          "returncode": 0,
+          "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/GOOGL/judge-20261109T150221739206Z.log"
+        }
+      ],
+      "problems": [
+        "GOOGL/baseline: judge is missing, errored, or semantically invalid",
+        "GOOGL/compact: judge is missing, errored, or semantically invalid"
+      ]
+    }
+  ],
+  "aggregate": {
+    "command": [
+      "/Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python",
+      "-m",
+      "research_desk.cli",
+      "aggregate",
+      "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release"
+    ],
+    "returncode": 0,
+    "log": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release-logs/aggregate/aggregate-20261109T150257241302Z.log"
+  },
+  "gate": {
+    "failures": [
+      "AAPL/baseline: judge error is not false",
+      "AAPL/baseline: semantic_valid is not true",
+      "AAPL/baseline: support below 0.8",
+      "AAPL/baseline: relevance below 0.8",
+      "AAPL/baseline: valid_citation_rate below 0.95",
+      "AAPL/baseline: deterministic check failed: final_decision_present",
+      "AAPL/baseline: recomputed pack check failed: final_decision_present",
+      "AAPL/compact: judge error is not false",
+      "AAPL/compact: semantic_valid is not true",
+      "AAPL/compact: support below 0.8",
+      "AAPL/compact: relevance below 0.8",
+      "AAPL/compact: valid_citation_rate below 0.95",
+      "MSFT/baseline: judge error is not false",
+      "MSFT/baseline: semantic_valid is not true",
+      "MSFT/baseline: support below 0.8",
+      "MSFT/baseline: relevance below 0.8",
+      "MSFT/baseline: valid_citation_rate below 0.95",
+      "MSFT/baseline: deterministic check failed: final_decision_present",
+      "MSFT/baseline: recomputed pack check failed: final_decision_present",
+      "MSFT/compact: judge error is not false",
+      "MSFT/compact: semantic_valid is not true",
+      "MSFT/compact: support below 0.8",
+      "MSFT/compact: relevance below 0.8",
+      "MSFT/compact: valid_citation_rate below 0.95",
+      "NVDA/baseline: judge error is not false",
+      "NVDA/baseline: semantic_valid is not true",
+      "NVDA/baseline: support below 0.8",
+      "NVDA/baseline: relevance below 0.8",
+      "NVDA/baseline: valid_citation_rate below 0.95",
+      "NVDA/compact: judge error is not false",
+      "NVDA/compact: semantic_valid is not true",
+      "NVDA/compact: support below 0.8",
+      "NVDA/compact: relevance below 0.8",
+      "NVDA/compact: valid_citation_rate below 0.95",
+      "AMZN/baseline: judge error is not false",
+      "AMZN/baseline: semantic_valid is not true",
+      "AMZN/baseline: support below 0.8",
+      "AMZN/baseline: relevance below 0.8",
+      "AMZN/baseline: valid_citation_rate below 0.95",
+      "AMZN/compact: judge error is not false",
+      "AMZN/compact: semantic_valid is not true",
+      "AMZN/compact: support below 0.8",
+      "AMZN/compact: relevance below 0.8",
+      "AMZN/compact: valid_citation_rate below 0.95",
+      "META/baseline: judge error is not false",
+      "META/baseline: semantic_valid is not true",
+      "META/baseline: support below 0.8",
+      "META/baseline: relevance below 0.8",
+      "META/baseline: valid_citation_rate below 0.95",
+      "META/baseline: deterministic check failed: final_decision_present",
+      "META/baseline: recomputed pack check failed: final_decision_present",
+      "META/compact: judge error is not false",
+      "META/compact: semantic_valid is not true",
+      "META/compact: support below 0.8",
+      "META/compact: relevance below 0.8",
+      "META/compact: valid_citation_rate below 0.95",
+      "GOOGL/baseline: judge error is not false",
+      "GOOGL/baseline: semantic_valid is not true",
+      "GOOGL/baseline: support below 0.8",
+      "GOOGL/baseline: relevance below 0.8",
+      "GOOGL/baseline: valid_citation_rate below 0.95",
+      "GOOGL/baseline: deterministic check failed: final_decision_present",
+      "GOOGL/baseline: recomputed pack check failed: final_decision_present",
+      "GOOGL/compact: judge error is not false",
+      "GOOGL/compact: semantic_valid is not true",
+      "GOOGL/compact: support below 0.8",
+      "GOOGL/compact: relevance below 0.8",
+      "GOOGL/compact: valid_citation_rate below 0.95"
+    ],
+    "checks": [
+      "RELEASE_SOURCE_FINGERPRINT=sha256:d457d150a8e57e112e2e19f89cda589df19deb8786c2b2e19d0173291098a0ed",
+      "RELEASE_CASES=6"
+    ],
+    "warnings": [],
+    "metrics": {
+      "cases": {
+        "AAPL": {
+          "baseline_tokens": 83480,
+          "compact_tokens": 66229,
+          "baseline_wall_seconds": 224.014,
+          "compact_wall_seconds": 132.417,
+          "baseline_support": null,
+          "compact_support": null,
+          "baseline_relevance": null,
+          "compact_relevance": null
+        },
+        "MSFT": {
+          "baseline_tokens": 74473,
+          "compact_tokens": 69461,
+          "baseline_wall_seconds": 220.699,
+          "compact_wall_seconds": 143.081,
+          "baseline_support": null,
+          "compact_support": null,
+          "baseline_relevance": null,
+          "compact_relevance": null
+        },
+        "NVDA": {
+          "baseline_tokens": 68378,
+          "compact_tokens": 68523,
+          "baseline_wall_seconds": 197.825,
+          "compact_wall_seconds": 126.556,
+          "baseline_support": null,
+          "compact_support": null,
+          "baseline_relevance": null,
+          "compact_relevance": null
+        },
+        "AMZN": {
+          "baseline_tokens": 77397,
+          "compact_tokens": 68414,
+          "baseline_wall_seconds": 216.204,
+          "compact_wall_seconds": 138.511,
+          "baseline_support": null,
+          "compact_support": null,
+          "baseline_relevance": null,
+          "compact_relevance": null
+        },
+        "META": {
+          "baseline_tokens": 69774,
+          "compact_tokens": 67058,
+          "baseline_wall_seconds": 214.749,
+          "compact_wall_seconds": 130.531,
+          "baseline_support": null,
+          "compact_support": null,
+          "baseline_relevance": null,
+          "compact_relevance": null
+        },
+        "GOOGL": {
+          "baseline_tokens": 67131,
+          "compact_tokens": 68683,
+          "baseline_wall_seconds": 210.141,
+          "compact_wall_seconds": 151.841,
+          "baseline_support": null,
+          "compact_support": null,
+          "baseline_relevance": null,
+          "compact_relevance": null
+        }
+      }
+    },
+    "source_fingerprint": "sha256:d457d150a8e57e112e2e19f89cda589df19deb8786c2b2e19d0173291098a0ed"
+  },
+  "problems": [
+    "NVDA/baseline: judge is missing, errored, or semantically invalid",
+    "NVDA/compact: judge is missing, errored, or semantically invalid",
+    "META/baseline: judge is missing, errored, or semantically invalid",
+    "META/compact: judge is missing, errored, or semantically invalid",
+    "AMZN/baseline: judge is missing, errored, or semantically invalid",
+    "AMZN/compact: judge is missing, errored, or semantically invalid",
+    "AAPL/baseline: judge is missing, errored, or semantically invalid",
+    "AAPL/compact: judge is missing, errored, or semantically invalid",
+    "MSFT/baseline: judge is missing, errored, or semantically invalid",
+    "MSFT/compact: judge is missing, errored, or semantically invalid",
+    "GOOGL/baseline: judge is missing, errored, or semantically invalid",
+    "GOOGL/compact: judge is missing, errored, or semantically invalid",
+    "AAPL/baseline: judge error is not false",
+    "AAPL/baseline: semantic_valid is not true",
+    "AAPL/baseline: support below 0.8",
+    "AAPL/baseline: relevance below 0.8",
+    "AAPL/baseline: valid_citation_rate below 0.95",
+    "AAPL/baseline: deterministic check failed: final_decision_present",
+    "AAPL/baseline: recomputed pack check failed: final_decision_present",
+    "AAPL/compact: judge error is not false",
+    "AAPL/compact: semantic_valid is not true",
+    "AAPL/compact: support below 0.8",
+    "AAPL/compact: relevance below 0.8",
+    "AAPL/compact: valid_citation_rate below 0.95",
+    "MSFT/baseline: judge error is not false",
+    "MSFT/baseline: semantic_valid is not true",
+    "MSFT/baseline: support below 0.8",
+    "MSFT/baseline: relevance below 0.8",
+    "MSFT/baseline: valid_citation_rate below 0.95",
+    "MSFT/baseline: deterministic check failed: final_decision_present",
+    "MSFT/baseline: recomputed pack check failed: final_decision_present",
+    "MSFT/compact: judge error is not false",
+    "MSFT/compact: semantic_valid is not true",
+    "MSFT/compact: support below 0.8",
+    "MSFT/compact: relevance below 0.8",
+    "MSFT/compact: valid_citation_rate below 0.95",
+    "NVDA/baseline: judge error is not false",
+    "NVDA/baseline: semantic_valid is not true",
+    "NVDA/baseline: support below 0.8",
+    "NVDA/baseline: relevance below 0.8",
+    "NVDA/baseline: valid_citation_rate below 0.95",
+    "NVDA/compact: judge error is not false",
+    "NVDA/compact: semantic_valid is not true",
+    "NVDA/compact: support below 0.8",
+    "NVDA/compact: relevance below 0.8",
+    "NVDA/compact: valid_citation_rate below 0.95",
+    "AMZN/baseline: judge error is not false",
+    "AMZN/baseline: semantic_valid is not true",
+    "AMZN/baseline: support below 0.8",
+    "AMZN/baseline: relevance below 0.8",
+    "AMZN/baseline: valid_citation_rate below 0.95",
+    "AMZN/compact: judge error is not false",
+    "AMZN/compact: semantic_valid is not true",
+    "AMZN/compact: support below 0.8",
+    "AMZN/compact: relevance below 0.8",
+    "AMZN/compact: valid_citation_rate below 0.95",
+    "META/baseline: judge error is not false",
+    "META/baseline: semantic_valid is not true",
+    "META/baseline: support below 0.8",
+    "META/baseline: relevance below 0.8",
+    "META/baseline: valid_citation_rate below 0.95",
+    "META/baseline: deterministic check failed: final_decision_present",
+    "META/baseline: recomputed pack check failed: final_decision_present",
+    "META/compact: judge error is not false",
+    "META/compact: semantic_valid is not true",
+    "META/compact: support below 0.8",
+    "META/compact: relevance below 0.8",
+    "META/compact: valid_citation_rate below 0.95",
+    "GOOGL/baseline: judge error is not false",
+    "GOOGL/baseline: semantic_valid is not true",
+    "GOOGL/baseline: support below 0.8",
+    "GOOGL/baseline: relevance below 0.8",
+    "GOOGL/baseline: valid_citation_rate below 0.95",
+    "GOOGL/baseline: deterministic check failed: final_decision_present",
+    "GOOGL/baseline: recomputed pack check failed: final_decision_present",
+    "GOOGL/compact: judge error is not false",
+    "GOOGL/compact: semantic_valid is not true",
+    "GOOGL/compact: support below 0.8",
+    "GOOGL/compact: relevance below 0.8",
+    "GOOGL/compact: valid_citation_rate below 0.95"
+  ],
+  "passed": false
+}

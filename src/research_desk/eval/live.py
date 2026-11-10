@@ -16,7 +16,8 @@ comparison (AT-07 / FR-003 / QUALITY-001..003 / COST-001 / PERF-001):
   (baseline vs compact) metrics without calling any model again.
 
 Only host credentials are used: ``DEEPSEEK_API_KEY`` and optional
-``DEEPSEEK_BASE_URL``. Each run uses an isolated home directory. A completed or
+``DEEPSEEK_BASE_URL`` (default ``https://api.aiohub.org/v1``). Each run uses an
+isolated home directory. A completed or
 failed outcome means the actual graph outcome; a failed setup is never reported
 as completed.
 """
@@ -32,19 +33,74 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
+from pydantic import BaseModel, Field, model_validator
+
+from ..config import DEFAULT_BASE_URL, DEFAULT_MODEL, DEFAULT_PROVIDER
 from .case_registry import case_for
 from .frozen_provider import FrozenMarketProvider
 
 logger = logging.getLogger(__name__)
 
-MODEL = "deepseek-v4-flash"
-PROVIDER = "deepseek"
+MODEL = DEFAULT_MODEL
+PROVIDER = DEFAULT_PROVIDER
 OUTPUT_CAP = 1800  # provider max_tokens cap, identical for both arms
+PROVENANCE_FILENAME = "provenance.json"
 
-# DeepSeek V4 is a thinking model; disable reasoning for a deterministic,
-# reproducible research/judge role. Forwarded as ``extra_body`` on the model so
-# it reaches the provider request payload.
-THINKING_DISABLED_EXTRA_BODY = {"thinking": {"type": "disabled"}}
+
+def _base_url() -> str:
+    """Host-supplied endpoint override, otherwise the authoritative default."""
+    return os.environ.get("DEEPSEEK_BASE_URL") or DEFAULT_BASE_URL
+
+
+def _project_root() -> Path:
+    """Repository root (this module lives in ``src/research_desk/eval``)."""
+    return Path(__file__).resolve().parents[3]
+
+
+def _current_source_fingerprint(root: Path) -> str:
+    """Current runtime source fingerprint from the release-quality contract."""
+    from .quality import source_fingerprint
+
+    return source_fingerprint(root)
+
+
+def _provenance_payload(
+    fingerprint: str, cfg: dict[str, Any], base_url: str
+) -> dict[str, Any]:
+    """Provenance record bound to the actual model/provider/endpoint/config."""
+    return {
+        "source_fingerprint": fingerprint,
+        "model": cfg.get("quick_think_llm") or MODEL,
+        "provider": cfg.get("llm_provider") or PROVIDER,
+        "endpoint": base_url,
+        "deep_think_llm": cfg.get("deep_think_llm") or MODEL,
+        "max_tokens": cfg.get("max_tokens"),
+        "temperature": cfg.get("temperature"),
+    }
+
+
+def _read_source_fingerprint(path: Path) -> str | None:
+    """Read a saved provenance source fingerprint, or None if absent/invalid."""
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    value = data.get("source_fingerprint")
+    return value if isinstance(value, str) else None
+
+
+# Verified AioHub deepseek-flash endpoint contract: ``thinking={"type":
+# "disabled"}`` alone is ignored and the model still emits reasoning, while
+# adding ``reasoning_effort="none"`` yields zero reasoning. Both keys travel as
+# ``extra_body`` (never top-level) because the upstream factory filters a
+# top-level ``reasoning_effort`` for DeepSeek; this gives the graph models and
+# the isolated judge the same effective non-thinking setting.
+THINKING_DISABLED_EXTRA_BODY = {
+    "thinking": {"type": "disabled"},
+    "reasoning_effort": "none",
+}
 
 
 def _graph_config(home: Path, base_url: str | None) -> dict[str, Any]:
@@ -78,8 +134,7 @@ def _graph_config(home: Path, base_url: str | None) -> dict[str, Any]:
             "memory_log_path": str(home / "memory" / "trading_memory.md"),
         }
     )
-    if base_url:
-        cfg["backend_url"] = base_url
+    cfg["backend_url"] = base_url or DEFAULT_BASE_URL
     return cfg
 
 
@@ -116,7 +171,7 @@ def run_evaluate_case(
     arm_dir = out / ticker / context_mode
     arm_dir.mkdir(parents=True, exist_ok=True)
 
-    base_url = os.environ.get("DEEPSEEK_BASE_URL")
+    base_url = _base_url()
     if not os.environ.get("DEEPSEEK_API_KEY"):
         raise RuntimeError(
             "DEEPSEEK_API_KEY is not set. Supply it as a host environment variable."
@@ -139,9 +194,19 @@ def run_evaluate_case(
         frozen_provider=provider,
         graph_config=cfg,
     )
+
+    root = _project_root()
+    source_before = _current_source_fingerprint(root)
+    _dump_json(
+        arm_dir / PROVENANCE_FILENAME,
+        _provenance_payload(source_before, cfg, base_url),
+    )
+
     start = time.time()
     result = runner.run(ticker, case["analysis_date"])
     wall_seconds = time.time() - start
+    source_after = _current_source_fingerprint(root)
+    source_changed = source_after != source_before
 
     # The pack is exported by the runner under the isolated home; relocate the
     # whole run directory into the arm dir for stable aggregate/export paths.
@@ -174,9 +239,17 @@ def run_evaluate_case(
         "pack_complete": pack.complete if pack is not None else False,
         "run_dir": str(dest),
     }
+    if source_changed:
+        summary["source_changed"] = True
+        summary["error"] = (
+            "source changed during run; refusing to certify evidence "
+            f"({source_before} != {source_after})"
+        )
     _dump_json(arm_dir / "summary.json", summary)
     if pack is not None:
         (arm_dir / "report.md").write_text(render_run_report(pack), encoding="utf-8")
+    if source_changed:
+        raise RuntimeError(summary["error"])
     return summary
 
 
@@ -287,20 +360,40 @@ def _report_text(final_state: dict[str, Any]) -> str:
     return "\n\n".join(parts)
 
 
+def _report_text_with_identity(pack) -> str:
+    """The judge input: the shared deterministic header plus raw generated text."""
+    from research_desk.report import render_research_identity
+
+    return render_research_identity(pack) + "\n\n" + _report_text(pack.final_state)
+
+
 def _deterministic_checks(case: dict, pack, ticker: str) -> list[dict[str, Any]]:
     """Deterministic identity/date/price/state and source-ID checks (QUALITY-001)."""
     checks: list[dict[str, Any]] = []
     fs = pack.final_state if pack is not None else {}
     text = _report_text(fs)
 
+    from research_desk.report import render_research_identity
+
+    # Identity/date are presentation-contract checks over the same deterministic
+    # header the user-visible report and judge input carry. The raw narrative
+    # price check below stays independent and stronger.
+    contract_text = render_research_identity(pack) if pack is not None else ""
+
     def check(name: str, passed: bool, detail: str) -> None:
         checks.append({"check": name, "passed": passed, "detail": detail})
 
     expected_company = case.get("identity", {}).get("company_name", "")
-    check("instrument_identity", expected_company and expected_company.lower() in text.lower(),
-          f"report references company '{expected_company}'")
-    check("analysis_date", case["analysis_date"] in text,
-          f"report references analysis date {case['analysis_date']}")
+    check(
+        "instrument_identity",
+        bool(expected_company) and expected_company.lower() in contract_text.lower(),
+        f"report contract references company '{expected_company}'",
+    )
+    check(
+        "analysis_date",
+        case["analysis_date"] in contract_text,
+        f"report contract references analysis date {case['analysis_date']}",
+    )
     check("final_decision_present", bool(fs.get("final_trade_decision")),
           "final trade decision is present in the final state")
     # Price must be supported by evidence (observed tool result or the factual
@@ -350,10 +443,30 @@ def run_judge_case(
         )
     case = case_for(ticker)
     out = Path(out_dir)
+    root = _project_root()
     judged: dict[str, Any] = {"ticker": ticker, "arms": {}}
+    source_failure = False
     for mode in ("baseline", "compact"):
         run_dir = out / ticker / mode / "run"
         if not run_dir.exists():
+            continue
+        current = _current_source_fingerprint(root)
+        run_fingerprint = _read_source_fingerprint(
+            out / ticker / mode / PROVENANCE_FILENAME
+        )
+        if run_fingerprint is None:
+            judged["arms"][mode] = {
+                "error": "run provenance missing; refusing to judge",
+            }
+            source_failure = True
+            continue
+        if run_fingerprint != current:
+            judged["arms"][mode] = {
+                "error": "run provenance is stale; refusing to judge",
+                "run_source_fingerprint": run_fingerprint,
+                "current_source_fingerprint": current,
+            }
+            source_failure = True
             continue
         try:
             pack = EvidencePackIO().import_pack(run_dir)
@@ -367,8 +480,21 @@ def run_judge_case(
                 "note": "skipped judge: run not completed",
             }
             continue
-        report_text = _report_text(pack.final_state)
+        report_text = _report_text_with_identity(pack)
         deterministic = _deterministic_checks(case, pack, ticker)
+        judge_cfg = {
+            "llm_provider": PROVIDER,
+            "quick_think_llm": MODEL,
+            "deep_think_llm": MODEL,
+            "max_tokens": OUTPUT_CAP,
+            "temperature": 0,
+        }
+        arm_judge_dir = out / "judge" / ticker / mode
+        arm_judge_dir.mkdir(parents=True, exist_ok=True)
+        _dump_json(
+            arm_judge_dir / PROVENANCE_FILENAME,
+            _provenance_payload(current, judge_cfg, _base_url()),
+        )
         raw, score = _llm_judge(
             case,
             report_text,
@@ -376,12 +502,23 @@ def run_judge_case(
             available_sources=pack.input.available_sources or {},
             events=pack.events,
         )
-        arm_judge_dir = out / "judge" / ticker / mode
-        arm_judge_dir.mkdir(parents=True, exist_ok=True)
+        source_after = _current_source_fingerprint(root)
+        if source_after != current:
+            judged["arms"][mode] = {
+                "error": "source changed during judge; refusing to certify",
+                "judge_source_fingerprint": current,
+                "current_source_fingerprint": source_after,
+            }
+            source_failure = True
+            continue
         _dump_json(arm_judge_dir / "raw.json", raw)
         _dump_json(arm_judge_dir / "judge.json", score)
         judged["arms"][mode] = score
     _dump_json(out / "judge" / ticker / "summary.json", judged)
+    if source_failure:
+        raise RuntimeError(
+            "source provenance missing or changed; refusing to certify judge results"
+        )
     return judged
 
 
@@ -478,6 +615,15 @@ Citation accounting (count factual claims that carry a source citation):
 - uncited_factual_claims = factual claims (numbers/dates/identity/price) made with no supporting source ID.
 Do NOT give 1.0 just because the report is nonempty.
 
+Semantic validity (dedicated condition):
+- semantic_valid = true only when every earnings-period and unit statement is correct. A quarterly EPS is never described as trailing-twelve-month (TTM) or annual EPS, and a trailing P/E or other trailing ratio is computed only from actual TTM EPS evidence.
+- Set semantic_valid = false if the report converts or relabels a single-quarter figure as TTM/annual, computes a trailing P/E from quarterly EPS, or makes a key numerical valuation assertion unsupported by the evidence. Valid citation IDs do NOT rescue a wrong period/unit or an unsupported numerical claim.
+- semantic_errors = concise explanations of each period/unit error or unsupported numerical valuation claim. Any non-empty semantic_errors list must accompany semantic_valid = false.
+
+Presentation contract:
+- The first section is a deterministic identity/date/evidence-price header rendered from the evidence pack. It is a presentation contract, not model reasoning.
+- A correct header does NOT excuse a contradictory price or identity in the raw reasoning, nor a wrong earnings period or unit. Judge the generated narrative independently.
+
 REPORT:
 {report_text}
 """
@@ -490,6 +636,45 @@ def _valid_citation_rate(cited: int, supported: int) -> float | None:
     return round(supported / cited, 4)
 
 
+class JudgeScore(BaseModel):
+    """Structured judge output, including the dedicated semantic validity gate.
+
+    ``semantic_valid`` defaults to ``False`` when a legacy or incomplete judge
+    response omits it, so absence can never be read as a pass. Any recorded
+    semantic error also forces it to ``False`` regardless of citation counts.
+    """
+
+    support: float = Field(..., ge=0, le=1)
+    relevance: float = Field(..., ge=0, le=1)
+    cited_claim_count: int = Field(..., ge=0)
+    supported_cited_claim_count: int = Field(..., ge=0)
+    invalid_citation_explanations: list[str] = Field(default_factory=list)
+    uncited_factual_claims: list[str] = Field(default_factory=list)
+    semantic_valid: bool = Field(
+        default=False,
+        description=(
+            "True only when earnings periods/units are correct and no key numerical "
+            "valuation assertion is unsupported by the evidence."
+        ),
+    )
+    semantic_errors: list[str] = Field(default_factory=list)
+    rationale: str = ""
+
+    @model_validator(mode="after")
+    def _supported_within_cited(self):
+        if self.supported_cited_claim_count > self.cited_claim_count:
+            raise ValueError(
+                "supported_cited_claim_count cannot exceed cited_claim_count"
+            )
+        return self
+
+    @model_validator(mode="after")
+    def _semantic_errors_invalidate(self):
+        if self.semantic_errors:
+            self.semantic_valid = False
+        return self
+
+
 def _llm_judge(
     case: dict,
     report_text: str,
@@ -499,31 +684,12 @@ def _llm_judge(
     events,
 ):
     """Run the real DeepSeek evaluator; returns (raw, score) without fabrication."""
-    from pydantic import BaseModel, Field, model_validator
-
     from tradingagents.llm_clients import create_llm_client
-
-    class _Judge(BaseModel):
-        support: float = Field(..., ge=0, le=1)
-        relevance: float = Field(..., ge=0, le=1)
-        cited_claim_count: int = Field(..., ge=0)
-        supported_cited_claim_count: int = Field(..., ge=0)
-        invalid_citation_explanations: list[str] = Field(default_factory=list)
-        uncited_factual_claims: list[str] = Field(default_factory=list)
-        rationale: str = ""
-
-        @model_validator(mode="after")
-        def _supported_within_cited(self):
-            if self.supported_cited_claim_count > self.cited_claim_count:
-                raise ValueError(
-                    "supported_cited_claim_count cannot exceed cited_claim_count"
-                )
-            return self
 
     client = create_llm_client(
         PROVIDER,
         MODEL,
-        base_url=os.environ.get("DEEPSEEK_BASE_URL"),
+        base_url=_base_url(),
         max_tokens=OUTPUT_CAP,
         temperature=0,
     )
@@ -532,7 +698,7 @@ def _llm_judge(
         llm.extra_body = dict(THINKING_DISABLED_EXTRA_BODY)
 
     prompt = _judge_prompt(case, report_text, deterministic, available_sources, events)
-    structured = llm.with_structured_output(_Judge, include_raw=True)
+    structured = llm.with_structured_output(JudgeScore, include_raw=True)
     try:
         raw_out = structured.invoke(prompt)
     except Exception as exc:  # noqa: BLE001 - surface judge failures visibly
@@ -545,6 +711,8 @@ def _llm_judge(
             "valid_citation_rate": None,
             "invalid_citation_explanations": [],
             "uncited_factual_claims": [],
+            "semantic_valid": False,
+            "semantic_errors": [],
             "rationale": f"judge invoke failed: {exc}",
             "error": True,
             "deterministic_checks": deterministic,
@@ -576,6 +744,8 @@ def _llm_judge(
             "valid_citation_rate": None,
             "invalid_citation_explanations": [],
             "uncited_factual_claims": [],
+            "semantic_valid": False,
+            "semantic_errors": [],
             "rationale": (
                 "judge returned no parseable structured score"
                 + (f": {parsing_error}" if parsing_error else "")
@@ -588,6 +758,10 @@ def _llm_judge(
         cited = int(parsed.cited_claim_count)
         supported = int(parsed.supported_cited_claim_count)
         valid_citation_rate = _valid_citation_rate(cited, supported)
+        semantic_errors = list(getattr(parsed, "semantic_errors", []) or [])
+        semantic_valid = bool(getattr(parsed, "semantic_valid", False))
+        if semantic_errors:
+            semantic_valid = False  # a recorded semantic defect cannot pass
         score = {
             "support": float(parsed.support),
             "relevance": float(parsed.relevance),
@@ -596,6 +770,8 @@ def _llm_judge(
             "valid_citation_rate": valid_citation_rate,
             "invalid_citation_explanations": list(parsed.invalid_citation_explanations),
             "uncited_factual_claims": list(parsed.uncited_factual_claims),
+            "semantic_valid": semantic_valid,
+            "semantic_errors": semantic_errors,
             "rationale": parsed.rationale,
             "error": False,
             "deterministic_checks": deterministic,

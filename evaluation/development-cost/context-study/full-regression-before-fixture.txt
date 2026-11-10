@@ -1,0 +1,55 @@
+.....................F....                                               [100%]
+=================================== FAILURES ===================================
+__________ test_authoritative_model_and_prompt_version_are_consistent __________
+
+    def test_authoritative_model_and_prompt_version_are_consistent():
+        from research_desk.config import (
+            DEFAULT_BASE_URL,
+            DEFAULT_MODEL,
+            DEFAULT_PROVIDER,
+            PROMPT_VERSION,
+            ResearchDeskSettings,
+        )
+        from research_desk.eval import live
+    
+        assert live.MODEL == DEFAULT_MODEL == "deepseek-flash"
+        assert live.PROVIDER == DEFAULT_PROVIDER == "deepseek"
+        assert DEFAULT_BASE_URL == "https://api.aiohub.org/v1"
+        assert ResearchDeskSettings().prompt_version == PROMPT_VERSION
+    
+        snapshot = yaml.safe_load(
+>           Path("prompts/runtime-prompts-v0.1.2.yaml").read_text(encoding="utf-8")
+        )
+
+/Users/leeyoma/Downloads/cs5351/work/project/test/offline/test_revision_contracts.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('prompts/runtime-prompts-v0.1.2.yaml'), mode = 'r'
+buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'prompts/runtime-prompts-v0.1.2.yaml'
+
+/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1013: FileNotFoundError
+=============================== warnings summary ===============================
+test/offline/test_revision_contracts.py::test_deepseek_transport_disables_reasoning_via_extra_body
+  /Users/leeyoma/Downloads/cs5351/work/project/tradingagents/llm_clients/openai_client.py:278: RuntimeWarning: Model 'deepseek-flash' is not in the known model list for provider 'deepseek'. Continuing anyway.
+    self.warn_if_unknown_model()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../../../Users/leeyoma/Downloads/cs5351/work/project/test/offline/test_revision_contracts.py::test_authoritative_model_and_prompt_version_are_consistent
+1 failed, 25 passed, 1 warning in 0.95s

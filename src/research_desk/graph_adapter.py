@@ -29,6 +29,7 @@ import logging
 import time
 import uuid
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from langchain_core.tools import tool
@@ -42,7 +43,7 @@ from tradingagents.agents.utils.rating import is_review
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.reporting import write_report_tree
 
-from .budget import BudgetExhausted, BudgetTracker
+from .budget import BudgetExhausted, BudgetTracker, ContextBudgetExceeded
 from .config import ResearchDeskSettings
 from .context import ContextAssembler, StandingConstraints, build_common_grounding
 from .evidence import EvidenceLog, EvidencePackIO, record_data_read
@@ -54,6 +55,7 @@ from .models import (
     RunResult,
     utcnow_iso,
 )
+from .report import apply_research_identity_header, render_research_identity
 from .review import ReviewError, create_proposal
 
 logger = logging.getLogger(__name__)
@@ -523,7 +525,7 @@ class ResearchRunner:
         from tradingagents.graph.setup import GraphSetup
         from tradingagents.graph.signal_processing import SignalProcessor
 
-        from .eval.compact_delegate import wrap_for_mode
+        from .eval.compact_delegate import BudgetObservation, wrap_for_mode
 
         # The one COMMON grounding layer, derived from the real per-case
         # provider/available_sources, identical for both arms.
@@ -534,11 +536,25 @@ class ResearchRunner:
             ticker or "", trade_date or "", available_sources
         )
 
+        def _observe_budget(observation: BudgetObservation) -> None:
+            if evidence_log is not None:
+                evidence_log.record("context_budget", **observation)
+
         graph.quick_thinking_llm = wrap_for_mode(
-            graph.quick_thinking_llm, self.context_mode, common_grounding=common_grounding
+            graph.quick_thinking_llm,
+            self.context_mode,
+            common_grounding=common_grounding,
+            context_max_tokens=self.settings.context_max_tokens,
+            context_trigger_tokens=self.settings.context_trigger_tokens,
+            budget_observer=_observe_budget,
         )
         graph.deep_thinking_llm = wrap_for_mode(
-            graph.deep_thinking_llm, self.context_mode, common_grounding=common_grounding
+            graph.deep_thinking_llm,
+            self.context_mode,
+            common_grounding=common_grounding,
+            context_max_tokens=self.settings.context_max_tokens,
+            context_trigger_tokens=self.settings.context_trigger_tokens,
+            budget_observer=_observe_budget,
         )
 
         # Rebuild the setup with the wrapped models but the *original* memory
@@ -632,9 +648,19 @@ class ResearchRunner:
         start = time.time()
         outcome = RunOutcome.COMPLETED
         error: str | None = None
+        context_stopped = False
         try:
             for chunk in graph.graph.stream(init_state, **args):
                 trace.append(chunk)
+        except ContextBudgetExceeded as exc:
+            outcome = RunOutcome.BUDGET_STOPPED
+            context_stopped = True
+            evidence_log.record(
+                "budget_stop",
+                reason=exc.stop_reason,
+                estimated_tokens=exc.estimated_tokens,
+                limit=exc.limit,
+            )
         except BudgetExhausted as exc:
             outcome = RunOutcome.BUDGET_STOPPED
             evidence_log.record("budget_stop", limit=exc.limit)
@@ -647,7 +673,9 @@ class ResearchRunner:
 
         final_state = merge_trace(trace)
         usage = budget.summary()
-        usage.stop_reason = budget.stop_reason()
+        usage.stop_reason = (
+            ContextBudgetExceeded.stop_reason if context_stopped else budget.stop_reason()
+        )
 
         signal = None
         if outcome == RunOutcome.COMPLETED and "final_trade_decision" in final_state:
@@ -665,9 +693,11 @@ class ResearchRunner:
         # Reports (deterministic rebuild from the final state).
         report_dir = self.settings.runs_dir / run_id / "report"
         report_files: list[str] = []
+        complete_report_path: Path | None = None
         if final_state:
             try:
                 complete = write_report_tree(final_state, ticker, report_dir)
+                complete_report_path = complete
                 report_files = [str(p) for p in report_dir.iterdir() if p.is_file()]
                 report_files.append(str(complete))
             except Exception as exc:  # noqa: BLE001 - reports are best-effort
@@ -735,6 +765,10 @@ class ResearchRunner:
             proposal=proposal,
             reports_written=report_files,
         )
+        if complete_report_path is not None:
+            apply_research_identity_header(
+                complete_report_path, render_research_identity(pack)
+            )
         run_dir = self.settings.runs_dir / run_id
         self.io.export(pack, run_dir)
         pack_path = str(run_dir)

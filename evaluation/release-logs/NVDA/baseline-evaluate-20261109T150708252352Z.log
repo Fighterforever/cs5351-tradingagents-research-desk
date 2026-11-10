@@ -1,0 +1,14 @@
+$ /Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python -m research_desk.cli evaluate-case NVDA --mode baseline --out /Users/leeyoma/Downloads/cs5351/work/project/evaluation/release --max-calls 32
+
+[exit 0]
+
+--- stdout ---
+NVDA  outcome=completed signal=Overweight calls=14 tokens=102425 wall=171.538s
+  run dir: 
+/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release/NVDA/baseline/ru
+n
+
+--- stderr ---
+/Users/leeyoma/Downloads/cs5351/work/project/tradingagents/llm_clients/openai_client.py:278: RuntimeWarning: Model 'deepseek-flash' is not in the known model list for provider 'deepseek'. Continuing anyway.
+  self.warn_if_unknown_model()
+

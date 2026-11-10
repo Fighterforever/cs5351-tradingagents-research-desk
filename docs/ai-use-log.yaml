@@ -5,14 +5,17 @@ entries:
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
-  purpose: Fix the actual offline failure resolving the official configuration schema's public model-schema dependency
+  purpose: Fix the actual offline failure resolving the official configuration schema's public model-schema
+    dependency
   session: ses_fa7ffd8cfffeKu8F0XdeWcNGv9
   prompt: transcripts/prompts/project-ci-offline-schema.md
   scope:
   - scripts/check_permissions.py
   review: docs/ci-gates.md
   evidence: transcripts/project-ci-offline-schema.full.json
-  outcome: Registered the coordinator-archived official dependency in a local JSON Schema registry. The previously failed static gate then passed offline, followed by the complete six-gate run. Permission definitions and application behavior remain unchanged.
+  outcome: Registered the coordinator-archived official dependency in a local JSON Schema registry. The
+    previously failed static gate then passed offline, followed by the complete six-gate run. Permission
+    definitions and application behavior remain unchanged.
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
@@ -26,13 +29,12 @@ entries:
   - pyproject.toml
   review: docs/review-memo.md
   evidence: transcripts/project-01.full.json
-  outcome: Offline slice47 passed; review required exact approval, total position and full-input
-    compaction fixes
+  outcome: Offline slice47 passed; review required exact approval, total position and full-input compaction
+    fixes
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
-  purpose: Apply substantive review corrections and implement the real fixed-corpus evaluation
-    adapter
+  purpose: Apply substantive review corrections and implement the real fixed-corpus evaluation adapter
   session: ses_fa83026e7ffe84kFIOlxvQB3aB
   prompt: transcripts/prompts/project-02-live.md
   scope:
@@ -41,30 +43,29 @@ entries:
   - test/live
   - test/fixtures
   review: docs/architecture/adr/002-exact-approval-and-total-position.md
-  outcome: Fixed-corpus adapter and review corrections generated; concrete integration corrections
-    continued in the next recorded session
+  outcome: Fixed-corpus adapter and review corrections generated; concrete integration corrections continued
+    in the next recorded session
   evidence: transcripts/project-02.full.json
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
-  purpose: Implement the six offline CI gates against approved requirements and real project
-    interfaces
+  purpose: Implement the six offline CI gates against approved requirements and real project interfaces
   session: ses_fa82cafc9ffeeAkOozPwPQ41De
   prompt: transcripts/prompts/project-ci.md
   scope:
   - scripts
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - docs/req/req-schema.json
   review: docs/ci-gates.md
   evidence: transcripts/project-ci.full.json
-  outcome: Six gates generated and corrected against the approved contracts. The final committed
-    implementation passed all six gates and all six AT-08 expected rejections; initial failures
-    and the final complete output are preserved in evaluation/ci-initial and evaluation/ci.
+  outcome: Six gates generated and corrected against the approved contracts. The final committed implementation
+    passed all six gates and all six AT-08 expected rejections; initial failures and the final complete
+    output are preserved in evaluation/ci-initial and evaluation/ci.
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
-  purpose: Prepare and install ADR-003 role permissions, preserve upstream ownership, and pin
-    CI to the existing dependency constraints
+  purpose: Prepare and install ADR-003 role permissions, preserve upstream ownership, and pin CI to the
+    existing dependency constraints
   session: ses_fa8181668ffeCa1wxagTDCdSli
   prompt: transcripts/prompts/project-permissions.md
   scope:
@@ -73,47 +74,48 @@ entries:
   - .opencode/config-schema.json
   - scripts/check_permissions.py
   - scripts/check_static.py
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - test/offline/test_evidence_message_roundtrip.py
   review: docs/architecture/adr/003-effective-agent-permissions.md
   evidence: transcripts/project-permissions.full.json
-  outcome: Candidate and manifest passed the official schema and role-boundary checks. Exact
-    shell commands closed the identified output-path bypasses. After source freeze, OpenCode
-    installed the accepted configuration at 2026-08-31T13:23:25.861000+00:00 and verified the
-    copy matched the candidate. Locked CI constraints and the authorized unused-import correction
-    are complete; the real runtime probe recorded an explicit denial.
+  outcome: Candidate and manifest passed the official schema and role-boundary checks. Exact shell commands
+    closed the identified output-path bypasses. After source freeze, OpenCode installed the accepted configuration
+    at 2026-08-31T13:23:25.861000+00:00 and verified the copy matched the candidate. Locked CI constraints
+    and the authorized unused-import correction are complete; the real runtime probe recorded an explicit
+    denial.
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
-  purpose: Demonstrate that explicit protected-path permissions remain enforced with --auto
-    using the inactive candidate only in this process
+  purpose: Demonstrate that explicit protected-path permissions remain enforced with --auto using the
+    inactive candidate only in this process
   session: ses_fa80c9b43ffeQxAOOAzm0TfP7m
   prompt: transcripts/prompts/project-permission-probe.md
   scope:
   - transcripts/project-permission-probe.jsonl
   review: docs/ci-gates.md
   evidence: transcripts/project-permission-probe.full.json
-  outcome: The actual write tool rejected docs/process/permission-probe.txt; no probe file was
-    created and no fallback tool was attempted
+  outcome: The actual write tool rejected docs/process/permission-probe.txt; no probe file was created
+    and no fallback tool was attempted
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
-  purpose: Generate one local runner that captures the six real gate commands and the six AT-08
-    expected rejections against explicit Git revisions
+  purpose: Generate one local runner that captures the six real gate commands and the six AT-08 expected
+    rejections against explicit Git revisions
   session: ses_fa80bcfeaffesU8pYhL8W33pWk
   prompt: transcripts/prompts/project-ci-runner.md
   scope:
   - scripts/run_gates.py
   review: docs/ci-gates.md
   evidence: transcripts/project-ci-runner.full.json
-  outcome: Runner generated and used on the final committed implementation. All six gates and
-    the AT-08 demonstration returned exit zero; upstream tests reported 649 passed plus 71
-    passing subtests and 2 skips, and the application suite reported 98 passed. Complete
-    command provenance and output are preserved in evaluation/ci.
+  outcome: Runner generated and used on the final committed implementation. All six gates and the AT-08
+    demonstration returned exit zero; upstream tests reported 649 passed plus 71 passing subtests and
+    2 skips, and the application suite reported 98 passed. Complete command provenance and output are
+    preserved in evaluation/ci.
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
-  purpose: Resolve the four specifically authorized files' actual final lint findings while preserving source behavior and test side effects
+  purpose: Resolve the four specifically authorized files' actual final lint findings while preserving
+    source behavior and test side effects
   session: ses_fa8062ac3ffeKfXEYAXA7301Hn
   prompt: transcripts/prompts/project-ci-lint-finish.md
   scope:
@@ -123,12 +125,13 @@ entries:
   - test/offline/test_live_fixes.py
   review: docs/ci-gates.md
   evidence: transcripts/project-ci-lint-finish.full.json
-  outcome: Combined one equivalent short-circuit guard, removed two unused assignment targets while retaining calls, and sorted or removed unused imports. Focused Ruff passed; live.py was untouched.
+  outcome: Combined one equivalent short-circuit guard, removed two unused assignment targets while retaining
+    calls, and sorted or removed unused imports. Focused Ruff passed; live.py was untouched.
 - date: '2026-08-31'
   tool: Codex coordinating workflow
   model: Codex
-  purpose: Read course and upstream contracts, specify requirements/architecture, approve scoped
-    tests under leo, write bounded OpenCode prompts and interpret actual evidence
+  purpose: Read course and upstream contracts, specify requirements/architecture, approve scoped tests
+    under leo, write bounded OpenCode prompts and interpret actual evidence
   scope:
   - AGENTS.md
   - Prompt.md
@@ -140,8 +143,8 @@ entries:
   - transcripts/leo-leo.md
   review: docs/process/APPROVAL_PACKET.md
   evidence: transcripts/leo-leo.md
-  outcome: Requirements, approval chronology, source review and report draft; measured results
-    filled only from actual execution
+  outcome: Requirements, approval chronology, source review and report draft; measured results filled
+    only from actual execution
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
@@ -155,14 +158,14 @@ entries:
   - prompts
   review: docs/review-memo.md
   evidence: transcripts/project-04.full.json
-  outcome: Real graph configuration, message/tool contracts, complete frozen evidence, valid
-    sales and opt-in live entry implemented; 66 offline tests and application mypy passed before
-    the separate message roundtrip additions
+  outcome: Real graph configuration, message/tool contracts, complete frozen evidence, valid sales and
+    opt-in live entry implemented; 66 offline tests and application mypy passed before the separate message
+    roundtrip additions
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
-  purpose: Fix evidence export of real LangChain messages and preserve numeric token usage during
-    credential redaction
+  purpose: Fix evidence export of real LangChain messages and preserve numeric token usage during credential
+    redaction
   session: ses_fa817dbb4ffescaq14SFvAqA2I
   prompt: transcripts/prompts/project-evidence-fix.md
   scope:
@@ -170,13 +173,13 @@ entries:
   - test/offline/test_evidence_message_roundtrip.py
   review: docs/bug-diary.md
   evidence: transcripts/project-evidence-fix.full.json
-  outcome: Two directory/ZIP message-roundtrip regressions and eight existing offline replay
-    tests passed; initial CallRecord test assertion corrected against its declared model
+  outcome: Two directory/ZIP message-roundtrip regressions and eight existing offline replay tests passed;
+    initial CallRecord test assertion corrected against its declared model
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
-  purpose: Repair actual development citation failure at every real model request in both arms;
-    retain honest source attribution and baseline history
+  purpose: Repair actual development citation failure at every real model request in both arms; retain
+    honest source attribution and baseline history
   session: ses_fa80e5e8bffei1CBiJ8vadPRtm
   prompt: transcripts/prompts/project-09-grounding.md
   follow_up_prompt: transcripts/prompts/project-10-grounding-precision.md
@@ -190,10 +193,9 @@ entries:
   - prompts/runtime-prompts-v0.1.1.yaml
   review: docs/architecture/adr/001-application-extension.md
   evidence: transcripts/project-09.full.json.gz
-  outcome: Shared source layer reaches plain/tools/structured paths in both modes;72 offline
-    passed before final prompt precision correction,5 focused passed after it; mypy clean across18
-    files. Root reruns development before held-out evaluation.
-
+  outcome: Shared source layer reaches plain/tools/structured paths in both modes;72 offline passed before
+    final prompt precision correction,5 focused passed after it; mypy clean across18 files. Root reruns
+    development before held-out evaluation.
 - date: '2026-08-31'
   tool: OpenCode CLI
   model: deepseek/deepseek-v4-flash
@@ -206,4 +208,278 @@ entries:
   - test/offline/test_live_fixes.py
   review: docs/bug-diary.md
   evidence: transcripts/project-report-check.full.json.gz
-  outcome: Twenty-five focused report/price/complete-observation checks and sixteen existing evaluation tests passed; original LLM rubric and thresholds unchanged; repeated inspection was redirected to bounded implementation; final judge receives every captured tool result
+  outcome: Twenty-five focused report/price/complete-observation checks and sixteen existing evaluation
+    tests passed; original LLM rubric and thresholds unchanged; repeated inspection was redirected to
+    bounded implementation; final judge receives every captured tool result
+- date: '2026-11-09'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  purpose: Correct terminal rejection, report identity and earnings-period contracts; enforce revision
+    approval chronology.
+  session: ses_e3f53febfffeJxqxKnMdRFfCgx
+  prompt: transcripts/prompts/project-revision-runtime.md
+  scope:
+  - src/research_desk
+  - test/offline
+  - scripts/check_approval.py
+  review: docs/architecture/adr/004-release-quality-and-context-budget.md
+  evidence: transcripts/project-revision-runtime.full.json
+  outcome: Changes retained in the release revision. Static analysis passed; final experiment outcomes
+    are recorded in evaluation/release.
+- date: '2026-11-09'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  purpose: Bound complete model input and record compaction observations and run/judge provenance.
+  session: ses_e3f4e729affepTXL7uidfzUkEm
+  prompt: transcripts/prompts/project-context-cap.md
+  scope:
+  - src/research_desk
+  - test/offline
+  review: docs/architecture/adr/004-release-quality-and-context-budget.md
+  evidence: transcripts/project-revision-context.full.json
+  outcome: Changes retained in the release revision. Static analysis passed; final experiment outcomes
+    are recorded in evaluation/release.
+- date: '2026-11-09'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  purpose: Implement current-source release validation; follow-up corrected the initial implementation.
+  session: ses_e3f4bd4e6ffelT24d1n6YZVvbS
+  prompt: transcripts/prompts/project-quality-gate.md
+  scope:
+  - src/research_desk/eval/quality.py
+  - scripts/check_semantic.py
+  - test/offline
+  review: docs/architecture/adr/004-release-quality-and-context-budget.md
+  evidence: transcripts/project-revision-quality.full.json
+  outcome: Changes retained in the release revision. Static analysis passed; final experiment outcomes
+    are recorded in evaluation/release.
+- date: '2026-11-09'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  purpose: Enforce separate quality drops, consolidate cloud gates and implement the bounded paired experiment
+    runner.
+  session: ses_e3f41e4c3ffePb0Q8P4fk877uH
+  prompt: transcripts/prompts/project-gate-fixes.md
+  scope:
+  - src/research_desk/eval/quality.py
+  - scripts
+  - test/offline
+  - .github/workflows
+  review: docs/architecture/adr/004-release-quality-and-context-budget.md
+  evidence: transcripts/project-revision-gates.full.json
+  outcome: Changes retained in the release revision. Static analysis passed; final experiment outcomes
+    are recorded in evaluation/release.
+- date: '2026-11-09'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  purpose: Resolve final lint/type findings and set the same 32-call limit in both evaluation arms.
+  session: ses_e3f3210baffeLJWTFA8V7sYmYV
+  prompt: transcripts/prompts/project-final-static.md
+  scope:
+  - src/research_desk
+  - test/offline
+  - scripts/evaluate_release.py
+  review: docs/architecture/adr/004-release-quality-and-context-budget.md
+  evidence: transcripts/project-revision-static.full.json
+  outcome: Changes retained in the release revision. Static analysis passed; final experiment outcomes
+    are recorded in evaluation/release.
+- date: '2026-11-09'
+  tool: Coordinating workflow
+  model: Recorded in native development transcripts
+  purpose: Apply the user-authorized public repository policy, team allocation and temporary developer-role
+    closure; synchronize documentary evidence.
+  scope:
+  - docs
+  - Report.md
+  - README.md
+  - transcripts/prompts
+  - opencode.json
+  - .opencode/permissions.jsonc
+  - .github/workflows/research-desk.yml
+  review: docs/process/revision-authorization.md
+  evidence: docs/process/revision-authorization.md
+  outcome: Public visibility and protected checks enabled; temporary revision role removed after source
+    freeze. Formal roster details remain with the team.
+- date: '2026-11-09'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  purpose: Correct the measured provider transport mismatch and exercise actual direct/structured request
+    serialization.
+  session: ses_e3f28f99fffeB3EaSGurvf2t3E
+  prompt: transcripts/prompts/project-provider-transport.md
+  follow_up_prompt: transcripts/prompts/project-provider-unit-fix.md
+  scope:
+  - src/research_desk/eval/live.py
+  - test/offline/test_revision_contracts.py
+  review: docs/architecture/adr/004-release-quality-and-context-budget.md
+  evidence: transcripts/project-revision-transport.full.json
+  outcome: Added the effective reasoning_effort setting to the shared provider body; corrected the initial
+    test traversal using the actual pinned RunnableParallel declaration.
+- date: '2026-11-09'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  purpose: Paired coding-context experiment on the same rejected-proposal maintenance defect; generated
+    code applied only to an isolated copy.
+  session: ses_e3f1a9a6affeOPzAFEi2UqnARB
+  prompt: evaluation/development-cost/context-study/full-prompt.txt
+  scope:
+  - evaluation/development-cost/context-study
+  review: Report.md
+  evidence: transcripts/project-coding-context-full.full.json
+  outcome: Generated replacement passed the same 26 existing unit cases. Production runtime source unchanged.
+- date: '2026-11-09'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  purpose: Paired coding-context experiment on the same rejected-proposal maintenance defect; generated
+    code applied only to an isolated copy.
+  session: ses_e3f19d6c2ffeLMkWpLUmKFsC5M
+  prompt: evaluation/development-cost/context-study/focused-prompt.txt
+  scope:
+  - evaluation/development-cost/context-study
+  review: Report.md
+  evidence: transcripts/project-coding-context-focused.full.json
+  outcome: Generated replacement passed the same 26 existing unit cases. Production runtime source unchanged.
+- date: '2026-11-09'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Independently assess non-video deliverables against the original course requirements and propose
+    evidence-preserving prose corrections.
+  session: c857803e-d8ce-4c89-89f7-95e04cf051f7
+  scope:
+  - Report.md
+  - README.md
+  - docs
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-release-review.json
+  outcome: Confirmed strong technical and higher-grade alignment; identified four documentation clarifications
+    and three team/review actions requiring authentic student information. Documentation corrections applied;
+    no runtime changes.
+- date: '2026-11-09'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Independently reassess the four documentation corrections and completed cloud CI against the
+    original requirements.
+  session: 0e6f73ec-e12d-4c25-b090-bb77a5a7a8e9
+  scope:
+  - docs/review-memo.md
+  - docs/process/delivery-checklist.md
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-release-followup.json
+  outcome: Technical readiness confirmed with no remaining technical findings. Formal roster/contribution
+    evidence, per-student annotations and independent human reviews remain pending.
+- date: '2026-11-10'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Polish source-linked development annotations while preserving exact quotations and observed
+    outcomes.
+  session: 4b8b9946-3a17-4910-a912-57bb72151ff0
+  scope:
+  - transcripts/annotations
+  - transcripts/59072966-Liyu-MA.md
+  - transcripts/intervention-index.json
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-intervention-edit.json
+  outcome: Edited 30 directives from 11 native OpenCode sessions. Exact quotes checked against source
+    messages; attribution and source locators added from recorded evidence.
+- date: '2026-11-10'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Review the complete non-video project against the original requirements and check annotation
+    fidelity against native messages.
+  session: 35808525-953e-4aaf-b814-7e4743263fe5
+  scope:
+  - Report.md
+  - docs
+  - transcripts/annotations
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-intervention-review.json
+  outcome: Confirmed technical readiness and source fidelity of all 30 annotations. Identified stale wording
+    in three reflections, corrected in the report. Team identities, authentic supervision evidence and
+    independent reviews remain open.
+- date: '2026-11-10'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Verify the corrected reflections and reassess the outstanding submission work against the exact
+    course wording.
+  session: 2343d49b-c222-4231-bda3-c1db49afa8f6
+  scope:
+  - Report.md
+  - docs/review-memo.md
+  - docs/process/delivery-checklist.md
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-intervention-followup.json
+  outcome: Confirmed all editorial corrections resolved with no remaining editorial issues. Formal team
+    details, authentic pipeline records, independent review and final video remain pending.
+- date: '2026-11-10'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Review all requirement classifications and architecture candidates, then map lifecycle evidence
+    across the assigned responsibility areas.
+  session: 1bba423d-0413-4e57-a257-683ec930238d
+  prompt: transcripts/prompts/gemini-pipeline-review.txt
+  scope:
+  - docs/process/pipeline-review.md
+  - transcripts/leo-project-directions.md
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-pipeline-review.json
+  outcome: Reviewed all 24 classifications and three candidates. Recomputed design scores of 3.10, 4.65
+    and 3.10; retained the application-seam design. No new runtime issue found.
+- date: '2026-11-10'
+  tool: Gemini CLI
+  model: gemini-4-argon
+  purpose: Complete process-review documents using the actual user directions and the new Gemini technical
+    review.
+  session: fab710b8-d729-42d7-9e1e-98c2d923bca7
+  prompt: transcripts/prompts/gemini-pipeline-integration.txt
+  scope:
+  - docs/process/pipeline-review.md
+  - transcripts/leo-project-directions.md
+  review: docs/review-memo.md
+  evidence: transcripts/gemini-pipeline-integration.json
+  outcome: Integrated six verbatim user directions with the 30 recorded implementation prompts. Completed
+    requirements and architecture review documentation with actual actor attribution.
+- date: '2026-11-10'
+  tool: Coordinating workflow
+  model: GPT-6
+  purpose: Prepare the user-designated GitHub reviewer and document the protected code-owner activation
+    sequence.
+  scope:
+  - .github/CODEOWNERS
+  - docs/process/reviewer-onboarding.md
+  - docs/process/team.md
+  - docs/process/delivery-checklist.md
+  review: docs/review-memo.md
+  evidence: docs/process/reviewer-onboarding.md
+  outcome: Confirmed accepted write access for wangsaorui and prepared the add-code-owner branch. No review
+    approval or protected merge has been recorded.
+- date: '2026-11-10'
+  tool: Coordinating workflow
+  model: GPT-6
+  purpose: Apply the user-directed four-member team allocation and distribute the former release/report
+    responsibilities.
+  scope:
+  - Report.md
+  - Report.pdf
+  - README.md
+  - docs/req/prd.yaml
+  - docs/process/team.md
+  - docs/process/pipeline-review.md
+  - docs/process/delivery-checklist.md
+  review: docs/review-memo.md
+  evidence: docs/process/team.md
+  outcome: Assigned report integration to Alfa, release governance to Bravo, packaging to Charlie and
+    CI to Delta. Consolidated the reflections into four 300–500-word paragraphs with equal assigned weights
+    of 1.0.
+- date: '2026-11-10'
+  tool: Coordinating workflow
+  model: GPT-6
+  purpose: Map the user-supplied new member account to the four-person responsibility allocation.
+  scope:
+  - docs/process/team.md
+  - docs/req/prd.yaml
+  - Report.md
+  - Report.pdf
+  review: docs/process/team.md
+  evidence: docs/process/team.md
+  outcome: Assigned nicolas393 to Charlie with the user’s delegated choice, issued a write-access invitation
+    and updated the participant records. The team remains four people.

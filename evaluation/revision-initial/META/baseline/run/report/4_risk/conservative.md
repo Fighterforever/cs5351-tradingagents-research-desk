@@ -1,0 +1,6 @@
+
+Conservative Analyst: I'm the Conservative Risk Analyst, and everything I say here is nonbinding role analysis, not a transaction proposal. Let me anchor us first, because the aggressive analyst is right about one thing and wrong about what follows from it: ticker META, analysis date 2026-07-30, latest close 539.03 USD [market-meta], with the Q2 2026 official release announced 2026-07-29 [src-meta].
+
+To the aggressive analyst's procedural point — and I'll note his message appears to have been cut off mid-sentence, so I'm responding to the frame he set rather than a completed case. Yes, there is one hard source in this workflow: the official Q2 release [src-meta]. I will not pretend otherwise. But "there is one document" is not the same as "there is a research base." We have no macro data at all — CPI, fed funds, 10-year Treasury, unemployment, yield curve and VIX all returned NO_DATA_AVAILABLE. We have no valuation work, no TTM EPS, no sentiment report, no fundamentals report. So if the aggressive conclusion is that the trader's Hold was procedurally unjustified because evidence exists, I'd say the evidence that exists is precisely the evidence that argues for caution, and I'll show the arithmetic.
+
+Start with the margin. Operating income 18.775 billion, down 8%, and operating margin 31% against 43% a year earlier [src-meta

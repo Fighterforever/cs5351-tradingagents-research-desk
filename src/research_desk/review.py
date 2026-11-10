@@ -159,16 +159,23 @@ def execute(
 
     Steps (each observable, none partial):
     1. Idempotence: an already-SIMULATED proposal returns its stored execution.
-    2. Version binding: the current proposal content must match the approved
+    2. A REJECTED proposal is terminal: return unexecuted without changing its
+       status or touching the store, so it can never be reopened for approval.
+    3. Version binding: the current proposal content must match the approved
        version; otherwise REVIEW_REQUIRED (AT-05).
-    3. Re-read the current ledger and run the deterministic policy.
-    4. On any failure: return REVIEW_REQUIRED / BLOCKED with reasons; ledger
+    4. Re-read the current ledger and run the deterministic policy.
+    5. On any failure: return REVIEW_REQUIRED / BLOCKED with reasons; ledger
        unchanged. On success: apply the transaction atomically.
     """
     if proposal.status == ProposalStatus.SIMULATED:
         existing = proposal.execution or ExecutionRecord(executed=True)
         existing.reason = "already executed"
         return proposal, existing
+
+    # A rejection is terminal. Check it before any version or generic status
+    # transition so an execution attempt can never reopen it for approval.
+    if proposal.status == ProposalStatus.REJECTED:
+        return proposal, ExecutionRecord(executed=False, reason="proposal rejected")
 
     current_version = _proposal_content_version(proposal)
     # A stale approval for different content is checked before status: an

@@ -1,0 +1,19 @@
+$ /Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python -m research_desk.cli evaluate-case META --mode baseline --out /Users/leeyoma/Downloads/cs5351/work/project/evaluation/release --max-calls 32
+
+[exit 0]
+
+--- stdout ---
+META  outcome=completed signal=REVIEW calls=16 tokens=69774 wall=214.749s
+  run dir: 
+/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release/META/baseline/ru
+n
+
+--- stderr ---
+/Users/leeyoma/Downloads/cs5351/work/project/tradingagents/llm_clients/openai_client.py:278: RuntimeWarning: Model 'deepseek-flash' is not in the known model list for provider 'deepseek'. Continuing anyway.
+  self.warn_if_unknown_model()
+Research Manager: structured-output invocation failed (structured output returned no parsed result); retrying once as free text
+Portfolio Manager: structured-output invocation failed (1 validation error for PortfolioDecision
+investment_thesis
+  Field required [type=missing, input_value={'rating': 'Hold', 'execu.... Horizon: 3-6 months.'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing); retrying once as free text
+

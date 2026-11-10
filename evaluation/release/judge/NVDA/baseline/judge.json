@@ -1,0 +1,42 @@
+{
+  "support": 0.9,
+  "relevance": 0.95,
+  "cited_claim_count": 48,
+  "supported_cited_claim_count": 48,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "Report header states evidence latest close 227.98 USD with source market-nvda \u2014 cited, so not uncited; no material uncited factual claims identified beyond derived arithmetic explicitly labeled as calculations"
+  ],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "Support: All key conclusions trace to the two live sources. Earnings figures (revenue 96.2B, +18% QoQ, +106% YoY, Data Center 89.0B +117%, 75.0% GM both bases, GAAP EPS 2.46 / non-GAAP 2.22, fiscal Q2 2027 ended July 26, 2026) match src-nvda exactly. Market figures (close 227.98, open 222.86, high 230.47, low 220.90, volume 298,909,800; prior close 209.66 on 179.9M; 10 EMA 217.08; Bollinger basis 217.21, upper 231.57, lower 202.85; VWMA 211.91; MACD 2.68 / signal 3.22 / histogram \u22120.54; RSI 53.50) all match market-nvda tool outputs. Derived arithmetic (8.74% day move, 6.30% gap, 92.5% concentration, 46.7B implied year-ago base, 49.5B increment, 1.18^4\u22121\u224894%, 7.2% stop distance) is correctly computed and explicitly labeled as calculation. NO_DATA_AVAILABLE items (50/200 SMA, macro, global news, prediction markets, TTM/forward multiples) are correctly reported as UNKNOWN rather than fabricated. Minor imprecision: the report calls 298.9M \"the largest volume print in the entire 82-row history\" \u2014 it is the largest in the retrieved window, which is accurate as stated. Relevance: tightly focused on NVDA at 2026-08-27, with a clear final decision (Overweight, staged entry, defined stop) and no off-topic drift; some redundancy across the four risk-seat sections but core is complete. Semantic validity: the report is exemplary on period/unit discipline \u2014 it explicitly labels EPS 2.46/2.22 as single-quarter fiscal Q2 2027 figures, explicitly declines to annualize (2.22\u00d74) or construct a TTM EPS, and states trailing P/E is UNKNOWN. No trailing ratio is computed from quarterly EPS, and no key numerical valuation assertion is unsupported. Citation accounting: cited claims are numerous and each cited source ID (src-nvda, market-nvda) genuinely backs the specific claim it is attached to; no invalid citations found.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'NVIDIA Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-08-27"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-nvda'"
+    }
+  ]
+}

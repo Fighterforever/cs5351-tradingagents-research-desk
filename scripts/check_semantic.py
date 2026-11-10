@@ -99,6 +99,11 @@ def main() -> None:
     )
     add_change_args(parser)
     parser.add_argument("--packs-dir", default="test/fixtures/packs")
+    parser.add_argument(
+        "--evidence-dir",
+        default="evaluation/release",
+        help="Current-source paired release evidence directory.",
+    )
     args = parser.parse_args()
 
     root: Path = resolve_root(args.root)
@@ -263,6 +268,24 @@ def main() -> None:
                 "fixed captured-output + prompt-transform gate applies (live quality "
                 "requires the recorded release experiment)"
             )
+
+    # --- Source-bound release evidence (ADR-004) ---
+    try:
+        from research_desk.eval.quality import validate_release
+
+        evidence_dir = Path(args.evidence_dir)
+        if not evidence_dir.is_absolute():
+            evidence_dir = root / evidence_dir
+        release = validate_release(root, evidence_dir)
+        checks.extend(release["checks"])
+        checks.extend(f"WARNING: {w}" for w in release["warnings"])
+        failures.extend(release["failures"])
+        checks.append(
+            "RELEASE_EVIDENCE=validated independently from per-case/per-arm files; "
+            "aggregate PASS is not trusted"
+        )
+    except Exception as exc:  # noqa: BLE001 - surface as a gate failure
+        failures.append(f"release evidence validation could not run: {exc}")
 
     fail(checks, failures)
 

@@ -1,0 +1,11 @@
+**Rating**: Hold
+
+**Executive Summary**: Maintain the existing AAPL position at current size; deploy no new capital at 308.91 [market-aapl]. Treat 300.00 as a close-based trim trigger and 327.24 (10 EMA) as the scale-in confirmation level — both are analyst judgment (ASSUMPTION), not sourced facts [market-aapl]. Cap total exposure at current size until a trailing P/E can be computed from actual TTM EPS, which is UNKNOWN [src-aapl]. Horizon: 3-6 months, letting verified levels decide.
+
+**Investment Thesis**: The debate resolves to a genuine standoff, and the Neutral Analyst's synthesis is the most defensible read. Bull case: the ex-refund franchise is intact — revenue 109.4B, +16% y/y, ex-refund EPS ≈1.91 (2.02−0.11) implying ≈+21% y/y, ex-refund gross margin ≈48.1% (50.1%−~2pp) [src-aapl, calc]. That is normalization, not deterioration, and the Conservative never disproved it. Bear case wins on the tape: a −7.35% gap (333.43→308.91) on 132.5M volume, MACD 6.82 below signal 8.14, price 18.33 (−5.6%) under the 10 EMA at 327.24, RSI 45.08 neutral with no washout [market-aapl]. That is distribution, not exhaustion.
+
+Both extremes overreach. The Aggressive's "verified floor" at 300.00 is one intraday low, and his 2:1 ratio is conditional, not settled — pre-positioning at 300–305 funds an unmeasured tail with no valuation anchor. The Conservative's "unbounded downside" is equally overstated: the close-based 300.00 trigger is precisely the mechanism that bounds it, and 50/200 SMA are UNKNOWN [market-aapl], so no broken long-term trend is established. Trailing P/E is UNKNOWN because no TTM EPS exists in the corpus [src-aapl] — so "expensive" and "already discounted" are both unproven and cancel.
+
+I adopt the Neutral's symmetric structure: no capital at 308.91; a small starter tranche only on a close stabilizing above 300.00 with volume normalizing below the 132.5M gap-day print; scale in ~1/3 of intended add per confirming close above 327.24; trim toward the low end of the band on a close below 300.00. ATR 9.90 (~3.2% of price) means 300.00 must be close-based, not intraday [market-aapl]. Good business, one-off-inflated beat, confirmed short-term downtrend, no valuation anchor — balanced evidence, no conviction either way. Ticker AAPL, analysis date 2026-07-31, latest close 308.91 [market-aapl].
+
+**Time Horizon**: 3-6 months

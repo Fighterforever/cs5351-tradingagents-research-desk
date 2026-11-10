@@ -1,0 +1,41 @@
+{
+  "support": null,
+  "relevance": null,
+  "cited_claim_count": 0,
+  "supported_cited_claim_count": 0,
+  "valid_citation_rate": null,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [],
+  "semantic_valid": false,
+  "semantic_errors": [],
+  "rationale": "judge returned no parseable structured score",
+  "error": true,
+  "parse_error": null,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'NVIDIA Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-08-27"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-nvda'"
+    }
+  ]
+}

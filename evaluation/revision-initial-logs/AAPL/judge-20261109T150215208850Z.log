@@ -1,0 +1,40 @@
+$ /Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python -m research_desk.cli judge-case AAPL --out /Users/leeyoma/Downloads/cs5351/work/project/evaluation/release
+
+[exit 0]
+
+--- stdout ---
+AAPL  not judged: {'support': None, 'relevance': None, 'cited_claim_count': 0, 
+'supported_cited_claim_count': 0, 'valid_citation_rate': None, 
+'invalid_citation_explanations': [], 'uncited_factual_claims': [], 
+'semantic_valid': False, 'semantic_errors': [], 'rationale': 'judge returned no 
+parseable structured score', 'error': True, 'parse_error': None, 
+'deterministic_checks': [{'check': 'instrument_identity', 'passed': True, 
+'detail': "report contract references company 'Apple Inc.'"}, {'check': 
+'analysis_date', 'passed': True, 'detail': 'report contract references analysis 
+date 2026-07-31'}, {'check': 'final_decision_present', 'passed': False, 
+'detail': 'final trade decision is present in the final state'}, {'check': 
+'frozen_price_in_report', 'passed': True, 'detail': 'frozen latest close 308.91 
+is supported by evidence and stated in the report'}, {'check': 
+'source_id_referenced', 'passed': True, 'detail': "report references source_id 
+'src-aapl'"}]}
+AAPL  not judged: {'support': None, 'relevance': None, 'cited_claim_count': 0, 
+'supported_cited_claim_count': 0, 'valid_citation_rate': None, 
+'invalid_citation_explanations': [], 'uncited_factual_claims': [], 
+'semantic_valid': False, 'semantic_errors': [], 'rationale': 'judge returned no 
+parseable structured score', 'error': True, 'parse_error': None, 
+'deterministic_checks': [{'check': 'instrument_identity', 'passed': True, 
+'detail': "report contract references company 'Apple Inc.'"}, {'check': 
+'analysis_date', 'passed': True, 'detail': 'report contract references analysis 
+date 2026-07-31'}, {'check': 'final_decision_present', 'passed': True, 'detail':
+'final trade decision is present in the final state'}, {'check': 
+'frozen_price_in_report', 'passed': True, 'detail': 'frozen latest close 308.91 
+is supported by evidence and stated in the report'}, {'check': 
+'source_id_referenced', 'passed': True, 'detail': "report references source_id 
+'src-aapl'"}]}
+
+--- stderr ---
+/Users/leeyoma/Downloads/cs5351/work/project/tradingagents/llm_clients/openai_client.py:278: RuntimeWarning: Model 'deepseek-flash' is not in the known model list for provider 'deepseek'. Continuing anyway.
+  self.warn_if_unknown_model()
+/Users/leeyoma/Downloads/cs5351/work/project/tradingagents/llm_clients/openai_client.py:278: RuntimeWarning: Model 'deepseek-flash' is not in the known model list for provider 'deepseek'. Continuing anyway.
+  self.warn_if_unknown_model()
+

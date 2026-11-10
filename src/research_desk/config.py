@@ -14,6 +14,18 @@ from pathlib import Path
 
 DEFAULT_HOME = os.path.join(os.path.expanduser("~"), ".research_desk")
 
+# Authoritative runtime settings. Keep one source of truth so the model,
+# provider endpoint and prompt version are never duplicated as literals.
+DEFAULT_MODEL = "deepseek-flash"
+DEFAULT_PROVIDER = "deepseek"
+DEFAULT_BASE_URL = "https://api.aiohub.org/v1"
+PROMPT_VERSION = "research-desk-0.1.2"
+
+# Whole-input context budget (ADR-004). Conservative UTF-8 byte-based token
+# upper bound: compact above the trigger, refuse to invoke above the hard cap.
+DEFAULT_CONTEXT_MAX_TOKENS = 96000
+DEFAULT_CONTEXT_TRIGGER_TOKENS = 72000
+
 # Simulated teaching policy (deterministic, decided by leo, enforced by code).
 INITIAL_CASH = 100000.0
 MAX_POSITION_PCT = 0.10  # single stock market value <= 10% of equity after buy
@@ -24,9 +36,11 @@ NO_SHORTING = True
 @dataclass
 class ResearchDeskSettings:
     home: str = field(default_factory=lambda: os.environ.get("RESEARCH_DESK_HOME", DEFAULT_HOME))
-    prompt_version: str = "research-desk-0.1.1"
+    prompt_version: str = PROMPT_VERSION
     analysts: tuple[str, ...] = ("market", "news")
     max_calls: int | None = None  # None = no LLM call budget
+    context_max_tokens: int = DEFAULT_CONTEXT_MAX_TOKENS
+    context_trigger_tokens: int = DEFAULT_CONTEXT_TRIGGER_TOKENS
     policy_version: str = "teaching-v1"
 
     def __post_init__(self) -> None:
@@ -60,6 +74,8 @@ class ResearchDeskSettings:
             "prompt_version": self.prompt_version,
             "analysts": list(self.analysts),
             "max_calls": self.max_calls,
+            "context_max_tokens": self.context_max_tokens,
+            "context_trigger_tokens": self.context_trigger_tokens,
             "policy_version": self.policy_version,
             "initial_cash": INITIAL_CASH,
             "max_position_pct": MAX_POSITION_PCT,

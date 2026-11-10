@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "deepseek/deepseek-v4-flash",
   "mcp": {
     "notion": {
       "enabled": false
@@ -152,6 +151,26 @@
           ".venv/bin/python scripts/check_regression.py --base-ref v0.4.0 --head-ref HEAD": "allow",
           ".venv/bin/python scripts/check_ai_use_log.py --base-ref v0.4.0 --head-ref HEAD": "allow",
           ".venv/bin/python scripts/check_gate_examples.py --output verification/negative-examples.json": "allow"
+        }
+      }
+    }
+  },
+  "provider": {
+    "course-revision": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Authorized project API",
+      "options": {
+        "baseURL": "https://api.aiohub.org/v1",
+        "apiKey": "{env:RESEARCH_API_KEY}"
+      },
+      "models": {
+        "deepseek-flash": {
+          "name": "DeepSeek Flash",
+          "tool_call": true,
+          "limit": {
+            "context": 1000000,
+            "output": 16384
+          }
         }
       }
     }

@@ -1,0 +1,8 @@
+..........................                                               [100%]
+=============================== warnings summary ===============================
+test/offline/test_revision_contracts.py::test_deepseek_transport_disables_reasoning_via_extra_body
+  /Users/leeyoma/Downloads/cs5351/work/project/tradingagents/llm_clients/openai_client.py:278: RuntimeWarning: Model 'deepseek-flash' is not in the known model list for provider 'deepseek'. Continuing anyway.
+    self.warn_if_unknown_model()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+26 passed, 1 warning in 0.90s

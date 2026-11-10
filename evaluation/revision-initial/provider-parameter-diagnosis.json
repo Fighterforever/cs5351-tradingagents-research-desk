@@ -1,0 +1,50 @@
+[
+  {
+    "variant": "standard",
+    "status": 200,
+    "content": "{\"ready\":true}",
+    "reasoning_chars": 46,
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 40,
+      "completion_tokens": 18,
+      "total_tokens": 58,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "neurons": 3.0545454025268555
+    }
+  },
+  {
+    "variant": "effort",
+    "status": 200,
+    "content": "{\"ready\":true}",
+    "reasoning_chars": 0,
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 14,
+      "completion_tokens": 6,
+      "total_tokens": 20,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "neurons": 1.0363636016845703
+    }
+  },
+  {
+    "variant": "template",
+    "status": 200,
+    "content": "{\"ready\":true}",
+    "reasoning_chars": 0,
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 14,
+      "completion_tokens": 6,
+      "total_tokens": 20,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "neurons": 1.0363636016845703
+    }
+  }
+]

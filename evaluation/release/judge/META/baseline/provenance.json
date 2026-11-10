@@ -1,0 +1,9 @@
+{
+  "source_fingerprint": "sha256:dfc822121885f6e088b73d312032dc787f9239f46071db73d94400705d7e7ab9",
+  "model": "deepseek-flash",
+  "provider": "deepseek",
+  "endpoint": "https://api.aiohub.org/v1",
+  "deep_think_llm": "deepseek-flash",
+  "max_tokens": 1800,
+  "temperature": 0
+}

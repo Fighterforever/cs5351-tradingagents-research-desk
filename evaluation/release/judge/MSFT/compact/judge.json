@@ -1,0 +1,43 @@
+{
+  "support": 0.95,
+  "relevance": 0.95,
+  "cited_claim_count": 42,
+  "supported_cited_claim_count": 42,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "Ticker/analysis date row in News Analyst table cites '\u2014' rather than a source ID (identity/date, not a market or earnings fact)",
+    "Tranche weights (~30%/35%/25%) and 10% max-position cap are analyst assumptions, explicitly labeled as such rather than sourced"
+  ],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "Every cited claim traces to a source that actually supports it: market-msft backs the 451.10 close, 390.54 prior close, 432.44\u2013458.69 range, 110.16M/47.21M volume, 10 EMA 401.04, MACD 7.50/4.18, RSI 73.62, Bollinger upper 422.91, ATR 15.87, the 466.32 June high, the 460.52\u2192352.83 June slide, and the 458.69 high give-back; src-msft backs revenue $90.0B +18%, operating income $40.6B +18%, GAAP 4.81 vs non-GAAP 4.74, Cloud $59.3B +27%, Azure +43%, FY2026 $331.8B, and the FQ4-ended-June-30 period. Derived ratios (65.9% cloud mix, 45.1% margin, +15.5% gap, 2.3x volume, ~12.5% above 10 EMA, ~23% June drawdown, 3.32 MACD histogram) are correctly labeled calculations from cited operands. NO_DATA_AVAILABLE items (50/200 SMA, global news, FRED, prediction markets) are reported as unavailable rather than fabricated. Semantic gate passes: EPS 4.81/4.74 is repeatedly and explicitly labeled quarterly, not TTM or annual; trailing P/E is declared UNKNOWN in every section and no trailing multiple is computed from single-quarter EPS; no price target is asserted as fact. Minor deductions only: the News table's ticker/date row carries no source ID, and tranche sizing is assumption-based (though flagged as such).",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'Microsoft Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 451.10 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-msft'"
+    }
+  ]
+}

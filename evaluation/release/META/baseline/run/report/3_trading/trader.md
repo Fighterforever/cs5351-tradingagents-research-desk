@@ -1,0 +1,7 @@
+**Action**: Hold
+
+**Reasoning**: The research plan's adjudication is sound and the technical evidence supports it: META closed at 539.03, −7.95% on the session and −10.18% gapped from the prior close of 585.61, on 1.89× volume — a confirmed short-term breakdown with price 58.34 points (−9.8%) below the 10 EMA at 597.37 and 10.23 points below the lower Bollinger band at 549.26. That is an outlier condition that resolves both ways, and with the 50/200 SMA unavailable (NO_DATA_AVAILABLE) no long-term trend or death-cross claim can be made, so neither an add nor an exit is evidence-supported. Fundamentally the demand engine is intact (revenue 60.801B, +28%) while cost quality deteriorated (operating margin 31% vs 43%, capex 31.08B ≈ 51% of revenue), and the disclosures that would resolve the debate — capex ROI, FCF, recurrence of the 2.40B legal / 1.18B severance charges — are absent. Hold existing exposure at current size; do not deploy new capital into an unverifiable story on a broken tape.
+
+**Position Sizing**: Maintain existing META position at current size — no new capital, no forced liquidation. Any stop or entry level is an analyst assumption, not a sourced fact, since 50/200 SMA are UNKNOWN. Reference levels for monitoring only: a closing break below the June low close of 542.87 (already breached at 539.03 — requires confirmation on a closing basis) argues for trimming toward Underweight; a reclaim of the 10 EMA at 597.37 would justify adding.
+
+FINAL TRANSACTION PROPOSAL: **HOLD**

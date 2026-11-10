@@ -1,0 +1,14 @@
+
+Conservative Analyst: I'm the Conservative Risk Analyst. Ticker AMZN, analysis date 2026-07-31, latest close 271.58 [market-amzn].
+
+Aggressive, you called the extension "what a repricing looks like." A repricing is also what a gap is — and gaps fill. AMZN closed 235.50 on 2026-07-30 and opened 265.00 the next morning [market-amzn]. That is a 12.5% overnight repricing on information, not on accumulated demand. The 129.05M shares you cite as institutional conviction is one session of event flow; it tells us nothing about who holds the stock at 271.58 tomorrow. And you cannot claim RSI 64.04 is "strong, not overbought" while the market analyst flags that the same series understates the impulse — you're using a lagging indicator as comfort.
+
+Your asymmetry math is where I object hardest. You say 4% now, stop 235.50, "roughly 1.5% of portfolio at risk." That assumes the stop fills at 235.50. This name just demonstrated it can move 12.5% between closes [market-amzn]. A close-based stop on a gap-prone instrument is not a 13.3% risk; it is an unknown risk, and ATR of 9.26 is explicitly a pre-gap reading that understates the 11.22-point bar [market-amzn]. Sizing off a number we know is wrong is not discipline.
+
+On quality: 53.4B of pre-tax other income inside 62.6B of net income is roughly 85% non-operating (calc from src-amzn). You call the Anthropic stake "a real, appreciating asset." It is a mark. Marks reverse without any operating change, and we have no visibility into the next one. Meanwhile TTM free cash flow is an outflow of 7.6B [src-amzn] — that is not "investment intensity" you can wave away; it means the growth is externally funded, and rates are UNKNOWN in this workflow. You are asking the firm to underwrite duration risk you cannot price.
+
+To the neutral seat: your "hold above 262" is the right instinct but it is not inside this plan — tranche 2 at 262 and tranche 3 at 242.70 are triggered by weakness, not by a hold. That is averaging down into a gap fill, and it deploys the full 11% precisely when the thesis is being invalidated. That is the flaw neither of you named.
+
+My adjustment: cut tranche 1 to ~2% of portfolio, not 4%. Make 262.00 — the 2026-07-31 low [market-amzn] — the confirmation trigger, not a buy level: add only on a close that holds above it with volume. Cap the position at ~7%, not 11%. And move invalidation from 235.50 to a close below 262.00, which cuts per-share risk from 13.3% to roughly 3.5% (calc from market-amzn) while keeping the AWS operating step-up — 27.5B versus 19.2B [src-amzn] — as the reason to own it at all. The 274.99 reference you lean on is a 2026-05-06 close [market-amzn], nearly three months stale; "open air beyond it" is absence of evidence, not a target.
+
+Buy less, later, with a tighter invalidation. That is how we keep the operating story without donating the firm's capital to a gap.

@@ -1,0 +1,16 @@
+{
+  "ticker": "MSFT",
+  "analysis_date": "2026-07-30",
+  "context_mode": "baseline",
+  "outcome": "completed",
+  "signal": "REVIEW",
+  "stop_reason": "completed",
+  "calls": 16,
+  "input_tokens": 51721,
+  "output_tokens": 22752,
+  "total_tokens": 74473,
+  "wall_seconds": 220.699,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release/MSFT/baseline/run"
+}

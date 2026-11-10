@@ -3,6 +3,7 @@
 | Trigger | Behavior | Evidence retained | Recovery |
 |---|---|---|---|
 | Provider request failure | Mark incomplete/failed; do not approve research | Actual request, error, usage received | Correct configuration or explicitly rerun the failed case |
+| Context budget exhausted | Stop before provider invocation; no proposal | Estimate, configured cap and stop event | Narrow the requested evidence or explicitly revise the configured budget |
 | Call budget exhausted | Stop before next request; no proposal | budget_stop event and all prior calls | Increase budget only as a documented experiment change |
 | Missing frozen optional data | Return an explicit unavailable sentinel | Tool name, parameters and absence | Continue with unknown facts; never synthesize a source |
 | Required package file absent | Reject replay | Named missing record | Re-export the complete source run |
@@ -13,4 +14,4 @@
 | Cash, total position or sell limit violation | Reject deterministic execution | Named policy checks | Choose permissible quantity and obtain approval |
 | Repeat execution | Return original transaction | Stable transaction reference | No financial side effect |
 | Semantic threshold failure | Fail applicable gate | Per-case facts/scores and reason | Correct the prompt or retain the previous release |
-| Private remote protection unavailable | Preserve checks and record API refusal | Actual GitHub response | Do not claim server enforcement; do not switch visibility or buy a plan |
+| Required review or CI missing | GitHub blocks the merge | Branch protection and PR check results | Complete the required checks and obtain the code-owner review |

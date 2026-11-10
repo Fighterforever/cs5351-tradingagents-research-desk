@@ -1,12 +1,24 @@
 # Function ownership and inherited trace links
 
-Generated from the actual application AST at report preparation. Each function inherits its module’s owning decision and acceptance contract shown below. This index supplements the behavior-level architecture trace matrix; it does not claim that every function separately enforces every invariant. Nested closures belong to their enclosing function. Tests provide the behavior evidence.
+This index is derived from the application AST. Each function inherits the module contract below; nested closures belong to their enclosing function. Behavior-level enforcement and tests are mapped in the architecture trace matrix.
+
+## src/research_desk/__init__.py
+
+Owner: ADR-004. Requirement contract: QUALITY-001/002/003; COST-001; PERF-001; GOV-004. Verification: AT-07/08.
+
+Package namespace; no functions..
+
+## src/research_desk/__main__.py
+
+Owner: ADR-004. Requirement contract: QUALITY-001/002/003; COST-001; PERF-001; GOV-004. Verification: AT-07/08.
+
+Package namespace; no functions..
 
 ## src/research_desk/budget.py
 
-Owner: ADR-001. Requirement contract: NFR-003. Verification: AT-06.
+Owner: ADR-001. Requirement contract: NFR-003. Verification: AT-06. Revision: ADR-004; CTX-001; I-CONTEXT; AT-06.
 
-`BudgetExhausted.__init__`, `BudgetTracker.can_start`, `BudgetTracker.start_call`, `BudgetTracker.record_usage`, `BudgetTracker.stop_reason`, `BudgetTracker.summary`, `BudgetTracker.merge`.
+`BudgetExhausted.__init__`, `ContextBudgetExceeded.__init__`, `_content_units`, `estimate_input_units`, `BudgetTracker.can_start`, `BudgetTracker.start_call`, `BudgetTracker.record_usage`, `BudgetTracker.stop_reason`, `BudgetTracker.summary`, `BudgetTracker.merge`.
 
 ## src/research_desk/cli.py
 
@@ -16,7 +28,7 @@ Owner: ADR-001; ADR-002. Requirement contract: FR-001/002/003; INV-001/002. Veri
 
 ## src/research_desk/config.py
 
-Owner: ADR-001; ADR-002. Requirement contract: INV-002; NFR-003. Verification: AT-04/06.
+Owner: ADR-001; ADR-002. Requirement contract: INV-002; NFR-003. Verification: AT-04/06. Revision: ADR-004; CTX-001; I-CONTEXT; AT-06.
 
 `ResearchDeskSettings.__post_init__`, `ResearchDeskSettings.home_path`, `ResearchDeskSettings.db_path`, `ResearchDeskSettings.runs_dir`, `ResearchDeskSettings.reports_dir`, `ResearchDeskSettings.ensure_dirs`, `ResearchDeskSettings.config_snapshot`.
 
@@ -34,9 +46,9 @@ Owner: ADR-001. Requirement contract: FR-003; QUALITY-001/002/003; COST-001; PER
 
 ## src/research_desk/eval/compact_delegate.py
 
-Owner: ADR-001. Requirement contract: FR-003; QUALITY-001/002/003; COST-001; PERF-001. Verification: AT-07.
+Owner: ADR-001. Requirement contract: FR-003; QUALITY-001/002/003; COST-001; PERF-001. Verification: AT-07. Revision: ADR-004; CTX-001; I-CONTEXT; AT-06.
 
-`_tuple_to_message`, `_to_messages`, `_content_of`, `_has_fact_marker`, `_rebuild`, `compact_transform`, `_measure_chars`, `delegate_transform`, `GroundingDelegate.__init__`, `GroundingDelegate._transform`, `GroundingDelegate.invoke`, `GroundingDelegate.bind_tools`, `GroundingDelegate.with_structured_output`, `wrap_for_mode`.
+`_tuple_to_message`, `_to_messages`, `_content_of`, `_has_fact_marker`, `_rebuild`, `compact_transform`, `_is_expendable_old_prose`, `enforce_context_budget`, `delegate_transform`, `GroundingDelegate.__init__`, `GroundingDelegate._transform`, `GroundingDelegate.invoke`, `GroundingDelegate.bind_tools`, `GroundingDelegate.with_structured_output`, `wrap_for_mode`.
 
 ## src/research_desk/eval/frozen_provider.py
 
@@ -46,9 +58,15 @@ Owner: ADR-001. Requirement contract: FR-003; QUALITY-001/002/003; COST-001; PER
 
 ## src/research_desk/eval/live.py
 
-Owner: ADR-001. Requirement contract: FR-003; QUALITY-001/002/003; COST-001; PERF-001. Verification: AT-07.
+Owner: ADR-001. Requirement contract: FR-003; QUALITY-001/002/003; COST-001; PERF-001. Verification: AT-07. Revision: ADR-004; INV-001; QUALITY-001/003; AT-04/07.
 
-`_graph_config`, `_desk_settings`, `_dump_json`, `run_evaluate_case`, `_replace_dir`, `_normalize_number_token`, `_contains_price`, `_report_text`, `_report_text._add`, `_deterministic_checks`, `_deterministic_checks.check`, `run_judge_case`, `_observed_tools_text`, `_judge_prompt`, `_valid_citation_rate`, `_llm_judge`, `_llm_judge._Judge._supported_within_cited`, `run_aggregate`, `_arm_value`, `_aggregate_report`, `_pct`.
+`_base_url`, `_project_root`, `_current_source_fingerprint`, `_provenance_payload`, `_read_source_fingerprint`, `_graph_config`, `_desk_settings`, `_dump_json`, `run_evaluate_case`, `_replace_dir`, `_normalize_number_token`, `_contains_price`, `_report_text`, `_report_text_with_identity`, `_deterministic_checks`, `run_judge_case`, `_observed_tools_text`, `_judge_prompt`, `_valid_citation_rate`, `JudgeScore._supported_within_cited`, `JudgeScore._semantic_errors_invalidate`, `_llm_judge`, `run_aggregate`, `_arm_value`, `_aggregate_report`, `_pct`.
+
+## src/research_desk/eval/quality.py
+
+Owner: ADR-004. Requirement contract: QUALITY-001/002/003; COST-001; PERF-001; GOV-004. Verification: AT-07/08.
+
+`_source_paths`, `source_fingerprint`, `_json`, `_num`, `_provenance`, `_summary`, `_pack`, `_judge`, `validate_release`.
 
 ## src/research_desk/evidence.py
 
@@ -58,9 +76,9 @@ Owner: ADR-001 and its evidence-format appendix. Requirement contract: SEC-001; 
 
 ## src/research_desk/graph_adapter.py
 
-Owner: ADR-001. Requirement contract: SEC-001; NFR-003; QUALITY-001/002/003. Verification: AT-01/02/06/07.
+Owner: ADR-001. Requirement contract: SEC-001; NFR-003; QUALITY-001/002/003. Verification: AT-01/02/06/07. Revision: ADR-004; CTX-001; I-CONTEXT; AT-06.
 
-`_provider_tools`, `_provider_tools.get_stock_data`, `_provider_tools.get_indicators`, `_provider_tools.get_verified_market_snapshot`, `_provider_tools.get_news`, `_provider_tools.get_global_news`, `_provider_tools.get_insider_transactions`, `_provider_tools.get_macro_indicators`, `_provider_tools.get_prediction_markets`, `EvidenceTradingGraph.__init__`, `EvidenceTradingGraph._create_tool_nodes`, `EvidenceTradingGraph.resolve_instrument_context`, `EvidenceTradingGraph._fetch_returns`, `_available_sources_from_provider`, `_parse_stock_data_price`, `_parse_verified_snapshot_price`, `price_from_evidence`, `merge_trace`, `decide_proposal`, `ResearchRunner.__init__`, `ResearchRunner._memory_entries`, `ResearchRunner._assemble_context`, `ResearchRunner._build_graph`, `ResearchRunner._price_from_provider`, `ResearchRunner.run`, `ResearchRunner._data_snapshot_from_run`, `ResearchRunner._available_sources`, `_trim_state`.
+`_provider_tools`, `EvidenceTradingGraph.__init__`, `EvidenceTradingGraph._create_tool_nodes`, `EvidenceTradingGraph.resolve_instrument_context`, `EvidenceTradingGraph._fetch_returns`, `_available_sources_from_provider`, `_parse_stock_data_price`, `_parse_verified_snapshot_price`, `price_from_evidence`, `merge_trace`, `decide_proposal`, `ResearchRunner.__init__`, `ResearchRunner._memory_entries`, `ResearchRunner._assemble_context`, `ResearchRunner._build_graph`, `ResearchRunner._price_from_provider`, `ResearchRunner.run`, `ResearchRunner._data_snapshot_from_run`, `ResearchRunner._available_sources`, `_trim_state`.
 
 ## src/research_desk/models.py
 
@@ -72,7 +90,7 @@ Owner: ADR-001; ADR-002. Requirement contract: FR-001/002; INV-001/002. Verifica
 
 Owner: ADR-002. Requirement contract: INV-002. Verification: AT-04/05.
 
-`_owned_shares`, `_revalue_equity`, `PolicyViolation.__init__`, `evaluate_buy`, `evaluate_buy.check`, `evaluate_sell`, `evaluate_sell.check`, `raise_for_violations`, `reject_reasons`, `policy_bounds`.
+`_owned_shares`, `_revalue_equity`, `PolicyViolation.__init__`, `evaluate_buy`, `evaluate_sell`, `raise_for_violations`, `reject_reasons`, `policy_bounds`.
 
 ## src/research_desk/replay.py
 
@@ -82,13 +100,13 @@ Owner: ADR-001. Requirement contract: FR-001; NFR-001. Verification: AT-01.
 
 ## src/research_desk/report.py
 
-Owner: ADR-001. Requirement contract: FR-001; QUALITY-001. Verification: AT-01/07.
+Owner: ADR-001. Requirement contract: FR-001; QUALITY-001. Verification: AT-01/07. Revision: ADR-004; INV-001; QUALITY-001/003; AT-04/07.
 
-`render_run_report`, `render_proposal_report`, `render_ledger_report`, `render_compare_report`, `render_compare_report.row`, `_delta`.
+`_identity_value`, `render_research_identity`, `_strip_existing_header`, `apply_research_identity_header`, `render_run_report`, `render_proposal_report`, `render_ledger_report`, `render_compare_report`, `_delta`.
 
 ## src/research_desk/review.py
 
-Owner: ADR-002. Requirement contract: INV-001/002. Verification: AT-03/04/05.
+Owner: ADR-002. Requirement contract: INV-001/002. Verification: AT-03/04/05. Revision: ADR-004; INV-001; QUALITY-001/003; AT-04/07.
 
 `_side_for_signal`, `_proposal_content_version`, `create_proposal`, `approve`, `reject`, `execute`, `_execute_sell`, `evaluate_proposal_legibility`, `now_iso`.
 

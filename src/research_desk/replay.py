@@ -22,6 +22,7 @@ from tradingagents.reporting import write_report_tree
 from .evidence import EvidencePackIO
 from .models import EvidencePack
 from .policy import PolicyVerdict, evaluate_buy, evaluate_sell, policy_bounds
+from .report import apply_research_identity_header, render_research_identity
 
 
 @dataclass
@@ -72,6 +73,7 @@ class ReplayEngine:
         out = Path(out_dir)
         try:
             complete = write_report_tree(pack.final_state, pack.manifest.ticker, out)
+            apply_research_identity_header(complete, render_research_identity(pack))
             result.report_files = [str(p) for p in out.rglob("*") if p.is_file()]
             if complete not in result.report_files:
                 result.report_files.append(str(complete))

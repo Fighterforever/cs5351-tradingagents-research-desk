@@ -1,0 +1,567 @@
+{
+  "decision_owner": "leo",
+  "participant": {
+    "name": "Liyu MA",
+    "student_number": "59072966"
+  },
+  "prompt_operator": "coordinating workflow",
+  "entry_count": 30,
+  "native_session_count": 11,
+  "entries": [
+    {
+      "id": "I-01",
+      "annotation_file": "transcripts/annotations/leo-session-1.md",
+      "session_id": "ses_fa849396effeNN2dsVIpTIaax8",
+      "native_record": "transcripts/project-01.full.json",
+      "message_id": "msg_057b6c6c3001AL4FZng9VdvW70",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-01-offline.md"
+      ],
+      "quote": "Implement a clean integration seam with TradingAgentsGraph: normal live run should use its actual graph, selected analysts, researchers, managers, trader and risk debate.",
+      "title": "Build the first working application",
+      "outcome_refs": [
+        "pyproject.toml",
+        "src/research_desk/graph_adapter.py",
+        "src/research_desk/evidence.py",
+        "src/research_desk/policy.py",
+        "test/offline/test_integration_seam.py"
+      ]
+    },
+    {
+      "id": "I-02",
+      "annotation_file": "transcripts/annotations/leo-session-2.md",
+      "session_id": "ses_fa83026e7ffe84kFIOlxvQB3aB",
+      "native_record": "transcripts/project-02.full.json",
+      "message_id": "msg_057cfd96f001nGEh3Hz4a0uUe0",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-02-live.md"
+      ],
+      "quote": "The position cap is for TOTAL holdings after a purchase, including existing shares in that ticker, not each independent ticket.",
+      "title": "Correct portfolio limits and evaluation inputs",
+      "outcome_refs": [
+        "src/research_desk/policy.py",
+        "src/research_desk/review.py",
+        "src/research_desk/eval/case_registry.py",
+        "src/research_desk/eval/compact_delegate.py",
+        "src/research_desk/eval/frozen_provider.py"
+      ]
+    },
+    {
+      "id": "I-03",
+      "annotation_file": "transcripts/annotations/leo-session-3.md",
+      "session_id": "ses_fa825e6e8fferDOiutg4e8ECO8",
+      "native_record": "transcripts/project-04.full.json",
+      "message_id": "msg_057da1942001Tp47keCSN4ERtu",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-04-ready-live.md"
+      ],
+      "quote": "Preserve the full original message via the declared model-copy/update API, only changing content. Never deduplicate away a tool response required by an assistant tool call.",
+      "title": "Preserve tool calls during compaction",
+      "outcome_refs": [
+        "src/research_desk/eval/compact_delegate.py",
+        "src/research_desk/eval/frozen_provider.py",
+        "src/research_desk/eval/live.py",
+        "src/research_desk/graph_adapter.py",
+        "test/offline/test_live_fixes.py"
+      ]
+    },
+    {
+      "id": "I-04",
+      "annotation_file": "transcripts/annotations/leo-session-3.md",
+      "session_id": "ses_fa825e6e8fferDOiutg4e8ECO8",
+      "native_record": "transcripts/project-04.full.json",
+      "message_id": "msg_057e18ca30013lkvYNje6DardE",
+      "json_pointer": "/messages/82",
+      "prompt_files": [
+        "transcripts/prompts/project-05-config-fix.md"
+      ],
+      "quote": "Fix this actual root cause: construct the evaluation config from a deep copy of the actual DEFAULT_CONFIG, then override the explicit model/settings.",
+      "title": "Supply the complete graph configuration",
+      "outcome_refs": [
+        "src/research_desk/eval/live.py",
+        "test/offline/test_live_fixes.py"
+      ]
+    },
+    {
+      "id": "I-05",
+      "annotation_file": "transcripts/annotations/leo-session-3.md",
+      "session_id": "ses_fa825e6e8fferDOiutg4e8ECO8",
+      "native_record": "transcripts/project-04.full.json",
+      "message_id": "msg_057e4aa250013uEwf2a20yn6lX",
+      "json_pointer": "/messages/109",
+      "prompt_files": [
+        "transcripts/prompts/project-06-evidence-judge.md"
+      ],
+      "quote": "Give FrozenMarketProvider an explicit identity contract and pass it to the subclass so frozen runs have no hidden identity request.",
+      "title": "Give the judge complete evidence",
+      "outcome_refs": [
+        "src/research_desk/eval/live.py",
+        "src/research_desk/graph_adapter.py",
+        "src/research_desk/models.py",
+        "test/offline/test_live_fixes.py"
+      ]
+    },
+    {
+      "id": "I-06",
+      "annotation_file": "transcripts/annotations/leo-session-3.md",
+      "session_id": "ses_fa825e6e8fferDOiutg4e8ECO8",
+      "native_record": "transcripts/project-04.full.json",
+      "message_id": "msg_057e988f3001a8BWcP7RGaTYte",
+      "json_pointer": "/messages/150",
+      "prompt_files": [
+        "transcripts/prompts/project-07-sell-fix.md"
+      ],
+      "quote": "The10% concentration check applies after a BUY. A valid SELL that reduces an owned position must be permitted even if price appreciation means the remaining holding is still above10%.",
+      "title": "Allow sales that reduce exposure",
+      "outcome_refs": [
+        "src/research_desk/policy.py",
+        "test/offline/test_at04_reject_boundaries.py"
+      ]
+    },
+    {
+      "id": "I-07",
+      "annotation_file": "transcripts/annotations/leo-session-3.md",
+      "session_id": "ses_fa825e6e8fferDOiutg4e8ECO8",
+      "native_record": "transcripts/project-04.full.json",
+      "message_id": "msg_057ebf53500134R3qYEe0C5Lyo",
+      "json_pointer": "/messages/164",
+      "prompt_files": [
+        "transcripts/prompts/project-08-live-test.md"
+      ],
+      "quote": "Archive actual current runtime prompt text/settings under prompts/ with a version mapping derived from the existing ResearchDeskSettings.prompt_version.",
+      "title": "Archive prompts and add the live entry point",
+      "outcome_refs": [
+        "prompts/runtime-prompts-v0.1.0.yaml",
+        "test/live/README.md",
+        "test/live/test_live_evaluation.py"
+      ]
+    },
+    {
+      "id": "I-08",
+      "annotation_file": "transcripts/annotations/leo-session-4.md",
+      "session_id": "ses_fa82cafc9ffeeAkOozPwPQ41De",
+      "native_record": "transcripts/project-ci.full.json",
+      "message_id": "msg_057d35063001V7BNOJy9zL3Iud",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-ci.md"
+      ],
+      "quote": "Validate the real YAML registry against the corrected JSON schema; reject missing or duplicate IDs, unmeasurable fit criteria, and broken component/test/trace links.",
+      "title": "Define the six CI gates",
+      "outcome_refs": [
+        "docs/req/req-schema.json"
+      ]
+    },
+    {
+      "id": "I-09",
+      "annotation_file": "transcripts/annotations/leo-session-4.md",
+      "session_id": "ses_fa82cafc9ffeeAkOozPwPQ41De",
+      "native_record": "transcripts/project-ci.full.json",
+      "message_id": "msg_057d7a4b2001oLlP2CtoQc6Xle",
+      "json_pointer": "/messages/38",
+      "prompt_files": [
+        "transcripts/prompts/project-ci-focus.md"
+      ],
+      "quote": "Continue the already inspected CI task now. The coordinator stopped your first turn because you repeated baseline checks after enough interfaces were known.",
+      "title": "Move from inspection to implementation",
+      "outcome_refs": [
+        "docs/req/req-schema.json",
+        "scripts/_gate_lib.py",
+        "scripts/check_approval.py",
+        "scripts/check_static.py",
+        "scripts/check_requirements.py",
+        "scripts/check_semantic.py",
+        "scripts/check_regression.py",
+        "scripts/check_ai_use_log.py"
+      ]
+    },
+    {
+      "id": "I-10",
+      "annotation_file": "transcripts/annotations/leo-session-4.md",
+      "session_id": "ses_fa82cafc9ffeeAkOozPwPQ41De",
+      "native_record": "transcripts/project-ci.full.json",
+      "message_id": "msg_057dc326f001NRTNntwda9nw33",
+      "json_pointer": "/messages/52",
+      "prompt_files": [
+        "transcripts/prompts/project-ci-corrections.md"
+      ],
+      "quote": "`_gate_lib.changed_files` must fail the gate on git failure; returning an empty list currently makes an invalid diff pass.",
+      "title": "Connect gates to real changes and interfaces",
+      "outcome_refs": [
+        "scripts/_gate_lib.py",
+        "scripts/check_approval.py",
+        "scripts/check_static.py",
+        "scripts/check_requirements.py",
+        "scripts/check_semantic.py",
+        "scripts/check_regression.py",
+        "scripts/check_ai_use_log.py"
+      ]
+    },
+    {
+      "id": "I-11",
+      "annotation_file": "transcripts/annotations/leo-session-4.md",
+      "session_id": "ses_fa82cafc9ffeeAkOozPwPQ41De",
+      "native_record": "transcripts/project-ci.full.json",
+      "message_id": "msg_057e05d13001kspLz9g5VTC61T",
+      "json_pointer": "/messages/77",
+      "prompt_files": [
+        "transcripts/prompts/project-ci-finalize.md"
+      ],
+      "quote": "Write the resolved value to `$GITHUB_OUTPUT` so the next step receives it. Preserve PR base/head SHA, ordinary push before/head, and fetch-depth 0.",
+      "title": "Repair workflow outputs and ADR matching",
+      "outcome_refs": [
+        "scripts/check_ai_use_log.py",
+        "scripts/check_approval.py",
+        "scripts/check_semantic.py",
+        "scripts/check_static.py"
+      ]
+    },
+    {
+      "id": "I-12",
+      "annotation_file": "transcripts/annotations/leo-session-4.md",
+      "session_id": "ses_fa82cafc9ffeeAkOozPwPQ41De",
+      "native_record": "transcripts/project-ci.full.json",
+      "message_id": "msg_057e2f9fc001782x6W2yD7S3Qm",
+      "json_pointer": "/messages/107",
+      "prompt_files": [
+        "transcripts/prompts/project-ci-negative-examples.md"
+      ],
+      "quote": "The script should create temporary isolated roots as needed and execute a single deliberately violating example for each gate. Record the actual command, nonzero exit code and relevant failure message.",
+      "title": "Demonstrate each gate’s rejection behavior",
+      "outcome_refs": [
+        "scripts/check_gate_examples.py",
+        "scripts/check_ai_use_log.py"
+      ]
+    },
+    {
+      "id": "I-13",
+      "annotation_file": "transcripts/annotations/leo-session-4.md",
+      "session_id": "ses_fa82cafc9ffeeAkOozPwPQ41De",
+      "native_record": "transcripts/project-ci.full.json",
+      "message_id": "msg_057e5ae86001yVs7qc6kgdcw4D",
+      "json_pointer": "/messages/114",
+      "prompt_files": [],
+      "quote": "In each JSON result save the actual proc.args, stdout and stderr as evidence alongside exit/matched, so a reviewer can see the real rejection.",
+      "title": "Capture reproducible gate failure evidence",
+      "outcome_refs": [
+        "scripts/check_gate_examples.py"
+      ]
+    },
+    {
+      "id": "I-14",
+      "annotation_file": "transcripts/annotations/leo-session-5.md",
+      "session_id": "ses_fa817dbb4ffescaq14SFvAqA2I",
+      "native_record": "transcripts/project-evidence-fix.full.json",
+      "message_id": "msg_057e8247e001TQpLNGBYcerJBS",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-evidence-fix.md"
+      ],
+      "quote": "Convert actual Pydantic BaseModel values (including LangChain HumanMessage, AIMessage and ToolMessage) to JSON-native structured dictionaries using their supported model_dump(mode='json') API, then recursively sanitize.",
+      "title": "Preserve messages and token counts",
+      "outcome_refs": [
+        "src/research_desk/evidence.py",
+        "test/offline/test_evidence_message_roundtrip.py"
+      ]
+    },
+    {
+      "id": "I-15",
+      "annotation_file": "transcripts/annotations/leo-session-6.md",
+      "session_id": "ses_fa80e5e8bffei1CBiJ8vadPRtm",
+      "native_record": "transcripts/project-09.full.json.gz",
+      "message_id": "msg_057f1a19e001W5VzxxxKnN4lj8",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-09-grounding.md"
+      ],
+      "quote": "Every actual LLM request in BOTH baseline and compact must receive the same common grounding layer after any compaction. It must require factual claims to cite the proper source ID inline.",
+      "title": "Deliver evidence instructions to every role",
+      "outcome_refs": [
+        "src/research_desk/context.py",
+        "src/research_desk/eval/compact_delegate.py",
+        "src/research_desk/graph_adapter.py",
+        "src/research_desk/eval/frozen_provider.py",
+        "src/research_desk/config.py",
+        "test/offline/test_common_grounding_delegate.py"
+      ]
+    },
+    {
+      "id": "I-16",
+      "annotation_file": "transcripts/annotations/leo-session-6.md",
+      "session_id": "ses_fa80e5e8bffei1CBiJ8vadPRtm",
+      "native_record": "transcripts/project-09.full.json.gz",
+      "message_id": "msg_057f71ae5001McaBa8PQGkTYCe",
+      "json_pointer": "/messages/43",
+      "prompt_files": [
+        "transcripts/prompts/project-10-grounding-precision.md"
+      ],
+      "quote": "Remove ALL numeric/company-specific examples from instruction prose. Give only a format such as \"<supported claim> [<actual source ID>]\"; arithmetic instruction can simply require actual operands and their citations without example values.",
+      "title": "Remove unsupported grounding examples",
+      "outcome_refs": [
+        "src/research_desk/context.py",
+        "prompts/runtime-prompts-v0.1.1.yaml",
+        "test/offline/test_common_grounding_delegate.py"
+      ]
+    },
+    {
+      "id": "I-17",
+      "annotation_file": "transcripts/annotations/leo-session-7.md",
+      "session_id": "ses_fa80b1435ffeLfgOoIjVIDIpKP",
+      "native_record": "transcripts/project-report-check.full.json.gz",
+      "message_id": "msg_057f4ebfa001mul7ZW3hDp6REI",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-report-check-fix.md"
+      ],
+      "quote": "Preserve authentic role/stage titles for market/news/social/fundamentals, research manager, trader proposal, risk manager and final portfolio decision. Keep all actual opinions and original content.",
+      "title": "Define report and price checks",
+      "outcome_refs": [
+        "src/research_desk/eval/live.py",
+        "test/offline/test_evaluation_report_checks.py"
+      ]
+    },
+    {
+      "id": "I-18",
+      "annotation_file": "transcripts/annotations/leo-session-7.md",
+      "session_id": "ses_fa80b1435ffeLfgOoIjVIDIpKP",
+      "native_record": "transcripts/project-report-check.full.json.gz",
+      "message_id": "msg_057f8527f001r563E00o2BDptA",
+      "json_pointer": "/messages/35",
+      "prompt_files": [],
+      "quote": "Implement the two requested function changes now in eval/live.py, add only the focused regression file, run it and ruff on the two files, then stop.",
+      "title": "Implement the two measurement repairs",
+      "outcome_refs": [
+        "src/research_desk/eval/live.py",
+        "test/offline/test_evaluation_report_checks.py"
+      ]
+    },
+    {
+      "id": "I-19",
+      "annotation_file": "transcripts/annotations/leo-session-7.md",
+      "session_id": "ses_fa80b1435ffeLfgOoIjVIDIpKP",
+      "native_record": "transcripts/project-report-check.full.json.gz",
+      "message_id": "msg_057fb5d840011lq7JQaffU0S3K",
+      "json_pointer": "/messages/53",
+      "prompt_files": [],
+      "quote": "Fix only numeric token matching/normalization in live.py so ungrouped integers of any length work, correctly grouped comma amounts work, and signs remain part of the numeric value.",
+      "title": "Match signed and multi-digit prices",
+      "outcome_refs": [
+        "src/research_desk/eval/live.py",
+        "test/offline/test_evaluation_report_checks.py"
+      ]
+    },
+    {
+      "id": "I-20",
+      "annotation_file": "transcripts/annotations/leo-session-7.md",
+      "session_id": "ses_fa80b1435ffeLfgOoIjVIDIpKP",
+      "native_record": "transcripts/project-report-check.full.json.gz",
+      "message_id": "msg_05800ec90001aaWvxmwNDIwJz1",
+      "json_pointer": "/messages/59",
+      "prompt_files": [],
+      "quote": "Extend only eval/live.py judge input plumbing so the judge receives all actual nonempty tool_result payload result strings from pack.events, retaining event/source context; identical repeated outputs may be deduplicated, but different outputs from the same tool must survive.",
+      "title": "Retain every observed tool result",
+      "outcome_refs": [
+        "src/research_desk/eval/live.py",
+        "test/offline/test_evaluation_report_checks.py",
+        "test/offline/test_live_fixes.py"
+      ]
+    },
+    {
+      "id": "I-21",
+      "annotation_file": "transcripts/annotations/08-release-revision.md",
+      "session_id": "ses_e3f53febfffeJxqxKnMdRFfCgx",
+      "native_record": "transcripts/project-revision-runtime.full.json",
+      "message_id": "msg_1c0ac015a001go87a2Fh2EiOcv",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-revision-runtime.md"
+      ],
+      "quote": "Use the current deepseek-flash model consistently in new runtime experiments and judge; retain historical model labels in archived records. Do not compare a new arm against an old-model arm.",
+      "title": "Set the release revision scope",
+      "outcome_refs": [
+        "src/research_desk/config.py",
+        "src/research_desk/review.py",
+        "src/research_desk/context.py",
+        "src/research_desk/eval/live.py"
+      ]
+    },
+    {
+      "id": "I-22",
+      "annotation_file": "transcripts/annotations/08-release-revision.md",
+      "session_id": "ses_e3f53febfffeJxqxKnMdRFfCgx",
+      "native_record": "transcripts/project-revision-runtime.full.json",
+      "message_id": "msg_1c0afbfbb001ORSPNsMkXsRB7J",
+      "json_pointer": "/messages/20",
+      "prompt_files": [
+        "transcripts/prompts/project-revision-slice.md"
+      ],
+      "quote": "Before any version or generic status check in execute, if status REJECTED return ExecutionRecord(executed=False,reason='proposal rejected') without changing status or store. Keep approve rejecting REJECTED.",
+      "title": "Correct rejection state and EPS semantics",
+      "outcome_refs": [
+        "src/research_desk/review.py",
+        "src/research_desk/config.py",
+        "src/research_desk/context.py",
+        "src/research_desk/eval/live.py",
+        "prompts/runtime-prompts-v0.1.2.yaml",
+        "test/offline/test_revision_contracts.py"
+      ]
+    },
+    {
+      "id": "I-23",
+      "annotation_file": "transcripts/annotations/08-release-revision.md",
+      "session_id": "ses_e3f53febfffeJxqxKnMdRFfCgx",
+      "native_record": "transcripts/project-revision-runtime.full.json",
+      "message_id": "msg_1c0b752e3001K3XI43qZM4bsPU",
+      "json_pointer": "/messages/48",
+      "prompt_files": [
+        "transcripts/prompts/project-report-contract.md"
+      ],
+      "quote": "Define ONE reusable render_research_identity(pack) helper in report.py. It renders identity/date/evidence close with source attribution. Include the same header in the actual user-visible complete_report.md and run summary, not only inside the evaluator.",
+      "title": "Render identity from the evidence package",
+      "outcome_refs": [
+        "src/research_desk/report.py",
+        "src/research_desk/graph_adapter.py",
+        "src/research_desk/replay.py",
+        "src/research_desk/eval/live.py",
+        "test/offline/test_report_contract.py"
+      ]
+    },
+    {
+      "id": "I-24",
+      "annotation_file": "transcripts/annotations/08-release-revision.md",
+      "session_id": "ses_e3f53febfffeJxqxKnMdRFfCgx",
+      "native_record": "transcripts/project-revision-runtime.full.json",
+      "message_id": "msg_1c0c3ee21001awRNJ7B7bnak0k",
+      "json_pointer": "/messages/73",
+      "prompt_files": [
+        "transcripts/prompts/project-final-integration.md"
+      ],
+      "quote": "When revision exists in test-approval.yaml, require revision decision APPROVED, approver leo, ISO timestamps approved_at<implementation_started_at, authorization/ADR/evidence real file paths, nonempty scope/tests.",
+      "title": "Align identity checks and approval records",
+      "outcome_refs": [
+        "src/research_desk/eval/live.py",
+        "src/research_desk/report.py",
+        "scripts/check_approval.py",
+        "test/offline/test_report_contract.py",
+        "test/offline/test_approval_revision.py"
+      ]
+    },
+    {
+      "id": "I-25",
+      "annotation_file": "transcripts/annotations/08-release-revision.md",
+      "session_id": "ses_e3f4e729affepTXL7uidfzUkEm",
+      "native_record": "transcripts/project-revision-context.full.json",
+      "message_id": "msg_1c0b18d7c001ohLotoIhf0vhU2",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-context-cap.md"
+      ],
+      "quote": "Above trigger compact expendable OLD non-fact prose while preserving system/grounding constraints, latest user/task, and entire AI tool-call/ToolMessage groups. Never remove essential factual evidence merely to fit.",
+      "title": "Bound the complete model input",
+      "outcome_refs": [
+        "src/research_desk/budget.py",
+        "src/research_desk/config.py",
+        "src/research_desk/eval/compact_delegate.py",
+        "src/research_desk/graph_adapter.py",
+        "test/offline/test_context_budget.py"
+      ]
+    },
+    {
+      "id": "I-26",
+      "annotation_file": "transcripts/annotations/08-release-revision.md",
+      "session_id": "ses_e3f4e729affepTXL7uidfzUkEm",
+      "native_record": "transcripts/project-revision-context.full.json",
+      "message_id": "msg_1c0bcec29001N2uJPwOI2ZhxB4",
+      "json_pointer": "/messages/37",
+      "prompt_files": [
+        "transcripts/prompts/project-runtime-finalize.md",
+        "transcripts/prompts/project-budget-observations.md"
+      ],
+      "quote": "Integrate this actual contract into eval/live.py: save run provenance immediately BEFORE ResearchRunner runs, and save judge provenance immediately BEFORE judge invocation.",
+      "title": "Record context usage and source provenance",
+      "outcome_refs": [
+        "src/research_desk/eval/compact_delegate.py",
+        "src/research_desk/eval/live.py",
+        "src/research_desk/graph_adapter.py",
+        "src/research_desk/policy.py",
+        "test/offline/test_context_budget.py",
+        "test/offline/test_eval_provenance.py"
+      ]
+    },
+    {
+      "id": "I-27",
+      "annotation_file": "transcripts/annotations/08-release-revision.md",
+      "session_id": "ses_e3f41e4c3ffePb0Q8P4fk877uH",
+      "native_record": "transcripts/project-revision-gates.full.json",
+      "message_id": "msg_1c0be1b5b001lpth0QH5Llk3Mj",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-gate-fixes.md"
+      ],
+      "quote": "Preserve declared quality retention: compare baseline/compact mean support (and mean relevance separately), each permitted drop <=.05. Cite validity has its existing .95 threshold.",
+      "title": "Separate quality checks and consolidate CI",
+      "outcome_refs": [
+        ".github/workflows/ci.yml",
+        "scripts/check_regression.py",
+        "scripts/evaluate_release.py",
+        "src/research_desk/eval/quality.py",
+        "test/offline/test_release_quality.py"
+      ]
+    },
+    {
+      "id": "I-28",
+      "annotation_file": "transcripts/annotations/09-provider-transport.md",
+      "session_id": "ses_e3f28f99fffeB3EaSGurvf2t3E",
+      "native_record": "transcripts/project-revision-transport.full.json",
+      "message_id": "msg_1c0d70681001leG7JpaXM81KJR",
+      "json_pointer": "/messages/0",
+      "prompt_files": [
+        "transcripts/prompts/project-provider-transport.md"
+      ],
+      "quote": "In src/research_desk/eval/live.py, add reasoning_effort:\"none\" to THINKING_DISABLED_EXTRA_BODY so both graph models and judge get the same effective nonthinking setting via extra_body (upstream factory filters top-level reasoning_effort for DeepSeek, so keep it inside extra_body).",
+      "title": "Apply the provider’s effective thinking setting",
+      "outcome_refs": [
+        "src/research_desk/eval/live.py",
+        "test/offline/test_revision_contracts.py"
+      ]
+    },
+    {
+      "id": "I-29",
+      "annotation_file": "transcripts/annotations/09-provider-transport.md",
+      "session_id": "ses_e3f28f99fffeB3EaSGurvf2t3E",
+      "native_record": "transcripts/project-revision-transport.full.json",
+      "message_id": "msg_1c0d94a08001bGuarwpCGgKFxo",
+      "json_pointer": "/messages/19",
+      "prompt_files": [
+        "transcripts/prompts/project-provider-unit-fix.md"
+      ],
+      "quote": "Use bound = structured.steps[0].steps__['raw'].bound, assert isinstance(bound, DeepSeekChatOpenAI), and inspect bound._get_request_payload(..., **structured.steps[0].steps__['raw'].kwargs) so the tool schema binding is exercised too.",
+      "title": "Inspect the actual structured request binding",
+      "outcome_refs": [
+        "test/offline/test_revision_contracts.py"
+      ]
+    },
+    {
+      "id": "I-30",
+      "annotation_file": "transcripts/annotations/09-provider-transport.md",
+      "session_id": "ses_e3f28f99fffeB3EaSGurvf2t3E",
+      "native_record": "transcripts/project-revision-transport.full.json",
+      "message_id": "msg_1c0debec7001cbJyBg2cqQP53A",
+      "json_pointer": "/messages/22",
+      "prompt_files": [
+        "transcripts/prompts/project-provider-unit-serialization.md"
+      ],
+      "quote": "Edit ONLY test/offline/test_revision_contracts.py: remove its local import json and the two redundant json.dumps substring assertions. Retain both real request-payload assertions of extra_body.reasoning_effort and thinking.type, including the structured binding kwargs.",
+      "title": "Check the serialized request fields",
+      "outcome_refs": [
+        "test/offline/test_revision_contracts.py",
+        "evaluation/ci-release/summary.json",
+        "evaluation/release/aggregate/release-gate.json",
+        "evaluation/github/revision-cloud-run.json"
+      ]
+    }
+  ]
+}

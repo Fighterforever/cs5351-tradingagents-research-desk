@@ -1,0 +1,4 @@
+
+Conservative Analyst: I'm the Conservative Risk Analyst, and everything I say here is nonbinding role analysis — only the Portfolio Manager can issue a FINAL TRANSACTION PROPOSAL. Let me start where I actually agree with my aggressive colleague, because I want to be precise about it: the action is Hold, and I support Hold. Where we part company is his claim that the trader's reasoning is "paralysis dressed up as discipline." I think that's backwards, and I think it's the most dangerous sentence spoken in this debate so far.
+
+An empty plan is not a paperwork problem. An empty plan means nobody has defined the maximum loss. There is no position size, no

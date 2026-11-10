@@ -1,0 +1,28 @@
+{
+  "ticker": "AAPL",
+  "analysis_date": "2026-07-31",
+  "announcement_date": "2026-07-30",
+  "split": "development",
+  "company_name": "Apple Inc.",
+  "sector": "Technology",
+  "industry": "Consumer Electronics",
+  "source_url": "https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/",
+  "source_id": "src-aapl",
+  "csv": "AAPL.csv",
+  "csv_path": "/Users/leeyoma/Downloads/cs5351/work/project/test/fixtures/market/AAPL.csv",
+  "as_of": "2026-07-31",
+  "latest_close": 308.9100036621094,
+  "identity": {
+    "company_name": "Apple Inc.",
+    "sector": "Technology",
+    "industry": "Consumer Electronics"
+  },
+  "notes": [
+    "Apple fiscal Q3 2026 ended June 27.",
+    "Revenue was USD109.4 billion, up 16% year over year.",
+    "Gross margin 50.1% included approximately 2 percentage points of tariff-refund benefit.",
+    "Diluted EPS 2.02, up 29%, included 0.11 of tariff-refund benefit.",
+    "Dividend 0.27 per share."
+  ],
+  "balance": "Distinguish the one-off tariff-refund benefit from underlying operating growth."
+}

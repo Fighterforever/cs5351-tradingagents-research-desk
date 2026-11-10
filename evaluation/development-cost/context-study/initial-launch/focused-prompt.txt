@@ -1,0 +1,1481 @@
+Repair this actual proposal lifecycle bug. A rejected proposal passed to execute currently enters REVIEW_REQUIRED and can later be approved. REJECTED must remain terminal after any execution attempt, including when previously approved before rejection. Return without store or ledger mutation and with executed=False. Keep all other semantics. Return ONLY JSON {"execute_source":"...complete replacement def execute function..."}. Use no tools. All needed code follows. This is an isolated coding experiment, not a production edit. The same acceptance tests are used for both context conditions.
+
+FILE src/research_desk/review.py
+"""Proposal review state machine and simulated-ledger execution.
+
+Flow: research produces a PENDING_REVIEW proposal. A trusted CLI operator
+approves or rejects it. Execution re-evaluates the *current* ledger against the
+deterministic policy before writing; the approval binds the exact proposal
+version, so a changed proposal cannot ride an old approval. Re-executing an
+already-simulated proposal is a no-op (idempotence).
+
+No LLM path reaches this module: the research graph only ever writes a proposal
+in PENDING_REVIEW, and only the CLI review/execute/ledger commands touch it.
+"""
+
+from __future__ import annotations
+
+import uuid
+from datetime import datetime, timezone
+
+from .models import (
+    ExecutionRecord,
+    ProposalRecord,
+    ProposalStatus,
+    TransactionRecord,
+    TransactionStatus,
+    make_proposal_version,
+    utcnow_iso,
+)
+from .policy import evaluate_buy, evaluate_sell
+
+# Signals that map to a tradeable buy action; everything else is a sell or
+# non-tradeable (Hold / REVIEW).
+BUY_SIGNALS = {"Buy", "Overweight", "Strong Buy"}
+SELL_SIGNALS = {"Sell", "Underweight", "Reduce"}
+
+
+def _side_for_signal(signal: str) -> str:
+    if signal in BUY_SIGNALS:
+        return "buy"
+    if signal in SELL_SIGNALS:
+        return "sell"
+    raise ReviewError(f"signal {signal!r} is not tradeable in v1 (Hold/REVIEW do not trade)")
+
+
+class ReviewError(Exception):
+    """Business rejection with a stable message; the ledger stays unchanged."""
+
+
+def _proposal_content_version(proposal: ProposalRecord) -> str:
+    """Fingerprint of the proposal's tradeable inputs, independent of status."""
+    return make_proposal_version(
+        proposal.ticker,
+        proposal.trade_date,
+        proposal.signal,
+        proposal.price,
+        side=proposal.side,
+        shares=proposal.shares,
+        evidence_id=proposal.evidence_id,
+    )
+
+
+def create_proposal(
+    *,
+    run_id: str,
+    ticker: str,
+    trade_date: str,
+    signal: str,
+    rating: str | None,
+    price: float | None,
+    proposal_id: str | None = None,
+    evidence_id: str | None = None,
+) -> ProposalRecord:
+    """Create a PENDING_REVIEW proposal from a completed research run.
+
+    Only tradeable signals become proposals: Buy-family signals are buys, Sell-
+    family signals are sells (up to owned shares, enforced at execution). Hold
+    and REVIEW never produce a tradeable recommendation.
+    """
+    if signal in ("Hold", "REVIEW"):
+        raise ReviewError(
+            f"signal {signal!r} is not tradeable in v1; no proposal is created "
+            "(REVIEW and Hold do not trade)"
+        )
+    side = _side_for_signal(signal)
+    pid = proposal_id or f"prop-{uuid.uuid4().hex[:12]}"
+    return ProposalRecord(
+        proposal_id=pid,
+        run_id=run_id,
+        ticker=ticker,
+        trade_date=trade_date,
+        signal=signal,
+        rating=rating,
+        side=side,
+        price=price,
+        evidence_id=evidence_id,
+        status=ProposalStatus.PENDING_REVIEW,
+        proposal_version=_proposal_content_version(
+            ProposalRecord(
+                proposal_id=pid,
+                run_id=run_id,
+                ticker=ticker,
+                trade_date=trade_date,
+                signal=signal,
+                rating=rating,
+                side=side,
+                price=price,
+                evidence_id=evidence_id,
+            )
+        ),
+        created_at=utcnow_iso(),
+    )
+
+
+def approve(
+    proposal: ProposalRecord,
+    *,
+    shares: int,
+    operator: str,
+) -> ProposalRecord:
+    """Approve an exact proposal version with an operator-supplied share count.
+
+    The approval is bound to the proposal's *content* version, so if the run's
+    material inputs (ticker/date/signal/price) later change, the old approval
+    no longer matches and execution requires review.
+    """
+    if proposal.status == ProposalStatus.SIMULATED:
+        raise ReviewError(f"proposal {proposal.proposal_id} is already simulated")
+    if proposal.status == ProposalStatus.REJECTED:
+        raise ReviewError(f"proposal {proposal.proposal_id} is rejected and cannot be approved")
+    # REVIEW_REQUIRED is a safe-fail state, not a dead end: after the operator
+    # reviews the current evidence, they may approve the corrected version.
+    if not operator:
+        raise ReviewError("approval requires an operator identity")
+    if not isinstance(shares, int) or shares <= 0:
+        raise ReviewError(f"shares must be a positive integer, got {shares!r}")
+    if proposal.price is None or proposal.price <= 0:
+        raise ReviewError(
+            f"proposal {proposal.proposal_id} has no evidence price; cannot approve without price"
+        )
+    proposal.shares = shares
+    proposal.operator = operator
+    proposal.status = ProposalStatus.APPROVED
+    proposal.approved_at = utcnow_iso()
+    proposal.approved_version = _proposal_content_version(proposal)
+    return proposal
+
+
+def reject(proposal: ProposalRecord, *, operator: str, reason: str = "rejected by operator") -> ProposalRecord:
+    if proposal.status == ProposalStatus.SIMULATED:
+        raise ReviewError(f"proposal {proposal.proposal_id} is already simulated")
+    proposal.status = ProposalStatus.REJECTED
+    proposal.operator = operator
+    proposal.reason = reason
+    return proposal
+
+
+def execute(
+    store, proposal: ProposalRecord, *, operator: str,
+) -> tuple[ProposalRecord, ExecutionRecord]:
+    """Re-evaluate the current ledger and simulate the approved buy (or reject).
+
+    Steps (each observable, none partial):
+    1. Idempotence: an already-SIMULATED proposal returns its stored execution.
+    2. A REJECTED proposal is terminal: return unexecuted without changing its
+       status or touching the store, so it can never be reopened for approval.
+    3. Version binding: the current proposal content must match the approved
+       version; otherwise REVIEW_REQUIRED (AT-05).
+    4. Re-read the current ledger and run the deterministic policy.
+    5. On any failure: return REVIEW_REQUIRED / BLOCKED with reasons; ledger
+       unchanged. On success: apply the transaction atomically.
+    """
+    if proposal.status == ProposalStatus.SIMULATED:
+        existing = proposal.execution or ExecutionRecord(executed=True)
+        existing.reason = "already executed"
+        return proposal, existing
+
+    current_version = _proposal_content_version(proposal)
+    # A stale approval for different content is checked before status: an
+    # approved proposal whose run inputs changed must not execute the new
+    # version (AT-05), even though the row now carries the new content.
+    if proposal.approved_version is not None and proposal.approved_version != current_version:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = (
+            "approval no longer matches the proposal content (version changed "
+            f"approved={proposal.approved_version!r} current={current_version!r}); "
+            "re-review against the current ledger"
+        )
+        store.update_proposal_status(
+            proposal.proposal_id,
+            ProposalStatus.REVIEW_REQUIRED,
+            operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False, reason=proposal.reason, policy_checks=[]
+        )
+    if proposal.status != ProposalStatus.APPROVED:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = (
+            f"proposal is not APPROVED (status={proposal.status.value}) and cannot "
+            "execute; approve it against the current ledger first"
+        )
+        store.update_proposal_status(
+            proposal.proposal_id,
+            ProposalStatus.REVIEW_REQUIRED,
+            operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False, reason=proposal.reason, policy_checks=[]
+        )
+
+    if proposal.shares is None or proposal.price is None:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "proposal missing shares or evidence price; cannot execute"
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(executed=False, reason=proposal.reason, policy_checks=[])
+
+    ledger = store.get_ledger()
+    if ledger is None:
+        raise ReviewError("ledger is not initialised")
+
+    if proposal.side == "sell":
+        return _execute_sell(store, proposal, ledger, operator=operator)
+    verdict = evaluate_buy(ledger, proposal.ticker, proposal.shares, proposal.price)
+    if not verdict.allowed:
+        reasons = [f"{c['check']}: {c['detail']}" for c in verdict.checks if not c["passed"]]
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "policy failed at execution time: " + "; ".join(reasons)
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False,
+            reason=proposal.reason,
+            policy_checks=verdict.checks,
+            equity_before=ledger.equity,
+        )
+
+    tx_id = f"tx-{uuid.uuid4().hex[:12]}"
+    execution = ExecutionRecord(
+        executed=True,
+        tx_id=tx_id,
+        policy_checks=verdict.checks,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        cash_delta=-proposal.shares * proposal.price,
+    )
+    tx = TransactionRecord(
+        tx_id=tx_id,
+        proposal_id=proposal.proposal_id,
+        ticker=proposal.ticker,
+        side="buy",
+        shares=proposal.shares,
+        price=proposal.price,
+        cash_delta=execution.cash_delta,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        status=TransactionStatus.SIMULATED,
+        policy_checks=verdict.checks,
+        operator=operator,
+        created_at=utcnow_iso(),
+    )
+    store.apply_transaction(tx, execution)
+    proposal.status = ProposalStatus.SIMULATED
+    proposal.execution = execution
+    updated = store.get_proposal(proposal.proposal_id)
+    return updated or proposal, proposal.execution
+
+
+def _execute_sell(store, proposal: ProposalRecord, ledger, *, operator: str):
+    """Execute an approved sell up to owned shares; apply the transaction atomically."""
+    shares = proposal.shares
+    price = proposal.price
+    if shares is None or price is None:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "proposal missing shares or evidence price; cannot execute"
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(executed=False, reason=proposal.reason, policy_checks=[])
+
+    verdict = evaluate_sell(ledger, proposal.ticker, shares, price)
+    if not verdict.allowed:
+        reasons = [f"{c['check']}: {c['detail']}" for c in verdict.checks if not c["passed"]]
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+        proposal.reason = "policy failed at execution time: " + "; ".join(reasons)
+        store.update_proposal_status(
+            proposal.proposal_id, ProposalStatus.REVIEW_REQUIRED, operator=operator,
+            reason=proposal.reason,
+        )
+        return proposal, ExecutionRecord(
+            executed=False,
+            reason=proposal.reason,
+            policy_checks=verdict.checks,
+            equity_before=ledger.equity,
+        )
+
+    tx_id = f"tx-{uuid.uuid4().hex[:12]}"
+    execution = ExecutionRecord(
+        executed=True,
+        tx_id=tx_id,
+        policy_checks=verdict.checks,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        cash_delta=shares * price,
+    )
+    tx = TransactionRecord(
+        tx_id=tx_id,
+        proposal_id=proposal.proposal_id,
+        ticker=proposal.ticker,
+        side="sell",
+        shares=shares,
+        price=price,
+        cash_delta=execution.cash_delta,
+        equity_before=ledger.equity,
+        equity_after=ledger.equity,
+        status=TransactionStatus.SIMULATED,
+        policy_checks=verdict.checks,
+        operator=operator,
+        created_at=utcnow_iso(),
+    )
+    store.apply_transaction(tx, execution)
+    proposal.status = ProposalStatus.SIMULATED
+    proposal.execution = execution
+    updated = store.get_proposal(proposal.proposal_id)
+    return updated or proposal, proposal.execution
+
+
+def evaluate_proposal_legibility(proposal: ProposalRecord) -> list[str]:
+    """Non-mutating advisory checks used by the CLI ledger/report views."""
+    issues: list[str] = []
+    if proposal.status != ProposalStatus.APPROVED:
+        issues.append(f"not APPROVED (status={proposal.status.value})")
+    if proposal.shares is None or proposal.price is None:
+        issues.append("missing shares or evidence price")
+    return issues
+
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
+
+
+FILE src/research_desk/models.py
+"""Pydantic data records for the Research Desk offline slice.
+
+These records are the single source of truth for everything the evidence
+packs, the simulated ledger, and the review state machine store on disk.
+Fields are explicit so a packed evidence bundle is self-describing and can
+be validated by an external JSON schema (see ``docs/req/req-schema.json``).
+
+Conventions enforced here:
+- Amounts are floats in USD; share counts are positive integers.
+- Every proposal and every ledger transaction carries a ``proposal_version``
+  that binds an approval to the exact proposal contents it was granted for.
+- Nothing in these records holds credentials.
+"""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any
+
+from pydantic import BaseModel, Field, field_validator
+
+# ---------------------------------------------------------------------------
+# Shared enums
+# ---------------------------------------------------------------------------
+
+
+class RunOutcome(str, Enum):
+    """How a research run ended."""
+
+    COMPLETED = "completed"
+    BUDGET_STOPPED = "budget_stopped"
+    FAILED = "failed"
+
+
+class ContextMode(str, Enum):
+    """Which context-assembly configuration produced a run's prompts."""
+
+    BASELINE = "baseline"
+    COMPACT = "compact"
+
+
+class RunDataMode(str, Enum):
+    """Where a run's tool data came from."""
+
+    LIVE = "live"  # real vendor fetches through the real graph
+    FROZEN = "frozen"  # controlled rerun on frozen evidence (same graph, no network)
+
+
+class ProposalStatus(str, Enum):
+    PENDING_REVIEW = "PENDING_REVIEW"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    SIMULATED = "SIMULATED"
+    REVIEW_REQUIRED = "REVIEW_REQUIRED"
+
+
+class TransactionStatus(str, Enum):
+    SIMULATED = "SIMULATED"
+    BLOCKED = "BLOCKED"
+
+
+class EventKind(str, Enum):
+    """Event types recorded in an evidence pack's event log."""
+
+    RUN_START = "run_start"
+    LLM_REQUEST = "llm_request"
+    LLM_RESPONSE = "llm_response"
+    TOOL_CALL = "tool_call"
+    TOOL_RESULT = "tool_result"
+    DATA_READ = "data_read"  # direct data paths callbacks cannot see
+    CONTEXT_ASSEMBLED = "context_assembled"
+    BUDGET_STOP = "budget_stop"
+    RUN_END = "run_end"
+
+
+# ---------------------------------------------------------------------------
+# Usage / calls
+# ---------------------------------------------------------------------------
+
+
+class CallUsage(BaseModel):
+    """Actual token usage reported by an LLM provider for one call."""
+
+    input_tokens: int = 0
+    output_tokens: int = 0
+
+
+class UsageSummary(BaseModel):
+    """Aggregated LLM usage across a run or a compare arm."""
+
+    calls: int = 0
+    input_tokens: int = 0
+    output_tokens: int = 0
+    total_tokens: int = 0
+    stop_reason: str | None = None  # "completed" | "budget_exhausted" | "error"
+
+    def add(self, usage: CallUsage) -> None:
+        self.calls += 1
+        self.input_tokens += usage.input_tokens
+        self.output_tokens += usage.output_tokens
+        self.total_tokens += usage.input_tokens + usage.output_tokens
+
+
+class CallRecord(BaseModel):
+    """One LLM or tool call observed during a run."""
+
+    seq: int = 0
+    ts: str = ""
+    kind: str = "llm"  # "llm" | "tool"
+    node: str | None = None  # best-effort graph node attribution (langgraph_node metadata)
+    model: str | None = None
+    name: str = ""  # tool name for tool calls
+    input_tokens: int = 0
+    output_tokens: int = 0
+    args: dict[str, Any] | None = None
+    result: str | None = None
+    prompt: str | None = None  # material input, kept for evidence completeness
+    response: str | None = None
+
+
+# ---------------------------------------------------------------------------
+# Events / manifest / evidence pack
+# ---------------------------------------------------------------------------
+
+
+class EvidenceEvent(BaseModel):
+    seq: int
+    kind: str
+    ts: str
+    node: str | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class RunManifest(BaseModel):
+    """Provenance header of a research run and its evidence pack."""
+
+    run_id: str
+    ticker: str
+    trade_date: str
+    asset_type: str = "stock"
+    analysts: list[str] = Field(default_factory=list)
+    context_mode: str = "baseline"
+    data_mode: str = "live"  # live | frozen
+    outcome: str = "completed"
+    signal: str | None = None
+    prompt_version: str = ""
+    package_schema_version: int = 1
+    created_at: str = ""
+    operator: str = "research-desk"
+    model_quick: str | None = None
+    model_deep: str | None = None
+    budget_max_calls: int | None = None
+    source_pack: str | None = None  # when this pack is a controlled rerun of another pack
+    reason: str | None = None
+
+
+class InputSnapshot(BaseModel):
+    """The material inputs a run consumed, so a rerun can be replayed."""
+
+    instrument_context: str = ""
+    past_context: str = ""
+    initial_state: dict[str, Any] = Field(default_factory=dict)
+    identity: dict[str, Any] = Field(default_factory=dict)
+    data_snapshot: dict[str, dict[str, str]] = Field(
+        default_factory=dict
+    )  # tool_name -> {"canonical args key": result text}
+    memory_used: list[dict[str, Any]] = Field(default_factory=list)
+    memory_sources: list[str] = Field(default_factory=list)
+    # Factual *available* corpus for the case (identity, full market CSV, official
+    # news notes) recorded separately from the tool calls actually made. This is
+    # what makes the evidence-derived price available for proposal/replay even
+    # when a model path did not ask one of the data tools.
+    available_sources: dict[str, Any] = Field(default_factory=dict)
+
+
+class EvidencePack(BaseModel):
+    """A complete, self-contained evidence package for one run.
+
+    ``final_state`` is the graph's merged terminal state; it is the material
+    needed to rebuild reports and derive the signal and policy outputs offline
+    with zero external calls.
+    """
+
+    manifest: RunManifest
+    input: InputSnapshot
+    events: list[EvidenceEvent] = Field(default_factory=list)
+    final_state: dict[str, Any] = Field(default_factory=dict)
+    usage: UsageSummary = Field(default_factory=UsageSummary)
+    calls: list[CallRecord] = Field(default_factory=list)
+    reports_written: list[str] = Field(default_factory=list)
+    proposal: ProposalRecord | None = None
+    complete: bool = False  # set True only when a full pack was exported
+
+    @field_validator("final_state")
+    @classmethod
+    def _final_state_serializable(cls, v):
+        if not v:
+            return v
+        if not isinstance(v, dict):
+            raise ValueError("final_state must be a dict")
+        return v
+
+
+class ProposalRecord(BaseModel):
+    """A single reviewable proposal produced by a research run."""
+
+    proposal_id: str
+    run_id: str
+    ticker: str
+    trade_date: str
+    signal: str
+    rating: str | None = None
+    side: str = "buy"  # "buy" | "sell"; derived from the tradeable signal
+    price: float | None = None  # from evidence only, never operator-typed
+    shares: int | None = None  # from the trusted CLI operator
+    evidence_id: str | None = None  # identity of the frozen evidence that supplied price/signal
+    status: ProposalStatus = ProposalStatus.PENDING_REVIEW
+    proposal_version: str = ""  # binds approvals to this exact content
+    operator: str | None = None
+    created_at: str = ""
+    approved_at: str | None = None
+    approved_version: str | None = None
+    reason: str | None = None
+    execution: ExecutionRecord | None = None
+
+    @field_validator("shares")
+    @classmethod
+    def _shares_positive_int(cls, v):
+        if v is None:
+            return v
+        if not isinstance(v, int) or v <= 0:
+            raise ValueError("shares must be a positive integer")
+        return v
+
+
+class ExecutionRecord(BaseModel):
+    """Result of executing an approved proposal against the current ledger."""
+
+    executed: bool
+    tx_id: str | None = None
+    policy_checks: list[dict[str, Any]] = Field(default_factory=list)
+    equity_before: float | None = None
+    equity_after: float | None = None
+    cash_delta: float | None = None
+    reason: str | None = None
+
+
+class LedgerPosition(BaseModel):
+    ticker: str
+    shares: int = 0
+    avg_price: float | None = None
+
+
+class LedgerState(BaseModel):
+    cash: float = 100000.0
+    positions: dict[str, LedgerPosition] = Field(default_factory=dict)
+    last_updated: str = ""
+
+    @property
+    def equity(self) -> float:
+        """Equity = cash + sum(position market value at avg price)."""
+        total = self.cash
+        for pos in self.positions.values():
+            if pos.avg_price is not None:
+                total += pos.shares * pos.avg_price
+        return total
+
+
+class TransactionRecord(BaseModel):
+    tx_id: str
+    proposal_id: str
+    ticker: str
+    side: str = "buy"
+    shares: int
+    price: float
+    cash_delta: float
+    equity_before: float
+    equity_after: float
+    status: TransactionStatus = TransactionStatus.SIMULATED
+    policy_checks: list[dict[str, Any]] = Field(default_factory=list)
+    operator: str | None = None
+    created_at: str = ""
+
+
+# ---------------------------------------------------------------------------
+# Run result returned by the research runner
+# ---------------------------------------------------------------------------
+
+
+class RunResult(BaseModel):
+    run_id: str
+    ticker: str
+    trade_date: str
+    outcome: str
+    signal: str | None = None
+    usage: UsageSummary = Field(default_factory=UsageSummary)
+    events: list[EvidenceEvent] = Field(default_factory=list)
+    final_state: dict[str, Any] = Field(default_factory=dict)
+    proposal: ProposalRecord | None = None
+    pack_path: str | None = None
+    error: str | None = None
+    stop_reason: str | None = None
+
+
+def utcnow_iso() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
+
+
+def make_proposal_version(
+    ticker: str,
+    trade_date: str,
+    signal: str,
+    price: float | None,
+    *,
+    side: str = "buy",
+    shares: int | None = None,
+    evidence_id: str | None = None,
+) -> str:
+    """Content fingerprint binding an approval to the exact proposal inputs.
+
+    The fingerprint covers every *tradeable* field: ticker, analysis date,
+    action (side), signal, price (from evidence), evidence identity, and the
+    operator-supplied quantity. Changing any of these requires a new approval.
+    """
+    import hashlib
+
+    payload = "|".join(
+        [
+            ticker.upper(),
+            str(trade_date),
+            str(side),
+            str(signal),
+            str(price),
+            str(evidence_id or ""),
+            str(shares if shares is not None else ""),
+        ]
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+
+EvidencePack.model_rebuild()
+
+
+FILE src/research_desk/policy.py
+"""Deterministic teaching-policy engine for the simulated ledger.
+
+The deterministic policy constants are defined in ``research_desk.config``;
+policy is never decided by an LLM. Every check returns a plain list of
+human-readable results; the review layer turns a non-empty list of failures into
+a business rejection and leaves the ledger untouched (INV-002). Boundary
+behaviour is explicit: a position value exactly equal to 10% of equity is
+allowed (<=), one share more is rejected.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from .config import INITIAL_CASH, MAX_POSITION_PCT, NO_SHORTING
+from .models import LedgerState
+
+
+@dataclass
+class PolicyVerdict:
+    allowed: bool
+    checks: list[dict]  # each: {"check": str, "passed": bool, "detail": str}
+    equity: float | None = None
+    position_value: float | None = None
+    cash_after: float | None = None
+    shares_after: int | None = None
+
+
+def _owned_shares(ledger: LedgerState, ticker: str) -> int:
+    pos = ledger.positions.get(ticker.upper())
+    return pos.shares if pos is not None else 0
+
+
+def _revalue_equity(ledger: LedgerState, ticker: str, mark_price: float) -> float:
+    """Equity with the target ticker's holdings re-marked at the evidence price.
+
+    The position cap is expressed as a fraction of equity, so the equity base
+    must mark the ticker under review at the same (frozen evidence) price used
+    for the trade. Other positions keep their recorded average mark, which is
+    made explicit in the check detail rather than silently revalued.
+    """
+    ticker = ticker.upper()
+    total = ledger.cash
+    for t, pos in ledger.positions.items():
+        if t == ticker and mark_price is not None and mark_price > 0:
+            total += pos.shares * mark_price
+        else:
+            total += pos.shares * (pos.avg_price or 0.0)
+    return total
+
+
+class PolicyViolation(Exception):
+    def __init__(self, reasons: list[str]):
+        self.reasons = reasons
+        super().__init__("; ".join(reasons))
+
+
+def evaluate_buy(
+    ledger: LedgerState,
+    ticker: str,
+    shares: int,
+    price: float,
+    *,
+    initial_cash: float = INITIAL_CASH,
+    max_position_pct: float = MAX_POSITION_PCT,
+) -> PolicyVerdict:
+    """Evaluate a buy proposal against the current ledger.
+
+    Rules (v1 teaching policy):
+    1. shares must be a positive integer.
+    2. price must be positive and present (it always comes from evidence).
+    3. cost (shares * price) must not exceed available cash.
+    4. after the buy, the *total* position in this ticker (existing holdings at
+       the evidence price plus the new shares) must be <= 10% of equity.
+    5. no shorting (buys only increase a long position; never negative).
+
+    ``initial_cash`` is recorded for the ledger seed; the effective cash check
+    uses the current ledger's cash, which is ``initial_cash`` plus the sum of
+    prior cash deltas. The position cap is against *total holdings after the
+    purchase*, re-marking this ticker's existing shares at ``price``.
+    """
+    ticker = ticker.upper()
+    checks: list[dict] = []
+
+    def check(name: str, passed: bool, detail: str) -> None:
+        checks.append({"check": name, "passed": passed, "detail": detail})
+
+    if not isinstance(shares, int) or shares <= 0:
+        check("integer_positive_shares", False, f"shares must be a positive integer, got {shares!r}")
+        return PolicyVerdict(False, checks)
+
+    if price is None or not isinstance(price, (int, float)) or price <= 0:
+        check("price_from_evidence", False, f"price must be a positive number from evidence, got {price!r}")
+        return PolicyVerdict(False, checks)
+
+    equity = _revalue_equity(ledger, ticker, price)
+    owned = _owned_shares(ledger, ticker)
+    shares_after = owned + shares
+    position_value = shares_after * price
+    cash_after = ledger.cash - shares * price
+
+    check("cash_sufficient", cash_after >= -1e-9, f"cost={shares * price:.2f}, cash={ledger.cash:.2f}")
+
+    cap_value = max_position_pct * equity
+    check(
+        "position_cap_10pct",
+        position_value <= cap_value + 1e-9,
+        f"total holdings after buy ({owned} existing + {shares} new = {shares_after} sh "
+        f"@ {price:.2f} = {position_value:.2f}) <= {max_position_pct:.0%} * equity={cap_value:.2f}",
+    )
+
+    check("no_shorting", NO_SHORTING, "v1 policy is buy-only; sell proposals use evaluate_sell")
+
+    return PolicyVerdict(
+        allowed=all(c["passed"] for c in checks),
+        checks=checks,
+        equity=equity,
+        position_value=position_value,
+        cash_after=cash_after,
+        shares_after=shares_after,
+    )
+
+
+def evaluate_sell(
+    ledger: LedgerState,
+    ticker: str,
+    shares: int,
+    price: float,
+    *,
+    max_position_pct: float = MAX_POSITION_PCT,
+) -> PolicyVerdict:
+    """Evaluate a sell proposal against the current ledger.
+
+    Sells are allowed only up to the shares actually owned (no shorting means
+    a position can never go negative). The 10% concentration cap applies after a
+    BUY; a valid SELL that reduces an owned position is permitted even if price
+    appreciation means the remaining holding still exceeds 10% of equity.
+    ``price`` comes from evidence; cash increases by ``shares * price``.
+    """
+    ticker = ticker.upper()
+    checks: list[dict] = []
+
+    def check(name: str, passed: bool, detail: str) -> None:
+        checks.append({"check": name, "passed": passed, "detail": detail})
+
+    if not isinstance(shares, int) or shares <= 0:
+        check("integer_positive_shares", False, f"shares must be a positive integer, got {shares!r}")
+        return PolicyVerdict(False, checks)
+
+    if price is None or not isinstance(price, (int, float)) or price <= 0:
+        check("price_from_evidence", False, f"price must be a positive number from evidence, got {price!r}")
+        return PolicyVerdict(False, checks)
+
+    owned = _owned_shares(ledger, ticker)
+    equity = _revalue_equity(ledger, ticker, price)
+    shares_after = owned - shares
+    position_value = shares_after * price
+    cash_after = ledger.cash + shares * price
+
+    check(
+        "sell_not_exceeding_owned",
+        shares_after >= 0,
+        f"cannot sell {shares} sh when {owned} sh are owned (no shorting); "
+        f"sell at most {owned} sh",
+    )
+
+    return PolicyVerdict(
+        allowed=all(c["passed"] for c in checks),
+        checks=checks,
+        equity=equity,
+        position_value=position_value,
+        cash_after=cash_after,
+        shares_after=shares_after,
+    )
+
+
+def raise_for_violations(verdict: PolicyVerdict) -> None:
+    """Raise a PolicyViolation listing every failed check (no partial writes)."""
+    if not verdict.allowed:
+        reasons = [f"{c['check']}: {c['detail']}" for c in verdict.checks if not c["passed"]]
+        raise PolicyViolation(reasons)
+
+
+def reject_reasons(verdict: PolicyVerdict) -> list[str]:
+    return [f"{c['check']}: {c['detail']}" for c in verdict.checks if not c["passed"]]
+
+
+def policy_bounds(
+    ledger: LedgerState,
+    ticker: str,
+    price: float | None,
+    *,
+    max_position_pct: float = MAX_POSITION_PCT,
+) -> dict:
+    """Deterministic policy limits for a proposal price against a ledger.
+
+    Reported by offline replay so the *policy output* (the largest integer
+    share count the teaching policy would allow) is reproduced without needing
+    the operator's eventual share choice. ``max_by_cap`` is the additional
+    shares a *buy* may add given existing holdings must stay within the total
+    position cap.
+    """
+    if price is None or price <= 0:
+        return {
+            "price_present": False,
+            "max_by_cap": None,
+            "max_by_cash": None,
+            "owned": _owned_shares(ledger, ticker),
+            "equity": ledger.equity,
+            "cash": ledger.cash,
+        }
+    cap_value = max_position_pct * _revalue_equity(ledger, ticker, price)
+    owned = _owned_shares(ledger, ticker)
+    max_total = int(cap_value // price)
+    return {
+        "price_present": True,
+        "max_by_cap": max_total - owned,  # additional shares still within total cap
+        "max_by_cash": int(ledger.cash // price),
+        "owned": owned,
+        "equity": _revalue_equity(ledger, ticker, price),
+        "cash": ledger.cash,
+    }
+
+
+FILE src/research_desk/storage.py
+"""SQLite persistence for the simulated ledger and proposals, plus JSON pack IO.
+
+The simulated ledger is deliberately separate from upstream TradingAgents'
+research memory: research memory records decisions for reflection, while this
+ledger records executable, operator-approved transactions. Both live in the
+desk home, and neither stores credentials.
+
+SQLite is used with ``PRAGMA journal_mode=WAL`` and a single writer so the
+approve/execute re-read is atomic; every ledger change is written inside a
+transaction and references the approved proposal version and the deterministic
+policy checks that passed (INV-001).
+"""
+
+from __future__ import annotations
+
+import json
+import sqlite3
+from pathlib import Path
+from typing import Any
+
+from .config import INITIAL_CASH
+from .models import (
+    ExecutionRecord,
+    LedgerPosition,
+    LedgerState,
+    ProposalRecord,
+    ProposalStatus,
+    TransactionRecord,
+    utcnow_iso,
+)
+
+_SCHEMA = """
+CREATE TABLE IF NOT EXISTS ledger_state (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    cash REAL NOT NULL,
+    last_updated TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS positions (
+    ticker TEXT PRIMARY KEY,
+    shares INTEGER NOT NULL,
+    avg_price REAL
+);
+
+CREATE TABLE IF NOT EXISTS proposals (
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL,
+    ticker TEXT NOT NULL,
+    trade_date TEXT NOT NULL,
+    signal TEXT NOT NULL,
+    rating TEXT,
+    side TEXT NOT NULL DEFAULT 'buy',
+    price REAL,
+    shares INTEGER,
+    evidence_id TEXT,
+    status TEXT NOT NULL,
+    proposal_version TEXT NOT NULL,
+    operator TEXT,
+    created_at TEXT NOT NULL,
+    approved_at TEXT,
+    approved_version TEXT,
+    reason TEXT,
+    execution_json TEXT
+);
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id TEXT PRIMARY KEY,
+    proposal_id TEXT NOT NULL,
+    ticker TEXT NOT NULL,
+    side TEXT NOT NULL,
+    shares INTEGER NOT NULL,
+    price REAL NOT NULL,
+    cash_delta REAL NOT NULL,
+    equity_before REAL NOT NULL,
+    equity_after REAL NOT NULL,
+    status TEXT NOT NULL,
+    policy_json TEXT NOT NULL,
+    operator TEXT,
+    created_at TEXT NOT NULL
+);
+"""
+
+
+class ResearchDeskStore:
+    """Thin SQLite wrapper for ledger + proposals.
+
+    Not an ORM: methods are few and map directly to the review/ledger commands
+    so the deterministic policy logic stays readable and testable.
+    """
+
+    def __init__(self, db_path: str | Path):
+        self.db_path = Path(db_path)
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._conn = sqlite3.connect(str(self.db_path))
+        self._conn.row_factory = sqlite3.Row
+        self._conn.execute("PRAGMA journal_mode=WAL")
+        self._conn.executescript(_SCHEMA)
+        self._conn.commit()
+        self._migrate()
+        # Seed the single ledger row on first use.
+        if self.get_ledger() is None:
+            self._conn.execute(
+                "INSERT INTO ledger_state (id, cash, last_updated) VALUES (1, ?, ?)",
+                (INITIAL_CASH, utcnow_iso()),
+            )
+            self._conn.commit()
+
+    # ------------------------------------------------------------------
+    # Ledger
+    # ------------------------------------------------------------------
+
+    def _migrate(self) -> None:
+        """Add columns introduced after the initial schema on pre-existing DBs."""
+        cols = {r["name"] for r in self._conn.execute("PRAGMA table_info(proposals)").fetchall()}
+        if "side" not in cols:
+            self._conn.execute("ALTER TABLE proposals ADD COLUMN side TEXT NOT NULL DEFAULT 'buy'")
+        if "evidence_id" not in cols:
+            self._conn.execute("ALTER TABLE proposals ADD COLUMN evidence_id TEXT")
+        self._conn.commit()
+
+    def get_ledger(self) -> LedgerState | None:
+        row = self._conn.execute("SELECT cash, last_updated FROM ledger_state WHERE id=1").fetchone()
+        if row is None:
+            return None
+        positions: dict[str, LedgerPosition] = {}
+        for p in self._conn.execute("SELECT ticker, shares, avg_price FROM positions").fetchall():
+            positions[p["ticker"]] = LedgerPosition(
+                ticker=p["ticker"], shares=p["shares"], avg_price=p["avg_price"]
+            )
+        return LedgerState(cash=row["cash"], positions=positions, last_updated=row["last_updated"])
+
+    def apply_transaction(self, tx: TransactionRecord, execution: ExecutionRecord) -> None:
+        """Atomically apply a simulated buy transaction and record it.
+
+        Re-reads the current ledger inside the write transaction so a concurrent
+        approve/execute cannot double-apply a stale balance. The caller (review
+        policy) has already re-evaluated the ledger; this is the commit step.
+        """
+        with self._conn:
+            row = self._conn.execute(
+                "SELECT cash FROM ledger_state WHERE id=1"
+            ).fetchone()
+            new_cash = row["cash"] + tx.cash_delta
+            self._conn.execute(
+                "UPDATE ledger_state SET cash=?, last_updated=? WHERE id=1",
+                (new_cash, utcnow_iso()),
+            )
+            pos = self._conn.execute(
+                "SELECT shares, avg_price FROM positions WHERE ticker=?", (tx.ticker,)
+            ).fetchone()
+            if tx.side == "sell":
+                if pos is None:
+                    raise ValueError(
+                        f"cannot sell {tx.ticker}: no position held in the ledger"
+                    )
+                new_shares = pos["shares"] - tx.shares
+                if new_shares < 0:
+                    raise ValueError(
+                        f"cannot sell {tx.shares} of {pos['shares']} owned {tx.ticker} (no shorting)"
+                    )
+                # Average price is unchanged by a sale; shares only decrease.
+                self._conn.execute(
+                    "UPDATE positions SET shares=?, avg_price=? WHERE ticker=?",
+                    (new_shares, pos["avg_price"], tx.ticker),
+                )
+            elif pos is None:
+                self._conn.execute(
+                    "INSERT INTO positions (ticker, shares, avg_price) VALUES (?, ?, ?)",
+                    (tx.ticker, tx.shares, tx.price),
+                )
+            else:
+                new_shares = pos["shares"] + tx.shares
+                total_cost = (pos["shares"] * (pos["avg_price"] or 0.0)) + (tx.shares * tx.price)
+                new_avg = total_cost / new_shares if new_shares else 0.0
+                self._conn.execute(
+                    "UPDATE positions SET shares=?, avg_price=? WHERE ticker=?",
+                    (new_shares, new_avg, tx.ticker),
+                )
+            self._conn.execute(
+                """INSERT INTO transactions
+                   (id, proposal_id, ticker, side, shares, price, cash_delta,
+                    equity_before, equity_after, status, policy_json, operator, created_at)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (
+                    tx.tx_id, tx.proposal_id, tx.ticker, tx.side, tx.shares, tx.price,
+                    tx.cash_delta, tx.equity_before, tx.equity_after, tx.status.value,
+                    json.dumps(tx.policy_checks), tx.operator, tx.created_at,
+                ),
+            )
+            self._conn.execute(
+                "UPDATE proposals SET status=?, execution_json=? WHERE id=?",
+                (
+                    ProposalStatus.SIMULATED.value,
+                    json.dumps(execution.model_dump()),
+                    tx.proposal_id,
+                ),
+            )
+
+    def list_transactions(self) -> list[dict[str, Any]]:
+        rows = self._conn.execute(
+            "SELECT * FROM transactions ORDER BY created_at"
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+    # ------------------------------------------------------------------
+    # Proposals
+    # ------------------------------------------------------------------
+
+    def save_proposal(self, proposal: ProposalRecord) -> None:
+        # Carry over a prior approval binding when content is re-saved: an
+        # approved proposal whose run inputs later change keeps its approved
+        # version so execution detects the stale approval (AT-05). Fresh
+        # (PENDING_REVIEW) proposals keep None.
+        prior = self._conn.execute(
+            "SELECT approved_at, approved_version, operator FROM proposals WHERE id=?",
+            (proposal.proposal_id,),
+        ).fetchone()
+        carry_approved_at = proposal.approved_at
+        carry_approved_version = proposal.approved_version
+        carry_operator = proposal.operator
+        if prior is not None and (prior["approved_version"] is not None):
+            carry_approved_at = proposal.approved_at or prior["approved_at"]
+            carry_approved_version = proposal.approved_version or prior["approved_version"]
+            carry_operator = proposal.operator or prior["operator"]
+        with self._conn:
+            self._conn.execute(
+                """INSERT OR REPLACE INTO proposals
+                   (id, run_id, ticker, trade_date, signal, rating, side, price,
+                    shares, evidence_id, status, proposal_version, operator,
+                    created_at, approved_at, approved_version, reason, execution_json)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (
+                    proposal.proposal_id, proposal.run_id, proposal.ticker,
+                    proposal.trade_date, proposal.signal, proposal.rating,
+                    proposal.side, proposal.price, proposal.shares,
+                    proposal.evidence_id, proposal.status.value,
+                    proposal.proposal_version, carry_operator,
+                    proposal.created_at, carry_approved_at,
+                    carry_approved_version, proposal.reason,
+                    json.dumps(proposal.execution.model_dump()) if proposal.execution else None,
+                ),
+            )
+
+    def get_proposal(self, proposal_id: str) -> ProposalRecord | None:
+        row = self._conn.execute(
+            "SELECT * FROM proposals WHERE id=?", (proposal_id,)
+        ).fetchone()
+        if row is None:
+            return None
+        return self._row_to_proposal(row)
+
+    def list_proposals(self, status: str | None = None) -> list[ProposalRecord]:
+        if status:
+            rows = self._conn.execute(
+                "SELECT * FROM proposals WHERE status=? ORDER BY created_at", (status,)
+            ).fetchall()
+        else:
+            rows = self._conn.execute(
+                "SELECT * FROM proposals ORDER BY created_at"
+            ).fetchall()
+        return [self._row_to_proposal(r) for r in rows]
+
+    def update_proposal_status(
+        self,
+        proposal_id: str,
+        status: ProposalStatus,
+        operator: str | None = None,
+        approved_version: str | None = None,
+        reason: str | None = None,
+    ) -> None:
+        with self._conn:
+            now = utcnow_iso()
+            if status == ProposalStatus.APPROVED:
+                self._conn.execute(
+                    """UPDATE proposals SET status=?, operator=?, approved_at=?,
+                       approved_version=?, reason=? WHERE id=?""",
+                    (status.value, operator, now, approved_version, reason, proposal_id),
+                )
+            else:
+                self._conn.execute(
+                    """UPDATE proposals SET status=?, operator=?, reason=? WHERE id=?""",
+                    (status.value, operator, reason, proposal_id),
+                )
+
+    def _row_to_proposal(self, row: sqlite3.Row) -> ProposalRecord:
+        execution = None
+        if row["execution_json"]:
+            execution = ExecutionRecord(**json.loads(row["execution_json"]))
+        return ProposalRecord(
+            proposal_id=row["id"],
+            run_id=row["run_id"],
+            ticker=row["ticker"],
+            trade_date=row["trade_date"],
+            signal=row["signal"],
+            rating=row["rating"],
+            side=row["side"],
+            price=row["price"],
+            shares=row["shares"],
+            evidence_id=row["evidence_id"],
+            status=ProposalStatus(row["status"]),
+            proposal_version=row["proposal_version"],
+            operator=row["operator"],
+            created_at=row["created_at"],
+            approved_at=row["approved_at"],
+            approved_version=row["approved_version"],
+            reason=row["reason"],
+            execution=execution,
+        )
+
+    def close(self) -> None:
+        self._conn.close()
+
+
+def _json_default(o):
+    if hasattr(o, "model_dump"):
+        return o.model_dump()
+    if hasattr(o, "isoformat"):
+        return o.isoformat()
+    return str(o)
+
+
+def write_json(path: str | Path, data: Any) -> None:
+    Path(path).write_text(json.dumps(data, indent=2, default=_json_default), encoding="utf-8")
+
+
+def read_json(path: str | Path) -> Any:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+FILE test/offline/test_revision_contracts.py
+"""ADR-004 bounded revision contracts: terminal rejection, EPS periods, model
+version and the judge semantic-validity condition.
+
+The review tests use a Mock store so they assert the state transition itself
+(no persistence call, no ledger read) rather than a database implementation.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
+import yaml
+
+from research_desk.context import build_common_grounding
+from research_desk.eval.case_registry import case_for
+from research_desk.models import ProposalStatus, utcnow_iso
+from research_desk.review import ReviewError, approve, create_proposal, execute, reject
+
+
+def _proposal(*, price: float = 100.0, proposal_id: str | None = None):
+    return create_proposal(
+        run_id="run-revision",
+        ticker="AAPL",
+        trade_date="2026-06-10",
+        signal="Buy",
+        rating="Buy",
+        price=price,
+        proposal_id=proposal_id or f"prop-revision-{utcnow_iso()[-9:]}",
+    )
+
+
+def test_rejected_execute_remains_rejected_and_cannot_be_approved():
+    """Execution cannot turn a rejection into an approvable REVIEW_REQUIRED row."""
+    store = MagicMock()
+    proposal = _proposal()
+    reject(proposal, operator="leo")
+    assert proposal.status == ProposalStatus.REJECTED
+
+    updated, execution = execute(store, proposal, operator="leo")
+
+    assert updated.status == ProposalStatus.REJECTED
+    assert execution.executed is False
+    assert execution.reason == "proposal rejected"
+    store.update_proposal_status.assert_not_called()
+    store.apply_transaction.assert_not_called()
+    store.get_ledger.assert_not_called()
+
+    with pytest.raises(ReviewError, match="rejected"):
+        approve(updated, shares=100, operator="leo")
+
+
+def test_previously_approved_then_rejected_stays_rejected_on_execute():
+    """A rejection is terminal even when an earlier approval version is present."""
+    store = MagicMock()
+    proposal = _proposal()
+    approved = approve(proposal, shares=100, operator="leo")
+    assert approved.approved_version
+    reject(approved, operator="leo")
+    assert approved.status == ProposalStatus.REJECTED
+
+    updated, execution = execute(store, approved, operator="leo")
+
+    assert updated.status == ProposalStatus.REJECTED
+    assert execution.executed is False
+    assert execution.reason == "proposal rejected"
+    store.update_proposal_status.assert_not_called()
+    store.apply_transaction.assert_not_called()
+
+    with pytest.raises(ReviewError, match="rejected"):
+        approve(updated, shares=100, operator="leo")
+
+
+def test_common_grounding_names_eps_period_and_ttm_limit():
+    grounding = build_common_grounding("AAPL", "2026-07-31", {})
+    lower = grounding.lower()
+    assert "quarterly eps" in lower
+    assert "trailing-twelve-month (ttm)" in lower
+    assert "trailing p/e" in lower
+    assert "actual ttm evidence" in lower
+    # No fixed stock examples or invented figures in the shared rules.
+    assert "microsoft" not in lower
+    assert "usd90.0b" not in lower
+
+
+def test_authoritative_model_and_prompt_version_are_consistent():
+    from research_desk.config import (
+        DEFAULT_BASE_URL,
+        DEFAULT_MODEL,
+        DEFAULT_PROVIDER,
+        PROMPT_VERSION,
+        ResearchDeskSettings,
+    )
+    from research_desk.eval import live
+
+    assert live.MODEL == DEFAULT_MODEL == "deepseek-flash"
+    assert live.PROVIDER == DEFAULT_PROVIDER == "deepseek"
+    assert DEFAULT_BASE_URL == "https://api.aiohub.org/v1"
+    assert ResearchDeskSettings().prompt_version == PROMPT_VERSION
+
+    snapshot = yaml.safe_load(
+        Path("prompts/runtime-prompts-v0.1.2.yaml").read_text(encoding="utf-8")
+    )
+    assert snapshot["prompt_version"] == PROMPT_VERSION
+    assert snapshot["model"] == DEFAULT_MODEL
+    assert snapshot["provider"] == DEFAULT_PROVIDER
+    assert snapshot["base_url"] == DEFAULT_BASE_URL
+
+
+def test_judge_prompt_requires_semantic_validity():
+    from research_desk.eval.live import _judge_prompt
+
+    prompt = _judge_prompt(
+        case_for("AAPL"),
+        "report text",
+        [],
+        available_sources={},
+        events=[],
+    )
+    assert "semantic_valid" in prompt
+    assert "semantic_errors" in prompt
+    assert "quarterly EPS" in prompt
+    assert "trailing P/E" in prompt
+    assert "Valid citation IDs do NOT rescue" in prompt
+
+
+def test_judge_score_defaults_invalid_and_errors_force_false():
+    from research_desk.eval.live import JudgeScore
+
+    legacy = JudgeScore(
+        support=0.9,
+        relevance=0.9,
+        cited_claim_count=2,
+        supported_cited_claim_count=2,
+    )
+    assert legacy.semantic_valid is False  # absent field is never a pass
+    assert legacy.semantic_errors == []
+
+    flagged = JudgeScore(
+        support=0.9,
+        relevance=0.9,
+        cited_claim_count=2,
+        supported_cited_claim_count=2,
+        semantic_valid=True,
+        semantic_errors=["quarterly EPS labeled as TTM"],
+    )
+    assert flagged.semantic_valid is False
+
+
+def test_llm_judge_records_semantic_fields(monkeypatch):
+    from langchain_core.messages import AIMessage
+
+    from research_desk.eval import live
+
+    class _FakeLLM:
+        def __init__(self):
+            self.extra_body = None
+
+        def with_structured_output(self, schema, include_raw=False):
+            def invoke(_prompt):
+                parsed = live.JudgeScore(
+                    support=0.9,
+                    relevance=0.9,
+                    cited_claim_count=2,
+                    supported_cited_claim_count=2,
+                    semantic_valid=True,
+                    semantic_errors=["quarterly EPS relabeled as TTM"],
+                )
+                return {"raw": AIMessage(content=""), "parsed": parsed, "parsing_error": None}
+
+            return type("SO", (), {"invoke": staticmethod(invoke)})()
+
+    class _FakeClient:
+        def get_llm(self):
+            return _FakeLLM()
+
+    monkeypatch.setattr(
+        "tradingagents.llm_clients.create_llm_client", lambda *a, **k: _FakeClient()
+    )
+
+    _raw, score = live._llm_judge(
+        case_for("AAPL"),
+        "report text",
+        [],
+        available_sources={},
+        events=[],
+    )
+    assert score["semantic_valid"] is False
+    assert score["semantic_errors"] == ["quarterly EPS relabeled as TTM"]
+
+
+def test_deepseek_transport_disables_reasoning_via_extra_body(monkeypatch):
+    """The verified endpoint flag reaches the real DeepSeek request payload."""
+    import json
+
+    from langchain_core.messages import HumanMessage
+
+    from research_desk.config import DEFAULT_BASE_URL, DEFAULT_MODEL, DEFAULT_PROVIDER
+    from research_desk.eval import live
+    from tradingagents.llm_clients import create_llm_client
+    from tradingagents.llm_clients.openai_client import DeepSeekChatOpenAI
+
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key-not-used")
+
+    llm = create_llm_client(
+        DEFAULT_PROVIDER,
+        DEFAULT_MODEL,
+        base_url=DEFAULT_BASE_URL,
+        max_tokens=live.OUTPUT_CAP,
+        temperature=0,
+    ).get_llm()
+    assert isinstance(llm, DeepSeekChatOpenAI)
+    # Same assignment the graph adapter and judge apply before invocation.
+    llm.extra_body = dict(live.THINKING_DISABLED_EXTRA_BODY)
+
+    payload = llm._get_request_payload([HumanMessage(content="ping")])
+    assert payload["extra_body"]["reasoning_effort"] == "none"
+    assert payload["extra_body"]["thinking"] == {"type": "disabled"}
+    assert '"reasoning_effort": "none"' in json.dumps(payload)
+
+    structured = llm.with_structured_output(live.JudgeScore, include_raw=True)
+    raw_binding = structured.steps[0].steps__["raw"]
+    bound = raw_binding.bound
+    assert isinstance(bound, DeepSeekChatOpenAI)
+    structured_payload = bound._get_request_payload(
+        [HumanMessage(content="ping")], **raw_binding.kwargs
+    )
+    assert structured_payload["extra_body"]["reasoning_effort"] == "none"
+    assert '"reasoning_effort": "none"' in json.dumps(structured_payload)
+

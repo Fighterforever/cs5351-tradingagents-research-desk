@@ -1,0 +1,12 @@
+
+Aggressive Analyst: I'm the Aggressive Risk Analyst, and I'll say it plainly: the trader's scaled Buy is the right expression, and both the cautious and the neutral seats are about to argue themselves out of the best operating print this name has produced.
+
+Start with what the conservative will attack first — extension. Yes, AMZN at 271.58 on 2026-07-31 sits 11.9% above the 10 EMA of 242.70 and 12.7% above VWMA of 240.96 [market-amzn]. That is not a warning; that is what a repricing looks like. The move came on 129.05M shares versus 101.84M the prior day [market-amzn] — that is institutional repositioning, not retail froth. RSI 64.04 [market-amzn] is strong, not overbought. Demanding a pullback to 242.70 means demanding the market surrender the entire catalyst before you'll own a share. That isn't risk control, it's a hope.
+
+On earnings quality: the conservative will wave the 53.4B pre-tax other income and the −7.6B TTM FCF [src-amzn] as reasons to stand aside. But you cannot dismiss the Anthropic gain as "low quality" while ignoring that it reflects a real, appreciating asset on the balance sheet. And negative FCF alongside 20% sales growth to 200.6B [src-amzn] is investment intensity, not deterioration. Meanwhile the actual operating engine: AWS 42.2B, +37%, operating income 27.5B versus 19.2B — an 8.3B step-up (calc from src-amzn). That is cash-generating, not mark-to-market.
+
+To the neutral: hiding behind UNKNOWN valuation multiples and NO_DATA_AVAILABLE 50/200 SMAs [market-amzn] is not analysis, it's paralysis. Waiting for data that doesn't exist is not risk management. And your "scale in on a hold above 262" is already inside this plan — tranche 2 at 262, tranche 3 at 242.70. The only real disagreement is whether you own anything at 271.58. You should, because if AWS compounds at 37%, this is the cheapest tranche you'll get.
+
+The asymmetry is the argument: 4% now, cap 11%, stop at 235.50 — roughly 1.5% of portfolio at risk — against a clear overhead reference at 274.99 [market-amzn] and open air beyond it. The trader even refuses to add above 274.99 without volume exceeding 129.05M. That's discipline, not timidity.
+
+Ticker AMZN, analysis date 2026-07-31, latest close 271.58 [market-amzn]. Buy the first tranche.

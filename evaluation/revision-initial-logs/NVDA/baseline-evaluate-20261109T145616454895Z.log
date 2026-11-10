@@ -1,0 +1,16 @@
+$ /Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python -m research_desk.cli evaluate-case NVDA --mode baseline --out /Users/leeyoma/Downloads/cs5351/work/project/evaluation/release --max-calls 32
+
+[exit 0]
+
+--- stdout ---
+NVDA  outcome=completed signal=REVIEW calls=15 tokens=68378 wall=197.825s
+  run dir: 
+/Users/leeyoma/Downloads/cs5351/work/project/evaluation/release/NVDA/baseline/ru
+n
+
+--- stderr ---
+/Users/leeyoma/Downloads/cs5351/work/project/tradingagents/llm_clients/openai_client.py:278: RuntimeWarning: Model 'deepseek-flash' is not in the known model list for provider 'deepseek'. Continuing anyway.
+  self.warn_if_unknown_model()
+Research Manager: structured-output invocation failed (structured output returned no parsed result); retrying once as free text
+Portfolio Manager: structured-output invocation failed (structured output returned no parsed result); retrying once as free text
+
