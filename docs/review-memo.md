@@ -85,3 +85,25 @@ The user supplied `wangsaorui` as the review account. A write-access invitation 
 ## Four-member allocation
 
 The user revised the team to Alfa, Bravo, Charlie and Delta. Alfa now owns report integration and submission checks. Bravo owns GitHub release governance. Charlie owns reproducible packaging. Delta owns CI. The reflection material has been integrated into four paragraphs, one per current member. The four-person rotation and assigned weights are recorded in `docs/process/team.md`.
+
+## Independent code-owner review of PR #1
+
+Reviewer: wangsaorui (working name Delta, student 60254685), the designated non-author code owner. Review analysis was assisted by the AI coding agent; the verdict below and the GitHub approval are the human reviewer's own decision. Recorded 2026-11-10.
+
+Scope: pull request #1 (`improve-delivery` into `main`, head `154e77c`). The reviewer inspected the substantive code/CI/governance diff against `main` and verified that each referenced gate program exists; the large `evaluation/` and `transcripts/` evidence blobs were spot-checked, not re-executed.
+
+Specification alignment: the CI workflow is consolidated into six blocking jobs (`gate-1-approval` through `gate-6-ai-use-log`) that map one-to-one onto the six course gates. All six referenced scripts (`scripts/check_approval.py`, `check_static.py`, `check_requirements.py`, `check_semantic.py`, `check_regression.py`, `check_ai_use_log.py`) are present on the branch. The AI-use log is updated on this change, so Gate 6 is satisfied.
+
+Architecture alignment: the upstream research graph is preserved and the extension remains under `src/research_desk`. Model output carries no approval or ledger authority; ADR-004 documents the release-quality and context-budget decisions.
+
+Code and test quality: six new offline modules expand regression coverage (`test_approval_revision`, `test_context_budget`, `test_eval_provenance`, `test_release_quality`, `test_report_contract`, `test_revision_contracts`).
+
+Security: the workflow runs with `permissions: contents: read`; secrets come from host environment variables; no broker is connected.
+
+Findings carried as follow-ups (non-blocking):
+- F1 (medium): the gate rewrite pins Python 3.12 only, dropping the prior 3.10-3.13 matrix; cross-version coverage is no longer exercised.
+- F2 (documentation): this PR does not close D6 — `team.md` still records equal assigned weights rather than measured hours, and the formal roster for Alfa/Bravo/Charlie is unfinished.
+- F3 (hygiene, low): roughly 1013 files and about 119k added lines, most of them committed evidence artifacts.
+- F4 (verification statement): the reviewer did not locally re-run the full 790-test suite; approval is conditioned on the PR's own CI turning green.
+
+Verdict: **APPROVE with comments**. No finding is safety-blocking; F1-F4 are recorded as follow-ups. The independent code-owner approval on GitHub and the protected-branch merge remain the human administrative actions that complete D7.
