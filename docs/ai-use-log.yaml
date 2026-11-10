@@ -450,5 +450,5 @@ entries:
   - docs/process/delivery-checklist.md
   review: docs/review-memo.md
   evidence: docs/process/reviewer-onboarding.md
-  outcome: Issued a write-access invitation to wangsaorui and prepared the add-code-owner branch. No review
+  outcome: Confirmed accepted write access for wangsaorui and prepared the add-code-owner branch. No review
     approval or protected merge has been recorded.

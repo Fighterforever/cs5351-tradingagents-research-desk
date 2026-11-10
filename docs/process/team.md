@@ -28,4 +28,4 @@ These increments include functional and non-functional requirements. They share 
 
 ## GitHub reviewer
 
-The user designated `wangsaorui` for GitHub review. A write-access invitation has been issued. The [onboarding record](reviewer-onboarding.md) explains activation on `main` and the independent review sequence. The account’s formal student identity and working-name mapping remain unassigned.
+The user designated `wangsaorui` for GitHub review. The invitation has been accepted and write access is active. The [onboarding record](reviewer-onboarding.md) explains activation on `main` and the independent review sequence. The account’s formal student identity and working-name mapping remain unassigned.

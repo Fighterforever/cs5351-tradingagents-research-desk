@@ -1,6 +1,6 @@
 # Reviewer onboarding
 
-Designated GitHub reviewer: [wangsaorui](https://github.com/wangsaorui). The repository owner is Fighterforever. A collaborator invitation with write permission has been issued and is awaiting acceptance.
+Designated GitHub reviewer: [wangsaorui](https://github.com/wangsaorui). The repository owner is Fighterforever. The collaborator invitation has been accepted, and GitHub confirms write permission.
 
 ## Prepared configuration
 
@@ -10,7 +10,7 @@ GitHub evaluates code ownership using the pull request's base branch. The curren
 
 ## Activation sequence
 
-1. **wangsaorui** accepts the [repository invitation](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/invitations).
+1. **Completed:** wangsaorui accepted the [repository invitation](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/invitations).
 2. **wangsaorui**, signed in with that account, opens the [prepared configuration pull request](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/compare/main...add-code-owner?expand=1). Use the title `Add code owner`. The changes add the designated reviewer and reuse the project's established CI workflow.
 3. **Fighterforever** reviews the configuration PR. After the six required checks pass and the owner approves it, merge it into `main`.
 4. Update `improve-delivery` with `main` and preserve both branches' AI-use log entries. After its required checks pass, **wangsaorui** independently reviews [PR #1](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1) and submits the review decision.

@@ -80,4 +80,4 @@ Team attribution and independent code-owner approval remain on the delivery chec
 
 ## Reviewer configuration
 
-The user supplied `wangsaorui` as the review account. A write-access invitation was issued, and the `add-code-owner` branch prepares the owner entry on `main`. The branch reuses the existing six-gate workflow. The activation sequence is recorded in `docs/process/reviewer-onboarding.md`; invitation acceptance and the actual review decisions remain pending.
+The user supplied `wangsaorui` as the review account. A write-access invitation was issued, and the `add-code-owner` branch prepares the owner entry on `main`. The branch reuses the existing six-gate workflow. The activation sequence is recorded in `docs/process/reviewer-onboarding.md`; write access is now confirmed, while the configuration PR and actual review decisions remain pending.
