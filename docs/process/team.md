@@ -13,7 +13,7 @@ The four-person review rotation is Alfa → Bravo → Charlie → Delta → Alfa
 
 Report integration and the submission checklist belong to Alfa. Bravo owns GitHub permissions and release coordination. Charlie owns installation packaging and reproducibility materials. Delta owns the six CI gates. Each member retains an equal assigned weight of 1.0.
 
-The recorded decision identifier leo refers to Liyu MA (59072966). The [annotated development record](../../transcripts/59072966-Liyu-MA.md) preserves that identity and the coordinating workflow’s role in sending prompts. The submission roster must connect each working name to its formal name and student number. Delta is now identified as `wangsaorui`, student number 60254685; the formal names and student numbers for Alfa, Bravo and Charlie remain with their owners to confirm.
+The recorded decision identifier leo refers to Liyu MA (59072966). The [annotated development record](../../transcripts/59072966-Liyu-MA.md) preserves that identity and the coordinating workflow’s role in sending prompts. The submission roster must connect each working name to its formal name and student number. Delta is **Chengru WANG**, student number **60254685** (GitHub account `wangsaorui`); the formal names and student numbers for Alfa, Bravo and Charlie remain with their owners to confirm.
 
 ## Five substantial requirement increments
 
@@ -37,4 +37,4 @@ Charlie is assigned to the user-supplied account `nicolas393`. A repository invi
 
 ## GitHub reviewer
 
-The user designated `wangsaorui` for GitHub review. The invitation has been accepted and write access is active. The [onboarding record](reviewer-onboarding.md) explains activation on `main` and the independent review sequence. The account maps to working name **Delta** with formal student number **60254685**, and its independent approval of PR #1 is recorded in `docs/review-memo.md`.
+The user designated `wangsaorui` for GitHub review. The invitation has been accepted and write access is active. The [onboarding record](reviewer-onboarding.md) explains activation on `main` and the independent review sequence. The account maps to **Chengru WANG** (GitHub account `wangsaorui`), working name **Delta**, formal student number **60254685**, and its independent approval of PR #1 is recorded in `docs/review-memo.md`.
