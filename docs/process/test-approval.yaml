@@ -22,3 +22,10 @@ scope:
 - F3 context budget and evaluation
 evidence: transcripts/project-01.full.json
 approval_record: docs/process/APPROVAL_PACKET.md
+workflow_reference_update:
+  reason: Reviewer onboarding reuses the consolidated six-gate workflow.
+  previous_path: .github/workflows/research-desk.yml
+  current_path: .github/workflows/ci.yml
+  requirements: GOV-001 through GOV-004 component links
+  acceptance_criteria: Unchanged
+  test_implementations: Unchanged
