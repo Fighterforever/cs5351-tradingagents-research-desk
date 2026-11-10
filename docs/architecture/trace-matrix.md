@@ -16,10 +16,10 @@
 | QUALITY-003 | research_desk.graph_adapter | AT-07; Score support and relevance separately with the same independent judge; retain raw judgments and failures. | Run manifest/events and terminal outcome |
 | COST-001 | research_desk.context, research_desk.graph_adapter | AT-07; Same six cases and settings; quality mean drop <=0.05; judge tokens excluded and separately reported. | Run manifest/events and terminal outcome |
 | PERF-001 | research_desk.graph_adapter | AT-07; Sum measured elapsed seconds of six runs per arm; disclose concurrency and all retries. | Run manifest/events and terminal outcome |
-| GOV-001 | .github/workflows/research-desk.yml, scripts | AT-08; Validate approval timestamps and eight test IDs; changed safety paths require decision evidence. | CI job result |
-| GOV-002 | .github/workflows/research-desk.yml, scripts | AT-08; Run lint/type/dependency/schema checks and both tests/ and test/offline/ in CI. | CI job result |
-| GOV-003 | .github/workflows/research-desk.yml, scripts | AT-08; Compare changed paths to the log; recompute fixed evidence quality rather than trusting a hand-written PASS. | CI job result |
-| GOV-004 | .github/workflows/research-desk.yml, .github/CODEOWNERS | AT-08; Record actual GitHub protection response and failure/recovery checks; do not claim unavailable enforcement. | CI job result |
+| GOV-001 | .github/workflows/ci.yml, scripts | AT-08; Validate approval timestamps and eight test IDs; changed safety paths require decision evidence. | CI job result |
+| GOV-002 | .github/workflows/ci.yml, scripts | AT-08; Run lint/type/dependency/schema checks and both tests/ and test/offline/ in CI. | CI job result |
+| GOV-003 | .github/workflows/ci.yml, scripts | AT-08; Compare changed paths to the log; recompute fixed evidence quality rather than trusting a hand-written PASS. | CI job result |
+| GOV-004 | .github/workflows/ci.yml, .github/CODEOWNERS | AT-08; Record actual GitHub protection response and failure/recovery checks; do not claim unavailable enforcement. | CI job result |
 | INH-001 | tradingagents.graph | upstream-regression, AT-07; Run the complete original tests/ directory; frozen integration preserves public graph contracts. | Run manifest/events and terminal outcome |
 | INH-002 | tradingagents.agents.utils.memory | upstream-regression, AT-07; Run the complete original tests/ directory; frozen integration preserves public graph contracts. | Run manifest/events and terminal outcome |
 | INH-003 | tradingagents.graph | upstream-regression, AT-07; Run the complete original tests/ directory; frozen integration preserves public graph contracts. | Run manifest/events and terminal outcome |

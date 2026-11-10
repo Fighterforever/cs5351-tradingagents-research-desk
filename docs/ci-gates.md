@@ -1,6 +1,6 @@
 # Research Desk CI gates
 
-Decision owner: leo. The workflow is `.github/workflows/research-desk.yml`. OpenCode generated the check scripts; the coordinating workflow reviewed their behavior against the approved requirements and actual source interfaces. The six independent jobs are intended required checks for the private repository. Server-side branch protection is recorded separately after GitHub accepts or rejects the configuration request.
+Decision owner: leo. The workflow is `.github/workflows/ci.yml`. OpenCode generated the check scripts; the coordinating workflow reviewed their behavior against the approved requirements and actual source interfaces. The six independent jobs are intended required checks for the private repository. Server-side branch protection is recorded separately after GitHub accepts or rejects the configuration request.
 
 | Gate | Blocking contract | Local command |
 |---|---|---|

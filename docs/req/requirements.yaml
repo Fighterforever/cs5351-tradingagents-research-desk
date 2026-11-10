@@ -268,7 +268,7 @@ requirements:
   source:
   - docs/process/TEST_PLAN.md
   components:
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - scripts
   tests:
   - AT-08
@@ -286,7 +286,7 @@ requirements:
   source:
   - docs/process/TEST_PLAN.md
   components:
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - scripts
   tests:
   - AT-08
@@ -304,7 +304,7 @@ requirements:
   source:
   - docs/process/TEST_PLAN.md
   components:
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - scripts
   tests:
   - AT-08
@@ -322,7 +322,7 @@ requirements:
   source:
   - docs/process/TEST_PLAN.md
   components:
-  - .github/workflows/research-desk.yml
+  - .github/workflows/ci.yml
   - .github/CODEOWNERS
   tests:
   - AT-08
