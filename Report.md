@@ -11,7 +11,7 @@ CS5351 Agentic Software Engineering Project. Team: **Alfa, Bravo, Charlie and De
 | Charlie | Evidence, proposal state and reproducible packaging | 1.0 |
 | Delta | Unit tests, research evaluation and CI gates | 1.0 |
 
-The team allocates equal responsibility across these four areas, with a mean weight of 1.0. The closing review rotates each area to the next member as set out in docs/process/team.md. Archived development sessions and approvals retain their original operator identifier, leo.
+The team allocates equal responsibility across these four areas, with a mean weight of 1.0. Charlie uses the GitHub account [nicolas393](https://github.com/nicolas393). The closing review rotates each area to the next member as set out in docs/process/team.md. Archived development sessions and approvals retain their original operator identifier, leo.
 
 
 This project uses a genuine language-model research graph to investigate a practical software engineering question: how can a user inspect the evidence behind an AI recommendation, reproduce its presentation, and control the consequences of accepting it? The delivered workflow connects research to a portable evidence package, then to an explicitly approved paper transaction. A second workflow compares the cost and quality of two context strategies using the same underlying research system.

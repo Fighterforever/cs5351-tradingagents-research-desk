@@ -63,7 +63,9 @@ participants:
   relative_contribution: 1.0
 - name: Charlie
   relative_contribution: 1.0
+  github: nicolas393
 - name: Delta
   relative_contribution: 1.0
+  github: wangsaorui
 registry: requirements.yaml
 team_responsibilities: docs/process/team.md

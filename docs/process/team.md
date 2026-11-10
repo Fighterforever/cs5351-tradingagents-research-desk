@@ -27,6 +27,14 @@ The recorded decision identifier leo refers to Liyu MA (59072966). The [annotate
 
 These increments include functional and non-functional requirements. They share the existing graph and preserve upstream responsibilities.
 
+## Member account
+
+| Working name | GitHub account | Assigned area |
+|---|---|---|
+| Charlie | [nicolas393](https://github.com/nicolas393) | Evidence, proposal state and reproducible packaging |
+
+Charlie is assigned to the user-supplied account `nicolas393`. A repository invitation with write permission has been issued for this account. Charlie reviews Delta’s evaluation and CI gates under the four-person rotation.
+
 ## GitHub reviewer
 
 The user designated `wangsaorui` for GitHub review. The invitation has been accepted and write access is active. The [onboarding record](reviewer-onboarding.md) explains activation on `main` and the independent review sequence. The account maps to working name **Delta** with formal student number **60254685**, and its independent approval of PR #1 is recorded in `docs/review-memo.md`.
