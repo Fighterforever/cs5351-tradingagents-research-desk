@@ -25,3 +25,7 @@ The recorded decision identifier leo refers to Liyu MA (59072966). The [annotate
 | Quality-controlled releases | GOV-003/004, QUALITY-001/002/003 | Current-source quality evidence and protected GitHub checks |
 
 These increments include functional and non-functional requirements. They share the existing graph and preserve upstream responsibilities.
+
+## GitHub reviewer
+
+The user designated `wangsaorui` for GitHub review. A write-access invitation has been issued. The [onboarding record](reviewer-onboarding.md) explains activation on `main` and the independent review sequence. The account’s formal student identity and working-name mapping remain unassigned.

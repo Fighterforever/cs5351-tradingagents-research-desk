@@ -438,3 +438,17 @@ entries:
   evidence: transcripts/gemini-pipeline-integration.json
   outcome: Integrated six verbatim user directions with the 30 recorded implementation prompts. Completed
     requirements and architecture review documentation with actual actor attribution.
+- date: '2026-11-10'
+  tool: Coordinating workflow
+  model: GPT-6
+  purpose: Prepare the user-designated GitHub reviewer and document the protected code-owner activation
+    sequence.
+  scope:
+  - .github/CODEOWNERS
+  - docs/process/reviewer-onboarding.md
+  - docs/process/team.md
+  - docs/process/delivery-checklist.md
+  review: docs/review-memo.md
+  evidence: docs/process/reviewer-onboarding.md
+  outcome: Issued a write-access invitation to wangsaorui and prepared the add-code-owner branch. No review
+    approval or protected merge has been recorded.

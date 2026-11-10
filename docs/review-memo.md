@@ -77,3 +77,7 @@ Reviewer: Gemini CLI. Scope: all 24 requirement classifications, three architect
 Six selected user-message excerpts now document leo's actual scope and governance directions. They are linked separately from the 30 implementation prompts issued by the coordinating workflow. The subsequent review and its exact prompts are preserved under `transcripts/gemini-pipeline-review.json` and `transcripts/gemini-pipeline-integration.json`. The finished review is in `docs/process/pipeline-review.md`.
 
 Team attribution and independent code-owner approval remain on the delivery checklist. This review adds a recorded requirements/architecture assessment to the available development evidence.
+
+## Reviewer configuration
+
+The user supplied `wangsaorui` as the review account. A write-access invitation was issued, and the `add-code-owner` branch prepares the owner entry on `main`. The branch reuses the existing six-gate workflow. The activation sequence is recorded in `docs/process/reviewer-onboarding.md`; invitation acceptance and the actual review decisions remain pending.
