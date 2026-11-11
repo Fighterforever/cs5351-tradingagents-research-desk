@@ -483,3 +483,23 @@ entries:
   evidence: docs/process/team.md
   outcome: Assigned nicolas393 to Charlie with the user’s delegated choice, issued a write-access invitation
     and updated the participant records. The team remains four people.
+- date: '2026-11-11'
+  tool: Qoder coding agent
+  model: IDE-integrated agent session (annotated in transcripts/60254685-Chengru-WANG.md)
+  purpose: Restore cross-Python-version regression coverage in CI that the six-gate rewrite
+    dropped (review finding F1), authored and supervised by Delta (Chengru WANG, 60254685).
+  scope:
+  - .github/workflows/ci.yml
+  - docs/ci-gates.md
+  review: docs/review-memo.md
+  evidence: transcripts/60254685-Chengru-WANG.md
+  outcome: Added an advisory, non-blocking cross-version-regression job running
+    scripts/check_regression.py on Python 3.10-3.13 for pull requests. The human owner
+    approved the plan first and set the job advisory rather than blocking pending an
+    observed green run. Local verification in the global environment could not run the
+    suite (missing package dependencies, including ModuleNotFoundError research_desk and 44 upstream
+    collection errors); authoritative cross-version evidence is produced by CI. The first CI run
+    on this pull request left all six blocking gates green and passed 3.12 and 3.13, while 3.10 and
+    3.11 failed at the dependency-install step with the regression step skipped. The human owner
+    chose to keep those versions advisory and red as a true signal rather than narrow the matrix,
+    and deferred resolving the 3.10 and 3.11 install gap as a separate engineering decision.
