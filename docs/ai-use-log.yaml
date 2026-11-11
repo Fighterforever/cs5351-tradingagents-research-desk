@@ -498,4 +498,8 @@ entries:
     approved the plan first and set the job advisory rather than blocking pending an
     observed green run. Local verification in the global environment could not run the
     suite (missing package dependencies, including ModuleNotFoundError research_desk and 44 upstream
-    collection errors); authoritative cross-version evidence is produced by CI.
+    collection errors); authoritative cross-version evidence is produced by CI. The first CI run
+    on this pull request left all six blocking gates green and passed 3.12 and 3.13, while 3.10 and
+    3.11 failed at the dependency-install step with the regression step skipped. The human owner
+    chose to keep those versions advisory and red as a true signal rather than narrow the matrix,
+    and deferred resolving the 3.10 and 3.11 install gap as a separate engineering decision.

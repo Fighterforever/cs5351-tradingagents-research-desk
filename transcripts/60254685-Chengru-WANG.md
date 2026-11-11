@@ -40,6 +40,11 @@ This record documents one supervised agentic software-engineering session in whi
 - **Human decision:** Record the failure as-is, do not fabricate a passing count, and treat CI as the authoritative cross-version executor. The local run therefore verifies only that the workflow file and gate scripts are wired correctly, not that every Python version passes.
 - **Rationale:** `AGENTS.md` forbids inventing test outcomes. The advisory job's purpose is precisely to obtain that evidence in CI, where dependencies are installed from `requirements-lock.txt`.
 
+### D5-05 — React honestly to the first real CI run
+- **Situation:** The first CI run of the new job on this pull request showed all six blocking gates green and the cross-version matrix passing on Python 3.12 and 3.13, but **failing on 3.10 and 3.11 at the "Install gate dependencies" step**. On those two versions the `check_regression.py` step was **skipped**, so no test outcome was produced and none was hidden. The class of cause is that `requirements-lock.txt` does not resolve/install on 3.10 and 3.11 even though `pyproject.toml` declares `requires-python = ">=3.10"`. The exact offending distribution needs the authenticated Actions log, which is not available to this session; it is therefore left un-named rather than guessed.
+- **Human decision:** Keep the job advisory and leave 3.10/3.11 red as a true signal. Do **not** silence it by narrowing the matrix to the two versions that currently install. Merge is unaffected because the job is `continue-on-error`; the six real gates remain the blocking set.
+- **Rationale:** The point of the coverage added here is to surface unverified versions honestly. Deleting the failing versions to force a green advisory would hide a genuine latent inconsistency between the project's declared Python support and its locked dependencies — the opposite of what closing F1 is meant to achieve. Promoting the job to a required check, and resolving the 3.10/3.11 install gap (fix the lock or correct the `requires-python` floor), are deferred as explicit human engineering decisions.
+
 ## Coverage across the supervised pipeline
 
 | Stage | This session's evidence |
@@ -47,9 +52,9 @@ This record documents one supervised agentic software-engineering session in whi
 | Requirements / review finding | F1 recorded in [review memo](../docs/review-memo.md); scope confirmed in [team responsibilities](../docs/process/team.md). |
 | Architecture / governance | Change confined to CI and documentation; no safety-path or frozen-file edit, consistent with `AGENTS.md`. |
 | Implementation | `cross-version-regression` job in [.github/workflows/ci.yml](../.github/workflows/ci.yml); YAML validated (7 jobs present). |
-| Verification | Local `check_regression.py` attempted and its real failure documented; authoritative matrix deferred to the CI job. |
+| Verification | Local `check_regression.py` attempted and its real failure documented; the CI matrix then ran and its real result (3.12/3.13 pass, 3.10/3.11 fail at dependency install) is recorded honestly in D5-05. |
 | Delivery controls | Change set prepared on branch `d5-ci-cross-version` for an independent-reviewed pull request; AI-use log updated. |
 
 ## Result
 
-An advisory, non-blocking CI job now exercises the Gate 5 regression suite on Python 3.10, 3.11, 3.12 and 3.13 for every pull request. Finding F1 is addressed with real, non-fabricated evidence, and the promotion of the job to a required check remains an explicit human decision.
+An advisory, non-blocking CI job now exercises the Gate 5 regression suite on Python 3.10, 3.11, 3.12 and 3.13 for every pull request. Finding F1 is addressed with real, non-fabricated evidence. The first run immediately exposed a true, previously-unseen gap: the locked dependency set installs and passes on 3.12/3.13 but does not install on 3.10/3.11, contradicting the `requires-python = ">=3.10"` claim. That finding is recorded rather than masked, and both the promotion to a required check and the resolution of the 3.10/3.11 install gap remain explicit human decisions.
