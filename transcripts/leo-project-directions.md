@@ -11,7 +11,7 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 ### `U-01` — Working Aliases, Video Scope Exclusion, and Gemini CLI Assessment
 
 - **Source locator**: User message requesting the five-member optimization plan and Gemini assessment.
-
+- [Original message](leo-project-directions.json), entry `U-01`.
 - **Plain-English explanation**: Defines the original five roles, excludes the final demonstration video from the current revision pass, and directs a Gemini CLI evaluation of all non-video deliverables against the course project requirements.
 - **Engineering rationale**: Establishes stable responsibility labels for structuring the five-member project scope and introduces an independent CLI review pass to check deliverable completeness before submission.
 - **Resulting artifacts**: [`../docs/process/team.md`](../docs/process/team.md), [`gemini-release-review.json`](gemini-release-review.json), [`../docs/process/delivery-checklist.md`](../docs/process/delivery-checklist.md)
@@ -71,13 +71,11 @@ Summary of the student’s direction. The student requested repairs to proposal 
 
 ### U-09 — Liyu MA identity
 
-Liyu MA confirmed the name and student number. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
+Liyu MA confirmed the name and student number. [Original message](leo-project-directions.json), entry `U-09`. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
 
 ### U-10 — Xinyao HENG and Yinuo Li identities
 
-> 60106154Xinyao HENG 是 Bravo，60980401 Yinuo Li 是Charlie
-
-Liyu MA supplied the formal names and student numbers for Xinyao HENG and Yinuo Li. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
+Liyu MA supplied the formal names and student numbers for Xinyao HENG and Yinuo Li. [Original message](leo-project-directions.json), entry `U-10`, field `quote`. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
 
 ### U-11 — OpenCode provider decision
 
@@ -95,6 +93,4 @@ At final review, Liyu MA recalled advocating retention of the upstream research 
 
 > liyu 建议保留上游交易研究图，Xinyao HENG 主张直接修改上游
 
-Liyu MA described Xinyao HENG’s comparison and Yinuo Li’s verification work in a follow-up:
-
-> Bravo 比较过在上游加采集点和在外层封装的取舍；Charlie 检查过导出的研究包能否离线重放、重复登记后是否保留审批结果
+In a follow-up, Liyu MA recalled that Xinyao HENG compared collecting evidence inside the upstream graph with capturing it in an outer wrapper. Yinuo Li checked offline replay and approval persistence after repeat registration. [Original message](leo-project-directions.json), entry `U-13`, field `follow_up_quote`.
