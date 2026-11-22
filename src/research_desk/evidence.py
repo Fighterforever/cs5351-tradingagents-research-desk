@@ -44,6 +44,27 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
+
+def _canonical_json(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, default=str)
+
+
+def material_evidence_id(
+    ticker: str, trade_date: str, input_snapshot: InputSnapshot
+) -> str:
+    """Stable SHA-256 identity of the material evidence for a proposal.
+
+    Derived only from logical inputs (ticker, trade date and material
+    ``InputSnapshot`` data), so it is identical on creation and import,
+    independent of JSON key ordering, secret sanitization and run IDs.
+    """
+    import hashlib
+
+    payload = sanitize_secrets(input_snapshot.model_dump())
+    payload["ticker"] = str(ticker).strip().upper()
+    payload["trade_date"] = str(trade_date).strip()
+    return hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+
 # Files that make up a complete evidence pack. ``complete`` is only set when all
 # of them are present and parseable.
 PACK_FILES = (
@@ -447,6 +468,44 @@ class EvidencePackIO:
         if manifest.outcome == "completed" and not final_state:
             raise EvidencePackError(
                 f"Evidence pack {d} claims a completed run but has an empty final_state."
+            )
+        if proposal is not None:
+            from .models import make_proposal_version
+
+            if proposal.run_id != manifest.run_id:
+                raise ValueError(
+                    f"Proposal run_id {proposal.run_id!r} does not match "
+                    f"manifest run_id {manifest.run_id!r}"
+                )
+            if (proposal.ticker or "").strip().upper() != (
+                manifest.ticker or ""
+            ).strip().upper():
+                raise ValueError(
+                    f"Proposal ticker {proposal.ticker!r} does not match "
+                    f"manifest ticker {manifest.ticker!r}"
+                )
+            if (proposal.trade_date or "").strip() != (
+                manifest.trade_date or ""
+            ).strip():
+                raise ValueError(
+                    f"Proposal trade_date {proposal.trade_date!r} does not match "
+                    f"manifest trade_date {manifest.trade_date!r}"
+                )
+            proposal.ticker = manifest.ticker
+            proposal.trade_date = manifest.trade_date
+            proposal.evidence_id = material_evidence_id(
+                manifest.ticker,
+                manifest.trade_date,
+                input_snapshot,
+            )
+            proposal.proposal_version = make_proposal_version(
+                proposal.ticker,
+                proposal.trade_date,
+                proposal.signal,
+                proposal.price,
+                side=proposal.side,
+                shares=proposal.shares,
+                evidence_id=proposal.evidence_id,
             )
         return pack
 

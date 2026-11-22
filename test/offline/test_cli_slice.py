@@ -91,15 +91,14 @@ def test_cli_reject_leaves_ledger_untouched(desk_home, monkeypatch):
 
 def test_cli_replay_incomplete_fails(desk_home, monkeypatch, tmp_path):
     monkeypatch.setenv("RESEARCH_DESK_HOME", desk_home)
-    from research_desk.evidence import EvidencePackError
 
     bad = tmp_path / "bad"
     shutil.copytree("test/fixtures/packs/aapl_buy_complete", bad)
     (bad / "usage.json").unlink()
     r = runner.invoke(app, ["replay", str(bad)])
     assert r.exit_code != 0
-    assert isinstance(r.exception, EvidencePackError)
-    assert "missing required files" in str(r.exception)
+    assert "missing required files" in r.output
+    assert "Replayed" not in r.output
 
 
 def test_cli_ledger_report_renders(desk_home, monkeypatch):

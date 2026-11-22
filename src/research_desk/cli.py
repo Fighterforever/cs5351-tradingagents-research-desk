@@ -16,7 +16,7 @@ from rich.markdown import Markdown
 from rich.table import Table
 
 from .config import ResearchDeskSettings
-from .evidence import EvidencePackIO
+from .evidence import EvidencePackError, EvidencePackIO
 from .graph_adapter import ResearchRunner
 from .models import ContextMode, ProposalStatus, RunOutcome, RunResult
 from .replay import ReplayEngine
@@ -92,7 +92,7 @@ def analyze(
 
     store = _store(settings)
     if result.proposal is not None and not no_proposal:
-        store.save_proposal(result.proposal)
+        result.proposal = store.register_proposal(result.proposal)
     store.close()
 
     _print_run_result(result)
@@ -167,17 +167,36 @@ def replay(
     settings = _settings()
     out_dir = out or str(settings.reports_dir / f"replay-{Path(source).stem}")
     ledger = None
+    store = None
     if with_ledger:
-        ledger = _store(settings).get_ledger()
-    result = engine.replay(source, out_dir, ledger=ledger)
+        store = _store(settings)
+        try:
+            ledger = store.get_ledger()
+        finally:
+            store.close()
+    try:
+        result = engine.replay(source, out_dir, ledger=ledger)
+    except (EvidencePackError, OSError, ValueError) as exc:
+        console.print(f"[red]Replay failed: {exc}[/red]")
+        raise typer.Exit(1) from None
+    if result.incomplete or result.error:
+        detail = result.error or "incomplete evidence pack"
+        console.print(f"[red]Replay failed: {detail}[/red]")
+        raise typer.Exit(1)
     console.print(f"[green]Replayed {result.pack.manifest.run_id}[/green] (external calls: {result.external_calls})")
     console.print(f"signal: {result.signal or 'n/a'}")
     console.print(f"reports: {len(result.report_files)} files under {out_dir}")
-    if result.incomplete:
-        raise typer.Exit(f"incomplete pack: {result.error}")
     if result.policy_bounds is not None:
         bounds = result.policy_bounds
-        if bounds.get("price_present"):
+        if bounds.get("side") == "sell":
+            if bounds.get("price_present"):
+                console.print(
+                    f"policy: sell up to {bounds.get('max_sell', 0)} owned shares at the "
+                    f"evidence price, on equity ${bounds['equity']:,.2f}"
+                )
+            else:
+                console.print("policy: price missing from evidence; nothing is executable")
+        elif bounds.get("price_present"):
             console.print(
                 f"policy: max {bounds['max_by_cap']} shares by 10% cap, "
                 f"max {bounds['max_by_cash']} by cash, on equity ${bounds['equity']:,.2f}"
@@ -208,8 +227,8 @@ def propose(
     if pack.proposal is None:
         raise typer.BadParameter(f"run {run_id!r} has no proposal (signal not tradeable or budget stopped)")
     store = _store(settings)
-    store.save_proposal(pack.proposal)
-    console.print(f"[green]Proposal {pack.proposal.proposal_id} registered (status {pack.proposal.status.value})[/green]")
+    stored = store.register_proposal(pack.proposal)
+    console.print(f"[green]Proposal {stored.proposal_id} registered (status {stored.status.value})[/green]")
     store.close()
 
 
@@ -343,7 +362,7 @@ def compare(
         wall = time.time() - start
         store = _store(settings)
         if result.proposal is not None:
-            store.save_proposal(result.proposal)
+            store.register_proposal(result.proposal)
         store.close()
         arms[mode] = {
             "calls": result.usage.calls,
@@ -382,14 +401,27 @@ def evaluate_case(
 
     with console.status(f"Running {ticker} {mode} (real DeepSeek)..."):
         summary = run_evaluate_case(ticker, mode, out, max_calls=max_calls)
+    outcome = summary.get("outcome")
+    error = summary.get("error")
+    color = "green" if outcome == "completed" and not error else "yellow" if outcome == "budget_stopped" else "red"
     console.print(
-        f"[green]{ticker} [{mode}] outcome={summary['outcome']} "
+        f"[{color}]{ticker} [{mode}] outcome={outcome} "
         f"signal={summary['signal'] or 'n/a'} calls={summary['calls']} "
-        f"tokens={summary['total_tokens']} wall={summary['wall_seconds']}s[/green]"
+        f"tokens={summary['total_tokens']} wall={summary['wall_seconds']}s[/{color}]"
     )
     console.print(f"  run dir: {summary['run_dir']}")
-    if summary.get("error"):
-        console.print(f"  [red]error: {summary['error']}[/red]")
+    if outcome == "budget_stopped":
+        console.print(
+            "  [yellow]Budget stopped: incomplete research returned; no approvable "
+            "recommendation was created.[/yellow]"
+        )
+    if error:
+        console.print(f"  [red]error: {error}[/red]")
+    if outcome == "completed" and summary.get("pack_complete") is False:
+        console.print("  [red]Evidence pack is incomplete; refusing to report success.[/red]")
+        raise typer.Exit(1)
+    if outcome == "failed" or (error and outcome != "budget_stopped"):
+        raise typer.Exit(1)
 
 
 @app.command("judge-case")
@@ -403,14 +435,43 @@ def judge_case(
 
     with console.status(f"Judging {ticker} (real DeepSeek evaluator)..."):
         result = run_judge_case(ticker, out, max_calls=max_calls)
-    for mode, score in result.get("arms", {}).items():
-        if isinstance(score, dict) and not score.get("error"):
+    arms = result.get("arms", {})
+    for mode, score in arms.items():
+        if (
+            isinstance(score, dict)
+            and not score.get("error")
+            and score.get("support") is not None
+            and score.get("relevance") is not None
+        ):
             console.print(
                 f"[green]{ticker} [{mode}] support={score['support']} "
                 f"relevance={score['relevance']}[/green]"
             )
         else:
             console.print(f"[yellow]{ticker} [{mode}] not judged: {score}[/yellow]")
+
+    missing = [m for m in ("baseline", "compact") if m not in arms]
+    failed = [
+        m
+        for m in ("baseline", "compact")
+        if m in arms
+        and (
+            not isinstance(arms[m], dict)
+            or arms[m].get("error")
+            or arms[m].get("support") is None
+            or arms[m].get("relevance") is None
+        )
+    ]
+    if missing:
+        console.print(
+            f"[red]Judge incomplete for {ticker}: missing arm(s) {', '.join(missing)}[/red]"
+        )
+    if failed:
+        console.print(
+            f"[red]Judge failed for {ticker}: arm(s) {', '.join(failed)} not judged successfully[/red]"
+        )
+    if missing or failed:
+        raise typer.Exit(1)
 
 
 @app.command("aggregate")

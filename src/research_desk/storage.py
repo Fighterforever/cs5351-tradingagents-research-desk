@@ -26,6 +26,7 @@ from .models import (
     ProposalRecord,
     ProposalStatus,
     TransactionRecord,
+    make_proposal_version,
     utcnow_iso,
 )
 
@@ -240,6 +241,82 @@ class ResearchDeskStore:
                     json.dumps(proposal.execution.model_dump()) if proposal.execution else None,
                 ),
             )
+
+    def register_proposal(self, proposal: ProposalRecord) -> ProposalRecord:
+        """Register untrusted import-facing advisory material in the ledger.
+
+        New rows start pending with no operator approval, shares, or
+        execution. An unchanged duplicate in a nonterminal status returns the
+        existing ledger row unchanged (preserving any chosen quantity and
+        approval); rejected/simulated rows are immutable. If research terms or
+        identity change while nonterminal, local approval, shares and
+        execution are reset to pending with a freshly computed version. Any
+        research-supplied operator reason is never persisted.
+        """
+        nonterminal = (
+            ProposalStatus.PENDING_REVIEW.value,
+            ProposalStatus.APPROVED.value,
+            ProposalStatus.REVIEW_REQUIRED.value,
+        )
+        terms_unchanged = (
+            "proposals.run_id = excluded.run_id"
+            " AND proposals.ticker = excluded.ticker"
+            " AND proposals.trade_date = excluded.trade_date"
+            " AND proposals.signal = excluded.signal"
+            " AND proposals.rating IS excluded.rating"
+            " AND proposals.side = excluded.side"
+            " AND proposals.price IS excluded.price"
+            " AND proposals.evidence_id IS excluded.evidence_id"
+        )
+        with self._conn:
+            self._conn.execute(
+                f"""INSERT INTO proposals
+                   (id, run_id, ticker, trade_date, signal, rating, side, price,
+                    shares, evidence_id, status, proposal_version, operator,
+                    created_at, approved_at, approved_version, reason, execution_json)
+                   VALUES (?,?,?,?,?,?,?,?,NULL,?,?,?,NULL,?,NULL,NULL,NULL,NULL)
+                   ON CONFLICT(id) DO UPDATE SET
+                     run_id = excluded.run_id,
+                     ticker = excluded.ticker,
+                     trade_date = excluded.trade_date,
+                     signal = excluded.signal,
+                     rating = excluded.rating,
+                     side = excluded.side,
+                     price = excluded.price,
+                     evidence_id = excluded.evidence_id,
+                     status = excluded.status,
+                     proposal_version = excluded.proposal_version,
+                     reason = excluded.reason,
+                     shares = NULL,
+                     operator = NULL,
+                     approved_at = NULL,
+                     approved_version = NULL,
+                     execution_json = NULL
+                   WHERE proposals.status IN (?,?,?)
+                     AND NOT ({terms_unchanged})""",
+                (
+                    proposal.proposal_id, proposal.run_id, proposal.ticker,
+                    proposal.trade_date, proposal.signal, proposal.rating,
+                    proposal.side, proposal.price, proposal.evidence_id,
+                    ProposalStatus.PENDING_REVIEW.value,
+                    make_proposal_version(
+                        proposal.ticker,
+                        proposal.trade_date,
+                        proposal.signal,
+                        proposal.price,
+                        side=proposal.side,
+                        evidence_id=proposal.evidence_id,
+                    ),
+                    proposal.created_at,
+                    *nonterminal,
+                ),
+            )
+        existing = self.get_proposal(proposal.proposal_id)
+        if existing is None:
+            raise RuntimeError(
+                f"proposal {proposal.proposal_id} missing after registration"
+            )
+        return existing
 
     def get_proposal(self, proposal_id: str) -> ProposalRecord | None:
         row = self._conn.execute(

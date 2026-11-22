@@ -46,7 +46,7 @@ from tradingagents.reporting import write_report_tree
 from .budget import BudgetExhausted, BudgetTracker, ContextBudgetExceeded
 from .config import ResearchDeskSettings
 from .context import ContextAssembler, StandingConstraints, build_common_grounding
-from .evidence import EvidenceLog, EvidencePackIO, record_data_read
+from .evidence import EvidenceLog, EvidencePackIO, material_evidence_id, record_data_read
 from .models import (
     InputSnapshot,
     ProposalRecord,
@@ -706,22 +706,7 @@ class ResearchRunner:
         # Proposal (only a completed, tradeable signal with evidence price).
         proposal = None
         proposal_error: str | None = None
-        snapshot = self._data_snapshot_from_run(final_state, frozen_snapshot)
         available_sources = self._available_sources(ticker, trade_date, frozen_identity)
-        try:
-            proposal = decide_proposal(
-                outcome=outcome.value,
-                signal=signal,
-                run_id=run_id,
-                ticker=ticker,
-                trade_date=trade_date,
-                snapshot=snapshot,
-                available_sources=available_sources,
-            )
-        except ReviewError as exc:
-            proposal_error = str(exc)
-        if outcome == RunOutcome.BUDGET_STOPPED:
-            proposal = None  # incomplete research must not be approvable (NFR-003)
 
         input_snapshot = InputSnapshot(
             instrument_context=instrument_context,
@@ -733,6 +718,22 @@ class ResearchRunner:
             memory_sources=["tradingagents.memory_log" if self.data_mode == "live" else "frozen-pack"],
             available_sources=available_sources,
         )
+
+        try:
+            proposal = decide_proposal(
+                outcome=outcome.value,
+                signal=signal,
+                run_id=run_id,
+                ticker=ticker,
+                trade_date=trade_date,
+                snapshot=input_snapshot.data_snapshot,
+                available_sources=available_sources,
+                evidence_id=material_evidence_id(ticker, trade_date, input_snapshot),
+            )
+        except ReviewError as exc:
+            proposal_error = str(exc)
+        if outcome == RunOutcome.BUDGET_STOPPED:
+            proposal = None  # incomplete research must not be approvable (NFR-003)
 
         manifest = RunManifest(
             run_id=run_id,
