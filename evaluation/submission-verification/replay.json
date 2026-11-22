@@ -1,0 +1,600 @@
+{
+  "description": "Independent offline replay of the twelve submission research packs",
+  "measured_at_utc": "2026-11-22T14:08:26.227742+00:00",
+  "method": {
+    "entrypoint": "evaluation/replay-review/check_replay.py --child",
+    "scope": "Fresh interpreter per pack; child audit blocks network connections, name resolution and subprocess creation.",
+    "decision": "Compare the original final portfolio rating, run manifest, experiment summary, rebuilt portfolio report and CLI signal; separately record research manager and trader advice.",
+    "material": "For each trade proposal, independently recalculate the canonical material identity from the archived input, ticker and date; compare the raw and imported IDs.",
+    "price": "The proposal must exactly match the archived market CSV close on the analysis date; its case metadata must be within one binary64 ULP and agree to the published cent.",
+    "account": "Baseline starts with USD 100,000 cash. For compact, a seven-share opening purchase at the case close is booked in an isolated paper ledger before replay.",
+    "ledger": "Compare all rows and fields of ledger_state, positions, proposals and transactions before and after replay.",
+    "reports": "Compare the relative names and bytes of every archived and rebuilt Markdown report.",
+    "timing": "Wall clock includes interpreter startup. Per-pack target is under two seconds."
+  },
+  "total": 12,
+  "passed": 12,
+  "price_comparison": {
+    "case_metadata_exact_decimal_mismatches": [
+      "NVDA/baseline",
+      "NVDA/compact"
+    ],
+    "note": "The first check compared the proposal with case.json using exact decimals. Both NVDA modes differed by one binary64 ULP. Their raw proposals exactly match the close in their archived market CSV."
+  },
+  "directions": {
+    "sell": 4,
+    "buy": 7,
+    "no_trade": 1
+  },
+  "runs": [
+    {
+      "ticker": "AAPL",
+      "mode": "baseline",
+      "source": "evaluation/submission-release/AAPL/baseline/run",
+      "run_id": "run-ad25c78521e6",
+      "research_manager_recommendation": "Underweight",
+      "trader_action": "Sell",
+      "archived_rating": "Underweight",
+      "replayed_rating": "Underweight",
+      "rendered_current_decision": "Underweight",
+      "proposal_side": "sell",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "308.9100036621094",
+      "frozen_csv_close_usd": "308.9100036621094",
+      "proposal_price_usd": "308.9100036621094",
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-13",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "closing_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_sell": 0
+      },
+      "cli_policy": "sell up to 0 owned shares at the evidence price, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.7922,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "AAPL",
+      "mode": "compact",
+      "source": "evaluation/submission-release/AAPL/compact/run",
+      "run_id": "run-cc27914d6fa7",
+      "research_manager_recommendation": "Underweight",
+      "trader_action": "Sell",
+      "archived_rating": "Underweight",
+      "replayed_rating": "Underweight",
+      "rendered_current_decision": "Underweight",
+      "proposal_side": "sell",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "308.9100036621094",
+      "frozen_csv_close_usd": "308.9100036621094",
+      "proposal_price_usd": "308.9100036621094",
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-13",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 97837.62997436523,
+        "holdings": {
+          "AAPL": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "closing_ledger": {
+        "cash_usd": 97837.62997436523,
+        "holdings": {
+          "AAPL": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_sell": 7
+      },
+      "cli_policy": "sell up to 7 owned shares at the evidence price, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.6204,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "AMZN",
+      "mode": "baseline",
+      "source": "evaluation/submission-release/AMZN/baseline/run",
+      "run_id": "run-36641be0857f",
+      "research_manager_recommendation": "Overweight",
+      "trader_action": "Buy",
+      "archived_rating": "Overweight",
+      "replayed_rating": "Overweight",
+      "rendered_current_decision": "Overweight",
+      "proposal_side": "buy",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "271.5799865722656",
+      "frozen_csv_close_usd": "271.5799865722656",
+      "proposal_price_usd": "271.5799865722656",
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-13",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "closing_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_additional_buy_by_position_cap": 36,
+        "max_buy_by_cash": 368
+      },
+      "cli_policy": "max 36 shares by 10% cap, max 368 by cash, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.6241,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "AMZN",
+      "mode": "compact",
+      "source": "evaluation/submission-release/AMZN/compact/run",
+      "run_id": "run-b798148a2066",
+      "research_manager_recommendation": "Overweight",
+      "trader_action": "Buy",
+      "archived_rating": "Overweight",
+      "replayed_rating": "Overweight",
+      "rendered_current_decision": "Overweight",
+      "proposal_side": "buy",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "271.5799865722656",
+      "frozen_csv_close_usd": "271.5799865722656",
+      "proposal_price_usd": "271.5799865722656",
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-13",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 98098.94009399414,
+        "holdings": {
+          "AMZN": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "closing_ledger": {
+        "cash_usd": 98098.94009399414,
+        "holdings": {
+          "AMZN": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_additional_buy_by_position_cap": 29,
+        "max_buy_by_cash": 361
+      },
+      "cli_policy": "max 29 shares by 10% cap, max 361 by cash, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.7431,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "GOOGL",
+      "mode": "baseline",
+      "source": "evaluation/submission-release/GOOGL/baseline/run",
+      "run_id": "run-351421bde5cd",
+      "research_manager_recommendation": "Hold",
+      "trader_action": "Hold",
+      "archived_rating": "Hold",
+      "replayed_rating": "Hold",
+      "rendered_current_decision": "Hold",
+      "proposal_side": null,
+      "proposal_status": null,
+      "raw_and_imported_material_id_verified": null,
+      "case_price_usd": "317.69000244140625",
+      "frozen_csv_close_usd": "317.69000244140625",
+      "proposal_price_usd": null,
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-14",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "closing_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": null,
+      "cli_policy": null,
+      "cli_policy_allowed": null,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.6825,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "GOOGL",
+      "mode": "compact",
+      "source": "evaluation/submission-release/GOOGL/compact/run",
+      "run_id": "run-708781f20d49",
+      "research_manager_recommendation": "Overweight",
+      "trader_action": "Buy",
+      "archived_rating": "Overweight",
+      "replayed_rating": "Overweight",
+      "rendered_current_decision": "Overweight",
+      "proposal_side": "buy",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "317.69000244140625",
+      "frozen_csv_close_usd": "317.69000244140625",
+      "proposal_price_usd": "317.69000244140625",
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-14",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 97776.16998291016,
+        "holdings": {
+          "GOOGL": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "closing_ledger": {
+        "cash_usd": 97776.16998291016,
+        "holdings": {
+          "GOOGL": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_additional_buy_by_position_cap": 24,
+        "max_buy_by_cash": 307
+      },
+      "cli_policy": "max 24 shares by 10% cap, max 307 by cash, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.6371,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "META",
+      "mode": "baseline",
+      "source": "evaluation/submission-release/META/baseline/run",
+      "run_id": "run-a2edf2031279",
+      "research_manager_recommendation": "Underweight",
+      "trader_action": "Sell",
+      "archived_rating": "Underweight",
+      "replayed_rating": "Underweight",
+      "rendered_current_decision": "Underweight",
+      "proposal_side": "sell",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "539.030029296875",
+      "frozen_csv_close_usd": "539.030029296875",
+      "proposal_price_usd": "539.030029296875",
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-12",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "closing_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_sell": 0
+      },
+      "cli_policy": "sell up to 0 owned shares at the evidence price, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.6853,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "META",
+      "mode": "compact",
+      "source": "evaluation/submission-release/META/compact/run",
+      "run_id": "run-601ba8f12879",
+      "research_manager_recommendation": "Underweight",
+      "trader_action": "Sell",
+      "archived_rating": "Underweight",
+      "replayed_rating": "Underweight",
+      "rendered_current_decision": "Underweight",
+      "proposal_side": "sell",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "539.030029296875",
+      "frozen_csv_close_usd": "539.030029296875",
+      "proposal_price_usd": "539.030029296875",
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-12",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 96226.78979492188,
+        "holdings": {
+          "META": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "closing_ledger": {
+        "cash_usd": 96226.78979492188,
+        "holdings": {
+          "META": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_sell": 7
+      },
+      "cli_policy": "sell up to 7 owned shares at the evidence price, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.694,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "MSFT",
+      "mode": "baseline",
+      "source": "evaluation/submission-release/MSFT/baseline/run",
+      "run_id": "run-0f3d91fc8c7c",
+      "research_manager_recommendation": "Overweight",
+      "trader_action": "Buy",
+      "archived_rating": "Overweight",
+      "replayed_rating": "Overweight",
+      "rendered_current_decision": "Overweight",
+      "proposal_side": "buy",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "451.1000061035156",
+      "frozen_csv_close_usd": "451.1000061035156",
+      "proposal_price_usd": "451.1000061035156",
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-13",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "closing_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_additional_buy_by_position_cap": 22,
+        "max_buy_by_cash": 221
+      },
+      "cli_policy": "max 22 shares by 10% cap, max 221 by cash, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.6867,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "MSFT",
+      "mode": "compact",
+      "source": "evaluation/submission-release/MSFT/compact/run",
+      "run_id": "run-ff48868ac8aa",
+      "research_manager_recommendation": "Overweight",
+      "trader_action": "Buy",
+      "archived_rating": "Overweight",
+      "replayed_rating": "Overweight",
+      "rendered_current_decision": "Overweight",
+      "proposal_side": "buy",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "451.1000061035156",
+      "frozen_csv_close_usd": "451.1000061035156",
+      "proposal_price_usd": "451.1000061035156",
+      "case_close_exact_decimal_match": true,
+      "case_close_abs_delta_usd": "0E-13",
+      "case_close_abs_delta_binary64_ulps": 0.0,
+      "opening_ledger": {
+        "cash_usd": 96842.29995727539,
+        "holdings": {
+          "MSFT": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "closing_ledger": {
+        "cash_usd": 96842.29995727539,
+        "holdings": {
+          "MSFT": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_additional_buy_by_position_cap": 15,
+        "max_buy_by_cash": 214
+      },
+      "cli_policy": "max 15 shares by 10% cap, max 214 by cash, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.7108,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "NVDA",
+      "mode": "baseline",
+      "source": "evaluation/submission-release/NVDA/baseline/run",
+      "run_id": "run-00835ef04b9e",
+      "research_manager_recommendation": "Overweight",
+      "trader_action": "Buy",
+      "archived_rating": "Overweight",
+      "replayed_rating": "Overweight",
+      "rendered_current_decision": "Overweight",
+      "proposal_side": "buy",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "227.97999572753906",
+      "frozen_csv_close_usd": "227.97999572753903",
+      "proposal_price_usd": "227.97999572753903",
+      "case_close_exact_decimal_match": false,
+      "case_close_abs_delta_usd": "3E-14",
+      "case_close_abs_delta_binary64_ulps": 1.0,
+      "opening_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "closing_ledger": {
+        "cash_usd": 100000.0,
+        "holdings": {},
+        "proposal_count": 0,
+        "transaction_count": 0
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_additional_buy_by_position_cap": 43,
+        "max_buy_by_cash": 438
+      },
+      "cli_policy": "max 43 shares by 10% cap, max 438 by cash, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.6406,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "ticker": "NVDA",
+      "mode": "compact",
+      "source": "evaluation/submission-release/NVDA/compact/run",
+      "run_id": "run-c8b937dff703",
+      "research_manager_recommendation": "Overweight",
+      "trader_action": "Buy",
+      "archived_rating": "Overweight",
+      "replayed_rating": "Overweight",
+      "rendered_current_decision": "Overweight",
+      "proposal_side": "buy",
+      "proposal_status": "PENDING_REVIEW",
+      "raw_and_imported_material_id_verified": true,
+      "case_price_usd": "227.97999572753906",
+      "frozen_csv_close_usd": "227.97999572753903",
+      "proposal_price_usd": "227.97999572753903",
+      "case_close_exact_decimal_match": false,
+      "case_close_abs_delta_usd": "3E-14",
+      "case_close_abs_delta_binary64_ulps": 1.0,
+      "opening_ledger": {
+        "cash_usd": 98404.14002990723,
+        "holdings": {
+          "NVDA": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "closing_ledger": {
+        "cash_usd": 98404.14002990723,
+        "holdings": {
+          "NVDA": 7
+        },
+        "proposal_count": 1,
+        "transaction_count": 1
+      },
+      "ledger_rows_unchanged": true,
+      "expected_limits": {
+        "max_additional_buy_by_position_cap": 36,
+        "max_buy_by_cash": 431
+      },
+      "cli_policy": "max 36 shares by 10% cap, max 431 by cash, on equity $100,000.00",
+      "cli_policy_allowed": false,
+      "exit_code": 0,
+      "blocked_events": [],
+      "reports_rebuilt": 11,
+      "reports_match_archive": true,
+      "elapsed_seconds": 0.6864,
+      "passed": true,
+      "errors": []
+    }
+  ]
+}
