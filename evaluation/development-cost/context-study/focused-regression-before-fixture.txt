@@ -23,7 +23,7 @@ __________ test_authoritative_model_and_prompt_version_are_consistent __________
 
 /Users/leeyoma/Downloads/cs5351/work/project/test/offline/test_revision_contracts.py:103: 
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1027: in read_text
+<LOCAL_PYTHON>/lib/python3.12/pathlib.py:1027: in read_text
     with self.open(mode='r', encoding=encoding, errors=errors) as f:
          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
@@ -43,7 +43,7 @@ buffering = -1, encoding = 'utf-8', errors = None, newline = None
                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 E       FileNotFoundError: [Errno 2] No such file or directory: 'prompts/runtime-prompts-v0.1.2.yaml'
 
-/Users/leeyoma/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1013: FileNotFoundError
+<LOCAL_PYTHON>/lib/python3.12/pathlib.py:1013: FileNotFoundError
 =============================== warnings summary ===============================
 test/offline/test_revision_contracts.py::test_deepseek_transport_disables_reasoning_via_extra_body
   /Users/leeyoma/Downloads/cs5351/work/project/tradingagents/llm_clients/openai_client.py:278: RuntimeWarning: Model 'deepseek-flash' is not in the known model list for provider 'deepseek'. Continuing anyway.

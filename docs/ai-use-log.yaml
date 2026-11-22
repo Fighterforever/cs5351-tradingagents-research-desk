@@ -538,7 +538,8 @@ entries:
   model: course-revision/deepseek-flash
   session: ses_dfc7d7c37ffebu6szxmqBhi0E6
   purpose: Plan the post-review changes before implementation.
-  prompt: transcripts/submission-repair/plan.txt
+  prompt: transcripts/submission-repair/plan.full.json
+  prompt_json_pointer: /messages/0/parts/0/text
   scope:
   - docs/architecture/adr/005-submission-contracts.md
   - docs/process/test-approval.yaml
@@ -551,7 +552,8 @@ entries:
   model: course-revision/deepseek-flash
   session: ses_dfc7ad6dfffeVBhZ1UL1mk7BVw
   purpose: Review the provenance keyword audit and prepare D5/D6 updates.
-  prompt: transcripts/submission-repair/records-confirmed.txt
+  prompt: transcripts/submission-repair/records-confirmed.full.json
+  prompt_json_pointer: /messages/0/parts/0/text
   scope:
   - Report.md
   - Report.pdf
@@ -944,3 +946,36 @@ entries:
   evidence: transcripts/submission-repair/cloud-replay-diagnostic.full.json
   outcome: The existing unit checks the nonzero exit, missing usage.json diagnostic and absent success banner
     after normalizing display whitespace.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc4bc2aeffeomnIDiBwxG0DMC
+  purpose: Review each tool-name reference in the export and identify its source.
+  prompt: transcripts/submission-repair/disclosure-inventory.txt
+  scope:
+  - docs/ai-use-log.yaml
+  - transcripts/supervision-index.md
+  - transcripts/submission-repair/annotations.md
+  review: transcripts/supervision-index.md
+  evidence: transcripts/submission-repair/disclosure-inventory.full.json
+  outcome: Identified uses in disclosures, original sessions, supplier data and local path prefixes.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc4a5273ffewRTl9rCGGreH6o
+  purpose: Draft provenance wording and source pointers after comparing the native records.
+  prompt: transcripts/submission-repair/disclosure-changes.txt
+  scope:
+  - docs/ai-use-log.yaml
+  - transcripts/leo-project-directions.md
+  - transcripts/leo-project-directions.json
+  - transcripts/intervention-index.json
+  - transcripts/annotations/leo-session-4.md
+  - transcripts/supervision-index.md
+  - transcripts/submission-repair/annotations.md
+  - evaluation/ci-initial
+  - evaluation/development-cost/context-study
+  review: transcripts/supervision-index.md
+  evidence: transcripts/submission-repair/disclosure-changes.full.json
+  outcome: The coordinator verified identical input content before relocating the duplicate copies. The earlier
+    revision retains the original streamed event envelopes and log paths.

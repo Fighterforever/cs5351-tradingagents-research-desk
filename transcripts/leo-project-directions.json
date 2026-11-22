@@ -4,7 +4,7 @@
     "student_number": "59072966",
     "decision_identifier": "leo"
   },
-  "source": "User messages supplied in the current project conversation; selected verbatim excerpts in conversation order.",
+  "source": "User messages in conversation order. Entries include an excerpt or a summary with its source.",
   "entries": [
     {
       "id": "U-01",
@@ -76,12 +76,17 @@
     },
     {
       "id": "U-08",
-      "source_locator": "The coordinator received this student instruction after the submission audit.",
-      "meaning": "Alfa requested OpenCode repairs to proposal registration, approval, gates and CLI reporting. The same instruction requested a review of disclosure records, student materials and repository consistency.",
+      "source_locator": "The student requested these repairs after the review of the submission.",
+      "meaning": "The student requested repairs to proposal registration, approval, gates, and CLI reporting, together with a review of disclosure records, student materials, and repository consistency.",
       "evidence": [
         "docs/architecture/adr/005-submission-contracts.md",
         "docs/review-memo.md"
-      ]
+      ],
+      "original": {
+        "session": "transcripts/submission-repair/records-confirmed.full.json",
+        "pointer": "/messages/0/parts/0/text",
+        "field": "request"
+      }
     },
     {
       "id": "U-09",

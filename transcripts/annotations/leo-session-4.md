@@ -66,7 +66,7 @@ Result: [check_ai_use_log.py](../../scripts/check_ai_use_log.py), [check_approva
 
 Source: [project-ci.full.json](../project-ci.full.json), message `msg_057e05d13001kspLz9g5VTC61T`, JSON pointer `/messages/77`. Session: `ses_fa82cafc9ffeeAkOozPwPQ41De`.
 
-Prompt: [project-ci-finalize.md](../prompts/project-ci-finalize.md).
+Prompt: [project-ci.full.json](../project-ci.full.json), JSON pointer `/messages/77/parts/1/text`.
 
 ## I-12: Demonstrate each gate’s rejection behavior
 

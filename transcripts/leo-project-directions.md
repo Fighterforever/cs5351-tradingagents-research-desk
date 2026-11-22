@@ -1,12 +1,12 @@
 # Selected User Conversation Excerpts (`leo` / Liyu MA, 59072966)
 
-**Metadata** — Participant: Liyu MA (`59072966`, decision owner `leo`) | Record type: Selected verbatim user excerpts in conversation order from the current project conversation | Related records: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md) (`I-01`–`I-30` coordinating-workflow instructions) and [`gemini-pipeline-review.json`](gemini-pipeline-review.json) (Gemini CLI technical and pipeline review)
+**Metadata** — Participant: Liyu MA (`59072966`, decision owner `leo`) | Record type: Selected user excerpts and source-linked summaries in conversation order from the current project conversation | Related records: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md) (`I-01`–`I-30` coordinating-workflow instructions) and [`gemini-pipeline-review.json`](gemini-pipeline-review.json) (Gemini CLI technical and pipeline review)
 
 ## Scope and Attribution
 
-The entries below are verbatim user directives issued by `leo` (`Liyu MA, 59072966`) during the project conversation. U-01 and U-02 describe the original allocation. U-07 records the change to the current four-member team. The intervening entries cover repository publication, documentation and review.
+The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during the project conversation. U-01 and U-02 describe the original allocation. U-07 records the change to the current four-member team. The intervening entries cover repository publication, documentation and review.
 
-## Verbatim Directives
+## User directions
 
 ### `U-01` — Working Aliases, Video Scope Exclusion, and Gemini CLI Assessment
 
@@ -67,7 +67,7 @@ The entries below are verbatim user directives issued by `leo` (`Liyu MA, 590729
 
 ### U-08 — Submission contracts and release
 
-Alfa requested OpenCode repairs to proposal registration, approval, gates and CLI reporting. The same instruction requested a review of disclosure records, student materials and repository consistency. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [review-memo.md](../docs/review-memo.md)
+Summary of the student’s direction. The student requested repairs to proposal registration, approval, gates, and CLI reporting, together with a review of disclosure records, student materials, and repository consistency. [Original request](submission-repair/records-confirmed.full.json), JSON pointer `/messages/0/parts/0/text`, request field in the recorded input. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [review-memo.md](../docs/review-memo.md)
 
 ### U-09 — Alfa identity
 

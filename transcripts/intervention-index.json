@@ -208,8 +208,9 @@
       "message_id": "msg_057e05d13001kspLz9g5VTC61T",
       "json_pointer": "/messages/77",
       "prompt_files": [
-        "transcripts/prompts/project-ci-finalize.md"
+        "transcripts/project-ci.full.json"
       ],
+      "prompt_json_pointer": "/messages/77/parts/1/text",
       "quote": "Write the resolved value to `$GITHUB_OUTPUT` so the next step receives it. Preserve PR base/head SHA, ordinary push before/head, and fetch-depth 0.",
       "title": "Repair workflow outputs and ADR matching",
       "outcome_refs": [

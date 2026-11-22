@@ -37,3 +37,30 @@ The [complete development index](59072966-Liyu-MA.md) covers 30 directives acros
 ## Submission repair
 
 Alfa requested a repair after the submission audit found missing evidence identity and problems in registration, replay and release validation. [U-08 through U-11](leo-project-directions.md#u-08--submission-contracts-and-release) record the scope and provider decision together with the roster confirmations. OpenCode returned the [planning session](submission-repair/plan.full.json). The [annotated repair sessions](submission-repair/annotations.md) record why the work changed and where the new evidence appears. The coordinating workflow selected the specific acceptance conditions under Alfa’s delegated authority before implementation. [ADR-005](../docs/architecture/adr/005-submission-contracts.md) records the decision.
+
+## Archived copies and published paths
+
+The complete OpenCode exports are included in the submission. The earlier public revision holds seven auxiliary event streams with their original capture timestamps. The corresponding exports contain every message part from those streams.
+
+| Archived stream | Complete session |
+|---|---|
+| [project-01.raw.jsonl](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/project-01.raw.jsonl) | [project-01.full.json](project-01.full.json) |
+| [project-02.raw.jsonl](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/project-02.raw.jsonl) | [project-02.full.json](project-02.full.json) |
+| [project-04.raw.jsonl](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/project-04.raw.jsonl) | [project-04.full.json](project-04.full.json) |
+| [project-06.raw.jsonl](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/project-06.raw.jsonl) | [project-04.full.json](project-04.full.json) |
+| [project-ci.jsonl](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/project-ci.jsonl) | [project-ci.full.json](project-ci.full.json) |
+| [project-permissions.jsonl](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/project-permissions.jsonl) | [project-permissions.full.json](project-permissions.full.json) |
+| [project-revision-transport.raw.jsonl](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/project-revision-transport.raw.jsonl) | [project-revision-transport.full.json](project-revision-transport.full.json) |
+
+These prompt copies are also available in the earlier revision. Their inputs appear in the retained exports.
+
+- [project-ci-finalize.md](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/prompts/project-ci-finalize.md) → [project-ci.full.json](project-ci.full.json), `/messages/77/parts/1/text`.
+- [plan.txt](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/submission-repair/plan.txt) → [plan.full.json](submission-repair/plan.full.json), `/messages/0/parts/0/text`.
+- [records-confirmed.txt](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/transcripts/submission-repair/records-confirmed.txt) → [records-confirmed.full.json](submission-repair/records-confirmed.full.json), `/messages/0/parts/0/text`.
+
+Four historical test records use `<LOCAL_PYTHON>` for the machine-specific interpreter directory. Their original copies below preserve the exact original paths.
+
+- [check_static.stdout.txt](../evaluation/ci-initial/check_static.stdout.txt) · [Original](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/evaluation/ci-initial/check_static.stdout.txt)
+- [negative-examples.json](../evaluation/ci-initial/negative-examples.json) · [Original](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/evaluation/ci-initial/negative-examples.json)
+- [focused-regression-before-fixture.txt](../evaluation/development-cost/context-study/focused-regression-before-fixture.txt) · [Original](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/evaluation/development-cost/context-study/focused-regression-before-fixture.txt)
+- [full-regression-before-fixture.txt](../evaluation/development-cost/context-study/full-regression-before-fixture.txt) · [Original](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/1a752b4f7ade24ade3736573efea0597e5954270/evaluation/development-cost/context-study/full-regression-before-fixture.txt)

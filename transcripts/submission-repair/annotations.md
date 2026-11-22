@@ -25,3 +25,5 @@ Alfa set the scope in U-08 and approved the provider in U-11. The interventions 
 | Launch instruction | OpenCode proposed separate review points. The coordinator tightened the wording so the next operator sees the build result and makes a decision before verification begins. The final prompt also calls for a decision on the plan and on release. | [Original proposal](launch-review.full.json) · [Final launch prompt](../../Prompt.md) |
 
 The [unit run](../../evaluation/submission-verification/unit-regression.txt) records the result for the repaired source. The [research matrix](../../evaluation/submission-release/aggregate/release-gate.json) records the separate live evaluation.
+
+OpenCode reviewed each match in the package. The coordinator verified which inputs and message parts could be recovered exactly from the complete exports. Gate 1 still reads the original event stream that records the first implementation edit. Four earlier test records use `<LOCAL_PYTHON>` for the local interpreter path. [Archive index](../supervision-index.md#archived-copies-and-published-paths).
