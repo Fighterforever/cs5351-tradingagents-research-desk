@@ -1,0 +1,49 @@
+{
+  "pull_request": {
+    "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1",
+    "merged": true,
+    "merged_at": "2026-11-10T10:21:37Z",
+    "base_branch": "main"
+  },
+  "review": {
+    "user": "wangsaorui",
+    "state": "APPROVED",
+    "submitted_at": "2026-11-10T10:10:20Z",
+    "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1#pullrequestreview-5840085663"
+  },
+  "main_ci": {
+    "url": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42798475065",
+    "jobs": [
+      {
+        "name": "Gate 5 - full regression (tests + test/offline)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Gate 4 - fixed semantic regression (offline)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Gate 3 - requirements schema and traceability",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Gate 1 - tests approved before implementation",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Gate 2 - lint, types, deps and authority boundary",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Gate 6 - AI-use log required for code/prompt changes",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  }
+}

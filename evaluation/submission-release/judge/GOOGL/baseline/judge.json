@@ -1,0 +1,46 @@
+{
+  "support": 0.9,
+  "relevance": 0.95,
+  "cited_claim_count": 40,
+  "supported_cited_claim_count": 38,
+  "valid_citation_rate": 0.95,
+  "invalid_citation_explanations": [
+    "Minor: the report attributes the 10 EMA (345.96), Bollinger mid (353.39), lower band (329.21), VWMA (351.57), MACD (-4.80), signal (-1.29), RSI (29.65) and ATR (11.84) to source_id 'market-googl'. These values come from the get_indicators tool outputs (computed from the frozen CSV), not from the raw market CSV itself; the citation is a reasonable proxy for the same underlying data but is not literally the cited artifact.",
+    "Minor: the claim that the 50/200-SMA are unavailable because 'the frozen window only contains 30 rows' is an inference from the tool message; the CSV itself contains 57 records (from 2026-05-01), so the row-count rationale is slightly imprecise though the NO_DATA_AVAILABLE conclusion is correct."
+  ],
+  "uncited_factual_claims": [
+    "Prior close of 342.09 on 2026-07-22 and prior-day volume 39,334,100 are stated with [market-googl] in most places, but the '~20-30M typical of recent weeks' volume characterization is an unsourced generalization.",
+    "The statement that the stock 'peaked around 400.80 on 2026-05-08' is cited to market-googl but the true intraday high in the window is 408.61 (2026-05-18); the 400.80 figure is a close, described loosely as a peak."
+  ],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "The report is strongly grounded. Every headline earnings figure (revenue 119.796B +24%, Cloud 24.768B +82%, operating income 40.770B / 34% margin, net income 112.107B, EPS 9.11, other income 97.983B) is quoted verbatim from src-googl and correctly labeled as a single quarter. All market figures (317.69 close, 342.09 prior close, 314.90 low, 324.49 high, 69.4M volume, 10 EMA, VWMA, Bollinger bands, MACD, RSI, ATR) match the frozen data. Derived arithmetic (7.1% decline, 8.2% below 10 EMA, 87.4% other-income share, 14.124B core proxy, 3.4x Cloud growth multiple, -3.51 MACD gap) is correct and explicitly flagged as calculation. Critically, the report repeatedly and correctly refuses to compute a trailing P/E from the single-quarter EPS, labels valuation UNKNOWN, and does not relabel quarterly EPS as TTM/annual \u2014 semantic validity holds. Data gaps (50/200-SMA, macro, prediction markets) are honestly reported as NO_DATA_AVAILABLE rather than fabricated. Minor blemishes: indicator values are cited to 'market-googl' rather than the indicator tool, the '30 rows' rationale for missing SMAs is imprecise (CSV has 57 records), and the 'peaked around 400.80' phrasing conflates a close with the window's true high of 408.61. None of these are key-conclusion fabrications. Relevance is high: the report stays tightly on GOOGL, the 2026-07-23 date, and the earnings/tape question, with only mild redundancy from the multi-role debate structure.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'Alphabet Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-07-23"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 317.69 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-googl'"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+
+Aggressive Analyst: I'm the Aggressive Risk Analyst, and I'll say this plainly: the trader's SELL is the right call, but not for the timid reasons the conservative and neutral camps will reach for. Let me preempt and dismantle their likely arguments.
+
+To the conservative analyst who will surely say "hold for the bounce, don't sell into weakness": there is no bounce thesis in the data. The stock closed at 539.03 on 42.27M shares versus 22.37M prior [market-meta] — that is volume-confirmed distribution, not capitulation. The market analyst explicitly retrieved no RSI, MACD, or MA reclaim to support a reversal [market-meta]. Holding full weight on hope is the actual reckless bet. Caution that ignores the tape isn't caution — it's denial.
+
+To the neutral analyst who will say "the 28% revenue growth and 3.6B DAP justify holding": growth without earnings leverage is exactly the trap. Revenue rose 28% to $60.801B while operating income fell 8% to $18.775B, margin 31% vs 43% [src-meta]. Even stripping the $2.40B legal and $1.18B severance, ex-one-off margin is ~36.8% (calc: 18.775+3.58 / 60.801) [src-meta] — still well below 43%. So this is structural cost inflation, not a one-off blip. And capex at $31.08B is ~51% of quarterly revenue (calc: 31.08/60.801) [src-meta]. That is a company pouring half its top line into an UNKNOWN-return reinvestment cycle while earnings shrink. "Neutral" here means passively absorbing negative operating leverage.
+
+Here's the aggressive case for SELL: the highest-reward move is capital reallocation, not loyalty. Trimming one-third locks in optionality — you keep 28% growth and 3.6B DAP as the reason not to liquidate [src-meta], but you stop bleeding on a name the market is actively repricing. The stop at 585.61 is the prior close [market-meta], a disciplined reclaim trigger, not a fear level. Rebuild only on a hold above that on declining volume — that's how you buy strength instead of catching knives.
+
+The conservative's "wait" and the neutral's "hold" both assume the downside is bounded. Nothing in the sources bounds it: valuation is UNKNOWN, guidance is UNKNOWN, macro is NO_DATA_AVAILABLE. When the range of outcomes is that wide and the tape is distributing, reducing exposure is the bold, correct risk-taking — it frees capital for higher-conviction, higher-upside plays rather than anchoring it in a margin-compression story.
+
+The trader's plan — trim ~1/3, cap at ~50% of prior target, rebuild above 585.61 — is the aggressive-but-disciplined path. I fully endorse the SELL.

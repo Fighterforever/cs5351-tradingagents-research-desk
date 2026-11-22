@@ -1,0 +1,20 @@
+{
+  "proposal_id": "prop-89ab6186b1e7",
+  "run_id": "run-cc27914d6fa7",
+  "ticker": "AAPL",
+  "trade_date": "2026-07-31",
+  "signal": "Underweight",
+  "rating": "Underweight",
+  "side": "sell",
+  "price": 308.9100036621094,
+  "shares": null,
+  "evidence_id": "b04b3fdd049078ed3a77f4b39ecf783a739d56dd32c2b793a1a97bca5608808d",
+  "status": "PENDING_REVIEW",
+  "proposal_version": "862ba8ee244a597b",
+  "operator": null,
+  "created_at": "2026-11-22T14:04:13.996277Z",
+  "approved_at": null,
+  "approved_version": null,
+  "reason": null,
+  "execution": null
+}

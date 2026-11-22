@@ -1,0 +1,43 @@
+{
+  "support": 0.9,
+  "relevance": 0.95,
+  "cited_claim_count": 42,
+  "supported_cited_claim_count": 42,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [
+    "2026-06-26 volume of 186,201,600 described as the largest in the dataset (correct, but the 'capitulation-style' characterization is interpretive)",
+    "Statement that the frozen CSV spans 2026-05-01 to 2026-07-30 with 62 records \u2014 consistent with the tool output but the '30-row window' explanation of indicator unavailability is the report's own inference about vendor behavior"
+  ],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "Report is tightly scoped to MSFT / 2026-07-30 and every key conclusion traces to the two frozen sources. Earnings figures (revenue 90.0bn +18%, operating income 40.6bn +18%, GAAP EPS 4.81 vs non-GAAP 4.74, Microsoft Cloud 59.3bn +27%, Azure +43%, FY revenue 331.8bn) are all correctly attributed to src-msft and correctly labeled as fiscal Q4 2026. Market claims (close 451.10, prior close 390.54, open 437.90, high 458.69, low 432.44, volume 110,160,700 vs 47,209,000, 10-EMA 401.04, 20-SMA 393.15, vwma 386.48, 2026-06-01 peak 460.52, 2026-06-25 trough 352.83) all match the frozen CSV and are cited to market-msft. Derived arithmetic (15.51% gap, 2.33x volume, 45.1% margin, 65.9% cloud mix, 12.5%/14.7%/16.7% extensions, 21.8% stop distance, 23.4% drawdown) is correct and explicitly flagged as calculation on sourced operands. Unavailable data (50/200-SMA, macro, prediction markets, global news) is honestly reported as NO_DATA_AVAILABLE rather than fabricated. EPS period discipline is exemplary: 4.81 is repeatedly identified as a single-quarter GAAP figure, annualizing it is explicitly refused, and trailing P/E is declared UNKNOWN \u2014 no trailing multiple is computed anywhere. Minor deductions: the report is long and repetitive (the same gap/extension arithmetic is restated across five role sections), and a few interpretive statements (e.g., \"institutional accumulation,\" \"capitulation-style volume\") are narrative rather than sourced, though the report itself flags them as interpretation. No fabrication, no period/unit error, no unsupported valuation assertion.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'Microsoft Corporation'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 451.10 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-msft'"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+**Rating**: Overweight
+
+**Executive Summary**: Overweight AMZN (ticker AMZN, analysis date 2026-07-31, latest close 271.5799865722656 USD [market-amzn]) — but on the Neutral analyst's rebalanced architecture, not the trader's front-loaded one. Take a small initial tranche (~1/3 of intended size) near 271.58, require a confirmed daily close above 274.99 plus a few sessions of MACD histogram expansion for tranche two, and place the largest tranche on a pullback toward the 242.70 10 EMA or after the next quarterly print validates AWS margin. Cap total exposure at or modestly below benchmark until confirmation, keep the 226.65 thesis-integrity stop, and size so a 16.5% stop-out is absorbable rather than merely "survivable."
+
+**Investment Thesis**: The direction is right and the sizing architecture is wrong, and the debate resolves that cleanly.
+
+What survives all three seats: the operating engine. AWS sales of USD 42.2bn, up 37%, with segment operating income of USD 27.5bn versus USD 19.2bn a year earlier [src-amzn] is USD 8.3bn of incremental segment profit in one year (calc, operands [src-amzn]) at an implied ~65.2% segment margin (calc 27.5/42.2, operands [src-amzn]), alongside consolidated net sales of USD 200.6bn, up 20% [src-amzn]. The Conservative analyst explicitly conceded this is "the best fundamental data point in this entire file" and conceded the failed-breakdown structure at 226.65–227.01 gives a defined downside [market-amzn]. The Aggressive analyst is right that this cannot be marked-to-market into existence. That is the reason to own AMZN.
+
+What also survives: the headline is not the thesis. Net income of USD 62.6bn includes substantial investment-related gains, with pre-tax other income of USD 53.4bn primarily from Anthropic [src-amzn] — roughly 85% of net income from a mark (calc 53.4/62.6, operands [src-amzn]). No position-sizing logic may rest on the USD 62.6bn figure, and the Neutral analyst's point that the Anthropic stake cuts both ways — it flattered this quarter and can reverse in a future one — is a legitimate reason to cap total single-name exposure independent of the tape.
+
+Where the Aggressive analyst loses: the tranche architecture. Two-thirds of intended size goes to work at or above today's close of 271.58, which is −1.24% below the 274.99 high close of 2026-05-06 and +11.9% above the 10 EMA of 242.70 [market-amzn; calc]. That is a chase with a pullback option attached to the smallest slice, and "the plan already handles it" is not an answer to that. He also cannot dismiss the extension as a stale average while embracing RSI 64.04 and a MACD histogram of +0.91 [market-amzn] computed off the same 30-row window — the Neutral analyst's symmetry critique lands.
+
+Where the Conservative analyst loses: he argued himself into owning the idea and then sized it as if he didn't believe his own concession. His "wait two or three quarters" fix quietly assumes today's entry price will still be available, and he treats an unobservable macro backdrop (all macro series NO_DATA_AVAILABLE) as a known negative rather than an unknown. The honest response to an unobservable variable is to size for a range of outcomes, not to assume the bad one.
+
+Where both lose: the 50-day and 200-day SMAs are NO_DATA_AVAILABLE on a 30-row frozen window [market-amzn]. No long-term trend claim is supportable in either direction — that is a genuine tie and should reduce conviction symmetrically.
+
+Valuation is UNKNOWN and I will not invent it: only a single quarter distorted by the Anthropic gain exists [src-amzn], no TTM EPS is in the sources, so trailing P/E, forward multiples, targets and consensus are all UNKNOWN. The TTM free cash flow outflow of USD 7.6bn [src-amzn] is the key falsifier — a capital-intensity statement, not a solvency one, but if the next disclosure shows the outflow widening materially while AWS growth decelerates from 37% [src-amzn], downgrade toward Hold/Underweight regardless of price.
+
+Net: constructive operating evidence, extended and unconfirmed entry, no valuation anchor, and a wide 16.5% stop from 271.58 to 226.65 [market-amzn]. That combination is Overweight on a back-loaded, capped build — not Buy, and not the trader's front-loaded plan.
+
+**Time Horizon**: 6-12 months (build over 2-3 quarters, gated on breakout confirmation and the next quarterly print)

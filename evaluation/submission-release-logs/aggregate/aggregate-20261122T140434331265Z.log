@@ -1,0 +1,77 @@
+$ /Users/leeyoma/Downloads/cs5351/work/project/.venv/bin/python -m research_desk.cli aggregate /Users/leeyoma/Downloads/cs5351/work/project/evaluation/submission-release
+
+[exit 0]
+
+--- stdout ---
+               Baseline / Compact Aggregate (six paired metrics)                
+
+Read from existing run outputs; no model calls. Judge scores are attached when  
+present.                                                                        
+
+                                                                
+ ticker  metric                    baseline   compact    delta  
+ ────────────────────────────────────────────────────────────── 
+ AAPL    calls                     14         13         -7.1%  
+ AAPL    input_tokens              83766      53448      -36.2% 
+ AAPL    output_tokens             19966      8754       -56.2% 
+ AAPL    total_tokens              103732     62202      -40.0% 
+ AAPL    wall_seconds              184.9      84.4       -54.3% 
+ AAPL    outcome                   completed  completed  —      
+ AMZN    calls                     13         12         -7.7%  
+ AMZN    input_tokens              79935      46403      -41.9% 
+ AMZN    output_tokens             17816      8074       -54.7% 
+ AMZN    total_tokens              97751      54477      -44.3% 
+ AMZN    wall_seconds              169.2      79.2       -53.2% 
+ AMZN    outcome                   completed  completed  —      
+ GOOGL   calls                     13         12         -7.7%  
+ GOOGL   input_tokens              75482      42838      -43.2% 
+ GOOGL   output_tokens             16887      7204       -57.3% 
+ GOOGL   total_tokens              92369      50042      -45.8% 
+ GOOGL   wall_seconds              157.8      80.8       -48.8% 
+ GOOGL   outcome                   completed  completed  —      
+ META    calls                     14         12         -14.3% 
+ META    input_tokens              83630      43842      -47.6% 
+ META    output_tokens             17399      7402       -57.5% 
+ META    total_tokens              101029     51244      -49.3% 
+ META    wall_seconds              160.0      77.6       -51.5% 
+ META    outcome                   completed  completed  —      
+ MSFT    calls                     14         13         -7.1%  
+ MSFT    input_tokens              81327      52877      -35.0% 
+ MSFT    output_tokens             17336      8497       -51.0% 
+ MSFT    total_tokens              98663      61374      -37.8% 
+ MSFT    wall_seconds              158.6      81.8       -48.4% 
+ MSFT    outcome                   completed  completed  —      
+ NVDA    calls                     14         13         -7.1%  
+ NVDA    input_tokens              86743      56848      -34.5% 
+ NVDA    output_tokens             20289      9122       -55.0% 
+ NVDA    total_tokens              107032     65970      -38.4% 
+ NVDA    wall_seconds              175.7      85.6       -51.3% 
+ NVDA    outcome                   completed  completed  —      
+ AAPL    baseline judge support    0.90       —          —      
+ AAPL    baseline judge relevance  0.95       —          —      
+ AAPL    compact judge support     0.90       —          —      
+ AAPL    compact judge relevance   1.00       —          —      
+ AMZN    baseline judge support    0.90       —          —      
+ AMZN    baseline judge relevance  0.95       —          —      
+ AMZN    compact judge support     0.90       —          —      
+ AMZN    compact judge relevance   0.95       —          —      
+ GOOGL   baseline judge support    0.90       —          —      
+ GOOGL   baseline judge relevance  0.95       —          —      
+ GOOGL   compact judge support     0.90       —          —      
+ GOOGL   compact judge relevance   0.95       —          —      
+ META    baseline judge support    0.90       —          —      
+ META    baseline judge relevance  0.95       —          —      
+ META    compact judge support     0.95       —          —      
+ META    compact judge relevance   0.95       —          —      
+ MSFT    baseline judge support    0.90       —          —      
+ MSFT    baseline judge relevance  0.95       —          —      
+ MSFT    compact judge support     0.95       —          —      
+ MSFT    compact judge relevance   0.95       —          —      
+ NVDA    baseline judge support    0.90       —          —      
+ NVDA    baseline judge relevance  0.95       —          —      
+ NVDA    compact judge support     0.95       —          —      
+ NVDA    compact judge relevance   0.95       —          —      
+                                                                
+
+--- stderr ---
+

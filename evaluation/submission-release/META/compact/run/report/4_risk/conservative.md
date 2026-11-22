@@ -1,0 +1,12 @@
+
+Conservative Analyst: I'm the Conservative Risk Analyst. Let me be clear about where I actually stand, because the Aggressive Analyst has built his case against a straw man of me.
+
+He says I'll argue "hold for the bounce." I won't. I agree the tape is ugly — 539.03 close on 42.27M shares vs 22.37M prior [market-meta] is distribution, and I won't defend full weight on hope. But his framing that "nothing bounds the downside" is precisely the argument for being *more* cautious than his plan, not less. He wants to trim one-third and call it disciplined. I say that's half-measures dressed as risk management.
+
+Here's my real critique of the Aggressive case. First, his stop at 585.61 is the prior close [market-meta] — that's a *reclaim* trigger, not a stop-loss. A stop-loss protects capital on the downside; his "stop" sits 8.6% *above* the current price (calc: 585.61/539.03 − 1, operands [market-meta]). So the plan has no downside protection at all. If META keeps falling, the trader holds two-thirds of the position with no defined exit. That is not conservative — it's an open-ended bet that the decline stops on its own.
+
+Second, he celebrates "keeping 28% growth and 3.6B DAP" [src-meta] as the reason to hold two-thirds. But DAP grew only 3% [src-meta] while revenue grew 28% — the growth is monetization, and monetization is exactly what capex at ~51% of revenue (calc: 31.08/60.801) [src-meta] is being spent to defend. Operating income fell 8% to $18.775B, margin 31% vs 43% [src-meta], and even ex-one-off it's ~36.8% (calc) [src-meta]. The Aggressive Analyst and I agree on these facts; we disagree on what they demand. He says trim a third. I say the burden of proof is on *holding*, and with valuation, guidance, and macro all UNKNOWN, that proof is absent.
+
+Third, his "capital reallocation to higher-conviction plays" is itself an unquantified risk. He's asking the firm to swap a known, cash-generative franchise for unspecified alternatives with no evidence in the sources. That's not de-risking; it's substituting one unknown for another.
+
+So my position: I support the SELL direction but want it *hardened*. Trim more than one-third, and — critically — attach an actual downside stop below the market, not a reclaim level above it. Any such level is an assumption, not a sourced fact, but a conservative plan needs one. The Aggressive plan protects nothing on the way down; mine does. That is the safest path for the firm's assets.

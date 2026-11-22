@@ -1,0 +1,42 @@
+{
+  "support": 0.9,
+  "relevance": 0.95,
+  "cited_claim_count": 42,
+  "supported_cited_claim_count": 41,
+  "valid_citation_rate": 0.9762,
+  "invalid_citation_explanations": [
+    "The 'underlying margin ~36.8%' figure is repeatedly tagged [src-meta], but it is the analyst's own derived construction (60.801 \u2212 (42.03 \u2212 3.58))/60.801, not a figure in the release; the source supports the inputs (42.03, 2.40, 1.18, 60.801) but not the derived margin or the assumption that legal/severance are non-recurring. Reports do label it a construction in most places, so this is a minor over-attribution rather than fabrication."
+  ],
+  "uncited_factual_claims": [],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "Report is tightly on-task: META, 2026-07-30, frozen close 539.03, official Q2 2026 release. All earnings figures (revenue 60.801bn +28%, operating income 18.775bn \u22128%, margin 31% vs 43%, costs 42.03bn incl. 2.40bn legal and 1.18bn severance, DAP 3.60bn +3%, capex 31.08bn) are quoted correctly and cited to src-meta. Market data (OHLC, volume, prior close 585.61, 10-EMA 597.37, VWMA 603.43, MACD \u22123.14/signal 8.98/hist \u221212.12, RSI 13.71, Bollinger 622.11/694.96/549.26) all match the frozen CSV and are cited to market-meta. Derived arithmetic (\u22127.95% day, \u221220.88% drawdown, 94% range capture, 51% capex/revenue, 1.66x, 3.58bn one-offs) is correctly computed and explicitly flagged as derived. 50/200-SMA correctly reported as NO_DATA_AVAILABLE rather than fabricated; macro/global news/prediction markets correctly reported unavailable. Semantic validity holds: no EPS is invented, no TTM/annual relabeling, and the report explicitly refuses to construct a trailing P/E because no TTM EPS exists \u2014 the correct treatment. Minor deduction: the ~36.8% 'underlying margin' is an analyst construction carrying a [src-meta] tag, and the non-recurrence of legal charges is an assumption (though flagged as such by the bear/neutral analysts). Execution levels (560\u2013585, 524.49, 570 entry) are properly labeled assumptions. Overall a well-grounded, non-fabricated report.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'Meta Platforms, Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 539.03 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-meta'"
+    }
+  ]
+}

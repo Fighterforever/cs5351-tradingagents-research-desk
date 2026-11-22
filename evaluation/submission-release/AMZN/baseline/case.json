@@ -1,0 +1,28 @@
+{
+  "ticker": "AMZN",
+  "analysis_date": "2026-07-31",
+  "announcement_date": "2026-07-30",
+  "split": "held_out",
+  "company_name": "Amazon.com, Inc.",
+  "sector": "Consumer Discretionary",
+  "industry": "Internet Retail",
+  "source_url": "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx",
+  "source_id": "src-amzn",
+  "csv": "AMZN.csv",
+  "csv_path": "/Users/leeyoma/Downloads/cs5351/work/project/test/fixtures/market/AMZN.csv",
+  "as_of": "2026-07-31",
+  "latest_close": 271.5799865722656,
+  "identity": {
+    "company_name": "Amazon.com, Inc.",
+    "sector": "Consumer Discretionary",
+    "industry": "Internet Retail"
+  },
+  "notes": [
+    "Amazon Q2 2026 ended June 30.",
+    "Net sales USD200.6 billion increased 20%.",
+    "AWS sales 42.2 billion increased 37%; operating income 27.5 billion compared with 19.2 billion a year earlier.",
+    "Net income 62.6 billion includes substantial investment-related gains; pre-tax other income 53.4 billion was primarily from investments in Anthropic.",
+    "Trailing-twelve-month free cash flow was an outflow 7.6 billion."
+  ],
+  "balance": "Distinguish operating improvement from investment gains and capital expenditure pressure."
+}

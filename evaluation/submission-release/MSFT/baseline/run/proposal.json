@@ -1,0 +1,20 @@
+{
+  "proposal_id": "prop-b9c6d03b16de",
+  "run_id": "run-0f3d91fc8c7c",
+  "ticker": "MSFT",
+  "trade_date": "2026-07-30",
+  "signal": "Overweight",
+  "rating": "Overweight",
+  "side": "buy",
+  "price": 451.1000061035156,
+  "shares": null,
+  "evidence_id": "e21cd05ce3b11d77ff08e8e2d6a3c257b1518870dfed0ee8623bd8dc169517cb",
+  "status": "PENDING_REVIEW",
+  "proposal_version": "dfdf806b060ddd51",
+  "operator": null,
+  "created_at": "2026-11-22T14:02:22.362559Z",
+  "approved_at": null,
+  "approved_version": null,
+  "reason": null,
+  "execution": null
+}
