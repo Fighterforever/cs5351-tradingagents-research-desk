@@ -81,3 +81,12 @@ change_approvals:
   tests:
   - test/offline/test_cli_slice.py::test_cli_replay_incomplete_fails
   evidence: docs/architecture/adr/005-submission-contracts.md
+- id: launch-stage-decisions
+  authority: leo (delegated submission repair; coordinator accepted the D9 document criteria)
+  decision: APPROVED
+  approved_at: "2026-11-22T14:03:39.470119+00:00"
+  scope:
+  - Prompt.md
+  tests:
+  - D9 manual reading against the project requirement sheet, page 8, from plan through self-verification
+  evidence: docs/architecture/adr/005-submission-contracts.md
