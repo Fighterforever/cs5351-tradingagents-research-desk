@@ -2,22 +2,24 @@
 
 | Requirement | Current evidence | Status |
 |---|---|---|
-| D1 requirements | 24 schema-valid requirements with fit criteria and trace links | Complete |
-| D2 architecture | Blueprint, four ADRs, required design records and optional evaluation/risk/option artifacts | Complete |
+| D1 requirements | 25 schema-valid requirements with fit criteria and trace links | Complete |
+| D2 architecture | Blueprint, five ADRs, required design records and optional evaluation/risk/option artifacts | Complete |
 | D3 coding governance | Effective plan/build/verify permissions, structural contracts and tool manifest | Complete |
-| D4 verification | 790 unit passes, current-source quality gate, defect/debt/review records | Technical review complete; peer review pending |
-| D5 supervised sessions | 30 implementation directives, six user directions and a subsequent Gemini requirements/architecture review | Process evidence assembled; member attribution pending |
-| D6 report | Single report under 10,000 words; 12pt single-spaced PDF; four reflections of 300–500 words | Content complete; formal roster pending |
-| D7 GitHub | Public repository, six required checks, enforced human/code-owner review | Reviewer has write access; owner activation and independent approval pending |
-| D8 source/tests | Preserved upstream, application extension, offline tests and opt-in live experiment | Complete |
-| D9 launch instruction | Static plan-first Prompt.md and prior approvals | Complete |
-| Team scope | Five requirement increments and equal assigned weights | Complete allocation |
-| Runtime efficiency | 43.00% fewer tokens at passing quality thresholds | Complete |
+| D4 verification | The [current unit run](../../evaluation/submission-verification/unit-regression.txt) passed 832 tests and 71 subtests. | The revised approval, compatibility, quality and AI-log gates have dedicated unit cases. |
+| D5 supervised sessions | [Five complete annotated OpenCode sessions, direct decisions and the release review](../../transcripts/supervision-index.md) | Available evidence indexed; original early design deliberations and remaining student records to confirm |
+| D6 report | Single report under 10,000 words; 12pt single-spaced PDF; four reflections of 300–500 words | All four identities recorded; members still need to confirm personal reflections and actual contributions |
+| D7 GitHub | PR #1 merged after independent review. All six [main-branch jobs passed](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42798475065). | The [submission branch](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/tree/submission-repairs) carries the new contracts. Its pull request records the six checks and the independent review decision. |
+| D8 source/tests | The repository includes the upstream source and tests, the Research Desk extension, its offline tests and the live evaluation. | The ADR-005 [registration and recovery cases](../../test/offline/test_submission_runtime.py) cover FR-004. The [submission review](../review-memo.md#submission-review) records the original findings. |
+| D9 launch instruction | The [launch prompt](../../Prompt.md) calls for decisions on the proposed plan, completed build and verified release. | Complete. Each launch stops for approval before code generation. |
+| Team scope | Four members and four new functional requirements, FR-001 to FR-004, plus context-budget and release-quality increments. | ADR-005 defines registration and recovery from a saved package. [Acceptance cases](../../test/offline/test_submission_runtime.py) exercise the persistent ledger decision. |
+| Runtime efficiency | [42.50% fewer research tokens](../../evaluation/submission-release/aggregate/report.md), with 60/60 fields and all twelve individual assessments passing | Complete |
 | Coding efficiency | Same maintenance task, 26 unit cases per condition, 60.74% fewer tokens | Complete paired study |
 
 ## Submission actions
 
-1. Complete the four-member roster with formal names and student numbers. Each member should review their reflection and confirm the contribution allocation against completed work.
-2. Use `transcripts/59072966-Liyu-MA.md` to navigate the 30 implementation directives, six user directions and subsequent requirements/architecture review. Add each participating member’s own recorded interventions and rationale in a student-number/name file. Link any retained original planning conversation to the relevant stage.
-3. Complete the [wangsaorui onboarding sequence](reviewer-onboarding.md): activate the additional owner on `main` through the prepared configuration PR, then obtain independent approval of PR #1. Complete the rotating peer reviews in `docs/review-memo.md` and merge through the protected branch.
+The software evidence and roster are in place. The following records remain with the team.
+
+1. Each member should review the personal reflection under their own name and confirm the assigned weight against completed work. The formal roster is complete.
+2. Attach any retained student directions and early design discussion to the relevant stage in the [supervision index](../../transcripts/supervision-index.md).
+3. Obtain independent review of the submission branch through the protected pull request.
 4. Align the separate video with the final implementation and results before upload.

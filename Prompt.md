@@ -1,9 +1,19 @@
 # Project launch prompt
 
-Read `AGENTS.md` and its reading order. Before generating code, produce a concrete execution plan identifying requirement IDs, modules, declared interfaces, scope boundaries, tests and implementation steps. Identify any safety-relevant paths and cite the applicable ADR.
+Read `AGENTS.md` and the files in its reading order.
 
-Check for a leo approval of this exact plan and its tests that predates implementation. An existing approval is reusable only within its recorded scope. The approved three-feature plan and AT-01 through AT-08 in `docs/process/test-approval.yaml` authorize the current delivery. For a new scope or changed safety policy, stop after a reviewable plan and obtain a new decision; never create an approval on behalf of the implementation agent.
+## Plan
 
-After approval, build the smallest complete vertical slice on the real upstream application. Run the approved acceptance examples. Present behavior, test evidence and concrete unresolved issues for the next stage decision. Preserve the build, verification and release stage records. Do not treat a textual PASS as evidence.
+Identify the requirement IDs and link each one to the affected module and interface. Define the scope, the acceptance cases and the implementation steps. Cite the relevant ADR for changes to approval, policy or persisted data. Name the tests and the evidence each test will produce.
 
-Generate all application/test/CI code through OpenCode. Preserve upstream behavior. Record actual model settings and sessions. Runtime model requests use environment credentials provided by the host; inspect neither user secrets nor unrelated services. A finished delivery includes runnable source, source-linked requirements, architecture contracts, all prior regression tests, real evidence packs, comparison results, AI-use records, the process report and genuine GitHub check evidence.
+Present the plan and tests to a team member. Stop before generating code. Record the member’s decision, scope and time in the project record. The approvals in `docs/process/test-approval.yaml` document earlier decisions. Each launch needs a human decision on the plan just presented.
+
+## Build
+
+After approval, use OpenCode to implement the approved change in the upstream application or its extension. Use OpenCode for application code, tests and CI. Follow the ownership rules in `AGENTS.md`. Record the model settings and original session. Use credentials supplied through the runtime environment.
+
+At the end of the build, present the change and its requirement links. Stop for a human decision before moving to verification. If the scope changes, submit the revised plan and tests for approval.
+
+## Verify and release
+
+Run the approved tests. Show the observed behavior, command output and unresolved issues. Include the evidence packs and measured results for an experiment. Stop for a human release decision. Keep the decision with the review memo and preserve the original session, approval record and GitHub checks.
