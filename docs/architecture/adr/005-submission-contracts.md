@@ -19,3 +19,5 @@ Affected owners are `src/research_desk/graph_adapter.py`, `src/research_desk/evi
 - Compare the Git release branch and the generated ZIP by path and contents. Keep the existing public record and document any pending independent review.
 
 The student requested repair of the reported contracts and publication, and delegated implementation decisions. The historic releases and genuine tool-use records remain the source for what happened in earlier runs. A separate student's confirmation is required before attributing an unverified contribution or reflection to that student. Reopen if the approval or evidence schema has to change incompatibly, or the six-case corpus or source boundaries change.
+
+During unit review, the existing CLI case for an incomplete package was identified as checking the internal exception type as well as the failed command. Its approved CLI-level expectation is a nonzero exit with the missing-file diagnostic. The lower-level tests retain the evidence-reader exception contract.

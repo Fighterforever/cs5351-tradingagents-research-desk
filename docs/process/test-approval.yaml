@@ -71,4 +71,13 @@ change_approvals:
   - test/offline/test_submission_governance.py
   - test/offline/test_submission_api.py
   - test/offline/test_release_quality.py
-  - test/offline/test_submission_quality.py
+  test_placement: The Gate 4 cases specified before implementation are in test/offline/test_release_quality.py.
+- id: replay-cli-diagnostic
+  authority: leo (delegated repair scope; coordinator selected the existing unit case)
+  decision: APPROVED
+  approved_at: "2026-11-22T13:58:18.646185+00:00"
+  scope:
+  - test/offline/test_cli_slice.py
+  tests:
+  - test/offline/test_cli_slice.py::test_cli_replay_incomplete_fails
+  evidence: docs/architecture/adr/005-submission-contracts.md
