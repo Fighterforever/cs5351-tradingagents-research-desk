@@ -68,15 +68,15 @@ At this review, the team still needed to confirm individual contributions, locat
 
 Two assessment details were checked against the course text. D6 requires relative contributions and suggests productive hours or story points as possible measures; it does not prescribe a sprint-by-sprint table. D5 requires marked team interventions and full pipeline coverage; per-student files follow the supplied repository naming convention. The source revision CI link remains attached to the evaluated implementation. The final package also contains the CI receipt for its documentation update.
 
-Native editorial and assessment responses: `transcripts/gemini-intervention-edit.json` and [archived gemini-intervention-review](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-intervention-review.json).
+Native editorial and assessment responses: `transcripts/gemini-intervention-edit.json` and [archived gemini-intervention-review](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-intervention-review.json).
 
-Gemini checked the revised passages and closed the editorial findings. The [follow-up review](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-intervention-followup.json) records its decision.
+Gemini checked the revised passages and closed the editorial findings. The [follow-up review](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-intervention-followup.json) records its decision.
 
 ## Requirements and architecture process review
 
 Reviewer: Gemini CLI. Scope: the classification of 24 requirements, the comparison of three architecture candidates and the allocation of design responsibilities. Verdict: **APPROVE technical assessment**. The requirements review and weighted candidate comparison support the existing application-extension design. No new runtime issue was identified.
 
-Six selected user-message excerpts now document Liyu MA’s actual scope and governance directions. They are linked separately from the 30 implementation prompts issued by the coordinating workflow. The subsequent review and its exact prompts are preserved under [archived gemini-pipeline-review](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-review.json) and [archived gemini-pipeline-integration](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-integration.json). The finished review is in `docs/process/pipeline-review.md`.
+Six selected user-message excerpts now document Liyu MA’s actual scope and governance directions. They are linked separately from the 30 implementation prompts issued by the coordinating workflow. The subsequent review and its exact prompts are preserved under [archived gemini-pipeline-review](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-pipeline-review.json) and [archived gemini-pipeline-integration](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-pipeline-integration.json). The finished review is in `docs/process/pipeline-review.md`.
 
 This review documented the requirements and architecture assessment. The independent code-owner review took place later and is recorded below.
 

@@ -351,7 +351,7 @@ entries:
   - docs
   review: docs/review-memo.md
   evidence: transcripts/editorial-review-excerpts.json
-  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-release-review.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-release-review.json
   outcome: Confirmed strong technical and higher-grade alignment; identified four documentation clarifications
     and three team/review actions requiring authentic student information. Documentation corrections applied;
     no runtime changes.
@@ -366,7 +366,7 @@ entries:
   - docs/process/delivery-checklist.md
   review: docs/review-memo.md
   evidence: transcripts/editorial-review-excerpts.json
-  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-release-followup.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-release-followup.json
   outcome: Technical readiness confirmed with no remaining technical findings. Formal roster/contribution
     evidence, per-student annotations and independent human reviews remain pending.
 - date: '2026-11-10'
@@ -395,7 +395,7 @@ entries:
   - transcripts/annotations
   review: docs/review-memo.md
   evidence: transcripts/editorial-review-excerpts.json
-  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-intervention-review.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-intervention-review.json
   outcome: Confirmed technical readiness and source fidelity of all 30 annotations. Identified stale wording
     in three reflections, corrected in the report. Team identities, authentic supervision evidence and
     independent reviews remain open.
@@ -411,7 +411,7 @@ entries:
   - docs/process/delivery-checklist.md
   review: docs/review-memo.md
   evidence: transcripts/editorial-review-excerpts.json
-  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-intervention-followup.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-intervention-followup.json
   outcome: Confirmed all editorial corrections resolved with no remaining editorial issues. Formal team
     details, authentic pipeline records, independent review and final video remain pending.
 - date: '2026-11-10'
@@ -420,13 +420,13 @@ entries:
   purpose: Review all requirement classifications and architecture candidates, then map lifecycle evidence
     across the assigned responsibility areas.
   session: 1bba423d-0413-4e57-a257-683ec930238d
-  prompt: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/prompts/gemini-pipeline-review.txt
+  prompt: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/prompts/gemini-pipeline-review.txt
   scope:
   - docs/process/pipeline-review.md
   - transcripts/leo-project-directions.md
   review: docs/review-memo.md
   evidence: transcripts/editorial-review-excerpts.json
-  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-review.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-pipeline-review.json
   outcome: Reviewed all 24 classifications and three candidates. Recomputed design scores of 3.10, 4.65
     and 3.10; retained the application-seam design. No new runtime issue found.
 - date: '2026-11-10'
@@ -435,13 +435,13 @@ entries:
   purpose: Complete process-review documents using the actual user directions and the new Gemini technical
     review.
   session: fab710b8-d729-42d7-9e1e-98c2d923bca7
-  prompt: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/prompts/gemini-pipeline-integration.txt
+  prompt: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/prompts/gemini-pipeline-integration.txt
   scope:
   - docs/process/pipeline-review.md
   - transcripts/leo-project-directions.md
   review: docs/review-memo.md
   evidence: transcripts/editorial-review-excerpts.json
-  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-integration.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-pipeline-integration.json
   outcome: Integrated six verbatim user directions with the 30 recorded implementation prompts. Completed
     requirements and architecture review documentation with actual actor attribution.
 - date: '2026-11-10'
