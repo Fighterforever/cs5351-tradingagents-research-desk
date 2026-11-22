@@ -1,6 +1,7 @@
 # ADR-005: Preserve ledger authority and validate the complete release
 
 Status: Accepted within the repair scope delegated by Liyu MA. The student's direction is U-08. The coordinating workflow reviewed the OpenCode plan and selected the detailed acceptance cases before implementation. U-09 separately confirms Liyu MA's identity.
+Approval record ID: `leo`.
 
 ## Decision and scope
 

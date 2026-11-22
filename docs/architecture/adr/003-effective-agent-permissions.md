@@ -1,6 +1,7 @@
 # ADR-003: Install effective role permissions
 
 Status: accepted by Liyu MA, 2026-08-31. Requirements: GOV-001 through GOV-004; source: docs/architecture/permission-model.md.
+Approval record ID: `leo`.
 
 The required .opencode/permissions.jsonc is a machine-readable permission manifest. OpenCode does not automatically enforce that filename. The real project opencode.json must load .opencode/rules.md through its documented instructions field and configure supported role permissions. The CI check verifies consistency between the documented manifest and effective configuration.
 
