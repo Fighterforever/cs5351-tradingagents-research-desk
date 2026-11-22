@@ -88,5 +88,5 @@ change_approvals:
   scope:
   - Prompt.md
   tests:
-  - D9 manual reading against the project requirement sheet, page 8, from plan through self-verification
+  - docs/process/delivery-checklist.md::D9 manual review of plan, build and self-verification gates
   evidence: docs/architecture/adr/005-submission-contracts.md
