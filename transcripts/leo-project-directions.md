@@ -1,6 +1,6 @@
 # Selected User Conversation Excerpts (`leo` / Liyu MA, 59072966)
 
-**Metadata** — Participant: Liyu MA (`59072966`, decision owner `leo`) | Record type: Selected user excerpts and source-linked summaries in conversation order from the current project conversation | Related records: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md) (`I-01`–`I-30` coordinating-workflow instructions) and [`gemini-pipeline-review.json`](gemini-pipeline-review.json) (Gemini CLI technical and pipeline review)
+**Metadata** — Participant: Liyu MA (`59072966`, decision owner `leo`) | Record type: Selected user excerpts and source-linked summaries in conversation order from the current project conversation | Related records: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md) (`I-01`–`I-30` coordinating-workflow instructions) and [`gemini-pipeline-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-review.json) (Gemini CLI technical and pipeline review)
 
 ## Scope and Attribution
 
@@ -14,7 +14,7 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 - [Original message](leo-project-directions.json), entry `U-01`.
 - **Plain-English explanation**: Defines the original five roles, excludes the final demonstration video from the current revision pass, and directs a Gemini CLI evaluation of all non-video deliverables against the course project requirements.
 - **Engineering rationale**: Establishes stable responsibility labels for structuring the five-member project scope and introduces an independent CLI review pass to check deliverable completeness before submission.
-- **Resulting artifacts**: [`../docs/process/team.md`](../docs/process/team.md), [`gemini-release-review.json`](gemini-release-review.json), [`../docs/process/delivery-checklist.md`](../docs/process/delivery-checklist.md)
+- **Resulting artifacts**: [`../docs/process/team.md`](../docs/process/team.md), [`gemini-release-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-release-review.json), [`../docs/process/delivery-checklist.md`](../docs/process/delivery-checklist.md)
 
 ### `U-02` — Equal Responsibility Allocation and Deferred Formal Roster
 
@@ -48,7 +48,7 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 
 - **Plain-English explanation**: Requests adding source-linked intervention annotations, using Gemini CLI to polish the wording in a clear, fluent, and non-defensive style, and running another in-depth project review.
 - **Engineering rationale**: Links the 30 recorded coordinating-workflow directives (`I-01`–`I-30`) to exact transcript pointers and resulting repository changes, improves documentation readability, and verifies technical consistency across reports and logs.
-- **Resulting artifacts**: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md), [`intervention-index.json`](intervention-index.json), [`gemini-intervention-edit.json`](gemini-intervention-edit.json), [`gemini-intervention-review.json`](gemini-intervention-review.json)
+- **Resulting artifacts**: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md), [`intervention-index.json`](intervention-index.json), [`gemini-intervention-edit.json`](gemini-intervention-edit.json), [`gemini-intervention-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-intervention-review.json)
 
 ### `U-06` — Delegation of Pipeline Supervision-Evidence Review to Gemini CLI
 
@@ -56,7 +56,7 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 
 - **Plain-English explanation**: Delegates the completion of the supervision-evidence review and documentation to Gemini CLI.
 - **Engineering rationale**: Produces an explicit, attributable technical review by Gemini CLI covering all 24 requirement classifications, the three architecture candidates (`3.10`, `4.65`, `3.10`), the five responsibility scopes, and lifecycle evidence status.
-- **Resulting artifacts**: [`gemini-pipeline-review.json`](gemini-pipeline-review.json), [`../docs/process/pipeline-review.md`](../docs/process/pipeline-review.md)
+- **Resulting artifacts**: [`gemini-pipeline-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-review.json), [`../docs/process/pipeline-review.md`](../docs/process/pipeline-review.md)
 
 ### U-07 — Four-person team allocation
 

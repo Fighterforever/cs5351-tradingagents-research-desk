@@ -12,7 +12,7 @@
       "meaning": "Set the five working names, exclude video from this revision, and require Gemini assessment against project requirements.",
       "evidence": [
         "docs/process/team.md",
-        "transcripts/gemini-release-review.json",
+        "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-release-review.json",
         "docs/process/delivery-checklist.md"
       ]
     },
@@ -53,7 +53,7 @@
         "transcripts/59072966-Liyu-MA.md",
         "transcripts/intervention-index.json",
         "transcripts/gemini-intervention-edit.json",
-        "transcripts/gemini-intervention-review.json"
+        "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-intervention-review.json"
       ]
     },
     {
@@ -61,7 +61,7 @@
       "source_locator": "Current user request to delegate supervision-evidence work to Gemini",
       "meaning": "Delegate the evidence review and documentation work to Gemini. The new review is recorded under its actual reviewer.",
       "evidence": [
-        "transcripts/gemini-pipeline-review.json",
+        "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-review.json",
         "docs/process/pipeline-review.md"
       ]
     },

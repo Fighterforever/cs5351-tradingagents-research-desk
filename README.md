@@ -1,8 +1,8 @@
 # TradingAgents Research Desk
 
-Research Desk extends **TradingAgents v0.4.0** with portable research evidence, zero-network replay, an explicitly approved paper ledger and a measured baseline/compact context experiment. The real upstream market/news, research, trader, risk and portfolio graph remains the research engine. The language model advises; deterministic application code controls paper execution.
+Research Desk adds two steps to TradingAgents v0.4.0. An operator can replay a saved report offline and review a proposed paper trade before it reaches the ledger. The upstream graph still performs the research. Application code checks the approved terms, available cash and position limit at execution.
 
-Course repository: [Fighterforever/cs5351-tradingagents-research-desk](https://github.com/Fighterforever/cs5351-tradingagents-research-desk), public. Team: **Liyu MA, Xinyao HENG, Yinuo Li and Chengru WANG**, each assigned a relative contribution of **1.0**. Responsibilities and rotating review assignments are in [docs/process/team.md](docs/process/team.md). The report maps four new functional requirements and two non-functional increments to the delivered workflows.
+**CS5351 · Group 32** — Liyu MA, Xinyao HENG, Yinuo Li and Chengru WANG. Each member has a contribution weight of 1.0. [Project report](Report.md) · [Team responsibilities](docs/process/team.md) · [Public repository](https://github.com/Fighterforever/cs5351-tradingagents-research-desk).
 
 ## Run locally
 

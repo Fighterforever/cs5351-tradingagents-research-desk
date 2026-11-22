@@ -1,0 +1,10 @@
+# Supplementary editorial archives are available in the GitHub tree.
+transcripts/gemini-release-review.json export-ignore
+transcripts/gemini-release-followup.json export-ignore
+transcripts/gemini-intervention-review.json export-ignore
+transcripts/gemini-intervention-followup.json export-ignore
+transcripts/gemini-pipeline-review.json export-ignore
+transcripts/gemini-pipeline-integration.json export-ignore
+transcripts/prompts/gemini-pipeline-review.txt export-ignore
+transcripts/prompts/gemini-pipeline-integration.txt export-ignore
+transcripts/submission-repair/disclosure-changes.txt export-ignore

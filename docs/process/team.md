@@ -1,6 +1,6 @@
 # Team responsibilities
 
-The team has assigned equal responsibility for completing and reviewing the delivery. The allocation assigns a weight of 1.0 to each of the four members. At final review, Liyu MA confirmed equal contributions across all four members. [Contribution record](../../transcripts/leo-project-directions.md#u-13--architecture-discussion-and-final-contributions).
+Group 32 assigned each member a primary area and a review responsibility. At final review, Liyu MA confirmed that each member contributed one quarter of the work. [Contribution record](../../transcripts/leo-project-directions.md#u-13--architecture-discussion-and-final-contributions).
 
 | Member | Primary responsibility | Review responsibility | Relative contribution |
 |---|---|---|---:|

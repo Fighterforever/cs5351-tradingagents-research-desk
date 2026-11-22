@@ -1,6 +1,6 @@
 # Supervised development evidence
 
-This index connects project decisions, five complete OpenCode sessions and the independent release review. It links each record to its scope and outcome.
+The five sessions below follow the project from the first implementation to a release revision prompted by failed checks. Each annotation links a decision to the original message and the change that followed.
 
 ## Direct team decisions and review
 
@@ -31,7 +31,7 @@ The [complete development index](59072966-Liyu-MA.md) covers 30 directives acros
 ## Planning and later review
 
 - The [initial approval packet](../docs/process/APPROVAL_PACKET.md#决策记录) and [test approval record](../docs/process/test-approval.yaml) place plan and test acceptance before the first implementation. The coordinating workflow made the specific plan and test decisions under delegated authority. The [first implementation prompt](prompts/project-01-offline.md) cites the approval before work begins.
-- The [requirements registry](../docs/req/requirements.yaml), [candidate comparison](../docs/architecture/evaluation-table.md) and [architecture decision](../docs/architecture/adr/001-application-extension.md) record design choices. The [recorded Gemini assessment](gemini-pipeline-review.json) is a later technical review of these materials. Liyu MA later identified the two students who advocated different options. Their retrospective account appears below.
+- The [requirements registry](../docs/req/requirements.yaml), [candidate comparison](../docs/architecture/evaluation-table.md) and [architecture decision](../docs/architecture/adr/001-application-extension.md) record design choices. The [recorded Gemini assessment](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-review.json) is a later technical review of these materials. Liyu MA later identified the two students who advocated different options. Their retrospective account appears below.
 - [Chengru WANG’s annotated Qoder session](60254685-Chengru-WANG.md) uses the member’s formal name. The original was published in [PR #2](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/9435dcbf0b3697bec8c30d0cb2d514ab255032f2/transcripts/60254685-Chengru-WANG.md). Its workflow links and conclusions describe the PR branch. The six required checks passed there. The advisory matrix completed on Python 3.12 and 3.13 and stopped at dependency installation on 3.10 and 3.11. [PR #2](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/2) awaits review. The original Qoder conversation remains in the member’s client.
 
 ### Decisions that can be traced to a person

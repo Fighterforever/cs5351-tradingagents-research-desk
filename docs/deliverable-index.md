@@ -1,6 +1,6 @@
 # Course deliverable index
 
-Team responsibilities and the equal assigned contribution weights are recorded in process/team.md. The table links each deliverable to its evidence.
+Group 32’s [team record](process/team.md) gives each member’s responsibilities and final contribution weight. Start with D5 to trace the development sessions or D6 to read the results.
 
 | Deliverable | Review entry points | Evidence and scope |
 |---|---|---|
@@ -8,7 +8,7 @@ Team responsibilities and the equal assigned contribution weights are recorded i
 | D2: architecture | ../architecture-blueprint.md; architecture/ | Authoritative blueprint; ADRs and an explicitly named appendix; invariant/trace/state/permission/policy records; candidate comparison and optional logs |
 | D3: coding governance | ../AGENTS.md; code-governance/; ../.opencode/; ../.agent/ | Module and function ownership, allowed tools, role permissions, frozen human-owned rules and change process; actual candidate enforcement probe retained |
 | D4: verification | code-governance/verification-constraints.md; review-memo.md; debt-register.md; bug-diary.md; ci-gates.md | Structural, regression and behavioral checks; real defects and review decisions; six gate implementations and a controlled rejection harness, with execution outcomes recorded in ci-gates.md |
-| D5: supervised sessions | [Supervision index](../transcripts/supervision-index.md); ../transcripts/intervention-index.json | Five selected complete annotated sessions; eleven direct user directions; 30 source-linked implementation directives across 11 native sessions; independent release review |
+| D5: supervised sessions | [Supervision index](../transcripts/supervision-index.md); ../transcripts/intervention-index.json | Five selected complete annotated sessions; student directions and retrospective confirmations; 30 source-linked implementation directives across 11 native sessions; independent release review |
 | D6: single report | ../Report.md; ../Report.pdf | Process report, participant record and four 300–500-word reflections; final 12pt PDF rendered from the same Markdown |
 | D7: repository | ../README.md; ../.github/; ../evaluation/ci/ | Public Fighterforever/cs5351-tradingagents-research-desk; preserved upstream history and concise extension commits; six required checks and human-review protection enabled. Current cloud results are under evaluation/github |
 | D8: source and tests | ../src/research_desk/; ../test/offline/; ../test/live/; ../test/fixtures/ | Application extension around the unchanged upstream graph; API-free tests separated from opt-in live evaluation; actual source data and prompt snapshots |

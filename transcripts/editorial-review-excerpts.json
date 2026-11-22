@@ -1,0 +1,111 @@
+[
+  {
+    "session_id": "c857803e-d8ce-4c89-89f7-95e04cf051f7",
+    "source": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-release-review.json",
+    "response_field": "technical_readiness",
+    "recorded_value": "High. The extension around TradingAgents v0.4.0 is architecturally sound, well-isolated under src/research_desk, and backed by 790 passing offline/upstream unit tests (plus 71 subtests), 12 completed paired live DeepSeek runs across six frozen equity cases, 12 verified offline CLI replays (<0.92s each, zero external calls), a complete-input token budget (72,000 trigger / 96,000 cap), and six automated CI blocking gates. One subtle enforcement gap remains in Gate 4 (validate_release), where COST-001 (>=20% token reduction) and PERF-001 (<=1.10 wall-time ratio) are recorded as warnings rather than blocking failures, although the actual release run comfortably satisfies both targets (43.00% token reduction, 0.5652 wall-time ratio)."
+  },
+  {
+    "session_id": "0e6f73ec-e12d-4c25-b090-bb77a5a7a8e9",
+    "source": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-release-followup.json",
+    "response_field": "technical_assessment",
+    "recorded_value": "Technically complete and verified. The application extension around TradingAgents v0.4.0, deterministic paper-ledger safety boundaries, 72,000/96,000 whole-input context budget, 790 passing offline/upstream unit tests (plus 71 subtests), 12 paired live DeepSeek evaluation runs (43.00% token reduction, 0.5652 wall-time ratio, 60/60 mandatory checks, mean support 0.9000 to 0.9083), and 12 zero-network CLI replays (<0.92s) remain intact. All four fixable documentation/alignment issues from the first review have been accurately resolved in the prose and trace tables without altering the validated runtime source fingerprint, and the revision PR CI run (42645314153) has now completed with all six required blocking gates passing in GitHub Actions."
+  },
+  {
+    "session_id": "35808525-953e-4aaf-b814-7e4743263fe5",
+    "source": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-intervention-review.json",
+    "response_field": "annotation_accuracy",
+    "recorded_value": "Accurate and strictly grounded in the extracted native session evidence. All 30 entries (I-01 through I-30) in `transcripts/59072966-Liyu-MA.md`, `transcripts/intervention-index.json`, and `transcripts/annotations/*.md` match the exact session IDs, message IDs, JSON pointers, verbatim prompt quotes, edited file paths, and intermediate pytest/mypy test counts in the raw OpenCode JSON/JSONL records. Actor attribution is completely honest: `intervention-index.json` and `59072966-Liyu-MA.md` explicitly state that `decision_owner` is `leo` (Liyu MA, 59072966) and `prompt_operator` is the `coordinating workflow`, without fabricating interventions by Alfa, Bravo, Charlie, Delta, or Echo. Two structural limitations remain for D5: (1) all prompts in the raw OpenCode sessions were authored and dispatched by the coordinating workflow (where the agent read coordinator-generated markdown files from `../orchestration/` or `transcripts/prompts/`) rather than five individual students typing interactive corrections, and (2) initial requirements classification and architecture candidate scoring (ADR-001 / evaluation-table.md) were performed by the coordinating workflow before Session 1 (`I-01`) began, so those two upstream stages are documented in `docs/` rather than inside raw OpenCode conversation turns."
+  },
+  {
+    "session_id": "2343d49b-c222-4231-bda3-c1db49afa8f6",
+    "source": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-intervention-followup.json",
+    "response_field": "corrections_resolved",
+    "recorded_value": true
+  },
+  {
+    "session_id": "1bba423d-0413-4e57-a257-683ec930238d",
+    "source": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-review.json",
+    "response_field": "architecture_review",
+    "recorded_value": {
+      "candidates": [
+        {
+          "name": "A: edit core graph",
+          "weighted_score": 3.1,
+          "decision": "rejected",
+          "reason": "Design judgment recalculation: 0.25(3) + 0.25(3) + 0.20(5) + 0.15(2) + 0.15(2) = 0.75 + 0.75 + 1.00 + 0.30 + 0.30 = 3.10. While direct internal edits maximize raw capture access (5), scattering deterministic policy and experiment hooks across upstream agent nodes compromises baseline preservation (3), blurs authority boundaries (3), expands delivery scope (2), and degrades upstream maintainability (2)."
+        },
+        {
+          "name": "B: application seams",
+          "weighted_score": 4.65,
+          "decision": "selected",
+          "reason": "Design judgment recalculation: 0.25(5) + 0.25(5) + 0.20(4) + 0.15(4) + 0.15(5) = 1.25 + 1.25 + 0.80 + 0.60 + 0.75 = 4.65. Wrapping `TradingAgentsGraph` via `EvidenceTradingGraph` and `GroundingDelegate` while isolating `review.py`, `policy.py`, and `storage.py` preserves unmodified upstream behavior (`INH-001`–`INH-005`: 5) and enforces a strict deterministic execution boundary (`INV-001`, `INV-002`: 5). Narrow subclass overrides close the direct identity/returns capture gap (4) within single-operator CLI scope (4)."
+        },
+        {
+          "name": "C: replacement demo",
+          "weighted_score": 3.1,
+          "decision": "rejected",
+          "reason": "Design judgment recalculation: 0.25(1) + 0.25(4) + 0.20(4) + 0.15(5) + 0.15(2) = 0.25 + 1.00 + 0.80 + 0.75 + 0.30 = 3.10. Despite small implementation effort (5), replacing the multi-agent graph violates inherited baseline requirements (`INH-001`–`INH-005`: 1) and invalidates the `FR-003`/`COST-001` paired context optimization experiment."
+        }
+      ],
+      "selected": "B: application seams",
+      "iterations": [
+        {
+          "adr": "docs/architecture/adr/001-application-extension.md",
+          "finding": "Established application composition around TradingAgents v0.4.0 (`EvidenceTradingGraph`, `EvidencePackIO`, offline replay, and `GroundingDelegate` common grounding injection across plain, tool-bound, and structured-output calls).",
+          "evidence": [
+            "architecture-blueprint.md",
+            "docs/architecture/adr/ADR-001-evidence-pack-format.md",
+            "src/research_desk/graph_adapter.py",
+            "src/research_desk/evidence.py",
+            "src/research_desk/replay.py",
+            "test/offline/test_at01_replay.py",
+            "test/offline/test_common_grounding_delegate.py"
+          ]
+        },
+        {
+          "adr": "docs/architecture/adr/002-exact-approval-and-total-position.md",
+          "finding": "Bound cryptographic approval fingerprints to exact share quantity, evidence price, and evidence ID; enforced the 10% equity cap on cumulative post-buy holdings rather than single tickets; permitted risk-reducing sales of existing holdings.",
+          "evidence": [
+            "src/research_desk/policy.py",
+            "src/research_desk/review.py",
+            "test/offline/test_at03_ledger_approve.py",
+            "test/offline/test_at04_reject_boundaries.py",
+            "test/offline/test_at05_version_recheck.py"
+          ]
+        },
+        {
+          "adr": "docs/architecture/adr/003-effective-agent-permissions.md",
+          "finding": "Synchronized `.opencode/permissions.jsonc` with active root `opencode.json` role definitions, pinned the offline JSON schema registry, and verified runtime write denial on protected governance paths.",
+          "evidence": [
+            "docs/architecture/permission-model.md",
+            "scripts/check_permissions.py",
+            "scripts/check_static.py",
+            "transcripts/project-permissions.full.json",
+            "transcripts/project-permission-probe.full.json"
+          ]
+        },
+        {
+          "adr": "docs/architecture/adr/004-release-quality-and-context-budget.md",
+          "finding": "Made `REJECTED` proposal status terminal on execution attempts, enforced the 72,000/96,000-unit whole-input context budget (`CTX-001`), rendered deterministic evidence headers (`QUALITY-001`), enforced earnings-period semantics (`QUALITY-003`), bound release quality gate validation to SHA-256 runtime source fingerprints (`GOV-003`), and added `reasoning_effort: none` to DeepSeek `extra_body`.",
+          "evidence": [
+            "src/research_desk/review.py",
+            "src/research_desk/budget.py",
+            "src/research_desk/eval/compact_delegate.py",
+            "src/research_desk/eval/quality.py",
+            "test/offline/test_revision_contracts.py",
+            "test/offline/test_context_budget.py",
+            "test/offline/test_release_quality.py",
+            "evaluation/release/aggregate/report-metrics.json"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "session_id": "fab710b8-d729-42d7-9e1e-98c2d923bca7",
+    "source": "https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-integration.json",
+    "response_field": "new_technical_issues",
+    "recorded_value": []
+  }
+]
