@@ -18,7 +18,7 @@ concurrency:
 env:
   PYTHON_VERSION: "3.12"
   # Baseline tag preserved by this project: a brand-new branch push reports an
-  # all-zero `before` SHA, so diff against the preserved upstream baseline tag.
+  # all-zero `before` SHA. Feature branches use their merge base with main.
   BASE_TAG: "v0.4.0"
 
 jobs:
@@ -37,12 +37,18 @@ jobs:
       - name: Resolve change base
         id: base
         run: |
-          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
-          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
-            echo "base=$BASE_TAG" >> "$GITHUB_OUTPUT"
-          else
-            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          BASE=""
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ] || [ "$GITHUB_EVENT_NAME" = "pull_request_target" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            BASE="${{ github.event.before }}"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            BASE="$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true)"
           fi
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="$BASE_TAG"
+          fi
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
         env:
           BASE_TAG: ${{ env.BASE_TAG }}
       - name: Run Gate 1
@@ -63,12 +69,18 @@ jobs:
       - name: Resolve change base
         id: base
         run: |
-          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
-          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
-            echo "base=$BASE_TAG" >> "$GITHUB_OUTPUT"
-          else
-            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          BASE=""
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ] || [ "$GITHUB_EVENT_NAME" = "pull_request_target" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            BASE="${{ github.event.before }}"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            BASE="$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true)"
           fi
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="$BASE_TAG"
+          fi
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
         env:
           BASE_TAG: ${{ env.BASE_TAG }}
       - name: Run Gate 2
@@ -102,12 +114,18 @@ jobs:
       - name: Resolve change base
         id: base
         run: |
-          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
-          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
-            echo "base=$BASE_TAG" >> "$GITHUB_OUTPUT"
-          else
-            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          BASE=""
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ] || [ "$GITHUB_EVENT_NAME" = "pull_request_target" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            BASE="${{ github.event.before }}"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            BASE="$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true)"
           fi
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="$BASE_TAG"
+          fi
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
         env:
           BASE_TAG: ${{ env.BASE_TAG }}
       - name: Run Gate 4
@@ -141,12 +159,18 @@ jobs:
       - name: Resolve change base
         id: base
         run: |
-          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
-          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
-            echo "base=$BASE_TAG" >> "$GITHUB_OUTPUT"
-          else
-            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          BASE=""
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ] || [ "$GITHUB_EVENT_NAME" = "pull_request_target" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            BASE="${{ github.event.before }}"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            BASE="$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true)"
           fi
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            BASE="$BASE_TAG"
+          fi
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
         env:
           BASE_TAG: ${{ env.BASE_TAG }}
       - name: Run Gate 6

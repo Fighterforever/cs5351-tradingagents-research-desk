@@ -26,13 +26,14 @@ COST_MIN, QUALITY_DROP_MAX, WALL_MAX = 0.20, 0.05, 1.10
 def _source_paths(root: Path) -> list[Path]:
     root = Path(root)
     python_sources = [p for p in root.glob("src/research_desk/**/*.py") if p.is_file()]
+    upstream_sources = [p for p in root.glob("tradingagents/**/*.py") if p.is_file()]
     prompts = [
         p
         for pattern in ("prompts/**/*.yaml", "prompts/**/*.yml")
         for p in root.glob(pattern)
         if p.is_file()
     ]
-    groups = [python_sources, prompts]
+    groups = [python_sources, upstream_sources, prompts]
     required = [root / r for r in ("pyproject.toml", "requirements-lock.txt", "test/fixtures/market/orchestration-manifest.json")]
     market = [p for p in (root / "test/fixtures/market").glob("*.csv") if p.is_file()]
     if any(not g for g in groups + [market]) or not all(p.is_file() for p in required):
@@ -51,12 +52,17 @@ def source_fingerprint(root: Path) -> str:
     return "sha256:" + digest.hexdigest()
 
 
-def _json(path: Path, label: str, failures: list[str]) -> Any:
+def _record(path: Path, label: str, kind: str, failures: list[str]) -> dict[str, Any] | None:
+    path = Path(path)
     try:
-        return json.loads(Path(path).read_text(encoding="utf-8"))
+        value = json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:  # noqa: BLE001
-        failures.append(f"{label}: cannot read {Path(path).name}: {exc}")
+        failures.append(f"{label}: cannot read {kind} {path.name}: {exc}")
         return None
+    if not isinstance(value, dict):
+        failures.append(f"{label}: {kind} {path.name} is not a JSON object")
+        return None
+    return value
 
 
 def _num(value: Any) -> TypeGuard[int | float]:
@@ -101,7 +107,7 @@ def _summary(summary: dict[str, Any], ticker: str, mode: str, label: str, failur
         failures.append(f"{label}: wall_seconds is missing or negative")
 
 
-def _pack(pack: Any, summary: dict[str, Any], ticker: str, mode: str, case: dict, label: str, failures: list[str]) -> dict[str, dict[str, Any]]:
+def _pack(pack: Any, summary: dict[str, Any], ticker: str, mode: str, case: dict, label: str, failures: list[str]) -> dict[str, dict[str, Any]] | None:
     if not pack.complete or pack.manifest.outcome != "completed":
         failures.append(f"{label}: saved actual pack is incomplete or not completed")
     if str(pack.manifest.ticker).upper() != ticker or pack.manifest.context_mode != mode:
@@ -118,10 +124,10 @@ def _pack(pack: Any, summary: dict[str, Any], ticker: str, mode: str, case: dict
         return {c["check"]: c for c in _deterministic_checks(case, pack, ticker) if isinstance(c, dict) and isinstance(c.get("check"), str)}
     except Exception as exc:  # noqa: BLE001
         failures.append(f"{label}: cannot recompute checks from saved actual pack: {exc}")
-        return {}
+        return None
 
 
-def _judge(judge: dict[str, Any], recomputed: dict[str, dict[str, Any]], label: str, failures: list[str]) -> None:
+def _judge(judge: dict[str, Any], recomputed: dict[str, dict[str, Any]] | None, label: str, failures: list[str]) -> None:
     for key, expected, message in (("error", False, "judge error is not false"), ("semantic_valid", True, "semantic_valid is not true")):
         if judge.get(key) is not expected:
             failures.append(f"{label}: {message}")
@@ -130,17 +136,24 @@ def _judge(judge: dict[str, Any], recomputed: dict[str, dict[str, Any]], label: 
             failures.append(f"{label}: {key} below {minimum}")
     if judge.get("semantic_errors") != []:
         failures.append(f"{label}: semantic_errors is not empty")
-    saved = {c["check"]: c for c in (judge.get("deterministic_checks") or []) if isinstance(c, dict) and isinstance(c.get("check"), str)}
+    saved_checks = judge.get("deterministic_checks")
+    if not isinstance(saved_checks, list):
+        failures.append(f"{label}: deterministic_checks is not a list")
+        saved: dict[str, dict[str, Any]] = {}
+    else:
+        saved = {c["check"]: c for c in saved_checks if isinstance(c, dict) and isinstance(c.get("check"), str)}
     for name in MANDATORY:
         saved_check = saved.get(name)
         if saved_check is None:
             failures.append(f"{label}: mandatory deterministic check missing: {name}")
         elif saved_check.get("passed") is not True:
             failures.append(f"{label}: deterministic check failed: {name}")
-        if recomputed and (recomputed.get(name) is None or recomputed[name].get("passed") is not True):
-            failures.append(f"{label}: recomputed pack check failed: {name}")
-        elif recomputed and saved_check is not None and saved_check.get("passed") != recomputed[name].get("passed"):
-            failures.append(f"{label}: saved check disagrees with saved actual pack: {name}")
+        if recomputed is not None:
+            recomputed_check = recomputed.get(name)
+            if recomputed_check is None or recomputed_check.get("passed") is not True:
+                failures.append(f"{label}: recomputed pack check failed: {name}")
+            elif saved_check is not None and saved_check.get("passed") != recomputed_check.get("passed"):
+                failures.append(f"{label}: saved check disagrees with saved actual pack: {name}")
 
 
 def validate_release(root: Path, evidence_dir: Path) -> dict[str, Any]:
@@ -180,12 +193,12 @@ def validate_release(root: Path, evidence_dir: Path) -> dict[str, Any]:
             if not arm.is_dir():
                 failures.append(f"{label}: arm missing")
                 continue
-            summary = _json(arm / "summary.json", label, failures)
-            config = _json(arm / "config.json", label, failures)
-            prov = _json(arm / PROVENANCE, label, failures)
-            judge = _json(evidence / "judge" / ticker / mode / "judge.json", label, failures)
-            jprov = _json(evidence / "judge" / ticker / mode / PROVENANCE, label, failures)
-            if not all(isinstance(x, dict) for x in (summary, config, prov, judge, jprov)):
+            summary = _record(arm / "summary.json", label, "summary", failures)
+            config = _record(arm / "config.json", label, "config", failures)
+            prov = _record(arm / PROVENANCE, label, "run provenance", failures)
+            judge = _record(evidence / "judge" / ticker / mode / "judge.json", label, "judge", failures)
+            jprov = _record(evidence / "judge" / ticker / mode / PROVENANCE, label, "judge provenance", failures)
+            if summary is None or config is None or prov is None or judge is None or jprov is None:
                 continue
             _provenance(prov, current, label, "run", failures)
             _provenance(jprov, current, label, "judge", failures)
@@ -195,7 +208,7 @@ def validate_release(root: Path, evidence_dir: Path) -> dict[str, Any]:
                     failures.append(f"{label}: config {key} != run provenance")
             if any(config.get(k) != DEFAULT_MODEL for k in ("quick_think_llm", "deep_think_llm")):
                 failures.append(f"{label}: config model is not current {DEFAULT_MODEL!r}")
-            recomputed: dict[str, dict[str, Any]] = {}
+            recomputed: dict[str, dict[str, Any]] | None = None
             try:
                 from ..evidence import EvidencePackIO
                 pack = EvidencePackIO().import_pack(arm / "run")
@@ -227,21 +240,29 @@ def validate_release(root: Path, evidence_dir: Path) -> dict[str, Any]:
             "baseline_relevance": baseline["judge"].get("relevance"),
             "compact_relevance": compact["judge"].get("relevance"),
         }
-    paired = [
-        m
-        for m in metrics["cases"].values()
-        if None not in (
-            m["baseline_tokens"],
-            m["compact_tokens"],
-            m["baseline_wall_seconds"],
-            m["compact_wall_seconds"],
-            m["baseline_support"],
-            m["compact_support"],
-            m["baseline_relevance"],
-            m["compact_relevance"],
+    metric_fields = (
+        "baseline_tokens",
+        "compact_tokens",
+        "baseline_wall_seconds",
+        "compact_wall_seconds",
+        "baseline_support",
+        "compact_support",
+        "baseline_relevance",
+        "compact_relevance",
+    )
+    missing_pairs = sorted(expected - set(metrics["cases"]))
+    invalid_pairs = sorted(
+        ticker
+        for ticker, values in metrics["cases"].items()
+        if not all(_num(values.get(k)) for k in metric_fields)
+    )
+    if missing_pairs or invalid_pairs:
+        failures.append(
+            "missing or invalid case pairs: " + ", ".join(missing_pairs + invalid_pairs)
         )
-    ]
-    if paired:
+    complete_matrix = not missing_pairs and not invalid_pairs
+    if complete_matrix and not failures:
+        paired = list(metrics["cases"].values())
         bt, ct, bw, cw = (
             sum(m[k] for m in paired)
             for k in (

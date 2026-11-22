@@ -26,7 +26,15 @@ import re
 from pathlib import Path
 
 import yaml
-from _gate_lib import add_change_args, changed_files, fail, resolve_root, run, tool_path
+from _gate_lib import (
+    add_change_args,
+    changed_files,
+    fail,
+    read_base_text,
+    resolve_root,
+    run,
+    tool_path,
+)
 
 # Modules that own deterministic authority and therefore must not touch an LLM.
 NO_LLM_MODULES = ("policy", "review")
@@ -60,6 +68,9 @@ LEDGER_AUTHORITY_NAMES = {
 # and rule/config files as declared by permission-model.md).
 SAFETY_PATHS = (
     "src/research_desk/policy.py",
+    "src/research_desk/cli.py",
+    "src/research_desk/evidence.py",
+    "src/research_desk/graph_adapter.py",
     "src/research_desk/review.py",
     "src/research_desk/storage.py",
     "src/research_desk/config.py",
@@ -174,7 +185,10 @@ def check_safety_path_evidence(
     )
     approval_changed = APPROVAL_DOC in changed_set
 
-    accepted_adrs = [p for p in adr_changed if _adr_accepted_by_leo(root / p)]
+    accepted_adrs = [
+        p for p in adr_changed
+        if (root / p).exists() and _adr_accepted_by_leo(root / p)
+    ]
     if not accepted_adrs:
         failures.append(
             "safety-path change requires an ADR accepted by leo that is changed "
@@ -216,6 +230,126 @@ def check_safety_path_evidence(
             checks_ok = False
     if checks_ok:
         print("safety-path change carries a changed ADR accepted by leo + updated approval evidence")
+
+
+def _surface(tree):
+    result = {}
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef):
+            if not node.name.startswith("_"):
+                result[node.name] = node
+                for item in node.body:
+                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and (item.name == "__init__" or not item.name.startswith("_")):
+                        result[f"{node.name}.{item.name}"] = item
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not node.name.startswith("_"):
+            result[node.name] = node
+    return result
+
+
+def _descriptor(fn):
+    for dec in fn.decorator_list:
+        name = None
+        if isinstance(dec, ast.Name):
+            name = dec.id
+        elif isinstance(dec, ast.Attribute):
+            name = dec.attr
+        if name in ("property", "classmethod", "staticmethod"):
+            return name
+    return None
+
+
+def _compatible(old, new):
+    if type(old) is not type(new):
+        return False
+    if _descriptor(old) != _descriptor(new):
+        return False
+    oa, na = old.args, new.args
+    if oa.vararg is not None and na.vararg is None:
+        return False
+    if oa.kwarg is not None and na.kwarg is None:
+        return False
+    op = oa.posonlyargs + oa.args
+    np = na.posonlyargs + na.args
+    if len(np) < len(op):
+        return False
+    nposonly = len(na.posonlyargs)
+    for i in range(len(op)):
+        if i >= len(op) - len(oa.defaults) and i < len(np) - len(na.defaults):
+            return False
+        if i >= len(oa.posonlyargs) and (i < nposonly or np[i].arg != op[i].arg):
+            return False
+    old_required_kwonly = {
+        arg.arg for arg, default in zip(oa.kwonlyargs, oa.kw_defaults, strict=True)
+        if default is None
+    }
+    extra_start = len(op)
+    extra_end = len(np) - len(na.defaults)
+    for i in range(extra_start, extra_end):
+        if np[i].arg not in old_required_kwonly or i < nposonly:
+            return False
+    for arg, default in zip(na.kwonlyargs, na.kw_defaults, strict=True):
+        if default is None and arg.arg not in old_required_kwonly:
+            return False
+    new_named = {a.arg for a in na.args} | {a.arg for a in na.kwonlyargs}
+    return all(not (arg.arg not in new_named and na.kwarg is None) for arg in oa.kwonlyargs)
+
+
+def api_incompatibilities(before: str, after: str) -> list[str]:
+    try:
+        old_tree = ast.parse(before)
+    except SyntaxError as exc:
+        return [f"before source has SyntaxError: {exc}"]
+    try:
+        new_tree = ast.parse(after)
+    except SyntaxError as exc:
+        return [f"after source has SyntaxError: {exc}"]
+
+    old_surface = _surface(old_tree)
+    new_surface = _surface(new_tree)
+    problems = []
+
+    for name, old_node in old_surface.items():
+        if name not in new_surface:
+            kind = "class" if isinstance(old_node, ast.ClassDef) else "function"
+            problems.append(f"public {kind} '{name}' was removed")
+            continue
+        new_node = new_surface[name]
+        old_is_class = isinstance(old_node, ast.ClassDef)
+        new_is_class = isinstance(new_node, ast.ClassDef)
+        if old_is_class != new_is_class:
+            problems.append(f"public name '{name}' changed kind")
+            continue
+        if not old_is_class and not _compatible(old_node, new_node):
+            problems.append(f"public function '{name}' has an incompatible signature change")
+
+    return problems
+
+
+def check_public_api(root: Path, changed: list[str], base_ref: str | None, failures: list[str]) -> None:
+    ref = base_ref or "HEAD"
+    for path in changed:
+        if path not in SAFETY_PATHS or not path.endswith(".py"):
+            continue
+        target = Path(path)
+        if not target.is_absolute():
+            target = root / path
+        try:
+            base_text = read_base_text(root, ref, path)
+        except RuntimeError as exc:
+            failures.append(f"{path}: could not read base version ({exc})")
+            continue
+        if base_text is None:
+            continue
+        if not target.exists():
+            failures.append(f"{path}: public API file was removed")
+            continue
+        try:
+            current_text = target.read_text()
+        except OSError as exc:
+            failures.append(f"{path}: could not read current file ({exc})")
+            continue
+        for problem in api_incompatibilities(base_text, current_text):
+            failures.append(f"{path}: {problem}")
 
 
 def main() -> None:
@@ -285,6 +419,7 @@ def main() -> None:
         fail(checks, [f"could not resolve changed files: {exc}"])
     if changed:
         check_safety_path_evidence(root, changed, failures)
+        check_public_api(root, changed, args.base_ref, failures)
 
     fail(checks, failures)
 

@@ -21,7 +21,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
-from _gate_lib import add_change_args, changed_files, fail, resolve_root
+from _gate_lib import (
+    add_change_args,
+    changed_files,
+    fail,
+    first_change_time,
+    read_base_text,
+    resolve_root,
+)
 
 APPROVER = "leo"
 REQUIRED_TESTS = {f"AT-{i:02d}" for i in range(1, 9)}
@@ -192,6 +199,152 @@ def _validate_revision(root: Path, data: dict) -> list[str]:
     return failures
 
 
+def governed_path(path: str) -> bool:
+    return (path in {'Prompt.md', 'pyproject.toml', 'opencode.json', '.opencode/permissions.jsonc'}
+            or path.startswith(('.github/workflows/', 'prompts/'))
+            or (path.endswith('.py') and ('/' not in path or path.startswith(('src/', 'cli/', 'tradingagents/', 'scripts/', 'test/', 'tests/')))))
+
+
+def _safe_relpath(root, value):
+    if not isinstance(value, str) or not value:
+        return None
+    p = Path(value)
+    if p.is_absolute() or '..' in p.parts or p == Path('.'):
+        return None
+    r = (Path(root) / p).resolve()
+    root = Path(root).resolve()
+    return r if r != root and root in r.parents else None
+
+
+def _entry_covers(scope: list[str], change: str) -> bool:
+    for entry in scope:
+        if not isinstance(entry, str):
+            continue
+        entry = entry.rstrip("/")
+        if not entry:
+            continue
+        if entry == change or change.startswith(entry + "/"):
+            return True
+    return False
+
+
+def validate_change_approvals(root, data, changed, base_ref, head_ref):
+    governed = [path for path in changed if governed_path(path)]
+    if not governed:
+        return []
+
+    base = base_ref or 'HEAD'
+    baseline_text = read_base_text(root, base, APPROVAL_DOC)
+    old = yaml.safe_load(baseline_text) if baseline_text is not None else {}
+    if not isinstance(old, dict):
+        return ['approval document must be a mapping']
+
+    old_rows = old.get('change_approvals', [])
+    if not isinstance(old_rows, list):
+        return ['change_approvals must be a list']
+
+    errors = []
+    previous_ids = set()
+    for row in old_rows:
+        if not isinstance(row, dict):
+            errors.append('previous change_approvals entry must be a mapping')
+            continue
+        old_id = row.get('id')
+        if isinstance(old_id, str) and old_id:
+            previous_ids.add(old_id)
+
+    current = data.get('change_approvals', [])
+    if not isinstance(current, list):
+        return ['change_approvals must be a list']
+
+    covered = set()
+    current_ids = set()
+    for row in current:
+        if not isinstance(row, dict):
+            errors.append('change_approvals entry must be a mapping')
+            continue
+        row_id = row.get('id')
+        if not isinstance(row_id, str) or not row_id:
+            errors.append('change_approvals entry requires a nonempty string id')
+            continue
+        if row_id in previous_ids:
+            continue
+        if row_id in current_ids:
+            errors.append(f'duplicate change_approvals id {row_id!r}')
+            continue
+        current_ids.add(row_id)
+
+        if not isinstance(row.get('authority'), str) or not row['authority'].strip():
+            errors.append(f'{row_id}: authority must be a nonempty string')
+        if row.get('decision') != 'APPROVED':
+            errors.append(f'{row_id}: decision must be APPROVED')
+
+        tests = row.get('tests')
+        if not isinstance(tests, list) or not tests:
+            errors.append(f'{row_id}: tests must be a nonempty list')
+        else:
+            for case in tests:
+                if not isinstance(case, str):
+                    errors.append(f'{row_id}: test case must be a string')
+                    continue
+                test_path = case.split('::', 1)[0]
+                resolved = _safe_relpath(root, test_path)
+                if resolved is None or not resolved.is_file():
+                    errors.append(f'{row_id}: test path {test_path!r} is not a file')
+
+        evidence = row.get('evidence')
+        if evidence is None:
+            errors.append(f'{row_id}: evidence is required')
+        else:
+            resolved = _safe_relpath(root, evidence)
+            if resolved is None or not resolved.is_file():
+                errors.append(f'{row_id}: evidence path {evidence!r} is not a file')
+
+        scope = row.get('scope')
+        if not isinstance(scope, list) or not scope:
+            errors.append(f'{row_id}: scope must be a nonempty list')
+            scope = []
+        else:
+            for entry in scope:
+                if not isinstance(entry, str) or not entry.strip():
+                    errors.append(f'{row_id}: scope entry must be a nonempty string')
+                elif _safe_relpath(root, entry.rstrip('/')) is None:
+                    errors.append(f'{row_id}: scope entry {entry!r} is not repo-relative')
+
+        matched = [path for path in governed if _entry_covers(scope, path)]
+
+        approved_at = row.get('approved_at')
+        approved = None
+        if isinstance(approved_at, str):
+            try:
+                approved = datetime.fromisoformat(approved_at)
+            except ValueError:
+                errors.append(f'{row_id}: approved_at is not a valid ISO timestamp')
+        elif isinstance(approved_at, datetime):
+            approved = approved_at
+        else:
+            errors.append(f'{row_id}: approved_at is required')
+
+        if approved is not None:
+            if approved.tzinfo is None:
+                errors.append(f'{row_id}: approved_at must include a timezone')
+            else:
+                if approved > datetime.now(timezone.utc):
+                    errors.append(f'{row_id}: approved_at must not be in the future')
+                if matched:
+                    first = first_change_time(root, base, head_ref, matched)
+                    if first is not None and approved >= first:
+                        errors.append(f'{row_id}: approval must predate implementation commit')
+                        continue
+                covered.update(matched)
+
+    for path in governed:
+        if path not in covered:
+            errors.append(f'governed path {path!r} is not covered by an approval')
+
+    return errors
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Gate 1: tests approved before implementation.")
     add_change_args(parser)
@@ -297,6 +450,8 @@ def main() -> None:
         failures.extend(_validate_revision(root, data))
 
     changed = _resolve_changes(root, args)
+    failures.extend(validate_change_approvals(
+        root, data, changed, args.base_ref, args.head_ref))
     if changed:
         test_change = [
             c for c in changed
@@ -313,8 +468,7 @@ def main() -> None:
                 checks.append("test approval updated in the same change")
         else:
             checks.append(
-                "no test specification/file change; existing approved tests may be reused "
-                "for this source-only change"
+                "no test specification or test file changed"
             )
 
     fail(checks, failures)
