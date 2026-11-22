@@ -1,15 +1,7 @@
-"""Gate 1: tests approved before implementation.
-
-Validates ``docs/process/test-approval.yaml`` as real approval evidence rather
-than a bare APPROVED word: the identified approver, timezone-aware temporal
-ordering (approval must precede implementation start), the referenced plan /
-test-plan / approval-record / evidence artifacts, declared-versus-document
-version consistency, and coverage of AT-01 through AT-08.
-
-In PR/base-ref mode, a change to a test specification or test file must update
-``docs/process/test-approval.yaml`` in the same change; a source-only fix may
-reuse the already-approved tests. Approval of arbitrary new tests is never
-inferred from the existence of the old AT identifiers.
+"""Gate 1 retains original AT-01 through AT-08 and revision records, requiring fresh
+scoped approvals for changed execution files in the current Git comparison. It checks
+written test and evidence files and compares approval time against the first matching
+implementation commit.
 """
 
 from __future__ import annotations

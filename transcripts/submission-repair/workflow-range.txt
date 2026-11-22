@@ -1,0 +1,13 @@
+OpenCode, return only compact JSON {"replacement":"<entire replacement snippet>"} with preserved YAML indentation. The job uses actions/checkout fetch-depth 0. Use shell $GITHUB_EVENT_NAME and $GITHUB_REF for event/ref (untrusted ref must not be interpolated into shell text from expressions). For a feature-branch push compute the merge base of refs/remotes/origin/main with HEAD for every push, not only first push; this is the complete review/approval scope. For PR use unchanged PR base, for main push use before. If the base cannot be obtained or is zero use established $BASE_TAG. Keep GitHub output. No tool calls. Existing snippet follows:
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            if [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF" = "refs/heads/main" ]; then
+              BASE="$BASE_TAG"
+            elif git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null 2>&1; then
+              BASE="$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true)"
+            fi
+            if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+              BASE="$BASE_TAG"
+            fi
+          fi
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"

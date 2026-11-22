@@ -1,0 +1,151 @@
+{
+  "info": {
+    "id": "ses_dfc74a07afferE3kLNTGT9rGQg",
+    "slug": "jolly-cactus",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-judge-persist",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-judge-persist",
+    "title": "Research Desk runtime-judge-persist",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 2147,
+      "output": 1714,
+      "reasoning": 0,
+      "cache": {
+        "read": 1792,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355795333,
+      "updated": 1795355807127
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355795363
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_2038b5fa3001OrTRAu3epwFSV0",
+        "sessionID": "ses_dfc74a07afferE3kLNTGT9rGQg"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Return ONLY valid JSON {\\\"changes\\\":[{\\\"path\\\":\\\"...\\\",\\\"old\\\":\\\"unique exact original substring\\\",\\\"new\\\":\\\"new text\\\"}]} with optionally a new file via {\\\"path\\\":\\\"...\\\",\\\"content\\\":\\\"...\\\"} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.\nSmall correctness fix only to eval/live.py run_judge_case. Currently a prior successful judge.json on disk can remain for an arm that was skipped in this call due to missing run, import failure, provenance mismatch, incomplete research or exhausted budget. Preserve historical raw records and the old score where appropriate, but ensure a re-used output root cannot present an old score/provenance as current. Minimal general design: at each arm start establish arm_judge_dir; if a prior current result exists, move that arm directory to a per-run history sibling outside current judge/<ticker>/<mode> (avoid overwriting archived history). Write out actual new judge artifacts only for completed calls, record diagnostic per missing arm even before request and make no new PASS for skipped arms. Current fixed runner normally uses a new root; no churn for normal case. Alternatives may simply use atomic move preserving raw/judge/provenance to an unused version inside a sibling under ticker. Retain per-arm provenance on normal calls and existing tests on source mismatch semantics; do not change source-fingerprint code, helper interfaces, or metrics. Provide small exact replacements.\n\nSOURCE src/research_desk/eval/live.py\nOnly host credentials are used: ``DEEPSEEK_API_KEY`` and optional\n``DEEPSEEK_BASE_URL`` (default ``https://api.aiohub.org/v1``). Each run uses an\nisolated home directory. A completed or\nfailed outcome means the actual graph outcome; a failed setup is never reported\nas completed.\n\\\"\\\"\\\"\n\nfrom __future__ import annotations\n\nimport json\nimport logging\nimport os\nimport re\nimport time\nfrom decimal import Decimal, InvalidOperation\nfrom pathlib import Path\nfrom typing import Any\n\nfrom pydantic import BaseModel, Field, model_validator\n\nfrom ..config import DEFAULT_BASE_URL, DEFAULT_MODEL, DEFAULT_PROVIDER\nfrom .case_registry import case_for\nfrom .frozen_provider import FrozenMarketProvider\n\nlogger = logging.getLogger(__name__)\n\nMODEL = DEFAULT_MODEL\nPROVIDER = DEFAULT_PROVIDER\nOUTPUT_CAP = 1800  # provider max_tokens cap, identical for both arms\nPROVENANCE_FILENAME = \\\"provenance.json\\\"\n\n\ndef _base_url() -> str:\n    \\\"\\\"\\\"Host-supplied endpoint override, otherwise the authoritative default.\\\"\\\"\\\"\n    return os.environ.get(\\\"DEEPSEEK_BASE_URL\\\") or DEFAULT_BASE_URL\n\n\ndef _project_root() -> Path:\n    \\\"\\\"\\\"Repository root (this module lives in ``src/research_desk/eval``).\\\"\\\"\\\"\n    return Path(__file__).resolve().parents[3]\n\n\ndef _current_source_fingerprint(root: Path) -> str:\n    \\\"\\\"\\\"Current runtime source fingerprint from the release-quality contract.\\\"\\\"\\\"\n\n...\ndef run_judge_case(\n    ticker: str,\n    out_dir: str | Path,\n    max_calls: int | None = None,\n) -> dict[str, Any]:\n    \\\"\\\"\\\"Judge a completed run's report with a real isolated DeepSeek evaluator.\n\n    Deterministic checks are computed first. Then the real DeepSeek client\n    (same model, separate role, fixed evidence and rubric) scores support,\n    relevance and citations with a structured rationale. Raw response and usage\n    are recorded separately. A score is never auto-assigned for nonempty text.\n    \\\"\\\"\\\"\n    from research_desk.evidence import EvidencePackIO\n\n    ticker = ticker.upper()\n    if not os.environ.get(\\\"DEEPSEEK_API_KEY\\\"):\n        raise RuntimeError(\n            \\\"DEEPSEEK_API_KEY is not set. Supply it as a host environment variable.\\\"\n        )\n    case = case_for(ticker)\n    out = Path(out_dir)\n    root = _project_root()\n    judged: dict[str, Any] = {\\\"ticker\\\": ticker, \\\"arms\\\": {}}\n    source_failure = False\n    if max_calls is not None and max_calls < 0:\n        raise ValueError(f\\\"max_calls must be nonnegative, got {max_calls!r}\\\")\n    remaining_calls = max_calls\n    for mode in (\\\"baseline\\\", \\\"compact\\\"):\n        run_dir = out / ticker / mode / \\\"run\\\"\n        if not run_dir.exists():\n            continue\n        current = _current_source_fingerprint(root)\n        run_fingerprint = _read_source_fingerprint(\n            out / ticker / mode / PROVENANCE_FILENAME\n        )\n        if run_fingerprint is None:\n            judged[\\\"arms\\\"][mode] = {\n                \\\"error\\\": \\\"run provenance missing; refusing to judge\\\",\n            }\n            source_failure = True\n            continue\n        if run_fingerprint != current:\n            judged[\\\"arms\\\"][mode] = {\n                \\\"error\\\": \\\"run provenance is stale; refusing to judge\\\",\n                \\\"run_source_fingerprint\\\": run_fingerprint,\n                \\\"current_source_fingerprint\\\": current,\n            }\n            source_failure = True\n            continue\n        try:\n            pack = EvidencePackIO().import_pack(run_dir)\n        except Exception as exc:  # noqa: BLE001\n            logger.warning(\\\"cannot import run for %s/%s: %s\\\", ticker, mode, exc)\n            judged[\\\"arms\\\"][mode] = {\\\"error\\\": str(exc)}\n            continue\n        if pack.manifest.outcome != \\\"completed\\\" or not pack.final_state:\n            judged[\\\"arms\\\"][mode] = {\n                \\\"outcome\\\": pack.manifest.outcome,\n                \\\"note\\\": \\\"skipped judge: run not completed\\\",\n            }\n            continue\n        if remaining_calls is not None and remaining_calls <= 0:\n            judged[\\\"arms\\\"][mode] = {\n                \\\"outcome\\\": pack.manifest.outcome,\n                \\\"error\\\": \\\"judge call budget exhausted (--max-calls)\\\",\n                \\\"note\\\": \\\"not judged: no judge request was made\\\",\n            }\n            continue\n        if remaining_calls is not None:\n            remaining_calls -= 1\n        report_text = _report_text_with_identity(pack)\n        deterministic = _deterministic_checks(case, pack, ticker)\n        judge_cfg = {\n            \\\"llm_provider\\\": PROVIDER,\n            \\\"quick_think_llm\\\": MODEL,\n            \\\"deep_think_llm\\\": MODEL,\n            \\\"max_tokens\\\": OUTPUT_CAP,\n            \\\"temperature\\\": 0,\n        }\n        arm_judge_dir = out / \\\"judge\\\" / ticker / mode\n        arm_judge_dir.mkdir(parents=True, exist_ok=True)\n        _dump_json(\n            arm_judge_dir / PROVENANCE_FILENAME,\n            _provenance_payload(current, judge_cfg, _base_url()),\n        )\n        try:\n            raw, score = _llm_judge(\n                case,\n                report_text,\n                deterministic,\n                available_sources=pack.input.available_sources or {},\n                events=pack.events,\n                max_retries=0 if max_calls is not None else None,\n            )\n        except Exception as exc:  # noqa: BLE001 - record the failed request honestly\n            logger.warning(\\\"judge request failed for %s/%s: %s\\\", ticker, mode, exc)\n            raw = {\\\"prompt\\\": None, \\\"invoke_error\\\": str(exc), \\\"usage\\\": {}}\n            score = {\n                \\\"support\\\": None,\n                \\\"relevance\\\": None,\n                \\\"cited_claim_count\\\": 0,\n                \\\"supported_cited_claim_count\\\": 0,\n                \\\"valid_citation_rate\\\": None,\n                \\\"invalid_citation_explanations\\\": [],\n                \\\"uncited_factual_claims\\\": [],\n                \\\"semantic_valid\\\": False,\n                \\\"semantic_errors\\\": [],\n                \\\"rationale\\\": f\\\"judge request failed: {exc}\\\",\n                \\\"error\\\": True,\n                \\\"deterministic_checks\\\": deterministic,\n            }\n        source_after = _current_source_fingerprint(root)\n        if source_after != current:\n            judged[\\\"arms\\\"][mode] = {\n                \\\"error\\\": \\\"source changed during judge; refusing to certify\\\",\n                \\\"judge_source_fingerprint\\\": current,\n                \\\"current_source_fingerprint\\\": source_after,\n            }\n            source_failure = True\n            continue\n        _dump_json(arm_judge_dir / \\\"raw.json\\\", raw)\n        _dump_json(arm_judge_dir / \\\"judge.json\\\", score)\n        judged[\\\"arms\\\"][mode] = score\n    _dump_json(out / \\\"judge\\\" / ticker / \\\"summary.json\\\", judged)\n    if source_failure:\n        raise RuntimeError(\n            \\\"source provenance missing or changed; refusing to certify judge results\\\"\n        )\n\"",
+          "id": "prt_2038b5fa6001s34e2V39Yv443u",
+          "sessionID": "ses_dfc74a07afferE3kLNTGT9rGQg",
+          "messageID": "msg_2038b5fa3001OrTRAu3epwFSV0"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_2038b5fa3001OrTRAu3epwFSV0",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-judge-persist",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 5653,
+          "input": 2147,
+          "output": 1714,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1792
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355795718,
+          "completed": 1795355807117
+        },
+        "finish": "stop",
+        "id": "msg_2038b6106001d5qhWlsHM8Ry85",
+        "sessionID": "ses_dfc74a07afferE3kLNTGT9rGQg"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_2038b7038001WwGBXaTBQU4Vrr",
+          "sessionID": "ses_dfc74a07afferE3kLNTGT9rGQg",
+          "messageID": "msg_2038b6106001d5qhWlsHM8Ry85"
+        },
+        {
+          "type": "text",
+          "text": "{\"changes\":[{\"path\":\"src/research_desk/eval/live.py\",\"old\":\"    remaining_calls = max_calls\\n    for mode in (\\\"baseline\\\", \\\"compact\\\"):\\n        run_dir = out / ticker / mode / \\\"run\\\"\\n        if not run_dir.exists():\\n            continue\\n        current = _current_source_fingerprint(root)\\n        run_fingerprint = _read_source_fingerprint(\\n            out / ticker / mode / PROVENANCE_FILENAME\\n        )\\n        if run_fingerprint is None:\\n            judged[\\\"arms\\\"][mode] = {\\n                \\\"error\\\": \\\"run provenance missing; refusing to judge\\\",\\n            }\\n            source_failure = True\\n            continue\\n        if run_fingerprint != current:\\n            judged[\\\"arms\\\"][mode] = {\\n                \\\"error\\\": \\\"run provenance is stale; refusing to judge\\\",\\n                \\\"run_source_fingerprint\\\": run_fingerprint,\\n                \\\"current_source_fingerprint\\\": current,\\n            }\\n            source_failure = True\\n            continue\\n        try:\\n            pack = EvidencePackIO().import_pack(run_dir)\\n        except Exception as exc:  # noqa: BLE001\\n            logger.warning(\\\"cannot import run for %s/%s: %s\\\", ticker, mode, exc)\\n            judged[\\\"arms\\\"][mode] = {\\\"error\\\": str(exc)}\\n            continue\\n        if pack.manifest.outcome != \\\"completed\\\" or not pack.final_state:\\n            judged[\\\"arms\\\"][mode] = {\\n                \\\"outcome\\\": pack.manifest.outcome,\\n                \\\"note\\\": \\\"skipped judge: run not completed\\\",\\n            }\\n            continue\\n        if remaining_calls is not None and remaining_calls <= 0:\\n            judged[\\\"arms\\\"][mode] = {\\n                \\\"outcome\\\": pack.manifest.outcome,\\n                \\\"error\\\": \\\"judge call budget exhausted (--max-calls)\\\",\\n                \\\"note\\\": \\\"not judged: no judge request was made\\\",\\n            }\\n            continue\\n        if remaining_calls is not None:\\n            remaining_calls -= 1\\n        report_text = _report_text_with_identity(pack)\\n        deterministic = _deterministic_checks(case, pack, ticker)\\n        judge_cfg = {\\n            \\\"llm_provider\\\": PROVIDER,\\n            \\\"quick_think_llm\\\": MODEL,\\n            \\\"deep_think_llm\\\": MODEL,\\n            \\\"max_tokens\\\": OUTPUT_CAP,\\n            \\\"temperature\\\": 0,\\n        }\\n        arm_judge_dir = out / \\\"judge\\\" / ticker / mode\\n        arm_judge_dir.mkdir(parents=True, exist_ok=True)\\n        _dump_json(\\n            arm_judge_dir / PROVENANCE_FILENAME,\\n            _provenance_payload(current, judge_cfg, _base_url()),\\n        )\",\"new\":\"    remaining_calls = max_calls\\n    for mode in (\\\"baseline\\\", \\\"compact\\\"):\\n        arm_judge_dir = _prepare_arm_judge_dir(out / \\\"judge\\\" / ticker, mode)\\n        run_dir = out / ticker / mode / \\\"run\\\"\\n        if not run_dir.exists():\\n            judged[\\\"arms\\\"][mode] = {\\n                \\\"error\\\": \\\"no run directory; arm was not judged\\\",\\n                \\\"note\\\": \\\"skipped: no run for this call\\\",\\n            }\\n            continue\\n        current = _current_source_fingerprint(root)\\n        run_fingerprint = _read_source_fingerprint(\\n            out / ticker / mode / PROVENANCE_FILENAME\\n        )\\n        if run_fingerprint is None:\\n            judged[\\\"arms\\\"][mode] = {\\n                \\\"error\\\": \\\"run provenance missing; refusing to judge\\\",\\n            }\\n            source_failure = True\\n            continue\\n        if run_fingerprint != current:\\n            judged[\\\"arms\\\"][mode] = {\\n                \\\"error\\\": \\\"run provenance is stale; refusing to judge\\\",\\n                \\\"run_source_fingerprint\\\": run_fingerprint,\\n                \\\"current_source_fingerprint\\\": current,\\n            }\\n            source_failure = True\\n            continue\\n        try:\\n            pack = EvidencePackIO().import_pack(run_dir)\\n        except Exception as exc:  # noqa: BLE001\\n            logger.warning(\\\"cannot import run for %s/%s: %s\\\", ticker, mode, exc)\\n            judged[\\\"arms\\\"][mode] = {\\\"error\\\": str(exc)}\\n            continue\\n        if pack.manifest.outcome != \\\"completed\\\" or not pack.final_state:\\n            judged[\\\"arms\\\"][mode] = {\\n                \\\"outcome\\\": pack.manifest.outcome,\\n                \\\"note\\\": \\\"skipped judge: run not completed\\\",\\n            }\\n            continue\\n        if remaining_calls is not None and remaining_calls <= 0:\\n            judged[\\\"arms\\\"][mode] = {\\n                \\\"outcome\\\": pack.manifest.outcome,\\n                \\\"error\\\": \\\"judge call budget exhausted (--max-calls)\\\",\\n                \\\"note\\\": \\\"not judged: no judge request was made\\\",\\n            }\\n            continue\\n        if remaining_calls is not None:\\n            remaining_calls -= 1\\n        report_text = _report_text_with_identity(pack)\\n        deterministic = _deterministic_checks(case, pack, ticker)\\n        judge_cfg = {\\n            \\\"llm_provider\\\": PROVIDER,\\n            \\\"quick_think_llm\\\": MODEL,\\n            \\\"deep_think_llm\\\": MODEL,\\n            \\\"max_tokens\\\": OUTPUT_CAP,\\n            \\\"temperature\\\": 0,\\n        }\\n        arm_judge_dir.mkdir(parents=True, exist_ok=True)\\n        _dump_json(\\n            arm_judge_dir / PROVENANCE_FILENAME,\\n            _provenance_payload(current, judge_cfg, _base_url()),\\n        )\"},{\"path\":\"src/research_desk/eval/live.py\",\"old\":\"def run_judge_case(\\n    ticker: str,\",\"new\":\"def _prepare_arm_judge_dir(judge_ticker_dir: Path, mode: str) -> Path:\\n    \\\"\\\"\\\"Return a clean arm judge dir, archiving any prior current result.\\n\\n    A prior result under ``judge/<ticker>/<mode>`` is moved into a per-run\\n    history sibling so a re-used output root cannot present an old score as\\n    current. Archived history is never overwritten.\\n    \\\"\\\"\\\"\\n    arm_judge_dir = judge_ticker_dir / mode\\n    if arm_judge_dir.exists():\\n        history_root = judge_ticker_dir / \\\"history\\\"\\n        history_root.mkdir(parents=True, exist_ok=True)\\n        stamp = time.strftime(\\\"%Y%m%dT%H%M%S\\\", time.gmtime())\\n        archived = history_root / f\\\"{mode}-{stamp}-{os.getpid()}\\\"\\n        suffix = 1\\n        while archived.exists():\\n            archived = history_root / f\\\"{mode}-{stamp}-{os.getpid()}-{suffix}\\\"\\n            suffix += 1\\n        arm_judge_dir.rename(archived)\\n    arm_judge_dir.mkdir(parents=True, exist_ok=True)\\n    return arm_judge_dir\\n\\n\\ndef run_judge_case(\\n    ticker: str,\"}]}",
+          "time": {
+            "start": 1795355799612,
+            "end": 1795355807102
+          },
+          "id": "prt_2038b703c001hzEEAOEqTRsFOF",
+          "sessionID": "ses_dfc74a07afferE3kLNTGT9rGQg",
+          "messageID": "msg_2038b6106001d5qhWlsHM8Ry85"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 5653,
+            "input": 2147,
+            "output": 1714,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1792
+            }
+          },
+          "cost": 0,
+          "id": "prt_2038b8d86001ZULizxIlWc7HLQ",
+          "sessionID": "ses_dfc74a07afferE3kLNTGT9rGQg",
+          "messageID": "msg_2038b6106001d5qhWlsHM8Ry85"
+        }
+      ]
+    }
+  ]
+}

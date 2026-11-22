@@ -1,0 +1,68 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+Improve only replay() CLI in cli.py. Close optional ledger store by try/finally after reading ledger; catch EvidencePackError and IO/ValueError at the replay boundary for bad packs, output nonzero with clear text and no success banner. Preserve existing ReplayResult.error handling including success status only after checks. Do not change other commands or runtime source; preserve current entity imports with small exact replacements.
+
+SOURCE src/research_desk/cli.py
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.table import Table
+
+from .config import ResearchDeskSettings
+from .evidence import EvidencePackIO
+from .graph_adapter import ResearchRunner
+from .models import ContextMode, ProposalStatus, RunOutcome, RunResult
+from .replay import ReplayEngine
+from .report import (
+    render_compare_report,
+    render_ledger_report,
+)
+from .review import ReviewError, approve as _approve, execute as _execute, reject as _reject
+
+...
+# replay
+# ---------------------------------------------------------------------------
+
+
+@app.command()
+def replay(
+    source: str = typer.Argument(...),
+    out: str | None = typer.Option(None, "--out", help="Directory to rebuild reports into"),
+    with_ledger: bool = typer.Option(False, "--ledger", help="Evaluate proposal policy against the current ledger"),
+):
+    """Offline replay of a complete evidence pack (zero external calls)."""
+    engine = ReplayEngine()
+    settings = _settings()
+    out_dir = out or str(settings.reports_dir / f"replay-{Path(source).stem}")
+    ledger = None
+    if with_ledger:
+        ledger = _store(settings).get_ledger()
+    result = engine.replay(source, out_dir, ledger=ledger)
+    if result.incomplete or result.error:
+        detail = result.error or "incomplete evidence pack"
+        console.print(f"[red]Replay failed: {detail}[/red]")
+        raise typer.Exit(1)
+    console.print(f"[green]Replayed {result.pack.manifest.run_id}[/green] (external calls: {result.external_calls})")
+    console.print(f"signal: {result.signal or 'n/a'}")
+    console.print(f"reports: {len(result.report_files)} files under {out_dir}")
+    if result.policy_bounds is not None:
+        bounds = result.policy_bounds
+        if bounds.get("side") == "sell":
+            if bounds.get("price_present"):
+                console.print(
+                    f"policy: sell up to {bounds.get('max_sell', 0)} owned shares at the "
+                    f"evidence price, on equity ${bounds['equity']:,.2f}"
+                )
+            else:
+                console.print("policy: price missing from evidence; nothing is executable")
+        elif bounds.get("price_present"):
+            console.print(
+                f"policy: max {bounds['max_by_cap']} shares by 10% cap, "
+                f"max {bounds['max_by_cash']} by cash, on equity ${bounds['equity']:,.2f}"
+            )
+        else:
+            console.print("policy: price missing from evidence; nothing is executable")
+    if result.policy_verdict is not None:
+        console.print(f"policy allowed: {result.policy_verdict.allowed}")
+        for c in result.policy_verdict.checks:
+            console.print(f"  - {c['check']}: {'PASS' if c['passed'] else 'FAIL'} ({c['detail']})")
+
+

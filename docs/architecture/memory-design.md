@@ -8,7 +8,7 @@ A completed run survives process exit through its evidence package. Interrupted 
 
 Memory retrieval applies the analysis cutoff to resolution/availability dates. Retrieval date is recorded separately because downloading a July release in August does not make its content available before July. Future-resolved lessons are excluded. Unknown availability is visible and unsuitable for strict historical claims. This rule concerns input provenance and does not certify investment validity.
 
-The package schema starts at version1. Release names follow ordinary semantic versioning. Content fingerprints serve integrity and exact approval binding only. Changes to persisted contracts need an explicit migration or documented import path before claiming compatibility. No unsupported cross-version restoration is promised.
+The package schema starts at version 1. Release names follow ordinary semantic versioning. Content fingerprints serve integrity and exact approval binding only. Changes to persisted contracts need an explicit migration or documented import path before claiming compatibility. No unsupported cross-version restoration is promised.
 
 Retention: keep source fixtures, experiment evidence, decisions and full credential-scanned sessions through assessment; retain ledger demonstrations as reproducible fixtures. Credentials are never durable state. User-specific caches, environment files and Yahoo cookies are excluded from the submission and repository. Deleting a project home resets local paper state and must not delete the immutable submitted experiment evidence.
 

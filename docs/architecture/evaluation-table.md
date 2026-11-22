@@ -1,6 +1,6 @@
 # Architecture candidate evaluation
 
-Scores are design judgments by leo on a1–5 scale, not benchmark measurements. Weights sum to1.0.
+The planning workflow scored each candidate from 1 to 5 under the scope delegated by leo. The weights sum to 1.0. A higher total indicates a closer fit to the project drivers.
 
 | Criterion | Weight | A: edit core graph | B: application seams | C: replacement demo |
 |---|---:|---:|---:|---:|

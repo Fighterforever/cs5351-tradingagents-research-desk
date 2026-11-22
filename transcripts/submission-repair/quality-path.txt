@@ -1,0 +1,8 @@
+Use the edit tool to change just the --evidence-dir default from evaluation/release to evaluation/submission-release in scripts/check_semantic.py. This makes the unqualified CI invocation consume the new source-bound release directory. Keep explicit caller overrides. Do not edit anything else. Read and edit the exact absolute file /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py. The original source excerpt is:
+    parser.add_argument(
+        "--evidence-dir",
+        default="evaluation/release",
+        help="Current-source paired release evidence directory.",
+    )
+    args = parser.parse_args(
+If a tool fails, return exactly a JSON object with old and new literal containing the original default assignment and new default assignment for the coordinator to apply. End once the edit succeeds.

@@ -1,5 +1,7 @@
 # Review memo
 
+The [review of the repaired submission](#review-of-the-repaired-submission) covers ADR-005. The earlier entries below record the findings and decisions for the versions reviewed at the time.
+
 ## Initial implementation review
 
 Reviewer: leo. Scope: FR-001/002/003 and AT-01 through AT-08. Verdict: CHANGES REQUIRED for live delivery after the offline slice.
@@ -52,7 +54,7 @@ Gemini CLI reviewed the original course requirements together with the current s
 
 The follow-up assessment reports technical_ready true and an empty remaining_technical_issues list. It confirms alignment with the higher-grade directions for architecture, governance and token efficiency. Native review responses are retained in transcripts/gemini-release-review.json and transcripts/gemini-release-followup.json.
 
-The assessment leaves three authentic team actions open: formal identities and contribution evidence, per-student annotated interventions, and independent GitHub/rotating peer review. These remain on the delivery checklist.
+The assessment identified gaps in the roster, individual supervision evidence and independent review. The [delivery checklist](process/delivery-checklist.md) records their current status.
 
 ## Intervention evidence and report review
 
@@ -60,31 +62,31 @@ Reviewer: coordinating workflow, with an independent Gemini CLI assessment. Scop
 
 Each annotation now links its exact source message and quote to the observed result. The message locators and quotations were checked against the native exports. The participant index records Liyu MA (59072966) as decision owner leo and identifies the workflow that sent the prompts. Original conversations remain available alongside the annotations.
 
-Gemini found stale wording in three reflections. Bravo now describes the implemented context cap. Charlie describes the completed rejected-state repair and its transition test. Echo records the passing revision CI and the pending independent approval. Reference spacing was also corrected. Application source and experiment results are unchanged.
+The editorial review corrected three accounts: how the context cap works, which test covered the rejected-state repair, and which CI checks had passed at the time of review.
 
-The original requirements leave three areas to complete: formal member identification and contribution confirmation; authentic member interventions across the supervised pipeline; independent peer review and protected merge. Requirements classification and architecture candidate evaluation have design artifacts, but their original supervision record still needs to be linked. The team should add the corresponding conversation or document a new review as a subsequent review.
+At this review, the team still needed to confirm individual contributions, locate student decisions from early design and obtain an independent merge review. The requirements registry and candidate comparison already recorded the resulting design choices.
 
 Two assessment details were checked against the course text. D6 requires relative contributions and suggests productive hours or story points as possible measures; it does not prescribe a sprint-by-sprint table. D5 requires marked team interventions and full pipeline coverage; per-student files follow the supplied repository naming convention. The source revision CI link remains attached to the evaluated implementation. The final package also contains the CI receipt for its documentation update.
 
 Native editorial and assessment responses: `transcripts/gemini-intervention-edit.json` and `transcripts/gemini-intervention-review.json`.
 
-Gemini’s focused follow-up confirmed all corrections resolved and reported no remaining editorial issues. Its response is retained in `transcripts/gemini-intervention-followup.json`. That reviewed version contained five reflections of 300–500 words and a 23-page PDF.
+Gemini checked the revised passages and closed the editorial findings. The [follow-up review](../transcripts/gemini-intervention-followup.json) records its decision.
 
 ## Requirements and architecture process review
 
-Reviewer: Gemini CLI. Scope: all 24 requirement classifications, three architecture candidates and the five assigned responsibility areas. Verdict: **APPROVE technical assessment**. The requirements review and weighted candidate comparison support the existing application-extension design. No new runtime issue was identified.
+Reviewer: Gemini CLI. Scope: the classification of 24 requirements, the comparison of three architecture candidates and the allocation of design responsibilities. Verdict: **APPROVE technical assessment**. The requirements review and weighted candidate comparison support the existing application-extension design. No new runtime issue was identified.
 
 Six selected user-message excerpts now document leo's actual scope and governance directions. They are linked separately from the 30 implementation prompts issued by the coordinating workflow. The subsequent review and its exact prompts are preserved under `transcripts/gemini-pipeline-review.json` and `transcripts/gemini-pipeline-integration.json`. The finished review is in `docs/process/pipeline-review.md`.
 
-Team attribution and independent code-owner approval remain on the delivery checklist. This review adds a recorded requirements/architecture assessment to the available development evidence.
+This review documented the requirements and architecture assessment. The independent code-owner review took place later and is recorded below.
 
 ## Reviewer configuration
 
-The user supplied `wangsaorui` as the review account. A write-access invitation was issued, and the `add-code-owner` branch prepares the owner entry on `main`. The branch reuses the existing six-gate workflow. The activation sequence is recorded in `docs/process/reviewer-onboarding.md`; write access is now confirmed, while the configuration PR and actual review decisions remain pending.
+The team designated `wangsaorui` as a code owner. The [onboarding record](process/reviewer-onboarding.md) documents write access and activation on `main`. The account subsequently approved PR #1.
 
 ## Four-member allocation
 
-The user revised the team to Alfa, Bravo, Charlie and Delta. Alfa now owns report integration and submission checks. Bravo owns GitHub release governance. Charlie owns reproducible packaging. Delta owns CI. The reflection material has been integrated into four paragraphs, one per current member. The four-person rotation and assigned weights are recorded in `docs/process/team.md`.
+The four members are Alfa, Bravo, Charlie and Delta. Alfa handles report integration and submission checks. Bravo handles release governance, Charlie handles packaging, and Delta handles CI. The [team table](process/team.md) records their assigned weights and review rotation.
 
 ## Independent code-owner review of PR #1
 
@@ -107,3 +109,47 @@ Findings carried as follow-ups (non-blocking):
 - F4 (verification statement): the reviewer did not locally re-run the full 790-test suite; approval is conditioned on the PR's own CI turning green.
 
 Verdict: **APPROVE with comments**. No finding is safety-blocking; F1-F4 are recorded as follow-ups. The independent code-owner approval on GitHub and the protected-branch merge remain the human administrative actions that complete D7.
+
+**Release outcome.** After this memo, Delta recorded the [approval on GitHub](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1#pullrequestreview-5840085663). PR #1 merged, and all six [main-branch checks](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42798475065) passed.
+
+## Technical review of PR #2
+
+[PR #2](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/2) restores an advisory Python-version matrix. Its two commits change the workflow, CI documentation and AI-use log, and include [Delta’s supervision record](../transcripts/60254685-Chengru-WANG.md). The change leaves the application and the six required checks in place. The version matrix runs the existing regression job on pull requests. No model credentials or paid calls are required.
+
+All six required checks passed. The advisory jobs passed on Python 3.12 and 3.13. Installation stopped before regression on [Python 3.10](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/43003982308/job/130466775782) at the pandas pin and on [Python 3.11](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/43003982308/job/130466775679) at the NumPy pin. The package declares Python 3.10 or later.
+
+Technical verdict: **CHANGES REQUIRED** to claim reproducibility across the declared Python versions. Reconcile the dependency pins with the supported interpreters and retain the advisory status until those jobs pass. This assessment covers the published diff and CI output. The PR is open and awaits an independent reviewer’s decision on GitHub.
+
+## Submission review
+
+This review covers the archived release, the published pull requests and the submitted source. The twelve release runs support the reported 60/60 mandatory fields and 43.00% token reduction. The following findings concern contracts outside those measurements.
+
+| Requirement | Finding | Acceptance condition for the repair |
+|---|---|---|
+| INV-001, FR-002 | The nine tradeable proposals in the release have an empty evidence identifier. The research graph omits the field used by the approval fingerprint. The other three runs produced no proposal. | The research path supplies a stable evidence identity. Changing material evidence invalidates the earlier approval in a normal research-to-review flow. |
+| INV-001, INV-002 | Registration writes proposal state taken from the research package. Registering a known proposal can replace a terminal ledger record. | The ledger owns review and execution state. Repeat registration preserves the original rejection or execution and its audit record. |
+| FR-001 | Replay can record a report-write error while the CLI prints success. Its file count can also include the completed report twice because it compares a path object with file name strings. | A report-write failure reaches the caller with a nonzero exit and a diagnostic. Successful reconstruction reports the files actually written. |
+| D8, evaluator CLI | The judge command exposes a call budget that the judging function does not consult. | Enforce the advertised limit or remove the argument and document the number of calls. |
+| D7, Gates 1 and 2 | A source-only change can reuse an old approval without a check that the new behavior falls within its scope. Gate 2 checks permissions and selected imports but has no distinct public API compatibility check for safety-related changes. | Check the changed behavior against the approved tests and verify the affected public interface on safety-related PRs. |
+| D7, Gate 4 | The validator can omit an incorrectly shaped evidence record from a pair without recording a failure. Its provenance covers the extension but excludes the upstream graph and its role prompts. | Require six complete, validated pairs and cover the graph and prompt code used to generate them. |
+| D7, Gate 6 | Path coverage comes from the union of past log entries. A historical entry can satisfy the path check for a new change. | Match changed paths to the evidence in the entry added or amended for that PR. |
+
+The [supplementary replay check](../evaluation/replay-review/check_replay.py) ran the archived packages in fresh, network-guarded Python processes. All twelve signals matched and no network events were recorded. Its [observations](../evaluation/replay-review/observations.json) distinguish Hold results and proposals with no approved quantity. On sell proposals the CLI still labels the displayed limits as purchase bounds. Direction-specific bounds and an archived original policy result would permit a stronger comparison.
+
+At the end of this review, the technical verdict was **CHANGES REQUIRED**. The [delivery checklist](process/delivery-checklist.md) tracks student attribution and early supervision evidence. The GitHub checks cited above apply to their published revisions.
+
+## Review of the repaired submission
+
+The technical review traced each finding above through the revised entry point and the unit case that would fail if the defect returned. Alfa requested the work in [U-08](../transcripts/leo-project-directions.md#u-08--submission-contracts-and-release). The implementation decisions and corresponding OpenCode sessions appear in the [annotated record](../transcripts/submission-repair/annotations.md).
+
+| Finding | Resolution and evidence |
+|---|---|
+| Evidence identity and registration | Research and import derive an identifier from the saved research inputs. Registration preserves an existing operator decision when the terms are unchanged. A material change to a nonterminal proposal requires fresh review. Rejected and executed proposals retain their ledger records. [Registration and import tests](../test/offline/test_submission_runtime.py) |
+| CLI failures and judge budget | Replay reports each written file once and exits with a diagnostic if reconstruction fails. Sell bounds use the owned quantity. Incomplete evaluation output and unsuccessful judgments produce a failing exit. A capped judge counts failed calls against the same allowance as successful calls. [CLI regression cases](../test/offline/test_submission_cli.py) |
+| Approval and static checks | Gate 1 checks the scope and timing of the approval for each changed implementation path. Gate 2 checks whether existing callers of an affected public safety interface retain a valid call. [Approval cases](../test/offline/test_submission_governance.py) · [Interface cases](../test/offline/test_submission_api.py) |
+| Research quality and provenance | Gate 4 requires a valid baseline and compact arm for every case. A malformed record blocks aggregation. The source fingerprint covers the upstream graph and role prompts as well as the extension. [Release-quality tests](../test/offline/test_release_quality.py) |
+| AI-use log | Gate 6 matches changed code and runtime prompts to entries added or amended since the comparison branch. It verifies the prompt and native export for each new OpenCode entry. The local check passed against the published main baseline. [Gate implementation](../scripts/check_ai_use_log.py) · [Session register](ai-use-log.yaml) |
+
+The [unit regression](../evaluation/submission-verification/unit-regression.txt) passed 649 upstream tests and 183 Research Desk tests. It also recorded 71 passing subtests. The upstream run skipped one test and deselected one.
+
+The [earlier release](../evaluation/release/) retains the measurements and replay findings cited in the preceding review. The repaired application has its own [paired matrix and release decision](../evaluation/submission-release/aggregate/release-gate.json). The [evaluation logbook](architecture/evaluation-logbook.md) identifies the source and results for each experiment. Independent code-owner review of this submission belongs to its protected pull request.

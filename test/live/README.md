@@ -1,62 +1,17 @@
-# Live opt-in evaluation tests (`test/live/`)
+# Live evaluation test
 
-These are **live** integration tests: they drive the real `run_evaluate_case`
-entry point (the same code the six-case baseline/compact matrix uses) against
-real DeepSeek clients. They are **skipped by default** so the offline suite
-never touches the network or credentials.
+The live test runs one AAPL baseline case through the same `run_evaluate_case` function as the six-case experiment. It checks that the research completes and that the resulting evidence package contains a decision and provider-reported token counts.
 
-## Opt-in
+## Run the test
 
-Run the single live test with host-injected credentials:
+Supply `DEEPSEEK_API_KEY` for the configured endpoint. The application defaults to `https://api.aiohub.org/v1`. Set `DEEPSEEK_BASE_URL` to select a different endpoint that serves the configured model.
 
 ```bash
-export RESEARCH_DESK_LIVE_TESTS=1
-# export DEEPSEEK_API_KEY=<host-supplied>     # required credential
-# export DEEPSEEK_BASE_URL=<optional gateway>
-.venv/bin/pytest -q test/live/test_live_evaluation.py
+RESEARCH_DESK_LIVE_TESTS=1 .venv/bin/pytest -q test/live/test_live_evaluation.py
 ```
 
-Default (no opt-in) skips cleanly:
+The test skips when the opt-in flag or credential is absent. By default, pytest writes the outputs to its temporary directory. Set `RESEARCH_DESK_LIVE_OUT` to keep them in a new directory. The [project README](../../README.md#verification) gives the separate instructions for the upstream provider test.
 
-```bash
-.venv/bin/pytest -q test/live
-```
+## Six-case comparison
 
-Expected: the test is collected and skipped (`1 skipped`) with no API call.
-
-## Credential environment names
-
-| Env var | Required | Meaning |
-|---|---|---|
-| `RESEARCH_DESK_LIVE_TESTS` | yes | `=1` enables the live test; otherwise skip |
-| `DEEPSEEK_API_KEY` | yes | DeepSeek provider credential (host-injected) |
-| `DEEPSEEK_BASE_URL` | no | Optional DeepSeek gateway/base URL |
-| `RESEARCH_DESK_LIVE_OUT` | no | Explicit output dir; default is a pytest `tmp_path` |
-
-## Output isolation
-
-By default the test writes to an isolated pytest `tmp_path` and never touches
-`evaluation/final`. If you must use a stable directory, set
-`RESEARCH_DESK_LIVE_OUT` explicitly; the coordinator's real six-case experiment
-output is never overwritten by this test.
-
-## Relation to the six-case CLI matrix
-
-This test is a thin single-case smoke of the exact entry point the matrix uses.
-The real comparison is run separately by the coordinator/root as:
-
-```bash
-# per case (6 tickers) × mode (baseline|compact) = 12 evaluate-case runs
-.venv/bin/research-desk evaluate-case AAPL --mode baseline --out evaluation/pilot --max-calls 32
-.venv/bin/research-desk evaluate-case AAPL --mode compact  --out evaluation/pilot --max-calls 32
-# ... NVDA, AMZN, META, GOOGL, MSFT ...
-
-# independent judge per case
-.venv/bin/research-desk judge-case AAPL --out evaluation/pilot
-
-# offline aggregate of the six paired metrics
-.venv/bin/research-desk aggregate evaluation/pilot
-```
-
-This `test/live/` file exercises only the application entry point; it does not
-replace, duplicate, or mock the six-case experiment.
+The [experiment commands](../../README.md#actual-fixed-corpus-research) run both arms for each ticker, judge each report and aggregate the results. The [recorded release results](../../evaluation/release/aggregate/report.md) cover all twelve runs.

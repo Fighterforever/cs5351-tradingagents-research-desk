@@ -4,7 +4,7 @@
 
 ## Scope and Attribution
 
-The six entries below (`U-01`–`U-06`) are verbatim user directives issued by `leo` (`Liyu MA, 59072966`) during the project conversation. They record project-level scope, governance, repository publication, documentation style, and review-delegation decisions, and are indexed by conversation order and source locator description.
+The entries below are verbatim user directives issued by `leo` (`Liyu MA, 59072966`) during the project conversation. U-01 and U-02 describe the original allocation. U-07 records the change to the current four-member team. The intervening entries cover repository publication, documentation and review.
 
 ## Verbatim Directives
 
@@ -57,3 +57,30 @@ The six entries below (`U-01`–`U-06`) are verbatim user directives issued by `
 - **Plain-English explanation**: Delegates the completion of the supervision-evidence review and documentation to Gemini CLI.
 - **Engineering rationale**: Produces an explicit, attributable technical review by Gemini CLI covering all 24 requirement classifications, the three architecture candidates (`3.10`, `4.65`, `3.10`), the five responsibility scopes, and lifecycle evidence status.
 - **Resulting artifacts**: [`gemini-pipeline-review.json`](gemini-pipeline-review.json), [`../docs/process/pipeline-review.md`](../docs/process/pipeline-review.md)
+
+### U-07 — Four-person team allocation
+
+- **Source locator** — User message changing the team size after the request to document member supervision.
+
+- **Decision and rationale** — The user reduced the team to four and reassigned the fifth role's duties so that release, report and verification work each retained an owner.
+- **Result** — The revised responsibility table assigns report integration to Alfa, release governance to Bravo, reproducible delivery to Charlie and CI to Delta. [Team responsibilities](../docs/process/team.md)
+
+### U-08 — Submission contracts and release
+
+Alfa requested OpenCode repairs to proposal registration, approval, gates and CLI reporting. The same instruction requested a review of disclosure records, student materials and repository consistency. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [review-memo.md](../docs/review-memo.md)
+
+### U-09 — Alfa identity
+
+Liyu MA confirmed the Alfa identity. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
+
+### U-10 — Bravo and Charlie identities
+
+> 60106154Xinyao HENG 是 Bravo，60980401 Yinuo Li 是Charlie
+
+Alfa supplied the formal names and student numbers for Bravo and Charlie. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
+
+### U-11 — OpenCode provider decision
+
+> 允许 OpenCode 使用 AioHub 完成本次修复及评估
+
+Alfa authorized OpenCode to use the configured AioHub endpoint for the repair and evaluation. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [ai-use-log.yaml](../docs/ai-use-log.yaml)

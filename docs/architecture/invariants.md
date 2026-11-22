@@ -9,7 +9,7 @@
 | I-CUTOFF | SEC-001 | Historical inputs are eligible at the analysis cutoff | context, frozen corpus | AT-02 | Exclude ineligible records and mark unknown availability |
 | I-BUDGET | NFR-003 | No request starts after the configured call limit | budget, actual model boundary | AT-06 | Stop graph, record budget_stopped and produce no tradeable proposal |
 | I-CONTEXT | CTX-001 | Complete model inputs stay within the configured conservative cap | budget, request delegate | AT-06 context unit tests | Stop before the provider request; retain context_budget_exhausted evidence and no proposal |
-| I-USAGE | FR-003 | Cost claims use actual provider usage | evidence, evaluation | AT-07 | Mark missing usage and exclude no failure silently; rerun only with a recorded reason |
-| I-REPLAY | NFR-001 | Replay never initiates an external request | replay | AT-01 | Fail test on any attempted socket/model call |
+| I-USAGE | FR-003 | Cost claims use actual provider usage | evidence, evaluation | AT-07 | Flag the run and withhold the cost comparison until usage is recovered or the run is repeated with a recorded reason |
+| I-REPLAY | NFR-001 | Replay never initiates an external request | replay | AT-01 | Stop replay, discard the partial report and restore the offline replay path before regenerating it |
 
 Zero tolerance applies to safety escapes. A failed quality or performance target is a reported experiment result and does not authorize weakening these invariants.

@@ -1,14 +1,13 @@
 # Tool manifest
 
-| Tool | Role | Allowed purpose | Constraint |
-|---|---|---|---|
-| OpenCode CLI + DeepSeek | Build/Verify | Generate approved source, tests and CI | Explicit deepseek-v4-flash; project directory; no credential-file reads |
-| Shell + Python in project .venv | Build/Verify/Release | Install isolated dependencies, run tests and app | No global environment changes |
-| Git / GitHub CLI | Release | Preserve history and publish the user-authorized public repository | No push to TauricResearch upstream; no unsolicited messages |
-| Read-only web/Yahoo data | Plan/Verify | Official release facts and actual market history | Record URL, availability date and retrieval date |
-| LangChain model client | Runtime graph | Research and independent evaluation | Host-injected key; actual usage captured |
-| Frozen market/news tools | Runtime graph | Read the same fixed corpus in both arms | No hidden vendor calls |
-| SQLite | Runtime operator | Local paper ledger | Exact approval and deterministic policy required |
-| Notion/other unrelated MCP | None | No project purpose | Disabled in project configuration |
+| Tool | Who can use it | Scope |
+|---|---|---|
+| OpenCode CLI with DeepSeek | Host operator selects Plan, Build or Verify | Plan proposes changes. Build edits approved source, tests and CI. Verify runs the listed checks. The [AI-use log](../ai-use-log.yaml) records the model for each session. |
+| Project shell | Build and Verify | Build has read-only inspection commands. Verify can also run the exact test and gate commands in the [permission manifest](../../.opencode/permissions.jsonc). |
+| Dependency installer, Git and GitHub CLI | Host release operator | Install the project environment and publish to the authorized project repository. |
+| Market and company-release sources | Host data-collection process | Obtain historical inputs and record URLs, retrieval times and data availability dates. Network fetch and search are disabled for the installed coding roles. |
+| LangChain model client | Research graph and evaluator | Use host-supplied credentials and record actual usage. |
+| Frozen market and news tools | Runtime research graph | Both evaluation arms read the same fixed corpus. |
+| SQLite | Application through the operator CLI | An approved proposal and a successful policy check precede a paper transaction. |
 
-The extension exposes no broker tool and no runtime tool for model self-approval. A tool name in a report is data, not permission to execute it.
+The project disables the Notion MCP server. The research graph has no broker or approval tool.

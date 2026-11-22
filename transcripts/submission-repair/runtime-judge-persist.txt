@@ -1,0 +1,178 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+Small correctness fix only to eval/live.py run_judge_case. Currently a prior successful judge.json on disk can remain for an arm that was skipped in this call due to missing run, import failure, provenance mismatch, incomplete research or exhausted budget. Preserve historical raw records and the old score where appropriate, but ensure a re-used output root cannot present an old score/provenance as current. Minimal general design: at each arm start establish arm_judge_dir; if a prior current result exists, move that arm directory to a per-run history sibling outside current judge/<ticker>/<mode> (avoid overwriting archived history). Write out actual new judge artifacts only for completed calls, record diagnostic per missing arm even before request and make no new PASS for skipped arms. Current fixed runner normally uses a new root; no churn for normal case. Alternatives may simply use atomic move preserving raw/judge/provenance to an unused version inside a sibling under ticker. Retain per-arm provenance on normal calls and existing tests on source mismatch semantics; do not change source-fingerprint code, helper interfaces, or metrics. Provide small exact replacements.
+
+SOURCE src/research_desk/eval/live.py
+Only host credentials are used: ``DEEPSEEK_API_KEY`` and optional
+``DEEPSEEK_BASE_URL`` (default ``https://api.aiohub.org/v1``). Each run uses an
+isolated home directory. A completed or
+failed outcome means the actual graph outcome; a failed setup is never reported
+as completed.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+import re
+import time
+from decimal import Decimal, InvalidOperation
+from pathlib import Path
+from typing import Any
+
+from pydantic import BaseModel, Field, model_validator
+
+from ..config import DEFAULT_BASE_URL, DEFAULT_MODEL, DEFAULT_PROVIDER
+from .case_registry import case_for
+from .frozen_provider import FrozenMarketProvider
+
+logger = logging.getLogger(__name__)
+
+MODEL = DEFAULT_MODEL
+PROVIDER = DEFAULT_PROVIDER
+OUTPUT_CAP = 1800  # provider max_tokens cap, identical for both arms
+PROVENANCE_FILENAME = "provenance.json"
+
+
+def _base_url() -> str:
+    """Host-supplied endpoint override, otherwise the authoritative default."""
+    return os.environ.get("DEEPSEEK_BASE_URL") or DEFAULT_BASE_URL
+
+
+def _project_root() -> Path:
+    """Repository root (this module lives in ``src/research_desk/eval``)."""
+    return Path(__file__).resolve().parents[3]
+
+
+def _current_source_fingerprint(root: Path) -> str:
+    """Current runtime source fingerprint from the release-quality contract."""
+
+...
+def run_judge_case(
+    ticker: str,
+    out_dir: str | Path,
+    max_calls: int | None = None,
+) -> dict[str, Any]:
+    """Judge a completed run's report with a real isolated DeepSeek evaluator.
+
+    Deterministic checks are computed first. Then the real DeepSeek client
+    (same model, separate role, fixed evidence and rubric) scores support,
+    relevance and citations with a structured rationale. Raw response and usage
+    are recorded separately. A score is never auto-assigned for nonempty text.
+    """
+    from research_desk.evidence import EvidencePackIO
+
+    ticker = ticker.upper()
+    if not os.environ.get("DEEPSEEK_API_KEY"):
+        raise RuntimeError(
+            "DEEPSEEK_API_KEY is not set. Supply it as a host environment variable."
+        )
+    case = case_for(ticker)
+    out = Path(out_dir)
+    root = _project_root()
+    judged: dict[str, Any] = {"ticker": ticker, "arms": {}}
+    source_failure = False
+    if max_calls is not None and max_calls < 0:
+        raise ValueError(f"max_calls must be nonnegative, got {max_calls!r}")
+    remaining_calls = max_calls
+    for mode in ("baseline", "compact"):
+        run_dir = out / ticker / mode / "run"
+        if not run_dir.exists():
+            continue
+        current = _current_source_fingerprint(root)
+        run_fingerprint = _read_source_fingerprint(
+            out / ticker / mode / PROVENANCE_FILENAME
+        )
+        if run_fingerprint is None:
+            judged["arms"][mode] = {
+                "error": "run provenance missing; refusing to judge",
+            }
+            source_failure = True
+            continue
+        if run_fingerprint != current:
+            judged["arms"][mode] = {
+                "error": "run provenance is stale; refusing to judge",
+                "run_source_fingerprint": run_fingerprint,
+                "current_source_fingerprint": current,
+            }
+            source_failure = True
+            continue
+        try:
+            pack = EvidencePackIO().import_pack(run_dir)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("cannot import run for %s/%s: %s", ticker, mode, exc)
+            judged["arms"][mode] = {"error": str(exc)}
+            continue
+        if pack.manifest.outcome != "completed" or not pack.final_state:
+            judged["arms"][mode] = {
+                "outcome": pack.manifest.outcome,
+                "note": "skipped judge: run not completed",
+            }
+            continue
+        if remaining_calls is not None and remaining_calls <= 0:
+            judged["arms"][mode] = {
+                "outcome": pack.manifest.outcome,
+                "error": "judge call budget exhausted (--max-calls)",
+                "note": "not judged: no judge request was made",
+            }
+            continue
+        if remaining_calls is not None:
+            remaining_calls -= 1
+        report_text = _report_text_with_identity(pack)
+        deterministic = _deterministic_checks(case, pack, ticker)
+        judge_cfg = {
+            "llm_provider": PROVIDER,
+            "quick_think_llm": MODEL,
+            "deep_think_llm": MODEL,
+            "max_tokens": OUTPUT_CAP,
+            "temperature": 0,
+        }
+        arm_judge_dir = out / "judge" / ticker / mode
+        arm_judge_dir.mkdir(parents=True, exist_ok=True)
+        _dump_json(
+            arm_judge_dir / PROVENANCE_FILENAME,
+            _provenance_payload(current, judge_cfg, _base_url()),
+        )
+        try:
+            raw, score = _llm_judge(
+                case,
+                report_text,
+                deterministic,
+                available_sources=pack.input.available_sources or {},
+                events=pack.events,
+                max_retries=0 if max_calls is not None else None,
+            )
+        except Exception as exc:  # noqa: BLE001 - record the failed request honestly
+            logger.warning("judge request failed for %s/%s: %s", ticker, mode, exc)
+            raw = {"prompt": None, "invoke_error": str(exc), "usage": {}}
+            score = {
+                "support": None,
+                "relevance": None,
+                "cited_claim_count": 0,
+                "supported_cited_claim_count": 0,
+                "valid_citation_rate": None,
+                "invalid_citation_explanations": [],
+                "uncited_factual_claims": [],
+                "semantic_valid": False,
+                "semantic_errors": [],
+                "rationale": f"judge request failed: {exc}",
+                "error": True,
+                "deterministic_checks": deterministic,
+            }
+        source_after = _current_source_fingerprint(root)
+        if source_after != current:
+            judged["arms"][mode] = {
+                "error": "source changed during judge; refusing to certify",
+                "judge_source_fingerprint": current,
+                "current_source_fingerprint": source_after,
+            }
+            source_failure = True
+            continue
+        _dump_json(arm_judge_dir / "raw.json", raw)
+        _dump_json(arm_judge_dir / "judge.json", score)
+        judged["arms"][mode] = score
+    _dump_json(out / "judge" / ticker / "summary.json", judged)
+    if source_failure:
+        raise RuntimeError(
+            "source provenance missing or changed; refusing to certify judge results"
+        )

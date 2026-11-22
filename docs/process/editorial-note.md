@@ -1,3 +1,3 @@
-# Editorial note
+# Report sources
 
-The academic-humanizer pass identified number-spacing defects in the report, several long process sentences and empirical sections awaiting actual runs. Number spacing was corrected without changing values, source URLs or reported test results. The report retains its technical register and a single limitations section. The live and GitHub markers are reserved for measured results and cannot be replaced with inferred success. No number, result or citation was altered by the editorial pass.
+[Report.md](../../Report.md) is the source for [Report.pdf](../../Report.pdf). The [previous release](../../evaluation/release/aggregate/report-metrics.json) and the [submission experiment](../../evaluation/submission-release) use the same six-company corpus. Each comparison is reported against the code that produced it. The [PR #1 release record](../../evaluation/github/pr-1-release.json) documents the earlier merge and its six required checks.

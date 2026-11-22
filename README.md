@@ -2,7 +2,7 @@
 
 Research Desk extends **TradingAgents v0.4.0** with portable research evidence, zero-network replay, an explicitly approved paper ledger and a measured baseline/compact context experiment. The real upstream market/news, research, trader, risk and portfolio graph remains the research engine. The language model advises; deterministic application code controls paper execution.
 
-Course repository: [Fighterforever/cs5351-tradingagents-research-desk](https://github.com/Fighterforever/cs5351-tradingagents-research-desk), public. Team: **Alfa, Bravo, Charlie and Delta**, each assigned a relative contribution of **1.0**. Responsibilities and rotating review assignments are in [docs/process/team.md](docs/process/team.md). The report maps five requirement increments to the delivered workflows.
+Course repository: [Fighterforever/cs5351-tradingagents-research-desk](https://github.com/Fighterforever/cs5351-tradingagents-research-desk), public. Team: **Alfa, Bravo, Charlie and Delta**, each assigned a relative contribution of **1.0**. Responsibilities and rotating review assignments are in [docs/process/team.md](docs/process/team.md). The report maps four new functional requirements and two non-functional increments to the delivered workflows.
 
 ## Run locally
 
@@ -47,7 +47,9 @@ Run the same pair for MSFT, NVDA, AMZN, META and GOOGL. Source CSVs are under te
 
 Both arms use the same complete selected graph, model, frozen corpus and provider output cap. Runtime prompt version `research-desk-0.1.2` supplies the same evidence-grounding rules to every role in both modes; version snapshots are retained under `prompts/`. Compact requests concise role outputs and removes redundant non-evidence text. `judge-case` invokes an isolated evaluator role and logs its token usage separately from application runs, while `aggregate` computes summary metrics offline from saved provider metadata and judge outputs.
 
-The current-source comparison completed all 12 runs, passed **60/60 mandatory-field checks**, and passed every semantic and quality threshold. Compact used **43.00% fewer application tokens**; its elapsed-time sum was **56.52% of baseline**. Complete evidence is in [evaluation/release](evaluation/release), with the failed transport attempt preserved under evaluation/revision-initial.
+All 12 submission runs passed the quality thresholds and **60/60 mandatory-field checks**. Compact used **42.50% fewer application tokens** (345,309 versus 600,576). Its summed run time was **48.65% of baseline**. All eleven tradeable proposals recorded the identifier of their saved material inputs. [Submission results](evaluation/submission-release/aggregate/release-gate.json)
+
+Before ADR-005, the same corpus gave a 43.00% token reduction and a time ratio of 56.52%. [Earlier release](evaluation/release) · [Initial transport failure](evaluation/revision-initial)
 
 **Replay** rebuilds saved results without external calls. **Controlled rerun** regenerates research from fixed non-LLM inputs and remains stochastic. These modes answer different reproducibility questions.
 
@@ -68,9 +70,11 @@ The runner executes both modes for all six cases, judges them, aggregates actual
 .venv/bin/mypy src/research_desk --follow-imports=skip --ignore-missing-imports --python-version 3.12
 ```
 
-The current complete unit run passed **790 tests and 71 subtests**, with one optional-dependency skip and one live-test deselection. Structural, schema, approval and semantic checks also pass. Regression includes the preserved upstream tests and the extension unit suite. Full command records and the current cloud run are listed in [docs/ci-gates.md](docs/ci-gates.md). For the opt-in provider-dependent test entry, see [test/live/README.md](test/live/README.md); the complete paired experiment above is the release evidence.
+The submission revision passed **832 tests and 71 subtests** across the upstream and extension suites. One optional-dependency test was skipped and one live test was deselected. [Unit run record](evaluation/submission-verification/unit-regression.txt) · [CI checks and execution records](docs/ci-gates.md)
 
-The public repository has six required CI checks and enforced branch protection. Safety changes require an accepted ADR and code-owner review. One approving review is required before merge, including for administrators. The source branch and pull request carry the current implementation; server configuration and actual job results are saved under evaluation/github.
+To run the provider-dependent test with host-supplied credentials, use `RESEARCH_DESK_LIVE_TESTS=1 .venv/bin/pytest -q test/live`. For the full suite, run that live test with the gateway key and run `.venv/bin/pytest -q tests test/offline` in a separate shell with an official DeepSeek key. The [upstream integration test](tests/test_deepseek_reasoning.py) calls `api.deepseek.com` directly. The [Research Desk live test](test/live/README.md) uses the configured gateway.
+
+The public repository has six required CI checks and enforced branch protection. Safety changes require an accepted ADR and code-owner review. One approving review is required before merge, including for administrators. PR #1 contains the preceding merged implementation. The branch policy and release checks are saved under [evaluation/github](evaluation/github).
 
 ## Repository map
 
@@ -79,7 +83,7 @@ The public repository has six required CI checks and enforced branch protection.
 | src/research_desk | Application extension and fixed-corpus evaluation |
 | tradingagents, cli, tests | Preserved upstream engine and regression tests |
 | test/offline, test/fixtures | Extension acceptance tests and frozen evidence |
-| docs/req | Machine-readable PRD, 24-requirement registry and schema |
+| docs/req | Machine-readable PRD, 25-requirement registry and schema |
 | architecture-blueprint.md, docs/architecture | Component contracts, ADRs, invariants, state and permissions |
 | AGENTS.md, Prompt.md, .opencode, .agent | Coding governance and effective role rules |
 | docs/process, docs/review-memo.md, docs/bug-diary.md | Actual decisions, tests and interventions |
@@ -94,4 +98,4 @@ The source submission excludes virtual environments, credentials, caches and the
 
 The course structure illustrates versioned prompt files as prompt_v1.0.yaml and prompt_v1.1.yaml. This project uses the established runtime-prompts-v0.1.0.yaml and runtime-prompts-v0.1.1.yaml names for those first two snapshots; runtime-prompts-v0.1.2.yaml is current. config.py owns the active prompt version.
 
-The current source is in [PR #1](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1). The source revision’s [six required CI jobs passed](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42645314153). Branch protection keeps the PR blocked until an independent authorized reviewer approves it. The final roster and member-specific annotations are listed in [the delivery checklist](docs/process/delivery-checklist.md).
+The preceding release reached `main` through PR #1. Delta's [independent approval](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1#pullrequestreview-5840085663) preceded the merge of PR #1, and all six required [main-branch CI jobs passed](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42798475065). The [supervision index](transcripts/supervision-index.md) links five complete annotated sessions and the release review. The [delivery checklist](docs/process/delivery-checklist.md) records the remaining contribution confirmations and original early-design evidence.

@@ -1,0 +1,46 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+Only edit three CLI registration statements in research, propose and compare: a new store.register_proposal(proposal) will implement registering advisory data while preserving prior approval/termination state. Use it, and in propose print the actual returned stored record status/id. Leave explicit save_proposal on review approval unchanged. Do not change signatures or any other commands.
+
+SOURCE src/research_desk/cli.py
+    with console.status(f"Running research on {ticker} ({trade_date})..."):
+        result = runner.run(ticker, trade_date)
+
+    store = _store(settings)
+    if result.proposal is not None and not no_proposal:
+        store.save_proposal(result.proposal)
+    store.close()
+
+    _print_run_result(result)
+    if result.outcome == RunOutcome.BUDGET_STOPPED.value:
+        console.print(
+            "[yellow]Budget stopped: incomplete research returned, no approvable "
+            "recommendation was created (NFR-003).[/yellow]"
+
+...
+    settings = _settings()
+    io = EvidencePackIO()
+    pack = io.import_pack(settings.runs_dir / run_id)
+    if pack.proposal is None:
+        raise typer.BadParameter(f"run {run_id!r} has no proposal (signal not tradeable or budget stopped)")
+    store = _store(settings)
+    store.save_proposal(pack.proposal)
+    console.print(f"[green]Proposal {pack.proposal.proposal_id} registered (status {pack.proposal.status.value})[/green]")
+    store.close()
+
+
+
+...
+        )
+        start = time.time()
+        result = runner.run(pack.manifest.ticker, pack.manifest.trade_date)
+        wall = time.time() - start
+        store = _store(settings)
+        if result.proposal is not None:
+            store.save_proposal(result.proposal)
+        store.close()
+        arms[mode] = {
+            "calls": result.usage.calls,
+            "input_tokens": result.usage.input_tokens,
+            "output_tokens": result.usage.output_tokens,
+            "total_tokens": result.usage.total_tokens,
+            "wall_seconds": round(wall, 3),

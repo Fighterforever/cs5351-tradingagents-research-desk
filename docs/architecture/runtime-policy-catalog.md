@@ -10,7 +10,8 @@
 | Future-only memory | Exclude from context | Cutoff and excluded record metadata | Use at an eligible later analysis date |
 | Missing evidence price | Reject approval/execution | Proposal and reason | Obtain a complete research price record |
 | Hold or REVIEW signal | No tradeable proposal | Saved report and terminal signal | Operator can inspect evidence; no execution shortcut |
-| Unapproved or changed terms | REVIEW_REQUIRED, ledger unchanged | Current terms and approval reference | Review exact current terms again |
+| Operator rejects a proposal | Keep REJECTED on subsequent execution attempts and block approval | Proposal status and execution response | The operator can create a new proposal for separate review |
+| Pending proposal or changed approval terms | REVIEW_REQUIRED, ledger unchanged | Current terms and approval reference | Review exact current terms again |
 | Cash, total position or sell limit violation | Reject deterministic execution | Named policy checks | Choose permissible quantity and obtain approval |
 | Repeat execution | Return original transaction | Stable transaction reference | No financial side effect |
 | Semantic threshold failure | Fail applicable gate | Per-case facts/scores and reason | Correct the prompt or retain the previous release |

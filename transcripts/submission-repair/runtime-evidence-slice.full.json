@@ -1,0 +1,151 @@
+{
+  "info": {
+    "id": "ses_dfc767573ffeDVa3l3XMpxK5Mb",
+    "slug": "quiet-panda",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-evidence-slice",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-evidence-slice",
+    "title": "Research Desk runtime-evidence-slice",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 3293,
+      "output": 596,
+      "reasoning": 0,
+      "cache": {
+        "read": 1792,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355675277,
+      "updated": 1795355682494
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355675311
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_203898aaf001deIElFq4jO251J",
+        "sessionID": "ses_dfc767573ffeDVa3l3XMpxK5Mb"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Return ONLY valid JSON {\\\"changes\\\":[{\\\"path\\\":\\\"...\\\",\\\"old\\\":\\\"unique exact original substring\\\",\\\"new\\\":\\\"new text\\\"}]} with optionally a new file via {\\\"path\\\":\\\"...\\\",\\\"content\\\":\\\"...\\\"} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.\nAdd a top-level material_evidence_id(ticker,trade_date,input_snapshot) in evidence.py. Use a canonical SHA-256 accounting for ticker, trade date and material InputSnapshot data (identity, data_snapshot, available_sources, direct_reads and material memory). Stable over JSON key ordering and export/import secret sanitization; remove no material data. Derive from same logical inputs on both creation and import, NOT from unique run ID or passed proposal identity. After importing any current or legacy evidence pack with a proposal, derive its evidence id from the pack. Recompute the pending proposal version using existing make_proposal_version. For the ResearchRunner runtime, build the existing InputSnapshot before calling decide_proposal so you can pass evidence_id=material_evidence_id(...). Reuse already built snapshot and avoid duplicate data retrieval. Do not edit other files or any saved archive. Code to select, only shown excerpts.\n\nSOURCE src/research_desk/evidence.py\nfrom __future__ import annotations\n\nimport json\nimport logging\nimport zipfile\nfrom pathlib import Path\nfrom typing import Any\n\nfrom langchain_core.callbacks import BaseCallbackHandler\nfrom langchain_core.messages import AIMessage\nfrom langchain_core.outputs import LLMResult\nfrom pydantic import BaseModel\n\nfrom .budget import BudgetTracker\nfrom .models import (\n    CallUsage,\n    EvidenceEvent,\n    EvidencePack,\n    InputSnapshot,\n    RunManifest,\n    UsageSummary,\n    utcnow_iso,\n)\n\nlogger = logging.getLogger(__name__)\n\n# Files that make up a complete evidence pack. ``complete`` is only set when all\n# of them are present and parseable.\nPACK_FILES = (\n    \\\"manifest.json\\\",\n    \\\"input.json\\\",\n    \\\"events.jsonl\\\",\n    \\\"final_state.json\\\",\n    \\\"usage.json\\\",\n    \\\"calls.json\\\",\n)\n\n_SECRET_KEY_FRAGMENTS = (\n    \\\"api_key\\\",\n    \\\"apikey\\\",\n    \\\"password\\\",\n    \\\"secret\\\",\n    \\\"credential\\\",\n    \\\"authorization\\\",\n)\n\n\ndef _is_credential_key(key: str) -> bool:\n    \\\"\\\"\\\"Small explicit credential predicate (SEC-001).\n\n    Matches real credential names -- ``api_key``, ``apikey``, ``*_token``\n    (including a bare ``token``), ``password``, ``secret``, ``credential`` and\n    ``authorization`` -- without classifying provider-reported usage, count,\n    budget or ``token_limit`` fields as credentials. A substring rule for\n    ``token`` would redact ``input_tokens``/``output_tokens``/``total_tokens``\n    and destroy measured evidence, so only exact and ``_token``-suffixed keys\n    count as token credentials.\n    \\\"\\\"\\\"\n    kl = key.lower()\n\n...\n# Evidence pack IO\n# ---------------------------------------------------------------------------\n\n\nclass EvidencePackError(Exception):\n    \\\"\\\"\\\"Raised when an evidence pack is missing required material or malformed.\\\"\\\"\\\"\n\n\ndef _data_snapshot_from_events(events: list[EvidenceEvent]) -> dict[str, dict[str, str]]:\n    \\\"\\\"\\\"Rebuild the frozen tool-data snapshot from the tool_call/tool_result events.\n\n    Keys are the canonical JSON of the tool arguments; values are the recorded\n\n...\n\n    def _load_dir(self, d: Path) -> EvidencePack:\n        missing = [name for name in PACK_FILES if not (d / name).exists()]\n        if missing:\n            raise EvidencePackError(\n                f\\\"Incomplete evidence pack at {d}: missing required files {missing}. \\\"\n                \\\"A complete pack must include manifest, input snapshot, events, \\\"\n                \\\"final state, usage and calls.\\\"\n            )\n        manifest = RunManifest(**json.loads((d / \\\"manifest.json\\\").read_text(encoding=\\\"utf-8\\\")))\n        input_snapshot = InputSnapshot(\n            **json.loads((d / \\\"input.json\\\").read_text(encoding=\\\"utf-8\\\"))\n        )\n        events = [\n            EvidenceEvent(**json.loads(line))\n            for line in (d / \\\"events.jsonl\\\").read_text(encoding=\\\"utf-8\\\").splitlines()\n            if line.strip()\n        ]\n        final_state = json.loads((d / \\\"final_state.json\\\").read_text(encoding=\\\"utf-8\\\"))\n        usage = UsageSummary(**json.loads((d / \\\"usage.json\\\").read_text(encoding=\\\"utf-8\\\")))\n        calls = json.loads((d / \\\"calls.json\\\").read_text(encoding=\\\"utf-8\\\"))\n        proposal = None\n        if (d / \\\"proposal.json\\\").exists():\n            from .models import ProposalRecord\n\n            proposal = ProposalRecord(**json.loads((d / \\\"proposal.json\\\").read_text(encoding=\\\"utf-8\\\")))\n        pack = EvidencePack(\n            manifest=manifest,\n            input=input_snapshot,\n            events=events,\n            final_state=final_state,\n            usage=usage,\n            calls=calls,\n            proposal=proposal,\n            complete=True,\n        )\n        if manifest.outcome == \\\"completed\\\" and not final_state:\n            raise EvidencePackError(\n                f\\\"Evidence pack {d} claims a completed run but has an empty final_state.\\\"\n            )\n        return pack\n\n    def load_external_proposal(self, d: Path) -> Any:\n        \\\"\\\"\\\"Load proposal.json from a pack directory without requiring a full pack.\\\"\\\"\\\"\n        if not (d / \\\"proposal.json\\\").exists():\n            return None\n        from .models import ProposalRecord\n\n        return ProposalRecord(**json.loads((d / \\\"proposal.json\\\").read_text(encoding=\\\"utf-8\\\")))\n\nSOURCE src/research_desk/graph_adapter.py\nimport logging\nimport time\nimport uuid\nfrom collections.abc import Callable\nfrom pathlib import Path\nfrom typing import Any\n\nfrom langchain_core.tools import tool\nfrom langgraph.prebuilt import ToolNode\n\nfrom tradingagents.agents.utils.agent_utils import (\n    build_instrument_context,\n    resolve_instrument_identity,\n)\nfrom tradingagents.agents.utils.rating import is_review\nfrom tradingagents.graph.trading_graph import TradingAgentsGraph\nfrom tradingagents.reporting import write_report_tree\n\nfrom .budget import BudgetExhausted, BudgetTracker, ContextBudgetExceeded\nfrom .config import ResearchDeskSettings\nfrom .context import ContextAssembler, StandingConstraints, build_common_grounding\nfrom .evidence import EvidenceLog, EvidencePackIO, record_data_read\nfrom .models import (\n    InputSnapshot,\n    ProposalRecord,\n    RunManifest,\n    RunOutcome,\n    RunResult,\n    utcnow_iso,\n)\nfrom .report import apply_research_identity_header, render_research_identity\nfrom .review import ReviewError, create_proposal\n\nlogger = logging.getLogger(__name__)\n\n\ndef _provider_tools(provider: Any) -> dict[str, Any]:\n    \\\"\\\"\\\"Build frozen tools bound to a concrete ``FrozenMarketProvider``.\n\n...\n\n        # Proposal (only a completed, tradeable signal with evidence price).\n        proposal = None\n        proposal_error: str | None = None\n        snapshot = self._data_snapshot_from_run(final_state, frozen_snapshot)\n        available_sources = self._available_sources(ticker, trade_date, frozen_identity)\n        try:\n            proposal = decide_proposal(\n                outcome=outcome.value,\n                signal=signal,\n                run_id=run_id,\n                ticker=ticker,\n                trade_date=trade_date,\n                snapshot=snapshot,\n                available_sources=available_sources,\n            )\n        except ReviewError as exc:\n            proposal_error = str(exc)\n        if outcome == RunOutcome.BUDGET_STOPPED:\n            proposal = None  # incomplete research must not be approvable (NFR-003)\n\n        input_snapshot = InputSnapshot(\n            instrument_context=instrument_context,\n            past_context=assembly.text,\n            initial_state=_trim_state(init_state),\n            identity=identity,\n            data_snapshot=self._data_snapshot_from_run(final_state, frozen_snapshot),\n            memory_used=self._memory_entries(ticker, trade_date),\n            memory_sources=[\\\"tradingagents.memory_log\\\" if self.data_mode == \\\"live\\\" else \\\"frozen-pack\\\"],\n            available_sources=available_sources,\n        )\n\n        manifest = RunManifest(\n            run_id=run_id,\n            ticker=ticker,\n            trade_date=trade_date,\n            asset_type=asset_type,\n            analysts=list(self.settings.analysts),\n            context_mode=self.context_mode,\n            data_mode=self.data_mode,\n            outcome=outcome.value,\n            signal=signal,\n            prompt_version=self.settings.prompt_version,\n            created_at=utcnow_iso(),\n            operator=\\\"research-desk\\\",\n            model_quick=self.graph_config.get(\\\"quick_think_llm\\\"),\n            model_deep=self.graph_config.get(\\\"deep_think_llm\\\"),\n            budget_max_calls=self.settings.max_calls,\n            source_pack=self.source_pack.manifest.run_id if self.source_pack is not None else None,\n            reason=proposal_error,\n        )\n\n        from .evidence import build_pack\n\n        pack = build_pack(\n            manifest=manifest,\n            input_snapshot=input_snapshot,\n            events=evidence_log.events,\n            final_state=final_state,\n            usage=usage,\n            proposal=proposal,\n            reports_written=report_files,\n        )\n        if complete_report_path is not None:\n            apply_research_identity_header(\n                complete_report_path, render_research_identity(pack)\n            )\n        run_dir = self.settings.runs_dir / run_id\n        self.io.export(pack, run_dir)\n        pack_path = str(run_dir)\n\n\nSOURCE src/research_desk/models.py\n    source_pack: str | None = None  # when this pack is a controlled rerun of another pack\n    reason: str | None = None\n\n\nclass InputSnapshot(BaseModel):\n    \\\"\\\"\\\"The material inputs a run consumed, so a rerun can be replayed.\\\"\\\"\\\"\n\n    instrument_context: str = \\\"\\\"\n    past_context: str = \\\"\\\"\n    initial_state: dict[str, Any] = Field(default_factory=dict)\n    identity: dict[str, Any] = Field(default_factory=dict)\n    data_snapshot: dict[str, dict[str, str]] = Field(\n        default_factory=dict\n    )  # tool_name -> {\\\"canonical args key\\\": result text}\n    memory_used: list[dict[str, Any]] = Field(default_factory=list)\n    memory_sources: list[str] = Field(default_factory=list)\n    # Factual *available* corpus for the case (identity, full market CSV, official\n    # news notes) recorded separately from the tool calls actually made. This is\n    # what makes the evidence-derived price available for proposal/replay even\n    # when a model path did not ask one of the data tools.\n    available_sources: dict[str, Any] = Field(default_factory=dict)\n\n\nclass EvidencePack(BaseModel):\n    \\\"\\\"\\\"A complete, self-contained evidence package for one run.\n\n    ``final_state`` is the graph's merged terminal state; it is the material\n    needed to rebuild reports and derive the signal and policy outputs offline\n    with zero external calls.\n    \\\"\\\"\\\"\n\n    manifest: RunManifest\n    input: InputSnapshot\n    events: list[EvidenceEvent] = Field(default_factory=list)\n    final_state: dict[str, Any] = Field(default_factory=dict)\n    usage: UsageSummary = Field(default_factory=UsageSummary)\n    calls: list[CallRecord] = Field(default_factory=list)\n    reports_written: list[str] = Field(default_factory=list)\n    proposal: ProposalRecord | None = None\n    complete: bool = False  # set True only when a full pack was exported\n\n\n...\nclass ProposalRecord(BaseModel):\n    \\\"\\\"\\\"A single reviewable proposal produced by a research run.\\\"\\\"\\\"\n\n    proposal_id: str\n    run_id: str\n    ticker: str\n    trade_date: str\n    signal: str\n    rating: str | None = None\n    side: str = \\\"buy\\\"  # \\\"buy\\\" | \\\"sell\\\"; derived from the tradeable signal\n    price: float | None = None  # from evidence only, never operator-typed\n    shares: int | None = None  # from the trusted CLI operator\n    evidence_id: str | None = None  # identity of the frozen evidence that supplied price/signal\n    status: ProposalStatus = ProposalStatus.PENDING_REVIEW\n    proposal_version: str = \\\"\\\"  # binds approvals to this exact content\n    operator: str | None = None\n    created_at: str = \\\"\\\"\n    approved_at: str | None = None\n    approved_version: str | None = None\n    reason: str | None = None\n    execution: ExecutionRecord | None = None\n\n\n...\ndef make_proposal_version(\n    ticker: str,\n    trade_date: str,\n    signal: str,\n    price: float | None,\n    *,\n    side: str = \\\"buy\\\",\n    shares: int | None = None,\n    evidence_id: str | None = None,\n) -> str:\n    \\\"\\\"\\\"Content fingerprint binding an approval to the exact proposal inputs.\n\n    The fingerprint covers every *tradeable* field: ticker, analysis date,\n    action (side), signal, price (from evidence), evidence identity, and the\n    operator-supplied quantity. Changing any of these requires a new approval.\n    \\\"\\\"\\\"\n    import hashlib\n\n    payload = \\\"|\\\".join(\n        [\n            ticker.upper(),\n            str(trade_date),\n            str(side),\n            str(signal),\n            str(price),\n            str(evidence_id or \\\"\\\"),\n            str(shares if shares is not None else \\\"\\\"),\n        ]\n    )\n    return hashlib.sha256(payload.encode(\\\"utf-8\\\")).hexdigest()[:16]\n\n\nEvidencePack.model_rebuild()\n\"",
+          "id": "prt_203898ab2001uwo2VVs0QGnqRP",
+          "sessionID": "ses_dfc767573ffeDVa3l3XMpxK5Mb",
+          "messageID": "msg_203898aaf001deIElFq4jO251J"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_203898aaf001deIElFq4jO251J",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-evidence-slice",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 5681,
+          "input": 3293,
+          "output": 596,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1792
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355675639,
+          "completed": 1795355682364
+        },
+        "finish": "stop",
+        "id": "msg_203898bf7001H0B7zbnwCNdtnJ",
+        "sessionID": "ses_dfc767573ffeDVa3l3XMpxK5Mb"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_203899b5a001a2CDF6DTsVRLCT",
+          "sessionID": "ses_dfc767573ffeDVa3l3XMpxK5Mb",
+          "messageID": "msg_203898bf7001H0B7zbnwCNdtnJ"
+        },
+        {
+          "type": "text",
+          "text": "```json\n{\"changes\":[{\"path\":\"src/research_desk/evidence.py\",\"old\":\"logger = logging.getLogger(__name__)\",\"new\":\"logger = logging.getLogger(__name__)\\n\\n\\ndef _canonical_json(value: Any) -> str:\\n    return json.dumps(value, sort_keys=True, separators=(\\\",\\\", \\\":\\\"), ensure_ascii=False, default=str)\\n\\n\\ndef material_evidence_id(\\n    ticker: str, trade_date: str, input_snapshot: InputSnapshot\\n) -> str:\\n    \\\"\\\"\\\"Stable SHA-256 identity of the material evidence for a proposal.\\n\\n    Derived only from logical inputs (ticker, trade date and material\\n    ``InputSnapshot`` data), so it is identical on creation and import,\\n    independent of JSON key ordering, secret sanitization and run IDs.\\n    \\\"\\\"\\\"\\n    import hashlib\\n\\n    payload = {\\n        \\\"ticker\\\": str(ticker).upper(),\\n        \\\"trade_date\\\": str(trade_date),\\n        \\\"identity\\\": input_snapshot.identity,\\n        \\\"data_snapshot\\\": input_snapshot.data_snapshot,\\n        \\\"available_sources\\\": input_snapshot.available_sources,\\n        \\\"memory_used\\\": input_snapshot.memory_used,\\n        \\\"memory_sources\\\": input_snapshot.memory_sources,\\n    }\\n    return hashlib.sha256(_canonical_json(payload).encode(\\\"utf-8\\\")).hexdigest()\"},{\"path\":\"src/research_desk/evidence.py\",\"old\":\"        if manifest.outcome == \\\"completed\\\" and not final_state:\\n            raise EvidencePackError(\\n                f\\\"Evidence pack {d} claims a completed run but has an empty final_state.\\\"\\n            )\\n        return pack\",\"new\":\"        if manifest.outcome == \\\"completed\\\" and not final_state:\\n            raise EvidencePackError(\\n                f\\\"Evidence pack {d} claims a completed run but has an empty final_state.\\\"\\n            )\\n        if proposal is not None:\\n            from .models import make_proposal_version\\n\\n            proposal.evidence_id = material_evidence_id(\\n                proposal.ticker or manifest.ticker,\\n                proposal.trade_date or manifest.trade_date,\\n                input_snapshot,\\n            )\\n            proposal.proposal_version = make_proposal_version(\\n                proposal.ticker,\\n                proposal.trade_date,\\n                proposal.signal,\\n                proposal.price,\\n                side=proposal.side,\\n                shares=proposal.shares,\\n                evidence_id=proposal.evidence_id,\\n            )\\n        return pack\"}]}\n```",
+          "time": {
+            "start": 1795355679582,
+            "end": 1795355682120
+          },
+          "id": "prt_203899b5e001b9HNN2qfwbI4DU",
+          "sessionID": "ses_dfc767573ffeDVa3l3XMpxK5Mb",
+          "messageID": "msg_203898bf7001H0B7zbnwCNdtnJ"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 5681,
+            "input": 3293,
+            "output": 596,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1792
+            }
+          },
+          "cost": 0,
+          "id": "prt_20389a589001065h0zjN08NbuH",
+          "sessionID": "ses_dfc767573ffeDVa3l3XMpxK5Mb",
+          "messageID": "msg_203898bf7001H0B7zbnwCNdtnJ"
+        }
+      ]
+    }
+  ]
+}

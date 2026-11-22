@@ -1,21 +1,6 @@
-"""Gate 2: lint, types, dependencies and the deterministic authority boundary.
-
-Runs ``ruff check .`` over the repository, a meaningful mypy check over the new
-``src/research_desk`` package (``--follow-imports=skip`` so the untouched
-upstream package is not silently made part of the new type contract), and
-``python -m pip check`` for dependency consistency. It then scans the policy /
-review / storage / graph-adapter modules for the structural authority boundary:
-``review`` and ``policy`` must never import an LLM (including direct provider
-modules and upstream LLM factories), and the graph must never import a function
-that grants approval or mutates the ledger.
-
-Genuine application lint/type findings are reported with file:line and the gate
-fails; this implementation does not own application source, so findings are
-surfaced to the supervisor rather than suppressed.
-
-In PR mode, a change on a safety-relevant path must carry, in the same diff, a
-changed ADR that references the changed owner/path AND a changed concrete
-approval record carrying the real APPROVED marker and owner.
+"""Gate 2 runs lint, type checks, declared dependency consistency, and permission
+validation. Changes to safety modules require a scoped accepted ADR plus an API
+compatibility comparison against the Git base.
 """
 
 from __future__ import annotations

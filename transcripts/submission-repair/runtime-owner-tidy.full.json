@@ -1,0 +1,151 @@
+{
+  "info": {
+    "id": "ses_dfc74b8e7ffe6pFTp1L7s0BClE",
+    "slug": "hidden-island",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-owner-tidy",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-owner-tidy",
+    "title": "Research Desk runtime-owner-tidy",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 2654,
+      "output": 1510,
+      "reasoning": 0,
+      "cache": {
+        "read": 1792,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355789080,
+      "updated": 1795355799019
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355789108
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_2038b4734001yZb9FQ7FQKqPGr",
+        "sessionID": "ses_dfc74b8e7ffe6pFTp1L7s0BClE"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Return ONLY valid JSON {\\\"changes\\\":[{\\\"path\\\":\\\"...\\\",\\\"old\\\":\\\"unique exact original substring\\\",\\\"new\\\":\\\"new text\\\"}]} with optionally a new file via {\\\"path\\\":\\\"...\\\",\\\"content\\\":\\\"...\\\"} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.\nSmall corrections using exact text replacements only. In storage.register_proposal include REVIEW_REQUIRED as a nonterminal status in the guarded SQL and parameters; do not persist a research-supplied operator reason, use NULL; improve the long leading comment to one docstring; on returning the inserted or existing record use a clear invariant (raise if unexpectedly missing), not a fallback that returns the incoming record and its authority fields. In cli.research avoid the unused variable stored, assign the returned record back to result.proposal for a truthful printed outcome. In evidence.py compute canonical material identity for all fields of the InputSnapshot as via sanitize_secrets(input_snapshot.model_dump()), plus normalized ticker/trade_date. Existing serialization exports the same sanitized inputs; reuse json canonicalization. Use the source pack manifest ticker/date for deriving proposal identity. Reject mismatch proposal and manifest in run_id, ticker or date instead of trusting the incoming proposal labels. Keep no original archives modified.\n\nSOURCE src/research_desk/storage.py\n\n    def register_proposal(self, proposal: ProposalRecord) -> ProposalRecord:\n        # Import-facing registration: untrusted advisory material only. New\n        # rows start pending with no operator approval, shares, or execution.\n        # A legit unchanged duplicate returns the actual ledger row (preserving\n        # any chosen quantity/approval); rejected/simulated rows are immutable.\n        # If research terms/identity change while nonterminal, reset local\n        # approval/shares/execution to pending with a freshly computed version.\n        nonterminal = (\n            ProposalStatus.PENDING_REVIEW.value,\n            ProposalStatus.APPROVED.value,\n        )\n        terms_unchanged = (\n            \\\"proposals.run_id = excluded.run_id\\\"\n            \\\" AND proposals.ticker = excluded.ticker\\\"\n            \\\" AND proposals.trade_date = excluded.trade_date\\\"\n            \\\" AND proposals.signal = excluded.signal\\\"\n            \\\" AND proposals.rating IS excluded.rating\\\"\n            \\\" AND proposals.side = excluded.side\\\"\n            \\\" AND proposals.price IS excluded.price\\\"\n            \\\" AND proposals.evidence_id IS excluded.evidence_id\\\"\n        )\n        with self._conn:\n            self._conn.execute(\n                f\\\"\\\"\\\"INSERT INTO proposals\n                   (id, run_id, ticker, trade_date, signal, rating, side, price,\n                    shares, evidence_id, status, proposal_version, operator,\n                    created_at, approved_at, approved_version, reason, execution_json)\n                   VALUES (?,?,?,?,?,?,?,?,NULL,?,?,?,NULL,?,NULL,NULL,?,NULL)\n                   ON CONFLICT(id) DO UPDATE SET\n                     run_id = excluded.run_id,\n                     ticker = excluded.ticker,\n                     trade_date = excluded.trade_date,\n                     signal = excluded.signal,\n                     rating = excluded.rating,\n                     side = excluded.side,\n                     price = excluded.price,\n                     evidence_id = excluded.evidence_id,\n                     status = excluded.status,\n                     proposal_version = excluded.proposal_version,\n                     reason = excluded.reason,\n                     shares = NULL,\n                     operator = NULL,\n                     approved_at = NULL,\n                     approved_version = NULL,\n                     execution_json = NULL\n                   WHERE proposals.status IN (?,?)\n                     AND NOT ({terms_unchanged})\\\"\\\"\\\",\n                (\n                    proposal.proposal_id, proposal.run_id, proposal.ticker,\n                    proposal.trade_date, proposal.signal, proposal.rating,\n                    proposal.side, proposal.price, proposal.evidence_id,\n                    ProposalStatus.PENDING_REVIEW.value,\n                    make_proposal_version(\n                        proposal.ticker,\n                        proposal.trade_date,\n                        proposal.signal,\n                        proposal.price,\n                        side=proposal.side,\n                        evidence_id=proposal.evidence_id,\n                    ),\n                    proposal.created_at, proposal.reason,\n                    *nonterminal,\n                ),\n            )\n        existing = self.get_proposal(proposal.proposal_id)\n        if existing is not None:\n            return existing\n        return proposal\n\n    def get_proposal(self, proposal_id: str) -> ProposalRecord | None:\n        row = self._conn.execute(\n            \\\"SELECT * FROM proposals WHERE id=?\\\", (proposal_id,)\n        ).fetchone()\n        if row is None:\n            return None\n        return self._row_to_proposal(row)\n\n\nSOURCE src/research_desk/evidence.py\n\nlogger = logging.getLogger(__name__)\n\n\ndef _canonical_json(value: Any) -> str:\n    return json.dumps(value, sort_keys=True, separators=(\\\",\\\", \\\":\\\"), ensure_ascii=False, default=str)\n\n\ndef material_evidence_id(\n    ticker: str, trade_date: str, input_snapshot: InputSnapshot\n) -> str:\n    \\\"\\\"\\\"Stable SHA-256 identity of the material evidence for a proposal.\n\n    Derived only from logical inputs (ticker, trade date and material\n    ``InputSnapshot`` data), so it is identical on creation and import,\n    independent of JSON key ordering, secret sanitization and run IDs.\n    \\\"\\\"\\\"\n    import hashlib\n\n    payload = {\n        \\\"ticker\\\": str(ticker).upper(),\n        \\\"trade_date\\\": str(trade_date),\n        \\\"identity\\\": input_snapshot.identity,\n        \\\"data_snapshot\\\": input_snapshot.data_snapshot,\n        \\\"available_sources\\\": input_snapshot.available_sources,\n        \\\"memory_used\\\": input_snapshot.memory_used,\n        \\\"memory_sources\\\": input_snapshot.memory_sources,\n    }\n    return hashlib.sha256(_canonical_json(payload).encode(\\\"utf-8\\\")).hexdigest()\n\n# Files that make up a complete evidence pack. ``complete`` is only set when all\n# of them are present and parseable.\nPACK_FILES = (\n    \\\"manifest.json\\\",\n    \\\"input.json\\\",\n    \\\"events.jsonl\\\",\n    \\\"final_state.json\\\",\n    \\\"usage.json\\\",\n    \\\"calls.json\\\",\n)\n\n...\ndef sanitize_secrets(obj: Any, _key: str = \\\"\\\") -> Any:\n    \\\"\\\"\\\"Recursively redact credential-looking keys so packs never hold secrets (SEC-001).\n\n    Actual Pydantic models -- including LangChain ``HumanMessage``,\n    ``AIMessage`` and ``ToolMessage`` values nested in graph state -- are\n    converted to JSON-native dicts via their ``model_dump(mode=\\\"json\\\")`` API\n    before redaction. Their type, content, tool calls, tool call id,\n    additional kwargs, response metadata and usage metadata therefore survive\n    export/import intact while any credential fields inside them are still\n    redacted. Messages are never stringified.\n    \\\"\\\"\\\"\n    if isinstance(obj, BaseModel):\n        return sanitize_secrets(obj.model_dump(mode=\\\"json\\\"), _key)\n    if isinstance(obj, dict):\n        out = {}\n        for k, v in obj.items():\n            if _is_credential_key(str(k)):\n                out[k] = \\\"**REDACTED**\\\" if v not in (None, \\\"\\\") else v\n            else:\n                out[k] = sanitize_secrets(v, _key)\n        return out\n    if isinstance(obj, (list, tuple)):\n        return [sanitize_secrets(v, _key) for v in obj]\n    return obj\n\n\nclass EvidenceLog:\n    \\\"\\\"\\\"Ordered, sequence-numbered event log for one run.\\\"\\\"\\\"\n\n    def __init__(self) -> None:\n\n...\n                f\\\"Evidence pack {d} claims a completed run but has an empty final_state.\\\"\n            )\n        if proposal is not None:\n            from .models import make_proposal_version\n\n            proposal.evidence_id = material_evidence_id(\n                proposal.ticker or manifest.ticker,\n                proposal.trade_date or manifest.trade_date,\n                input_snapshot,\n            )\n            proposal.proposal_version = make_proposal_version(\n                proposal.ticker,\n                proposal.trade_date,\n                proposal.signal,\n                proposal.price,\n                side=proposal.side,\n                shares=proposal.shares,\n                evidence_id=proposal.evidence_id,\n            )\n        return pack\n\n    def load_external_proposal(self, d: Path) -> Any:\n        \\\"\\\"\\\"Load proposal.json from a pack directory without requiring a full pack.\\\"\\\"\\\"\n        if not (d / \\\"proposal.json\\\").exists():\n            return None\n        from .models import ProposalRecord\n\nSOURCE src/research_desk/cli.py\n        source_pack=source_pack,\n    )\n    with console.status(f\\\"Running research on {ticker} ({trade_date})...\\\"):\n        result = runner.run(ticker, trade_date)\n\n    store = _store(settings)\n    stored = None\n    if result.proposal is not None and not no_proposal:\n        stored = store.register_proposal(result.proposal)\n    store.close()\n\n    _print_run_result(result)\n    if result.outcome == RunOutcome.BUDGET_STOPPED.value:\n        console.print(\n            \\\"[yellow]Budget stopped: incomplete research returned, no approvable \\\"\n\nSOURCE src/research_desk/models.py\n    \\\"\\\"\\\"Provenance header of a research run and its evidence pack.\\\"\\\"\\\"\n\n    run_id: str\n    ticker: str\n    trade_date: str\n    asset_type: str = \\\"stock\\\"\n    analysts: list[str] = Field(default_factory=list)\n    context_mode: str = \\\"baseline\\\"\n    data_mode: str = \\\"live\\\"  # live | frozen\n    outcome: str = \\\"completed\\\"\n    signal: str | None = None\n    prompt_version: str = \\\"\\\"\n    package_schema_version: int = 1\n    created_at: str = \\\"\\\"\n    operator: str = \\\"research-desk\\\"\n    model_quick: str | None = None\n    model_deep: str | None = None\n    budget_max_calls: int | None = None\n    source_pack: str | None = None  # when this pack is a controlled rerun of another pack\n    reason: str | None = None\n\n\nclass InputSnapshot(BaseModel):\n    \\\"\\\"\\\"The material inputs a run consumed, so a rerun can be replayed.\\\"\\\"\\\"\n\n    instrument_context: str = \\\"\\\"\n    past_context: str = \\\"\\\"\n    initial_state: dict[str, Any] = Field(default_factory=dict)\n    identity: dict[str, Any] = Field(default_factory=dict)\n    data_snapshot: dict[str, dict[str, str]] = Field(\n        default_factory=dict\n    )  # tool_name -> {\\\"canonical args key\\\": result text}\n    memory_used: list[dict[str, Any]] = Field(default_factory=list)\n    memory_sources: list[str] = Field(default_factory=list)\n    # Factual *available* corpus for the case (identity, full market CSV, official\n    # news notes) recorded separately from the tool calls actually made. This is\n    # what makes the evidence-derived price available for proposal/replay even\n    # when a model path did not ask one of the data tools.\n    available_sources: dict[str, Any] = Field(default_factory=dict)\n\n\nclass EvidencePack(BaseModel):\n\"",
+          "id": "prt_2038b4737001TUA4NzMNDGROGE",
+          "sessionID": "ses_dfc74b8e7ffe6pFTp1L7s0BClE",
+          "messageID": "msg_2038b4734001yZb9FQ7FQKqPGr"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_2038b4734001yZb9FQ7FQKqPGr",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-owner-tidy",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 5956,
+          "input": 2654,
+          "output": 1510,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1792
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355789405,
+          "completed": 1795355799009
+        },
+        "finish": "stop",
+        "id": "msg_2038b485d001ziD97Y72asY5Tm",
+        "sessionID": "ses_dfc74b8e7ffe6pFTp1L7s0BClE"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_2038b5535001cwjd2a6VOjsYrh",
+          "sessionID": "ses_dfc74b8e7ffe6pFTp1L7s0BClE",
+          "messageID": "msg_2038b485d001ziD97Y72asY5Tm"
+        },
+        {
+          "type": "text",
+          "text": "{\"changes\":[{\"path\":\"src/research_desk/storage.py\",\"old\":\"    def register_proposal(self, proposal: ProposalRecord) -> ProposalRecord:\\n        # Import-facing registration: untrusted advisory material only. New\\n        # rows start pending with no operator approval, shares, or execution.\\n        # A legit unchanged duplicate returns the actual ledger row (preserving\\n        # any chosen quantity/approval); rejected/simulated rows are immutable.\\n        # If research terms/identity change while nonterminal, reset local\\n        # approval/shares/execution to pending with a freshly computed version.\\n        nonterminal = (\\n            ProposalStatus.PENDING_REVIEW.value,\\n            ProposalStatus.APPROVED.value,\\n        )\",\"new\":\"    def register_proposal(self, proposal: ProposalRecord) -> ProposalRecord:\\n        \\\"\\\"\\\"Register untrusted import-facing advisory material in the ledger.\\n\\n        New rows start pending with no operator approval, shares, or\\n        execution. An unchanged duplicate in a nonterminal status returns the\\n        existing ledger row unchanged (preserving any chosen quantity and\\n        approval); rejected/simulated rows are immutable. If research terms or\\n        identity change while nonterminal, local approval, shares and\\n        execution are reset to pending with a freshly computed version. Any\\n        research-supplied operator reason is never persisted.\\n        \\\"\\\"\\\"\\n        nonterminal = (\\n            ProposalStatus.PENDING_REVIEW.value,\\n            ProposalStatus.APPROVED.value,\\n            ProposalStatus.REVIEW_REQUIRED.value,\\n        )\"},{\"path\":\"src/research_desk/storage.py\",\"old\":\"                   (id, run_id, ticker, trade_date, signal, rating, side, price,\\n                    shares, evidence_id, status, proposal_version, operator,\\n                    created_at, approved_at, approved_version, reason, execution_json)\\n                   VALUES (?,?,?,?,?,?,?,?,NULL,?,?,?,NULL,?,NULL,NULL,?,NULL)\",\"new\":\"                   (id, run_id, ticker, trade_date, signal, rating, side, price,\\n                    shares, evidence_id, status, proposal_version, operator,\\n                    created_at, approved_at, approved_version, reason, execution_json)\\n                   VALUES (?,?,?,?,?,?,?,?,NULL,?,?,?,NULL,?,NULL,NULL,NULL,NULL)\"},{\"path\":\"src/research_desk/storage.py\",\"old\":\"                    proposal.created_at, proposal.reason,\\n                    *nonterminal,\\n                ),\\n            )\\n        existing = self.get_proposal(proposal.proposal_id)\\n        if existing is not None:\\n            return existing\\n        return proposal\",\"new\":\"                    proposal.created_at,\\n                    *nonterminal,\\n                ),\\n            )\\n        existing = self.get_proposal(proposal.proposal_id)\\n        if existing is None:\\n            raise RuntimeError(\\n                f\\\"proposal {proposal.proposal_id} missing after registration\\\"\\n            )\\n        return existing\"},{\"path\":\"src/research_desk/cli.py\",\"old\":\"    store = _store(settings)\\n    stored = None\\n    if result.proposal is not None and not no_proposal:\\n        stored = store.register_proposal(result.proposal)\\n    store.close()\",\"new\":\"    store = _store(settings)\\n    if result.proposal is not None and not no_proposal:\\n        result.proposal = store.register_proposal(result.proposal)\\n    store.close()\"},{\"path\":\"src/research_desk/evidence.py\",\"old\":\"    payload = {\\n        \\\"ticker\\\": str(ticker).upper(),\\n        \\\"trade_date\\\": str(trade_date),\\n        \\\"identity\\\": input_snapshot.identity,\\n        \\\"data_snapshot\\\": input_snapshot.data_snapshot,\\n        \\\"available_sources\\\": input_snapshot.available_sources,\\n        \\\"memory_used\\\": input_snapshot.memory_used,\\n        \\\"memory_sources\\\": input_snapshot.memory_sources,\\n    }\\n    return hashlib.sha256(_canonical_json(payload).encode(\\\"utf-8\\\")).hexdigest()\",\"new\":\"    payload = sanitize_secrets(input_snapshot.model_dump())\\n    payload[\\\"ticker\\\"] = str(ticker).strip().upper()\\n    payload[\\\"trade_date\\\"] = str(trade_date).strip()\\n    return hashlib.sha256(_canonical_json(payload).encode(\\\"utf-8\\\")).hexdigest()\"},{\"path\":\"src/research_desk/evidence.py\",\"old\":\"        if proposal is not None:\\n            from .models import make_proposal_version\\n\\n            proposal.evidence_id = material_evidence_id(\\n                proposal.ticker or manifest.ticker,\\n                proposal.trade_date or manifest.trade_date,\\n                input_snapshot,\\n            )\\n            proposal.proposal_version = make_proposal_version(\\n                proposal.ticker,\\n                proposal.trade_date,\\n                proposal.signal,\\n                proposal.price,\\n                side=proposal.side,\\n                shares=proposal.shares,\\n                evidence_id=proposal.evidence_id,\\n            )\",\"new\":\"        if proposal is not None:\\n            from .models import make_proposal_version\\n\\n            if proposal.run_id != manifest.run_id:\\n                raise ValueError(\\n                    f\\\"Proposal run_id {proposal.run_id!r} does not match \\\"\\n                    f\\\"manifest run_id {manifest.run_id!r}\\\"\\n                )\\n            if (proposal.ticker or \\\"\\\").strip().upper() != (\\n                manifest.ticker or \\\"\\\"\\n            ).strip().upper():\\n                raise ValueError(\\n                    f\\\"Proposal ticker {proposal.ticker!r} does not match \\\"\\n                    f\\\"manifest ticker {manifest.ticker!r}\\\"\\n                )\\n            if (proposal.trade_date or \\\"\\\").strip() != (\\n                manifest.trade_date or \\\"\\\"\\n            ).strip():\\n                raise ValueError(\\n                    f\\\"Proposal trade_date {proposal.trade_date!r} does not match \\\"\\n                    f\\\"manifest trade_date {manifest.trade_date!r}\\\"\\n                )\\n            proposal.ticker = manifest.ticker\\n            proposal.trade_date = manifest.trade_date\\n            proposal.evidence_id = material_evidence_id(\\n                manifest.ticker,\\n                manifest.trade_date,\\n                input_snapshot,\\n            )\\n            proposal.proposal_version = make_proposal_version(\\n                proposal.ticker,\\n                proposal.trade_date,\\n                proposal.signal,\\n                proposal.price,\\n                side=proposal.side,\\n                shares=proposal.shares,\\n                evidence_id=proposal.evidence_id,\\n            )\"}]}",
+          "time": {
+            "start": 1795355792698,
+            "end": 1795355799002
+          },
+          "id": "prt_2038b553a001n1UCbi5po0czfo",
+          "sessionID": "ses_dfc74b8e7ffe6pFTp1L7s0BClE",
+          "messageID": "msg_2038b485d001ziD97Y72asY5Tm"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 5956,
+            "input": 2654,
+            "output": 1510,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1792
+            }
+          },
+          "cost": 0,
+          "id": "prt_2038b6ddd001pdS6ulyTaE4PUt",
+          "sessionID": "ses_dfc74b8e7ffe6pFTp1L7s0BClE",
+          "messageID": "msg_2038b485d001ziD97Y72asY5Tm"
+        }
+      ]
+    }
+  ]
+}

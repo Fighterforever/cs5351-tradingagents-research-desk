@@ -1,15 +1,6 @@
-"""Gate 6: the AI-use log must be updated for code or prompt changes.
-
-Uses the actual PR base..head (or an explicit changed-file list, or the working
-tree) to obtain changed files. When a change touches code (``*.py``) or prompt
-files, ``docs/ai-use-log.yaml`` must belong to that same change set and be a
-valid, non-empty log under the agreed schema. Every entry must carry the common
-fields (date/tool/model/purpose/scope/review/outcome); OpenCode CLI entries must
-additionally carry a nonempty ``session`` string and a real ``prompt`` file,
-while non-OpenCode (coordinator) entries must instead carry a real ``evidence``
-reference. The gate does not pass merely because the log exists: at least one
-entry's ``scope`` must cover every changed code/prompt file. A git failure is a
-gate failure, never "no change".
+"""Gate 6 matches changed code and runtime prompt paths to new or amended AI-use log
+entries relative to Git. It verifies evidence and review files plus the original prompt
+and session ID for OpenCode.
 """
 
 from __future__ import annotations

@@ -1,0 +1,50 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+Exact isolated two-code-block fix to graph_adapter.py only. Do both replacements: append material_evidence_id to the existing import from .evidence. Replace the shown snapshot/available_sources/proposal/except/budget_stopped/InputSnapshot section so it constructs the existing InputSnapshot before decide_proposal, reuses the already-computed snapshot for data_snapshot, and actually passes evidence_id=material_evidence_id(ticker,trade_date,input_snapshot) in decide_proposal. Then keep budget_stopped handling and manifest as-is. Return patch JSON.
+
+SOURCE src/research_desk/graph_adapter.py
+
+from .budget import BudgetExhausted, BudgetTracker, ContextBudgetExceeded
+from .config import ResearchDeskSettings
+from .context import ContextAssembler, StandingConstraints, build_common_grounding
+from .evidence import EvidenceLog, EvidencePackIO, record_data_read
+from .models import (
+    InputSnapshot,
+    ProposalRecord,
+
+...
+        proposal = None
+        proposal_error: str | None = None
+        snapshot = self._data_snapshot_from_run(final_state, frozen_snapshot)
+        available_sources = self._available_sources(ticker, trade_date, frozen_identity)
+        try:
+            proposal = decide_proposal(
+                outcome=outcome.value,
+                signal=signal,
+                run_id=run_id,
+                ticker=ticker,
+                trade_date=trade_date,
+                snapshot=snapshot,
+                available_sources=available_sources,
+            )
+        except ReviewError as exc:
+            proposal_error = str(exc)
+        if outcome == RunOutcome.BUDGET_STOPPED:
+            proposal = None  # incomplete research must not be approvable (NFR-003)
+
+        input_snapshot = InputSnapshot(
+            instrument_context=instrument_context,
+            past_context=assembly.text,
+            initial_state=_trim_state(init_state),
+            identity=identity,
+            data_snapshot=self._data_snapshot_from_run(final_state, frozen_snapshot),
+            memory_used=self._memory_entries(ticker, trade_date),
+            memory_sources=["tradingagents.memory_log" if self.data_mode == "live" else "frozen-pack"],
+            available_sources=available_sources,
+        )
+
+        manifest = RunManifest(
+            run_id=run_id,
+            ticker=ticker,
+            trade_date=trade_date,
+            asset_type=asset_type,
+            analysts=list(self.settings.analysts),

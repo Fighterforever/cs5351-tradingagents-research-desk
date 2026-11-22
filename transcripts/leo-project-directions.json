@@ -64,6 +64,53 @@
         "transcripts/gemini-pipeline-review.json",
         "docs/process/pipeline-review.md"
       ]
+    },
+    {
+      "id": "U-07",
+      "source_locator": "User message changing the team size after the supervision-evidence request",
+      "meaning": "Set the team size to four and distribute the former fifth role’s responsibilities among the remaining members.",
+      "evidence": [
+        "docs/process/team.md",
+        "Report.md"
+      ]
+    },
+    {
+      "id": "U-08",
+      "source_locator": "The coordinator received this student instruction after the submission audit.",
+      "meaning": "Alfa requested OpenCode repairs to proposal registration, approval, gates and CLI reporting. The same instruction requested a review of disclosure records, student materials and repository consistency.",
+      "evidence": [
+        "docs/architecture/adr/005-submission-contracts.md",
+        "docs/review-memo.md"
+      ]
+    },
+    {
+      "id": "U-09",
+      "source_locator": "Student reply to the request for the remaining D6 identities.",
+      "meaning": "Liyu MA confirmed the Alfa identity.",
+      "evidence": [
+        "docs/process/team.md",
+        "Report.md"
+      ]
+    },
+    {
+      "id": "U-10",
+      "source_locator": "Student follow-up identifying two members.",
+      "quote": "60106154Xinyao HENG 是 Bravo，60980401 Yinuo Li 是Charlie",
+      "meaning": "Alfa supplied the formal names and student numbers for Bravo and Charlie.",
+      "evidence": [
+        "docs/process/team.md",
+        "Report.md"
+      ]
+    },
+    {
+      "id": "U-11",
+      "source_locator": "Student selected the provider after receiving the official service balance result and the scope of the data transfer.",
+      "quote": "允许 OpenCode 使用 AioHub 完成本次修复及评估",
+      "meaning": "Alfa authorized OpenCode to use the configured AioHub endpoint for the repair and evaluation.",
+      "evidence": [
+        "docs/architecture/adr/005-submission-contracts.md",
+        "docs/ai-use-log.yaml"
+      ]
     }
   ]
 }

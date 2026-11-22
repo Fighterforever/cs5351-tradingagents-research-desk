@@ -2,7 +2,7 @@
 
 ADR-001 assigns one owner to each architectural element. New code extends the real v0.4.0 baseline under src/research_desk. Shared vendor routes must not branch on this application's identity. A subclass or composition seam may capture an existing external read where callbacks cannot observe it.
 
-The architecture trace matrix assigns each module its ADRs and invariants. Function ownership and inherited trace links are enumerated in function-trace.md; module docstrings provide local summaries and are not a separate source of authority. Pure business functions accept established records. Validate external package files, CLI input and provider output at their boundaries. Do not duplicate validation throughout trusted internal paths.
+The [requirement trace matrix](../architecture/trace-matrix.md) maps requirements to components and verification. The [function index](function-trace.md) lists each function under its module’s decision and contract. The [invariant register](../architecture/invariants.md) names the component responsible for each safety rule. Pure business functions accept established records. Validate external package files, CLI input and provider output at their boundaries. Do not duplicate validation throughout trusted internal paths.
 
 review and policy cannot call an LLM. The graph cannot import a function that grants approval or mutates the ledger. Storage applies approved deterministic decisions and records the resulting transaction. Context transformations preserve critical identity, date, price and task information. Unknown frozen data remains unknown.
 
