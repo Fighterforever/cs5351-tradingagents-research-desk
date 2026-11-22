@@ -1,6 +1,6 @@
 # Team responsibilities
 
-The project team uses the working names Alfa, Bravo, Charlie and Delta. The team has assigned equal responsibility for completing and reviewing the delivery. The allocation assigns a weight of 1.0 to each of the four members. Each member will confirm the final weight against completed work.
+The project team uses the working names Alfa, Bravo, Charlie and Delta. The team has assigned equal responsibility for completing and reviewing the delivery. The allocation assigns a weight of 1.0 to each of the four members. At final review, Liyu MA confirmed equal contributions across all four members. [Contribution record](../../transcripts/leo-project-directions.md#u-13--architecture-discussion-and-final-contributions).
 
 | Member | Primary responsibility | Review responsibility | Relative contribution |
 |---|---|---|---:|
@@ -11,7 +11,7 @@ The project team uses the working names Alfa, Bravo, Charlie and Delta. The team
 
 The four-person review rotation is Alfa → Bravo → Charlie → Delta → Alfa. Each reviewer checks the next member’s area and records the actual findings and decision in the review memo.
 
-Report integration and the submission checklist belong to Alfa. Bravo owns GitHub permissions and release coordination. Charlie owns installation packaging and reproducibility materials. Delta owns the six CI gates. Each member retains an equal assigned weight of 1.0.
+Report integration and the submission checklist belong to Alfa. Bravo owns GitHub permissions and release coordination. Charlie owns installation packaging and reproducibility materials. Delta owns the six CI gates. Each member retains an equal final weight of 1.0.
 
 The recorded decision identifier leo refers to Liyu MA (59072966). The [annotated development record](../../transcripts/59072966-Liyu-MA.md) preserves that identity and the coordinating workflow’s role in sending prompts. Delta is Chengru WANG (60254685), as identified in [the member's own follow-up record](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/9435dcbf0b3697bec8c30d0cb2d514ab255032f2/transcripts/60254685-Chengru-WANG.md). Alfa confirmed the remaining names and student numbers in the [student directions](../../transcripts/leo-project-directions.md).
 

@@ -126,6 +126,17 @@
         "transcripts/leo-project-directions.md",
         "Report.md"
       ]
+    },
+    {
+      "id": "U-13",
+      "source_locator": "Liyu MA's retrospective reply during final submission review.",
+      "quote": "liyu 建议保留上游交易研究图，Xinyao HENG 主张直接修改上游",
+      "meaning": "At final review, Liyu MA recalled advocating retention of the upstream research graph and identified Xinyao HENG as the advocate for changing it directly. Liyu MA also confirmed equal final contributions and accepted the four reflection paragraphs.",
+      "evidence": [
+        "docs/architecture/evaluation-table.md",
+        "Report.md"
+      ],
+      "follow_up_quote": "Bravo 比较过在上游加采集点和在外层封装的取舍；Charlie 检查过导出的研究包能否离线重放、重复登记后是否保留审批结果"
     }
   ]
 }

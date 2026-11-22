@@ -88,3 +88,13 @@ Alfa authorized OpenCode to use the configured AioHub endpoint for the repair an
 ### U-12 — Review the separate demonstration
 
 Alfa chose to record the English narration and exported the aligned recording. During the final review, Alfa asked the coordinator to check “终端操作能不能看清、画面和旁白字幕能不能对上”. The revised demonstration shows one captured command at a time, holds the ledger on screen while the presenter explains the balance, and displays the token counts beside the comparison bars. This intervention concerns acceptance of the separate demonstration.
+
+### U-13 — Architecture discussion and final contributions
+
+At final review, Liyu MA recalled advocating retention of the upstream research graph and identified Xinyao HENG as the advocate for changing it directly. Liyu MA also confirmed equal final contributions and accepted the four reflection paragraphs.
+
+> liyu 建议保留上游交易研究图，Xinyao HENG 主张直接修改上游
+
+Alfa described Bravo’s comparison and Charlie’s verification work in a follow-up:
+
+> Bravo 比较过在上游加采集点和在外层封装的取舍；Charlie 检查过导出的研究包能否离线重放、重复登记后是否保留审批结果
