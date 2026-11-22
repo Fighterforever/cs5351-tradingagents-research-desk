@@ -310,10 +310,10 @@ The four weights of 1.0 reflect the assigned workload. The team will confirm the
 
 | Working name | Work linked to the member |
 |---|---|
-| Alfa (Liyu MA, 59072966) | As leo, Liyu MA set the project scope, authorized the public repository, requested source-linked supervision evidence and directed the latest contract repairs. The original directions are linked above. |
+| Alfa (Liyu MA, 59072966) | As leo, Liyu MA set the project scope, authorized the public repository, requested source-linked supervision evidence and directed the latest contract repairs. Liyu MA also recorded the English narration and requested a legibility and timing review. The final video holds the transaction receipt and balance on screen during the corresponding explanation. [Demonstration review](transcripts/leo-project-directions.md#u-12--review-the-separate-demonstration). |
 | Bravo (Xinyao HENG, 60106154) | The project plan assigns this area to Bravo. Individual work awaits confirmation. |
 | Charlie (Yinuo Li, 60980401) | The team assigned the account nicolas393 to this scope. Work attributable to the account awaits confirmation. |
-| Delta (Chengru WANG, 60254685) | Submitted the independent [PR #1 review and approval](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1#pullrequestreview-5840085663). Added an advisory Python version matrix and a supervision write-up in [PR #2](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/2), which remains open. |
+| Delta (Chengru WANG, 60254685) | Submitted the independent [PR #1 review and approval](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1#pullrequestreview-5840085663). Approved the scoped plan and kept the four-version matrix advisory until its results could support a blocking policy. Added the matrix and a [supervision write-up](transcripts/60254685-Chengru-WANG.md) in [PR #2](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/2), which remains open. |
 
 The advisory matrix passed on Python 3.12 and 3.13. Installation stopped on 3.10 and 3.11. The [archived write-up](transcripts/60254685-Chengru-WANG.md) records Delta’s decisions on the PR branch. Its original Qoder conversation is held in the member’s client.
 

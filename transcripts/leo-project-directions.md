@@ -84,3 +84,7 @@ Alfa supplied the formal names and student numbers for Bravo and Charlie. [team.
 > 允许 OpenCode 使用 AioHub 完成本次修复及评估
 
 Alfa authorized OpenCode to use the configured AioHub endpoint for the repair and evaluation. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [ai-use-log.yaml](../docs/ai-use-log.yaml)
+
+### U-12 — Review the separate demonstration
+
+Alfa chose to record the English narration and exported the aligned recording. During the final review, Alfa asked the coordinator to check “终端操作能不能看清、画面和旁白字幕能不能对上”. The revised demonstration shows one captured command at a time, holds the ledger on screen while the presenter explains the balance, and displays the token counts beside the comparison bars. This intervention concerns acceptance of the separate demonstration.

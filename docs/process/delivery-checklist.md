@@ -21,5 +21,5 @@ The software evidence and roster are in place. The following records remain with
 
 1. Each member should review the personal reflection under their own name and confirm the assigned weight against completed work. The formal roster is complete.
 2. Attach any retained student directions and early design discussion to the relevant stage in the [supervision index](../../transcripts/supervision-index.md).
-3. Obtain independent review of the submission branch through the protected pull request.
-4. Align the separate video with the final implementation and results before upload.
+3. The [protected submission PR](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/3) requests review from wangsaorui. The reviewer should inspect the latest diff and record their own verdict.
+4. Upload the completed ten-minute MP4 separately from the project ZIP. It shows the recorded commands and the results of the submission experiment.

@@ -116,6 +116,16 @@
         "docs/architecture/adr/005-submission-contracts.md",
         "docs/ai-use-log.yaml"
       ]
+    },
+    {
+      "id": "U-12",
+      "source_locator": "Alfa requested a final review of the separately submitted video.",
+      "quote": "终端操作能不能看清、画面和旁白字幕能不能对上",
+      "meaning": "Alfa recorded the narration and requested a check of command legibility and audiovisual timing.",
+      "evidence": [
+        "transcripts/leo-project-directions.md",
+        "Report.md"
+      ]
     }
   ]
 }
