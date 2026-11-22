@@ -36,3 +36,39 @@ revision:
   approved_at: '2026-11-09T14:14:13.562174+00:00'
   implementation_started_at: '2026-11-09T14:22:11.409000+00:00'
   evidence: transcripts/project-revision-runtime.raw.jsonl
+change_approvals:
+- id: submission-contracts
+  authority: leo (delegated scope; detailed cases accepted by the coordinating workflow)
+  decision: APPROVED
+  approved_at: '2026-11-22T13:48:11.507590+00:00'
+  evidence: docs/architecture/adr/005-submission-contracts.md
+  scope:
+  - src/research_desk/graph_adapter.py
+  - src/research_desk/evidence.py
+  - src/research_desk/review.py
+  - src/research_desk/models.py
+  - src/research_desk/storage.py
+  - src/research_desk/replay.py
+  - src/research_desk/cli.py
+  - src/research_desk/eval/live.py
+  - src/research_desk/eval/quality.py
+  - scripts/check_approval.py
+  - scripts/check_ai_use_log.py
+  - scripts/check_static.py
+  - scripts/check_semantic.py
+  - scripts/_gate_lib.py
+  - scripts/check_gate_examples.py
+  - .github/workflows/ci.yml
+  - test/offline/test_submission_runtime.py
+  - test/offline/test_submission_cli.py
+  - test/offline/test_submission_governance.py
+  - test/offline/test_submission_api.py
+  - test/offline/test_release_quality.py
+  - test/offline/test_submission_quality.py
+  tests:
+  - test/offline/test_submission_runtime.py
+  - test/offline/test_submission_cli.py
+  - test/offline/test_submission_governance.py
+  - test/offline/test_submission_api.py
+  - test/offline/test_release_quality.py
+  - test/offline/test_submission_quality.py

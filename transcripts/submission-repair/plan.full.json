@@ -1,0 +1,162 @@
+{
+  "info": {
+    "id": "ses_dfc7d7c37ffebu6szxmqBhi0E6",
+    "slug": "jolly-river",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/plan",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/plan",
+    "title": "Research Desk plan",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 920,
+      "output": 4509,
+      "reasoning": 0,
+      "cache": {
+        "read": 1792,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355214792,
+      "updated": 1795355254923
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355214829
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_2038283ed001uuGfDj8W8DZJgt",
+        "sessionID": "ses_dfc7d7c37ffebu6szxmqBhi0E6"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"As the OpenCode planning agent, return a concise English file-by-file implementation and unit acceptance plan for the following real review, including scope of prior approval, how to preserve the submitted historical record and identify current evidence, and concrete risks. No tool calls or edits are needed. Deal with Codex keyword matches without changing authentic records or hiding material agent use. Identify D5 and D6 facts that require actual student evidence. Stop for a scope decision.\n\n\nThis review covers the archived release, the published pull requests and the submitted source. The twelve release runs support the reported 60/60 mandatory fields and 43.00% token reduction. The following findings concern contracts outside those measurements.\n\n| Requirement | Finding | Acceptance condition for the repair |\n|---|---|---|\n| INV-001, FR-002 | The nine tradeable proposals in the release have an empty evidence identifier. The research graph omits the field used by the approval fingerprint. The other three runs produced no proposal. | The research path supplies a stable evidence identity. Changing material evidence invalidates the earlier approval in a normal research-to-review flow. |\n| INV-001, INV-002 | Registration writes proposal state taken from the research package. Registering a known proposal can replace a terminal ledger record. | The ledger owns review and execution state. Repeat registration preserves the original rejection or execution and its audit record. |\n| FR-001 | Replay can record a report-write error while the CLI prints success. Its file count can also include the completed report twice because it compares a path object with file name strings. | A report-write failure reaches the caller with a nonzero exit and a diagnostic. Successful reconstruction reports the files actually written. |\n| D8, evaluator CLI | The judge command exposes a call budget that the judging function does not consult. | Enforce the advertised limit or remove the argument and document the number of calls. |\n| D7, Gates 1 and 2 | A source-only change can reuse an old approval without a check that the new behavior falls within its scope. Gate 2 checks permissions and selected imports but has no distinct public API compatibility check for safety-related changes. | Check the changed behavior against the approved tests and verify the affected public interface on safety-related PRs. |\n| D7, Gate 4 | The validator can omit an incorrectly shaped evidence record from a pair without recording a failure. Its provenance covers the extension but excludes the upstream graph and its role prompts. | Require six complete, validated pairs and cover the graph and prompt code used to generate them. |\n| D7, Gate 6 | Path coverage comes from the union of past log entries. A historical entry can satisfy the path check for a new change. | Match changed paths to the evidence in the entry added or amended for that PR. |\n\nThe [supplementary replay check](../evaluation/replay-review/check_replay.py) ran the archived packages in fresh, network-guarded Python processes. All twelve signals matched and no network events were recorded. Its [observations](../evaluation/replay-review/observations.json) distinguish Hold results and proposals with no approved quantity. On sell proposals the CLI still labels the displayed limits as purchase bounds. Direction-specific bounds and an archived original policy result would permit a stronger comparison.\n\nVerdict: **CHANGES REQUIRED**. The [delivery checklist](process/delivery-checklist.md) tracks student attribution and early supervision evidence. The GitHub checks cited above apply to their published revisions.\n\nThe owner requests these repairs, use of OpenCode, and synchronization of the public repo and ZIP. Four members: Alfa, Bravo, Charlie and Delta. Governance: AGENTS.md, root Prompt.md, existing ADR-004. Work only on the approved repair scope.\"",
+          "id": "prt_2038283ef001K2GmjozS67rpjW",
+          "sessionID": "ses_dfc7d7c37ffebu6szxmqBhi0E6",
+          "messageID": "msg_2038283ed001uuGfDj8W8DZJgt"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_2038283ed001uuGfDj8W8DZJgt",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/plan",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 7221,
+          "input": 920,
+          "output": 4509,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1792
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355215162,
+          "completed": 1795355254905
+        },
+        "finish": "stop",
+        "id": "msg_20382853a0015Dw2sxl6HQQVMw",
+        "sessionID": "ses_dfc7d7c37ffebu6szxmqBhi0E6"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_203828fe1001l2Rq1cJ4kMF4yj",
+          "sessionID": "ses_dfc7d7c37ffebu6szxmqBhi0E6",
+          "messageID": "msg_20382853a0015Dw2sxl6HQQVMw"
+        },
+        {
+          "type": "reasoning",
+          "text": "The user wants a concise English file-by-file implementation and unit acceptance plan for this review. No tool calls or edits. They want:\n\n- scope of prior approval\n- how to preserve submitted historical record and identify current evidence\n- concrete risks\n- deal with Codex keyword matches without changing authentic records or hiding material agent use\n- identify D5 and D6 facts that require actual student evidence\n- Stop for a scope decision.\n\nThis is a planning task. I need to produce a plan file-by-file, unit acceptance. No tools. Keep concise but detailed enough. They mention D5 and D6 facts that require actual student evidence — D5 likely \"student attribution\" and D6 maybe \"early supervision evidence\"? The delivery checklist tracks student attribution and early supervision evidence. Let me infer: D5 and D6 are probably dimensions in a rubric. D5 = student attribution? D6 = supervision evidence? The review says delivery checklist tracks student attribution and early supervision evidence. So D5 and D6 facts requiring actual student evidence: who did what, when supervision occurred, meeting notes, etc. Cannot be synthesized by agent. Need to flag.\n\nAlso \"Codex keyword matches\" — likely there are keyword scans detecting \"Codex\" in records; must not alter authentic records or hide material agent use. So plan: preserve raw logs, document agent use in a new disclosure file, don't rewrite historical commits. Add provenance.\n\nNeed to structure file-by-file. Let's identify files likely in repo based on review: research graph, registration/ledger, replay CLI, judge CLI, gates 1/2/4/6, delivery checklist, AGENTS.md, Prompt.md, ADR-004, check_replay.py, observations.json. We need propose file paths. Since no tools, infer plausible paths.\n\nLet me craft a plan with sections:\n\n1. Scope decision (STOP) — approved repair scope: INV-001, INV-002, FR-001, D8, D7 Gates 1,2,4,6, plus replay reporting. Out of scope: changing archived runs, rewriting history, altering authentic records, D5/D6 attestations. Need owner decision: whether to include D5/D6 evidence collection (requires students) and whether Codex keyword remediation is disclosure-only.\n\n2. Preservation & evidence:\n- Freeze archive: tag/commit hash, checksums manifest, read-only archive dir.\n- Never edit archived release, published PRs, submitted source; repairs in new branch/dir with provenance.\n- Evidence index mapping each finding to current file:line, commit, test, log.\n- Distinguish historical vs current: `evidence/historical/` immutable; `evidence/current/` new.\n- Codex keyword: preserve original logs/transcripts; add `AGENTS_USE.md` disclosure listing tools, dates, prompts, files; don't scrub. If keyword scan false positives, document match context in `evidence/codex-keyword-review.md`; do not edit authentic records.\n\n3. File-by-file plan with acceptance. Need concrete paths. Let's invent based on common structure but label as \"expected path; confirm\". Maybe use paths from review: `../evaluation/replay-review/check_replay.py`, `../evaluation/replay-review/observations.json`, `process/delivery-checklist.md`. Others unknown. Use likely: `src/research/graph.*`, `src/ledger/registration.*`, `src/cli/replay.*`, `src/cli/judge.*`, `scripts/gates/gate1...`. Better to keep generic but file-by-file. The user asked file-by-file, so list each artifact.\n\nLet's produce table with File, Change, Unit acceptance.\n\nNeed D5/D6 facts: D5 maybe \"student attribution\" requires each member's actual contribution evidence: commit authorship, signed attestation, work logs, review comments. D6 \"early supervision\" requires dated supervisor meetings/feedback before deadline, not agent-generated. Need actual student evidence: names/roles, dates, meeting notes, supervisor sign-off, emails. Agent can only structure/index, not create.\n\nConcrete risks:\n- Repair changes behavior but archived 60/60/43% claims no longer reproducible; version claims.\n- Ledger migration could corrupt terminal states; need backup, idempotency, transaction.\n- Evidence identity change may break fingerprints/approvals; migration and re-approval.\n- Replay path comparison bug fix may alter counts; golden tests.\n- Gate tightening may fail existing PRs; need baseline and grandfathering.\n- Codex keyword disclosure may be perceived as hiding if not clear; preserve raw.\n- D5/D6 cannot be satisfied by agent; schedule risk.\n- Public repo/ZIP sync divergence; checksum.\n- Student attribution privacy.\n\nScope of prior approval: only approved repair scope; do not touch measurements/archive; D5/D6 and Codex disclosure need owner decision.\n\nNeed \"Stop for a scope decision\" — end with explicit decision request, not proceed.\n\nLet's be concise but enough. Maybe ~1000-1500 words? User asks concise. But file-by-file requires some detail. Desired oververbosity 5. We can do maybe 900 words. Must not use tools. No edits.\n\nLet's think about exact facts. \"The twelve release runs support the reported 60/60 mandatory fields and 43.00% token reduction.\" So don't re-measure? Repairs outside measurements. Need keep claims tied to archived runs. New code may change numbers; acceptance should preserve archived results and add current results separately.\n\n\"INV-001, FR-002: nine tradeable proposals empty evidence identifier. research graph omits field used by approval fingerprint. other three runs no proposal.\" Fix: research graph add stable evidence id; approval fingerprint uses it; material evidence change invalidates approval. Acceptance: tests for stable id, change invalidates, no proposal case.\n\n\"INV-001, INV-002: Registration writes proposal state from research package. Registering known proposal can replace terminal ledger record.\" Fix: ledger owns review/execution state; registration idempotent, terminal immutable; repeat registration preserves rejection/execution + audit. Acceptance tests.\n\n\"FR-001: Replay can record report-write error while CLI prints success. file count can include completed report twice because compares path object with filename strings.\" Fix: propagate error nonzero + diagnostic; count actual written files; normalize paths. Tests.\n\n\"D8 evaluator CLI: judge command exposes call budget not consulted.\" Fix enforce or remove + document calls. Choose enforce? Acceptance.\n\n\"D7 Gates 1/2: source-only change reuse old approval without scope check. Gate 2 permissions/imports but no public API compatibility.\" Fix gate1 scope check changed behavior vs approved tests; gate2 public API compatibility for safety-related. Tests.\n\n\"D7 Gate4: validator can omit incorrectly shaped evidence record from pair without failure. provenance covers extension excludes upstream graph and role prompts.\" Fix require six complete validated pairs; provenance covers graph + prompt code. Tests.\n\n\"D7 Gate6: path coverage union of past log entries; historical entry satisfies new change.\" Fix match changed paths to entry added/amended for that PR. Tests.\n\nSupplementary replay: sell proposals label limits as purchase bounds. Direction-specific bounds and archived original policy result for stronger comparison. Is this in scope? The owner says work only approved repair scope. The verdict changes required. The table doesn't include sell label except supplementary observation. Could be a finding but not in acceptance table. Need scope decision: include direction-specific labels? It says \"Direction-specific bounds and an archived original policy result would permit a stronger comparison.\" Maybe optional. We should flag as scope decision: not in table, decide whether include. Since \"work only approved repair scope\", exclude unless approved.\n\nD5/D6: The delivery checklist tracks student attribution and early supervision evidence. So D5 = student attribution, D6 = early supervision? Likely. Need state: D5 requires actual per-member contribution evidence (commits, signed statements, meeting records); D6 requires contemporaneous supervisor feedback/meeting dates before submission. Agent must not fabricate. Acceptance: checklist has links to authentic artifacts, named owner, date, supervisor confirmation. If absent, cannot claim.\n\nCodex keyword matches: perhaps repository contains \"Codex\" references from prior agent. Plan: do not alter original records. Create `evidence/agent-use/codex-keyword-audit.md` listing each match, file, commit, context, whether material agent use. Add `AGENTS_USE.md` or update `AGENTS.md`? Governance AGENTS.md existing. Maybe update `AGENTS.md` with disclosure policy and `docs/agent-use.md` with actual disclosure. But \"without changing authentic records\" means don't rewrite logs; add disclosure. Also preserve ZIP original.\n\nFile-by-file paths: I'll use placeholders with `(confirm path)` but that might seem weak. Maybe infer from names:\n- `research/graph.py` or `src/research/graph.py`\n- `registration/ledger.py` or `src/ledger/registration.py`\n- `evaluation/replay-review/check_replay.py` given.\n- `evaluation/replay-review/observations.json` given.\n- `src/cli/judge.py`\n- `scripts/gates/gate_1.py`, `gate_2.py`, `gate_4.py`, `gate_6.py`\n- `process/delivery-checklist.md`\n- `docs/adr/ADR-004-...md`\n- `AGENTS.md`, `Prompt.md`\n- `evidence/` new.\n\nMaybe better to group by artifact rather than exact path. But \"file-by-file\" means each file. I can say \"expected paths; map to actual repo before edit\". That's acceptable in a plan.\n\nNeed \"unit acceptance\" — each file has tests/checks. Include test file names.\n\nLet's outline:\n\n**Scope decision required (stop)**\n- Approved: table rows only + preservation/sync mechanics.\n- Not approved: archived runs, PR history, measurements, D5/D6 content, Codex record edits, sell-label/policy comparison.\n- Decision 1: include sell-direction labels? Decision 2: D5/D6 evidence collection owner? Decision 3: Codex disclosure format?\n\n**Preservation**\n- Tag `archive/pre-repair-<sha>`, SHA256 manifest, read-only.\n- Branch `repair/...`; no force-push/rewrite; new commits only.\n- Evidence ledger `evidence/index.md` mapping finding -> historical artifact -> current artifact/test.\n- Keep ZIP original + new ZIP.\n- Codex: raw transcripts/logs immutable; add audit.\n\n**File-by-file table**:\n1. `src/research/graph.py` — add `evidence_id` stable, fingerprint input; tests `test_research_evidence_identity.py`; acceptance: 9 proposals non-empty, same evidence same id, material change changes id and invalidates approval; no-proposal path.\n2. `src/ledger/registration.py` — stop writing review/execution from package; idempotent; terminal guard; audit; migration; tests.\n3. `src/cli/replay.py` (or check_replay.py) — error propagation, exit code, diagnostic; path normalization; count actual; tests with write failure, duplicate report, symlink? acceptance.\n4. `src/evaluator/judge.py` — enforce budget or remove; tests call count; docs.\n5. `scripts/gates/gate1.py` — scope check; test old approval + changed behavior fails; unchanged passes.\n6. `scripts/gates/gate2.py` — public API compatibility on safety PRs; test removed/renamed signature fails.\n7. `scripts/gates/gate4.py` — six complete validated pairs; malformed pair fails; provenance includes graph/prompts; test.\n8. `scripts/gates/gate6.py` — per-PR entry matching; historical-only path fails; test.\n9. `evaluation/replay-review/observations.json` — append current observations only? Don't edit historical? Maybe new `observations-current.json`; keep old. Add direction label? If scope.\n10. `process/delivery-checklist.md` — D5/D6 fields; no fabricated; links; owner.\n11. `AGENTS.md` — governance for repair, agent disclosure, scope.\n12. `Prompt.md` — root prompt update? Maybe only if approved; record agent-use.\n13. `docs/adr/ADR-004...` — amend with repair decisions? ADR-004 existing. Maybe new ADR-005 for ledger ownership/evidence identity? Since existing ADR-004 governance, add ADR-005.\n14. `evidence/agent-use/codex-keyword-audit.md`, `evidence/index.md`, `evidence/historical/MANIFEST.sha256`.\n15. Public repo/ZIP sync: `scripts/release/sync_public.sh`? Maybe not code. Add `release/CHECKSUMS`.\n\nNeed keep concise. Maybe table rows with file, change, unit acceptance. That's efficient.\n\nRisks section concrete.\n\nD5/D6 section explicit facts:\nD5 (student attribution): per-member identity, contribution, commit/PR authorship, signed attestation, dates, specific files/sections. Actual student evidence required.\nD6 (early supervision): supervisor name, meeting dates before submission, agenda/feedback, student response, sign-off/email. Actual evidence required.\nAgent can index/format only; cannot generate or backfill. If evidence absent, checklist stays incomplete and claim must be withdrawn.\n\nCodex keyword: list matches, distinguish tooling name vs material agent use; preserve raw; disclosure. If authentic records contain Codex, don't edit; annotate in separate audit. \"Material agent use\" must be disclosed, not hidden. Acceptance: audit covers every match with file/commit/context/decision; no diff to historical files.\n\nScope of prior approval: \"Only the six table findings and delivery mechanics; not D5/D6 evidence creation, not sell-label change, not rewriting.\" Stop for decision.\n\nLet's write final. Avoid too much. Use headers. Since user says no tool calls. Good.\n\nNeed maybe mention \"unit acceptance\" means tests at unit level. Use checkboxes? Fine.\n\nLet's ensure no claim of actual paths as certain: \"paths to confirm against repo; mapping step is part of file 0\". Maybe include \"File 0: `evidence/current/path-map.md`\". Good.\n\nLet's draft final with ~1000 words maybe. The instruction says concise, but user asks detailed plan. 4-line limit applies unless detail requested; they requested plan, so longer okay.\n\nLet's produce.",
+          "time": {
+            "start": 1795355217893,
+            "end": 1795355243839
+          },
+          "id": "prt_203828fe5001FCZFXjP9n5llF4",
+          "sessionID": "ses_dfc7d7c37ffebu6szxmqBhi0E6",
+          "messageID": "msg_20382853a0015Dw2sxl6HQQVMw"
+        },
+        {
+          "type": "text",
+          "text": "## Scope decision required — stop here\n\n**Approved scope (proceed only after confirmation):** the six table findings — INV-001/FR-002 evidence identity, INV-001/INV-002 ledger ownership, FR-001 replay reporting, D8 judge budget, D7 Gates 1/2, D7 Gate 4, D7 Gate 6 — plus preservation and public-repo/ZIP synchronization mechanics.\n\n**Not approved by this review:** editing the archived release, published PRs, submitted source history, or the twelve-run measurements; changing the sell-proposal display or adding an archived original policy result; creating or backfilling D5/D6 evidence; rewriting records containing “Codex.”\n\n**Decisions needed before edits:** (1) Is the sell-direction/policy comparison in scope? (2) Who owns D5/D6 evidence collection? (3) Is Codex remediation disclosure-only?\n\n## Preservation and current evidence\n\n- Freeze the submission: tag/commit SHA, SHA-256 manifest, read-only archive copy. Keep the original ZIP unchanged; publish the repaired ZIP separately.\n- Repair only on a new branch with new commits. No rebase, force-push, or edits to historical commits, PR text, logs, or transcripts.\n- Add `evidence/index.md` mapping every finding to: historical artifact, current file/line, commit, test, and result.\n- Separate `evidence/historical/` (immutable) from `evidence/current/` (new test output). Archived 60/60 and 43.00% claims remain attributed to the twelve archived runs; repaired results are reported separately.\n- **Codex keyword matches:** do not alter authentic records. Add `evidence/agent-use/codex-keyword-audit.md` listing each match by file, commit, context, and whether it is a tool-name mention or material agent use. Add `docs/agent-use.md` disclosing tools, dates, prompts, and affected files. If material agent use occurred, disclose it; do not scrub it.\n\n## File-by-file implementation and unit acceptance\n\n| File (confirm actual path) | Change | Unit acceptance |\n|---|---|---|\n| `evidence/current/path-map.md` | Map findings to real repo paths before editing. | Every finding has a path, owner, and test target. |\n| `src/research/graph.*` | Add stable `evidence_id` to proposals; use it in the approval fingerprint. | Nine tradeable proposals have non-empty IDs; same evidence gives same ID; material evidence change changes ID and invalidates approval; no-proposal path remains valid. |\n| `src/ledger/registration.*` | Ledger owns review/execution state; registration idempotent; terminal records immutable; audit entry on repeat. | Repeat registration preserves original rejection/execution and audit; concurrent registration does not overwrite terminal state; migration test covers existing records. |\n| `evaluation/replay-review/check_replay.py` | Propagate report-write errors to caller; nonzero exit and diagnostic; normalize path comparison; count files actually written. | Simulated write failure returns nonzero with diagnostic; completed report counted once; successful reconstruction count equals files on disk. |\n| `src/evaluator/judge.*` and judge CLI | Enforce advertised call budget or remove the argument and document the call count. | Test asserts exact call count; exceeding budget fails or argument is absent and documented. |\n| `scripts/gates/gate_1.*` | Check changed behavior against approved tests/scope before reusing approval. | Source-only behavior change fails old approval; unchanged behavior passes. |\n| `scripts/gates/gate_2.*` | Add distinct public API compatibility check for safety-related PRs. | Removed/renamed public signature fails; compatible change passes; permission/import checks unchanged. |\n| `scripts/gates/gate_4.*` | Require six complete validated pairs; malformed evidence fails rather than being omitted; provenance covers upstream graph and role prompts. | Five pairs fail; malformed record fails; provenance test confirms graph and prompt code included. |\n| `scripts/gates/gate_6.*` | Match changed paths only to the entry added or amended for that PR. | Historical-only entry fails; current PR entry passes; mixed case reports the unmatched path. |\n| `evaluation/replay-review/observations.json` | Preserve historical file; add `observations-current.json` for repaired runs. | Historical observations unchanged; current file records direction and approved quantity where available. |\n| `process/delivery-checklist.md` | Add D5/D6 evidence fields with links, owners, dates, and supervisor confirmation. | No field can be marked complete without an authentic linked artifact. |\n| `AGENTS.md` / `Prompt.md` | Record repair scope, branch policy, agent-use disclosure, and prohibition on rewriting history. | Governance text matches approved scope; no conflicting instructions. |\n| `docs/adr/ADR-005-*.md` | Record ledger ownership, evidence identity, and gate changes; link ADR-004. | Decision, consequences, and migration noted; ADR-004 remains intact. |\n| `release/CHECKSUMS` and sync script | Synchronize public repo and new ZIP from one manifest. | Public tree and ZIP hashes match; original archive hash unchanged. |\n\n## D5 and D6 — actual student evidence required\n\n**D5, student attribution:** each member’s identity, role, specific contributions, commit/PR authorship, dates, and signed attestation. Agent may index or format these only if authentic artifacts already exist.\n\n**D6, early supervision:** supervisor name, meeting dates before submission, agenda or feedback, student responses, and supervisor sign-off/email. These cannot be reconstructed or generated after the fact.\n\nIf either set is missing, the checklist stays incomplete and the related claim must be withdrawn. Do not let an agent fabricate, infer, or backfill these facts.\n\n## Concrete risks\n\n- Tightening gates may fail existing published PRs; baseline results and grandfathering must be explicit.\n- Ledger migration may corrupt terminal states; require backup, transaction, and rollback test.\n- Evidence-ID changes may invalidate approvals unexpectedly; require migration and re-approval path.\n- Replay fixes may change file counts; preserve old counts and report new counts separately.\n- Codex disclosure may look like concealment if raw records are touched; keep originals byte-identical.\n- D5/D6 evidence may not exist; this is a schedule and integrity risk, not an engineering task.\n- Public repo and ZIP can diverge; checksum both and publish one source of truth.\n- Archived 60/60 and 43.00% results may not reproduce on repaired code; do not overwrite the historical claim.\n\n**Stop for the scope decision above before any implementation.**",
+          "time": {
+            "start": 1795355243844,
+            "end": 1795355254890
+          },
+          "id": "prt_20382f544001gPMzTUp5nmI5JS",
+          "sessionID": "ses_dfc7d7c37ffebu6szxmqBhi0E6",
+          "messageID": "msg_20382853a0015Dw2sxl6HQQVMw"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 7221,
+            "input": 920,
+            "output": 4509,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1792
+            }
+          },
+          "cost": 0,
+          "id": "prt_203832073001Vog4DDYI4qjzjl",
+          "sessionID": "ses_dfc7d7c37ffebu6szxmqBhi0E6",
+          "messageID": "msg_20382853a0015Dw2sxl6HQQVMw"
+        }
+      ]
+    }
+  ]
+}
