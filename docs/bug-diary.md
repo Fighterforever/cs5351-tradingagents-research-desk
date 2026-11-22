@@ -74,3 +74,7 @@ The previous release saved nine tradeable proposals without an evidence identifi
 ## Replay output and judge budgets
 
 The replay engine retained file-write errors while the CLI still printed a success line. A mismatch between paths and strings could count the completed report twice. The CLI now returns a diagnostic and a failing status when rebuilding fails. The judge command also consumed the modes independently of its advertised maximum call count. The updated request loop spends one shared budget for the two modes. The CLI unit cases cover a failed report write, an empty judge budget and a failure after a request starts.
+
+## Wrapped replay diagnostic on GitHub
+
+The first submission-branch regression passed 182 of 183 extension tests on Ubuntu. The failing case deleted `usage.json`. Replay returned a nonzero exit and named the missing file, but the longer runner path moved part of the diagnostic onto a new line. The test expected a contiguous phrase. Its acceptance criteria are the exit status, diagnostic and missing filename across terminal widths. [Cloud regression output](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/45031340237/job/137235399147)

@@ -932,3 +932,15 @@ entries:
   review: transcripts/submission-repair/annotations.md
   evidence: transcripts/submission-repair/launch-review.full.json
   outcome: The coordinator edited the proposed wording and added an explicit stop after the build.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc642b25ffebM6Q9kTW3ptYyW
+  purpose: Repair the incomplete-package CLI regression on narrow output after its cloud failure.
+  prompt: transcripts/submission-repair/cloud-replay-diagnostic.txt
+  scope:
+  - test/offline/test_cli_slice.py
+  review: docs/bug-diary.md
+  evidence: transcripts/submission-repair/cloud-replay-diagnostic.full.json
+  outcome: The existing unit checks the nonzero exit, missing usage.json diagnostic and absent success banner
+    after normalizing display whitespace.

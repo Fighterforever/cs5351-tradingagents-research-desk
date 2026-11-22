@@ -14,4 +14,17 @@ The test skips when the opt-in flag or credential is absent. By default, pytest 
 
 ## Six-case comparison
 
-The [experiment commands](../../README.md#actual-fixed-corpus-research) run both arms for each ticker, judge each report and aggregate the results. The [recorded release results](../../evaluation/release/aggregate/report.md) cover all twelve runs.
+The [experiment commands](../../README.md#actual-fixed-corpus-research) run both arms for each ticker, judge each report and aggregate the results. The [current results](../../evaluation/submission-release/aggregate/report.md) cover all twelve runs. The [previous release](../../evaluation/release/aggregate/report.md) uses the same six-company corpus.
+
+
+## Replay a saved research package
+
+From the repository root, the following command replays a saved result in a temporary account. It requires no API credential. The child process records any attempted external connection in the audit file.
+
+```sh
+replay_dir=$(mktemp -d)
+RESEARCH_DESK_HOME="$replay_dir/home" .venv/bin/python evaluation/replay-review/check_replay.py \
+  --child evaluation/submission-release/AAPL/baseline/run "$replay_dir/report" "$replay_dir/audit.json"
+```
+
+The expected reports and recorded policy bounds for all twelve packages are in the [replay observations](../../evaluation/submission-verification/replay.json).

@@ -6,7 +6,9 @@ Course repository: [Fighterforever/cs5351-tradingagents-research-desk](https://g
 
 ## Run locally
 
-Use Python 3.12 and a project-local virtual environment:
+Use Python 3.12 for the course release. The pinned dependencies also installed on Python 3.13 in the advisory matrix. The upstream package declares Python 3.10 or later. The course lockfile requires newer dependency builds, so the pinned setup stops during installation on 3.10 and 3.11. [Version matrix](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/2)
+
+Create a project-local virtual environment:
 
 ```sh
 python3.12 -m venv .venv

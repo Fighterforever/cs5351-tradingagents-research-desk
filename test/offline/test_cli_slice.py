@@ -95,9 +95,12 @@ def test_cli_replay_incomplete_fails(desk_home, monkeypatch, tmp_path):
     bad = tmp_path / "bad"
     shutil.copytree("test/fixtures/packs/aapl_buy_complete", bad)
     (bad / "usage.json").unlink()
+    monkeypatch.setenv("COLUMNS", "40")
     r = runner.invoke(app, ["replay", str(bad)])
     assert r.exit_code != 0
-    assert "missing required files" in r.output
+    normalized = " ".join(r.output.split())
+    assert "missing required files" in normalized
+    assert "usage.json" in normalized.split("missing required files", 1)[1]
     assert "Replayed" not in r.output
 
 
