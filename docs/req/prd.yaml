@@ -61,20 +61,20 @@ tradeoff: Must behavior and complete evidence take priority. Token and latency g
   measured without dropping graph roles or padding baseline. A compact improvement is accepted only when
   quality is retained.
 participants:
-- name: Alfa
+- name: Liyu MA
   formal_name: Liyu MA
   student_number: "59072966"
   relative_contribution: 1.0
-- name: Bravo
+- name: Xinyao HENG
   formal_name: Xinyao HENG
   student_number: "60106154"
   relative_contribution: 1.0
-- name: Charlie
+- name: Yinuo Li
   formal_name: Yinuo Li
   student_number: "60980401"
   relative_contribution: 1.0
   github: nicolas393
-- name: Delta
+- name: Chengru WANG
   formal_name: Chengru WANG
   student_number: "60254685"
   relative_contribution: 1.0

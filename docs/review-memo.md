@@ -4,7 +4,7 @@ The [review of the repaired submission](#review-of-the-repaired-submission) cove
 
 ## Initial implementation review
 
-Reviewer: leo. Scope: FR-001/002/003 and AT-01 through AT-08. Verdict: CHANGES REQUIRED for live delivery after the offline slice.
+Reviewer: Liyu MA. Scope: FR-001/002/003 and AT-01 through AT-08. Verdict: CHANGES REQUIRED for live delivery after the offline slice.
 
 Specification alignment: evidence packaging and the operator workflow were runnable. Forty-seven extension tests passed. The code review found that the total-holdings cap, valid-sell contract and exact approval quantity binding still needed correction. These are substantive semantics rather than style findings.
 
@@ -16,7 +16,7 @@ Operational metadata: original upstream suite recorded 649 passed, 2 skipped and
 
 ## First frozen-result review
 
-Reviewer: leo. Recorded at 2026-08-31T13:34:52.198947+00:00. Scope: the three application features, AT-01 through AT-08, the final six-case matrix and its complete evidence.
+Reviewer: Liyu MA. Recorded at 2026-08-31T13:34:52.198947+00:00. Scope: the three application features, AT-01 through AT-08, the final six-case matrix and its complete evidence.
 
 Specification alignment: all 12 real research runs completed and exported complete packages. All 12 independent CLI replays reproduced their original signal, reported zero external calls and finished within 0.812 seconds, including process startup. The paper-ledger workflow passed approval, denial, exact-term recheck, legitimate-sale and idempotent execution tests. Compact used 45.73% fewer application tokens; its elapsed-time sum was 40.42% of baseline. Support/relevance and counted-citation thresholds passed. Mandatory report fields passed 59/60 checks: META compact omitted the required full legal company name. QUALITY-001 therefore remains unmet for one report.
 
@@ -76,7 +76,7 @@ Gemini checked the revised passages and closed the editorial findings. The [foll
 
 Reviewer: Gemini CLI. Scope: the classification of 24 requirements, the comparison of three architecture candidates and the allocation of design responsibilities. Verdict: **APPROVE technical assessment**. The requirements review and weighted candidate comparison support the existing application-extension design. No new runtime issue was identified.
 
-Six selected user-message excerpts now document leo's actual scope and governance directions. They are linked separately from the 30 implementation prompts issued by the coordinating workflow. The subsequent review and its exact prompts are preserved under `transcripts/gemini-pipeline-review.json` and `transcripts/gemini-pipeline-integration.json`. The finished review is in `docs/process/pipeline-review.md`.
+Six selected user-message excerpts now document Liyu MA’s actual scope and governance directions. They are linked separately from the 30 implementation prompts issued by the coordinating workflow. The subsequent review and its exact prompts are preserved under `transcripts/gemini-pipeline-review.json` and `transcripts/gemini-pipeline-integration.json`. The finished review is in `docs/process/pipeline-review.md`.
 
 This review documented the requirements and architecture assessment. The independent code-owner review took place later and is recorded below.
 
@@ -86,11 +86,11 @@ The team designated `wangsaorui` as a code owner. The [onboarding record](proces
 
 ## Four-member allocation
 
-The four members are Alfa, Bravo, Charlie and Delta. Alfa handles report integration and submission checks. Bravo handles release governance, Charlie handles packaging, and Delta handles CI. The [team table](process/team.md) records their assigned weights and review rotation.
+The four members are Liyu MA, Xinyao HENG, Yinuo Li and Chengru WANG. Liyu MA handles report integration and submission checks. Xinyao HENG handles release governance, Yinuo Li handles packaging, and Chengru WANG handles CI. The [team table](process/team.md) records their assigned weights and review rotation.
 
 ## Independent code-owner review of PR #1
 
-Reviewer: wangsaorui (working name Delta, student 60254685), the designated non-author code owner. Review analysis was assisted by the AI coding agent; the verdict below and the GitHub approval are the human reviewer's own decision. Recorded 2026-11-10.
+Reviewer: wangsaorui (Chengru WANG, student 60254685), the designated non-author code owner. Review analysis was assisted by the AI coding agent; the verdict below and the GitHub approval are the human reviewer's own decision. Recorded 2026-11-10.
 
 Scope: pull request #1 (`improve-delivery` into `main`, head `154e77c`). The reviewer inspected the substantive code/CI/governance diff against `main` and verified that each referenced gate program exists; the large `evaluation/` and `transcripts/` evidence blobs were spot-checked, not re-executed.
 
@@ -104,17 +104,17 @@ Security: the workflow runs with `permissions: contents: read`; secrets come fro
 
 Findings carried as follow-ups (non-blocking):
 - F1 (medium): the gate rewrite pins Python 3.12 only, dropping the prior 3.10-3.13 matrix; cross-version coverage is no longer exercised.
-- F2 (documentation): this PR does not close D6 — `team.md` still records equal assigned weights rather than measured hours, and the formal roster for Alfa/Bravo/Charlie is unfinished.
+- F2 (documentation): this PR does not close D6 — `team.md` still records equal assigned weights rather than measured hours, and the formal roster for Liyu MA/Xinyao HENG/Yinuo Li is unfinished.
 - F3 (hygiene, low): roughly 1013 files and about 119k added lines, most of them committed evidence artifacts.
 - F4 (verification statement): the reviewer did not locally re-run the full 790-test suite; approval is conditioned on the PR's own CI turning green.
 
 Verdict: **APPROVE with comments**. No finding is safety-blocking; F1-F4 are recorded as follow-ups. The independent code-owner approval on GitHub and the protected-branch merge remain the human administrative actions that complete D7.
 
-**Release outcome.** After this memo, Delta recorded the [approval on GitHub](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1#pullrequestreview-5840085663). PR #1 merged, and all six [main-branch checks](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42798475065) passed.
+**Release outcome.** After this memo, Chengru WANG recorded the [approval on GitHub](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/1#pullrequestreview-5840085663). PR #1 merged, and all six [main-branch checks](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42798475065) passed.
 
 ## Technical review of PR #2
 
-[PR #2](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/2) restores an advisory Python-version matrix. Its two commits change the workflow, CI documentation and AI-use log, and include [Delta’s supervision record](../transcripts/60254685-Chengru-WANG.md). The change leaves the application and the six required checks in place. The version matrix runs the existing regression job on pull requests. No model credentials or paid calls are required.
+[PR #2](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/2) restores an advisory Python-version matrix. Its two commits change the workflow, CI documentation and AI-use log, and include [Chengru WANG’s supervision record](../transcripts/60254685-Chengru-WANG.md). The change leaves the application and the six required checks in place. The version matrix runs the existing regression job on pull requests. No model credentials or paid calls are required.
 
 All six required checks passed. The advisory jobs passed on Python 3.12 and 3.13. Installation stopped before regression on [Python 3.10](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/43003982308/job/130466775782) at the pandas pin and on [Python 3.11](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/43003982308/job/130466775679) at the NumPy pin. The package declares Python 3.10 or later.
 
@@ -140,7 +140,7 @@ At the end of this review, the technical verdict was **CHANGES REQUIRED**. The [
 
 ## Review of the repaired submission
 
-The technical review traced each finding above through the revised entry point and the unit case that would fail if the defect returned. Alfa requested the work in [U-08](../transcripts/leo-project-directions.md#u-08--submission-contracts-and-release). The implementation decisions and corresponding OpenCode sessions appear in the [annotated record](../transcripts/submission-repair/annotations.md).
+The technical review traced each finding above through the revised entry point and the unit case that would fail if the defect returned. Liyu MA requested the work in [U-08](../transcripts/leo-project-directions.md#u-08--submission-contracts-and-release). The implementation decisions and corresponding OpenCode sessions appear in the [annotated record](../transcripts/submission-repair/annotations.md).
 
 | Finding | Resolution and evidence |
 |---|---|

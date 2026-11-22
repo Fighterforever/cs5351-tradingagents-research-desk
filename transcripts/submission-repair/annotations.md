@@ -1,17 +1,17 @@
 # Submission repair sessions
 
-Alfa (Liyu MA, 59072966) asked the team to repair the approval, registration and release checks after the submission audit. The [student directions](../leo-project-directions.md#u-08--submission-contracts-and-release) give the original messages. Alfa also supplied the roster and confirmed the provider for this round. The coordinating workflow translated the scope into unit cases and reviewed OpenCode’s changes.
+Liyu MA (59072966) asked the team to repair the approval, registration and release checks after the submission audit. The [student directions](../leo-project-directions.md#u-08--submission-contracts-and-release) give the original messages. Liyu MA also supplied the roster and confirmed the provider for this round. The coordinating workflow translated the scope into unit cases and reviewed OpenCode’s changes.
 
 | Stage | Intervention and reason | Evidence |
 |---|---|---|
-| Plan | OpenCode stopped after proposing a repair plan. The coordinating workflow accepted the scoped cases before the first implementation under Alfa’s delegated authority. | [Original plan session](plan.full.json) and [ADR-005](../../docs/architecture/adr/005-submission-contracts.md) |
+| Plan | OpenCode stopped after proposing a repair plan. The coordinating workflow accepted the scoped cases before the first implementation under Liyu MA’s delegated authority. | [Original plan session](plan.full.json) and [ADR-005](../../docs/architecture/adr/005-submission-contracts.md) |
 | Verification | The first quality change could still publish aggregate statistics after a case failed. The coordinator asked OpenCode to require twelve valid arms and retain the upstream role and prompt provenance. | [Original coding session](quality-complete.full.json), [unit coverage](../../test/offline/test_release_quality.py) |
 | Workflow | The first-push rule treated the entire upstream-to-project difference as new. The next review identified repeated pushes to the same branch as part of the same PR. OpenCode revised the comparison to use the feature branch’s merge base with main. | [First proposal](workflow-patch.full.json), [follow-up](workflow-range.full.json), [workflow](../../.github/workflows/ci.yml) |
 | Team records | OpenCode classified the 32 keyword matches in the prior ZIP. The source review retained the original log and archived transcripts. The editor matched the identities and directions to the student’s actual messages before updating the four-person report. | [Editorial session](records-confirmed.full.json) and [student directions](../leo-project-directions.md) |
 
 ## Corrections made during implementation
 
-Alfa set the scope in U-08 and approved the provider in U-11. The interventions below came from the coordinating workflow during implementation. The [AI-use log](../../docs/ai-use-log.yaml) identifies the original prompt, native OpenCode session and affected files for each accepted change.
+Liyu MA set the scope in U-08 and approved the provider in U-11. The interventions below came from the coordinating workflow during implementation. The [AI-use log](../../docs/ai-use-log.yaml) identifies the original prompt, native OpenCode session and affected files for each accepted change.
 
 | Review point | Decision and observed result | Record |
 |---|---|---|

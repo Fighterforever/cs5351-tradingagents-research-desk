@@ -2,7 +2,7 @@
 
 | Category | Observed debt | Decision / owner | Trigger or closure evidence |
 |---|---|---|---|
-| Prompt rot | Upstream roles repeat instructions and prior reports | Compact wrapper, leo | Fixed-set quality/cost comparison after prompt changes |
+| Prompt rot | Upstream roles repeat instructions and prior reports | Compact wrapper, Liyu MA | Fixed-set quality/cost comparison after prompt changes |
 | Hallucinated dependencies | Initial package/schema assumptions needed correction | Verify actual pyproject and installed APIs | CLI import and declared-interface tests |
 | Untouchable code | Upstream graph has broad functionality | Preserve upstream; narrow adapter seams | Full upstream regression suite |
 | Hidden dependencies | Identity/returns paths bypass tool callbacks | Explicit subclass capture/freeze | Integration tests and captured direct reads |

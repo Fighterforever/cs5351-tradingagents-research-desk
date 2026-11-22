@@ -1,6 +1,6 @@
 # ADR-004: Bound context and gate release quality
 
-Status: accepted by leo. Scope: the user-authorized project completion revision.
+Status: accepted by Liyu MA. Scope: the user-authorized project completion revision.
 
 ## Drivers and decision
 

@@ -1,6 +1,6 @@
 # Research Desk coding contract
 
-Decision owner: leo. Build target: TradingAgents Research Desk, an application extension of official TradingAgents v0.4.0. Read this document first, then `Prompt.md`.
+Decision owner: Liyu MA. Build target: TradingAgents Research Desk, an application extension of official TradingAgents v0.4.0. Read this document first, then `Prompt.md`.
 
 ## Reading order
 
@@ -20,7 +20,7 @@ Application module ownership is defined in the blueprint. Policy constants belon
 
 Model output is advisory. It cannot approve a proposal, choose policy constants, set an evidence price, or mutate the ledger. Approval binds exact terms. Hold, REVIEW and incomplete research do not trade. Valid sells never exceed owned shares. Every execution rechecks current holdings and cash.
 
-The plan/test decision in `docs/process/test-approval.yaml` predates this implementation and authorizes its three-feature scope. It does not authorize unrelated future changes. Changes to policy, approval, permission files or persistent contracts need an ADR and a leo decision covering the concrete change. `.opencode/rules.md`, `.agent/rules.md`, test approvals and permission decisions are owned by leo; implementation agents may propose changes but must not overwrite them.
+The plan/test decision in `docs/process/test-approval.yaml` predates this implementation and authorizes its three-feature scope. It does not authorize unrelated future changes. Changes to policy, approval, permission files or persistent contracts need an ADR and a decision by Liyu MA covering the concrete change. `.opencode/rules.md`, `.agent/rules.md`, test approvals and permission decisions are owned by Liyu MA; implementation agents may propose changes but must not overwrite them.
 
 OpenCode generates and modifies application, tests and CI. The coordinating workflow supplies prompts, runs commands and maintains evidence/report documents. Credentials are supplied only as host environment variables at runtime; never read global credential files or serialize secrets. Use the isolated project `.venv` and explicit DeepSeek model. Do not change the parent workspace's `.venv`.
 

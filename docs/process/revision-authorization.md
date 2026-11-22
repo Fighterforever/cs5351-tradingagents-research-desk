@@ -1,6 +1,6 @@
 # Project completion authorization
 
-Decision owner: leo (Liyu MA). Decision: APPROVED.
+Decision owner: Liyu MA. Decision: APPROVED.
 
 Recorded at: 2026-11-09T14:14:13.562174+00:00
 

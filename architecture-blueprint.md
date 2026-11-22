@@ -1,6 +1,6 @@
 # Architecture blueprint
 
-Decision: leo accepted application composition over TradingAgents v0.4.0. Authoritative design: ADR-001. Scope: one local operator, US equities, English reports, market/news analysts and the complete downstream upstream graph. The application supports research, evidence replay, paper execution and controlled context experiments.
+Decision: Liyu MA accepted application composition over TradingAgents v0.4.0. Authoritative design: ADR-001. Scope: one local operator, US equities, English reports, market/news analysts and the complete downstream upstream graph. The application supports research, evidence replay, paper execution and controlled context experiments.
 
 ## Drivers and boundaries
 

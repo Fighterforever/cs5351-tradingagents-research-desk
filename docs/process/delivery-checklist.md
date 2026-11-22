@@ -6,8 +6,8 @@
 | D2 architecture | Blueprint, five ADRs, required design records and optional evaluation/risk/option artifacts | Complete |
 | D3 coding governance | Effective plan/build/verify permissions, structural contracts and tool manifest | Complete |
 | D4 verification | The [current unit run](../../evaluation/submission-verification/unit-regression.txt) passed 832 tests and 71 subtests. | The revised approval, compatibility, quality and AI-log gates have dedicated unit cases. |
-| D5 supervised sessions | [Five complete annotated OpenCode sessions, direct decisions and the release review](../../transcripts/supervision-index.md) | Alfa’s retrospective account identifies the alternatives advocated by Alfa and Bravo. The candidate table records the engineering tradeoffs. |
-| D6 report | Single report under 10,000 words; 12pt single-spaced PDF; four reflections of 300–500 words | Alfa confirmed the reflections and equal final weights. The report links Bravo’s architecture comparison and Charlie’s verification work to the relevant artifacts. |
+| D5 supervised sessions | [Five complete annotated OpenCode sessions, direct decisions and the release review](../../transcripts/supervision-index.md) | Liyu MA’s retrospective account identifies the alternatives advocated by Liyu MA and Xinyao HENG. The candidate table records the engineering tradeoffs. |
+| D6 report | Single report under 10,000 words; 12pt single-spaced PDF; four reflections of 300–500 words | Liyu MA confirmed the reflections and equal final weights. The report links Xinyao HENG’s architecture comparison and Yinuo Li’s verification work to the relevant artifacts. |
 | D7 GitHub | PR #1 merged after independent review. All six [main-branch jobs passed](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/42798475065). | The [submission branch](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/tree/submission-repairs) carries the new contracts. Its pull request records the six checks and the independent review decision. |
 | D8 source/tests | The repository includes the upstream source and tests, the Research Desk extension, its offline tests and the live evaluation. | The ADR-005 [registration and recovery cases](../../test/offline/test_submission_runtime.py) cover FR-004. The [submission review](../review-memo.md#submission-review) records the original findings. |
 | D9 launch instruction | The [launch prompt](../../Prompt.md) calls for decisions on the proposed plan, completed build and verified release. | Complete. Each launch stops for approval before code generation. |
@@ -19,6 +19,6 @@
 
 The software evidence and roster are in place. The following records remain with the team.
 
-1. If a member still has the original architecture discussion, attach it to the [supervision index](../../transcripts/supervision-index.md) alongside Alfa’s recollection.
+1. If a member still has the original architecture discussion, attach it to the [supervision index](../../transcripts/supervision-index.md) alongside Liyu MA’s recollection.
 2. The [protected submission PR](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/3) requests review from wangsaorui. The reviewer should inspect the latest diff and record their own verdict.
 3. Upload the completed ten-minute MP4 separately from the project ZIP. It shows the recorded commands and the results of the submission experiment.

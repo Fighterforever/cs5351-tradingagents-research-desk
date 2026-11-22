@@ -12,7 +12,7 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 
 - **Source locator**: User message requesting the five-member optimization plan and Gemini assessment.
 
-- **Plain-English explanation**: Sets the five working aliases (`Alfa`, `Bravo`, `Charlie`, `Delta`, `Echo`), excludes the final demonstration video from the current revision pass, and directs a Gemini CLI evaluation of all non-video deliverables against the course project requirements.
+- **Plain-English explanation**: Defines the original five roles, excludes the final demonstration video from the current revision pass, and directs a Gemini CLI evaluation of all non-video deliverables against the course project requirements.
 - **Engineering rationale**: Establishes stable responsibility labels for structuring the five-member project scope and introduces an independent CLI review pass to check deliverable completeness before submission.
 - **Resulting artifacts**: [`../docs/process/team.md`](../docs/process/team.md), [`gemini-release-review.json`](gemini-release-review.json), [`../docs/process/delivery-checklist.md`](../docs/process/delivery-checklist.md)
 
@@ -63,31 +63,31 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 - **Source locator** — User message changing the team size after the request to document member supervision.
 
 - **Decision and rationale** — The user reduced the team to four and reassigned the fifth role's duties so that release, report and verification work each retained an owner.
-- **Result** — The revised responsibility table assigns report integration to Alfa, release governance to Bravo, reproducible delivery to Charlie and CI to Delta. [Team responsibilities](../docs/process/team.md)
+- **Result** — The revised responsibility table assigns report integration to Liyu MA, release governance to Xinyao HENG, reproducible delivery to Yinuo Li and CI to Chengru WANG. [Team responsibilities](../docs/process/team.md)
 
 ### U-08 — Submission contracts and release
 
 Summary of the student’s direction. The student requested repairs to proposal registration, approval, gates, and CLI reporting, together with a review of disclosure records, student materials, and repository consistency. [Original request](submission-repair/records-confirmed.full.json), JSON pointer `/messages/0/parts/0/text`, request field in the recorded input. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [review-memo.md](../docs/review-memo.md)
 
-### U-09 — Alfa identity
+### U-09 — Liyu MA identity
 
-Liyu MA confirmed the Alfa identity. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
+Liyu MA confirmed the name and student number. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
 
-### U-10 — Bravo and Charlie identities
+### U-10 — Xinyao HENG and Yinuo Li identities
 
 > 60106154Xinyao HENG 是 Bravo，60980401 Yinuo Li 是Charlie
 
-Alfa supplied the formal names and student numbers for Bravo and Charlie. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
+Liyu MA supplied the formal names and student numbers for Xinyao HENG and Yinuo Li. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
 
 ### U-11 — OpenCode provider decision
 
 > 允许 OpenCode 使用 AioHub 完成本次修复及评估
 
-Alfa authorized OpenCode to use the configured AioHub endpoint for the repair and evaluation. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [ai-use-log.yaml](../docs/ai-use-log.yaml)
+Liyu MA authorized OpenCode to use the configured AioHub endpoint for the repair and evaluation. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [ai-use-log.yaml](../docs/ai-use-log.yaml)
 
 ### U-12 — Review the separate demonstration
 
-Alfa chose to record the English narration and exported the aligned recording. During the final review, Alfa asked the coordinator to check “终端操作能不能看清、画面和旁白字幕能不能对上”. The revised demonstration shows one captured command at a time, holds the ledger on screen while the presenter explains the balance, and displays the token counts beside the comparison bars. This intervention concerns acceptance of the separate demonstration.
+Liyu MA chose to record the English narration and exported the aligned recording. During the final review, Liyu MA asked the coordinator to check “终端操作能不能看清、画面和旁白字幕能不能对上”. The revised demonstration shows one captured command at a time, holds the ledger on screen while the presenter explains the balance, and displays the token counts beside the comparison bars. This intervention concerns acceptance of the separate demonstration.
 
 ### U-13 — Architecture discussion and final contributions
 
@@ -95,6 +95,6 @@ At final review, Liyu MA recalled advocating retention of the upstream research 
 
 > liyu 建议保留上游交易研究图，Xinyao HENG 主张直接修改上游
 
-Alfa described Bravo’s comparison and Charlie’s verification work in a follow-up:
+Liyu MA described Xinyao HENG’s comparison and Yinuo Li’s verification work in a follow-up:
 
 > Bravo 比较过在上游加采集点和在外层封装的取舍；Charlie 检查过导出的研究包能否离线重放、重复登记后是否保留审批结果

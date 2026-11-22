@@ -1,8 +1,8 @@
 # Annotated development record: Chengru WANG
 
-Student number: 60254685. Working name: Delta. GitHub account: [wangsaorui](https://github.com/wangsaorui).
+Student number: 60254685. GitHub account: [wangsaorui](https://github.com/wangsaorui).
 
-This record documents one supervised agentic software-engineering session in which the human owner (Delta) directed an AI coding agent to restore cross-Python-version regression coverage in the project CI, closing review finding **F1** that Delta had raised while independently reviewing PR #1 (see [review memo](../docs/review-memo.md), "Independent code-owner review of PR #1"). Each annotation records the observed situation, the human instruction or decision, the rationale, and the resulting change.
+This record documents one supervised agentic software-engineering session in which the human owner (Chengru WANG) directed an AI coding agent to restore cross-Python-version regression coverage in the project CI, closing review finding **F1** that Chengru WANG had raised while independently reviewing PR #1 (see [review memo](../docs/review-memo.md), "Independent code-owner review of PR #1"). Each annotation records the observed situation, the human instruction or decision, the rationale, and the resulting change.
 
 ## Session and evidence provenance (stated honestly)
 
@@ -22,14 +22,14 @@ This record documents one supervised agentic software-engineering session in whi
 ## Interventions
 
 ### D5-01 — Select a deliverable that requires real supervision
-- **Situation:** The only per-student deliverable still missing was Delta's annotated transcript (D5). A shortcut would have been to compose a transcript describing supervision that never happened.
+- **Situation:** The only per-student deliverable still missing was Chengru WANG's annotated transcript (D5). A shortcut would have been to compose a transcript describing supervision that never happened.
 - **Human instruction:** Do not write a transcript without an underlying session; instead run a real supervised task on the project and record it.
 - **Rationale:** D5 is evidence of auditable human supervision and must reconcile with repo artifacts. Fabricated interventions would be detectable against the git history and would constitute academic misconduct.
 
 ### D5-02 — Approve the execution plan before code (plan-first gate)
 - **Situation:** The agent proposed a scoped change and paused for approval, as `Prompt.md` requires for a new slice.
 - **Human decision:** Approved **Task A**: restore the cross-version matrix by adding an advisory CI job that runs the existing Gate 5 regression program across Python 3.10–3.13, limited to pull-request events, touching only `ci.yml`, `docs/ci-gates.md` and the AI-use log.
-- **Rationale:** The change stays within Delta's CI ownership, does not modify safety-critical policy or leo-owned frozen files, and directly closes the reviewer's own F1 finding. Running only on `pull_request` bounds CI minutes.
+- **Rationale:** The change stays within Chengru WANG's CI ownership, does not modify safety-critical policy or leo-owned frozen files, and directly closes the reviewer's own F1 finding. Running only on `pull_request` bounds CI minutes.
 
 ### D5-03 — Keep the new job advisory, not blocking
 - **Human decision:** Mark the job `continue-on-error: true` and out of the required-check set until a full-version run is observed green.

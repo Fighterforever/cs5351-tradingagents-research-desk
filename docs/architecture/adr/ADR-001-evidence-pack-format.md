@@ -1,6 +1,6 @@
 # ADR-001 Appendix: Evidence pack format and offline replay
 
-Status: accepted appendix to `001-application-extension.md` (2026-08-31, decided by leo). Context: F1. The application-extension ADR remains the authoritative architectural decision; this appendix specifies its package representation.
+Status: accepted appendix to `001-application-extension.md` (2026-08-31, decided by Liyu MA). Context: F1. The application-extension ADR remains the authoritative architectural decision; this appendix specifies its package representation.
 
 ## Decision
 

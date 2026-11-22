@@ -1,6 +1,6 @@
 # ADR-002: Bind approval to exact terms and cap total holdings
 
-Status: accepted by leo during implementation review, 2026-08-31. Requirements: FR-002, INV-001, INV-002. This clarifies the approved policy rather than adding a new feature.
+Status: accepted by Liyu MA during implementation review, 2026-08-31. Requirements: FR-002, INV-001, INV-002. This clarifies the approved policy rather than adding a new feature.
 
 The first generated implementation treated the10% cap as a limit on one new ticket. It also excluded Sell/Underweight even though the plan prohibited shorting rather than all sales. Its approval fingerprint omitted quantity and evidence identity. These behaviors would allow repeated individually small buys to exceed the policy or allow changed terms to reuse an earlier approval.
 

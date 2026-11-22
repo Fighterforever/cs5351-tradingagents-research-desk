@@ -91,7 +91,7 @@
     {
       "id": "U-09",
       "source_locator": "Student reply to the request for the remaining D6 identities.",
-      "meaning": "Liyu MA confirmed the Alfa identity.",
+      "meaning": "Liyu MA confirmed the name and student number.",
       "evidence": [
         "docs/process/team.md",
         "Report.md"
@@ -101,7 +101,7 @@
       "id": "U-10",
       "source_locator": "Student follow-up identifying two members.",
       "quote": "60106154Xinyao HENG 是 Bravo，60980401 Yinuo Li 是Charlie",
-      "meaning": "Alfa supplied the formal names and student numbers for Bravo and Charlie.",
+      "meaning": "Liyu MA supplied the formal names and student numbers for Xinyao HENG and Yinuo Li.",
       "evidence": [
         "docs/process/team.md",
         "Report.md"
@@ -111,7 +111,7 @@
       "id": "U-11",
       "source_locator": "Student selected the provider after receiving the official service balance result and the scope of the data transfer.",
       "quote": "允许 OpenCode 使用 AioHub 完成本次修复及评估",
-      "meaning": "Alfa authorized OpenCode to use the configured AioHub endpoint for the repair and evaluation.",
+      "meaning": "Liyu MA authorized OpenCode to use the configured AioHub endpoint for the repair and evaluation.",
       "evidence": [
         "docs/architecture/adr/005-submission-contracts.md",
         "docs/ai-use-log.yaml"
@@ -119,9 +119,9 @@
     },
     {
       "id": "U-12",
-      "source_locator": "Alfa requested a final review of the separately submitted video.",
+      "source_locator": "Liyu MA requested a final review of the separately submitted video.",
       "quote": "终端操作能不能看清、画面和旁白字幕能不能对上",
-      "meaning": "Alfa recorded the narration and requested a check of command legibility and audiovisual timing.",
+      "meaning": "Liyu MA recorded the narration and requested a check of command legibility and audiovisual timing.",
       "evidence": [
         "transcripts/leo-project-directions.md",
         "Report.md"
