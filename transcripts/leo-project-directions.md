@@ -19,7 +19,6 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 ### `U-02` — Equal Responsibility Allocation and Deferred Formal Roster
 
 - **Source locator**: User response to the formal roster and division-of-work question.
-
 - **Plain-English explanation**: Directs equal task allocation across the five working aliases while deferring entry of formal student names and student IDs.
 - **Engineering rationale**: Records an equal allocation across the five responsibility areas, with a weight of `1.0` each. Formal identities remain a final roster item.
 - **Resulting artifacts**: [`../docs/process/team.md`](../docs/process/team.md), [`../Report.md`](../Report.md)
@@ -45,7 +44,6 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 ### `U-05` — Source-Linked Intervention Annotations, Clear Prose, and Re-Review
 
 - **Source locator**: User request to add actual intervention annotations and review the project again.
-
 - **Plain-English explanation**: Requests adding source-linked intervention annotations, using Gemini CLI to polish the wording in a clear, fluent, and non-defensive style, and running another in-depth project review.
 - **Engineering rationale**: Links the 30 recorded coordinating-workflow directives (`I-01`–`I-30`) to exact transcript pointers and resulting repository changes, improves documentation readability, and verifies technical consistency across reports and logs.
 - **Resulting artifacts**: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md), [`intervention-index.json`](intervention-index.json), [`gemini-intervention-edit.json`](gemini-intervention-edit.json), [`gemini-intervention-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-intervention-review.json)
@@ -53,7 +51,6 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 ### `U-06` — Delegation of Pipeline Supervision-Evidence Review to Gemini CLI
 
 - **Source locator**: Current user request to delegate supervision-evidence work to Gemini.
-
 - **Plain-English explanation**: Delegates the completion of the supervision-evidence review and documentation to Gemini CLI.
 - **Engineering rationale**: Produces an explicit, attributable technical review by Gemini CLI covering all 24 requirement classifications, the three architecture candidates (`3.10`, `4.65`, `3.10`), the five responsibility scopes, and lifecycle evidence status.
 - **Resulting artifacts**: [`gemini-pipeline-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/30ceccc1a3cceaa9fcdb929cdf1772711fa00e79/transcripts/gemini-pipeline-review.json), [`../docs/process/pipeline-review.md`](../docs/process/pipeline-review.md)
@@ -61,7 +58,6 @@ The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during
 ### U-07 — Four-person team allocation
 
 - **Source locator** — User message changing the team size after the request to document member supervision.
-
 - **Decision and rationale** — The user reduced the team to four and reassigned the fifth role's duties so that release, report and verification work each retained an owner.
 - **Result** — The revised responsibility table assigns report integration to Liyu MA, release governance to Xinyao HENG, reproducible delivery to Yinuo Li and CI to Chengru WANG. [Team responsibilities](../docs/process/team.md)
 

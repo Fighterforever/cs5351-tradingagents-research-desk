@@ -9,7 +9,7 @@ The research package identifies the evidence for a proposed trade. The ledger ow
 
 For each code change, check the scope and timing of the corresponding approval and test evidence. Check public interfaces on safety-related changes. Match changed code or prompt paths to entries actually amended in the current AI-use log. Validate each of six pairs before aggregating the release results. Bind results to the research graph, role code and inputs actually used. Continue to apply the existing quality thresholds. Publish fresh research results when the source changes.
 
-Affected owners are `src/research_desk/graph_adapter.py`, `src/research_desk/evidence.py`, `src/research_desk/review.py`, `src/research_desk/models.py`, `src/research_desk/storage.py`, `src/research_desk/replay.py`, `src/research_desk/cli.py`, `src/research_desk/eval/live.py` and `src/research_desk/eval/quality.py`. Verification owners are the gate scripts and `.github/workflows/ci.yml`. The working copies used by OpenCode can edit only the files listed for their assigned task. The published role permissions continue to apply to the repository.
+Affected owners are `src/research_desk/graph_adapter.py`, `src/research_desk/evidence.py`, `src/research_desk/review.py`, `src/research_desk/models.py`, `src/research_desk/storage.py`, `src/research_desk/replay.py`, `src/research_desk/cli.py`, `src/research_desk/eval/live.py` and `src/research_desk/eval/quality.py`. Governance rule synchronization covers `.agent/rules.md` and `.opencode/rules.md`. Verification owners are the gate scripts and `.github/workflows/ci.yml`. The working copies used by OpenCode can edit only the files listed for their assigned task. The published role permissions continue to apply to the repository.
 
 ## Acceptance
 

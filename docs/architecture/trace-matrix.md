@@ -3,7 +3,7 @@
 | Requirement | Enforcing component | Test/evidence | Runtime monitor |
 |---|---|---|---|
 | FR-001 | research_desk.evidence, research_desk.replay, research_desk.cli | AT-01; Export, import and replay all six completed fixed cases; a missing required record must fail. | Run manifest/events and terminal outcome |
-| NFR-001 | research_desk.replay | AT-01; Run six complete packs in new processes; compare signal and policy; assert zero external calls. | CLI replay result and process duration in evaluation/replay-release |
+| NFR-001 | research_desk.replay | AT-01; Run six complete packs in new processes; compare signal and policy; assert zero external calls. | CLI replay result and process duration in evaluation/submission-verification/replay.json (max 0.7922s; prior release in evaluation/replay-release) |
 | SEC-001 | research_desk.evidence, research_desk.context, research_desk.graph_adapter | AT-02; Check evidence serialization and future-resolved memory; distinguish retrieval time from availability date. | Run manifest/events and terminal outcome |
 | FR-002 | research_desk.review, research_desk.storage, research_desk.cli | AT-03, AT-05; Approve 100 shares at USD100 against USD100000; execute twice; final cash remains USD90000 and shares100. | Proposal status, approval version and stored transaction |
 | FR-004 | research_desk.evidence, research_desk.storage, research_desk.cli | AT-03, AT-05. [Registration, terminal states and evidence changes](../../test/offline/test_submission_runtime.py). [Operator CLI](../../test/offline/test_cli_slice.py). | The propose command reports the ledger status. Proposal records retain the material evidence identity and any completed transaction reference. |

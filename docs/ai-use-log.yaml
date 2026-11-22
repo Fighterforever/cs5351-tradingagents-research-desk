@@ -1000,3 +1000,22 @@ entries:
   review: docs/process/editorial-note.md
   evidence: transcripts/editorial-review-excerpts.json
   outcome: The archive includes the five full annotated sessions. Nine supplementary review and prompt files remain available on GitHub.
+- date: '2026-11-23'
+  tool: Antigravity
+  model: Gemini
+  purpose: Synchronize governance rules, blueprint, debt register, trace matrix, README, review memo and Report wording with ADR-005/FR-004.
+  scope:
+  - AGENTS.md
+  - README.md
+  - Report.md
+  - Report.pdf
+  - architecture-blueprint.md
+  - .agent/rules.md
+  - .opencode/rules.md
+  - docs/architecture/adr/005-submission-contracts.md
+  - docs/architecture/trace-matrix.md
+  - docs/debt-register.md
+  - docs/review-memo.md
+  review: docs/review-memo.md
+  evidence: docs/review-memo.md
+  outcome: Updated governance and documentation files to reflect ADR-005/FR-004 without altering runtime source, tests, or historical provenance records.

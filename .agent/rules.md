@@ -10,3 +10,5 @@ When a requirement changes, update this covenant and the effective rules within 
 
 
 ADR-004 adds terminal rejection, complete-input budgets and source-bound release quality. The same revision updates requirements, tests and review evidence. The user-authorized temporary revision role ends at source freeze.
+
+ADR-005 and FR-004 add material evidence identity binding, ledger-owned proposal registration and recovery, strict CLI failure reporting, upstream-inclusive six-pair release validation, and scoped Gate 1, Gate 2 and Gate 6 enforcement.

@@ -155,3 +155,16 @@ The [unit regression](../evaluation/submission-verification/unit-regression.txt)
 The [earlier release](../evaluation/release/) retains the measurements and replay findings cited in the preceding review. The repaired application has its own [paired matrix and release decision](../evaluation/submission-release/aggregate/release-gate.json). The [evaluation logbook](architecture/evaluation-logbook.md) identifies the source and results for each experiment. Independent code-owner review of this submission belongs to its protected pull request.
 
 On the first [submission-branch CI run](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/45031340237/job/137235399147), a long temporary path wrapped the incomplete-replay diagnostic. The revised unit case uses a 40-column terminal and checks the exit status, normalized diagnostic and missing filename. The protected [submission PR](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/3) lists the checks for the revised commit.
+
+Verdict: **APPROVE** technical verification of the ADR-005 contracts; **CHANGES REQUIRED** before merge pending independent non-author code-owner review on [PR #3](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/3).
+
+## Pull request #3 review record (pending independent code-owner sign-off)
+
+- **Scope**: PR #3 (`submission-repairs` into `main`), implementing ADR-005 / FR-004 contract repairs and governance/documentation synchronization.
+- **Specification alignment**: All 25 requirements pass schema and trace-matrix validation (`Gate 3`). FR-001–FR-004, INV-001/002, and CTX-001 are mapped to enforcing components, tests, and runtime monitors.
+- **Architecture alignment**: The upstream TradingAgents v0.4.0 research graph remains intact. Proposal registration, exact-term approval, policy evaluation, and SQLite execution remain deterministic and outside LLM tool authority.
+- **Code and test quality**: 832 unit tests and 71 subtests pass (`tests/` 649 passed + 71 subtests; `test/offline/` 183 passed). Dedicated regression modules verify proposal registration recovery (`test_submission_runtime.py`), CLI failure propagation and judge call budgets (`test_submission_cli.py`), public safety API compatibility (`test_submission_api.py`), scoped gate enforcement (`test_submission_governance.py`), and six-pair release provenance (`test_release_quality.py`).
+- **Security and efficiency**: Zero external network calls during offline replay across all 12 submission packages (max 0.7922s); credentials read solely from host environment variables; no broker access; application tokens reduced by 42.50% (600,576 → 345,309) with 48.65% summed runtime ratio and 60/60 mandatory fields passing; coding-context study reduced observed tokens by 60.74% (60,409 → 23,719) across the same 26 passing tests.
+- **Operational metadata**: All six required GitHub Actions checks passed on `submission-repairs`. Protected `main` requires passing CI and code-owner review (`enforce_admins: true`).
+- **Independent code-owner reviewer**: `PENDING (wangsaorui or nicolas393 — to be completed on GitHub PR #3 before merge)`.
+- **Independent review verdict**: `PENDING (APPROVE / CHANGES REQUIRED / REJECT to be recorded by the independent human reviewer)`.

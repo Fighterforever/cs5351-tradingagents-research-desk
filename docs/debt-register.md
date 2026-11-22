@@ -17,4 +17,6 @@ No item is closed merely because a document exists. The final report identifies 
 
 ADR-004 closes the rejected-state transition and complete-input budget gaps. The paired release before ADR-005 passed all 60 mandatory fields and its semantic thresholds. Source-bound release validation closes the stale-evidence path. The provider transport mismatch is corrected and its failed matrix remains archived. Public GitHub checks and branch protection are active.
 
+ADR-005 and FR-004 close the proposal-evidence binding, registration-recovery, CLI failure-reporting, and gate-scoping gaps: all 11 submission proposals carry material evidence identifiers matching their saved inputs, repeat registration preserves terminal ledger states, CLI replay and judge errors exit nonzero, 832 unit tests and 71 subtests pass, and Gates 1, 2, 4, and 6 enforce scoped approvals, public safety API compatibility, complete six-pair upstream-inclusive provenance, and PR-scoped AI-use log matching.
+
 Broader corpus coverage and authenticated multiuser deployment remain future scope. Coding context cost is measured in evaluation/development-cost. The [delivery checklist](process/delivery-checklist.md) tracks member confirmation of reflections and contribution weights. The [release record](../evaluation/github/pr-1-release.json) documents the independent review and merge.

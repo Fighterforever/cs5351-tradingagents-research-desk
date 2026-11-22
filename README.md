@@ -1,12 +1,16 @@
 # TradingAgents Research Desk
 
-Research Desk adds two steps to TradingAgents v0.4.0. An operator can replay a saved report offline and review a proposed paper trade before it reaches the ledger. The upstream graph still performs the research. Application code checks the approved terms, available cash and position limit at execution.
+**TradingAgents Research Desk** extends official **TradingAgents v0.4.0** into an auditable equity-research and controlled paper-trading application. While the upstream multi-agent graph generates useful market analysis and trade recommendations, a finished report alone cannot prove which historical inputs were actually read, reproduce the exact output without re-calling an LLM, or prevent unauthorized execution. Research Desk closes these gaps by turning every run into a portable, inspectable evidence package and separating probabilistic model advice from deterministic portfolio execution.
 
-**CS5351 · Group 32** — Liyu MA, Xinyao HENG, Yinuo Li and Chengru WANG. Each member has a contribution weight of 1.0. [Project report](Report.md) · [Team responsibilities](docs/process/team.md) · [Public repository](https://github.com/Fighterforever/cs5351-tradingagents-research-desk).
+The architecture follows a narrow composition design (`ADR-001` through `ADR-005`). The unmodified upstream `TradingAgentsGraph` remains the advisory research engine (`tradingagents/`, `cli/`, `tests/`). Around it, `src/research_desk/` owns narrow seams: `graph_adapter.py` and `evidence.py` capture model calls, tool results, and direct data reads; `context.py`, `budget.py`, and `eval/compact_delegate.py` enforce six-layer context assembly, compaction, and pre-request call/input limits; `replay.py` reconstructs saved reports with zero network access; and `review.py`, `policy.py`, and `storage.py` enforce exact-term operator approval, deterministic cash/total-position/no-short rules, and atomic SQLite ledger persistence outside LLM authority.
+
+The extension delivers four operator workflows (`FR-001`–`FR-004`) plus bounded context and release-quality controls: exporting and replaying research offline (`FR-001`), reviewing exact terms and executing permitted paper trades (`FR-002`), comparing baseline vs. compact context over a fixed six-company corpus (`FR-003`), and registering saved packages into the ledger with state recovery and stale-evidence re-review (`FR-004`). In the submission release, compact context cut application tokens by **42.50%** (345,309 vs. 600,576) and summed run time to **48.65%** of baseline while passing **60/60** mandatory checks and all quality thresholds.
+
+**CS5351 · Group 32** — Liyu MA (59072966), Xinyao HENG (60106154), Yinuo Li (60980401) and Chengru WANG (60254685). Each member has a contribution weight of 1.0. [Project report](Report.md) · [Team responsibilities](docs/process/team.md) · [Public repository](https://github.com/Fighterforever/cs5351-tradingagents-research-desk).
 
 ## Run locally
 
-Use Python 3.12 for the course release. The pinned dependencies also installed on Python 3.13 in the advisory matrix. The upstream package declares Python 3.10 or later. The course lockfile requires newer dependency builds, so the pinned setup stops during installation on 3.10 and 3.11. [Version matrix](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/2)
+Use Python 3.12 for the course release. The pinned dependencies also installed on Python 3.13 in the advisory matrix. `pyproject.toml` retains the upstream `>=3.10` declaration and remains frozen to preserve Gate 4 source-fingerprint provenance, while `requirements-lock.txt` targets Python 3.12/3.13 so pinned installation stops on 3.10 and 3.11. [Version matrix](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/pull/2)
 
 Create a project-local virtual environment:
 
@@ -76,7 +80,16 @@ The submission revision passed **832 tests and 71 subtests** across the upstream
 
 To run the provider-dependent test with host-supplied credentials, use `RESEARCH_DESK_LIVE_TESTS=1 .venv/bin/pytest -q test/live`. For the full suite, run that live test with the gateway key and run `.venv/bin/pytest -q tests test/offline` in a separate shell with an official DeepSeek key. The [upstream integration test](tests/test_deepseek_reasoning.py) calls `api.deepseek.com` directly. The [Research Desk live test](test/live/README.md) uses the configured gateway.
 
-The public repository has six required CI checks and enforced branch protection. Safety changes require an accepted ADR and code-owner review. One approving review is required before merge, including for administrators. PR #1 contains the preceding merged implementation. The branch policy and release checks are saved under [evaluation/github](evaluation/github).
+The public repository enforces six blocking CI gates via `.github/workflows/ci.yml` and branch protection on `main` (requiring all six status checks, one non-author code-owner review on safety-relevant paths, stale-approval dismissal, and enforcement for administrators; `enforce_admins: true`). PR #1 contains the preceding merged implementation, and the branch policy and release checks are saved under [evaluation/github](evaluation/github) and detailed in [docs/ci-gates.md](docs/ci-gates.md):
+
+| Gate | Workflow job | Blocking rule | Enforcing script |
+|---|---|---|---|
+| 1. Test approval | `gate-1-approval` | Every governed code/prompt change must be covered by a scoped approval and test evidence predating implementation (`docs/process/test-approval.yaml`). | `scripts/check_approval.py` |
+| 2. Static & authority | `gate-2-static` | `ruff`, `mypy`, `pip check`, role permission manifest vs. `opencode.json`, no-LLM authority boundary, and safety-path ADR + public API compatibility checks must pass. | `scripts/check_static.py` |
+| 3. Requirements schema | `gate-3-requirements` | `docs/req/requirements.yaml` must validate against `docs/req/req-schema.json` and cross-check all 25 rows in `docs/architecture/trace-matrix.md`. | `scripts/check_requirements.py` |
+| 4. Semantic evaluation | `gate-4-semantic` | Offline fixture replay, prompt-fact retention, and six-pair source-bound quality/citation/retention validation (`evaluation/submission-release`) must pass. | `scripts/check_semantic.py` |
+| 5. Regression | `gate-5-regression` | Full preserved upstream suite (`tests/`) and extension offline suite (`test/offline/`) must pass with zero regressions. | `scripts/check_regression.py` |
+| 6. AI-use log | `gate-6-ai-use-log` | Every code or prompt path changed relative to base must be matched to a new or amended `docs/ai-use-log.yaml` entry with verifiable evidence. | `scripts/check_ai_use_log.py` |
 
 ## Repository map
 
