@@ -66,3 +66,15 @@ Offline replay alone could validate old outputs after a runtime change. The revi
 ## Provider ignored the requested thinking mode
 
 Reproduction: the first revision matrix sent the standard thinking-disabled body, but returned reasoning and exhausted the judge output cap. All twelve judges failed to produce structured scores. The host parameter diagnosis found reasoning_effort none effective at the authorized endpoint. The application evaluation adapter now sends both settings through extra_body; a unit test inspects actual plain and structured request payloads. The complete corrected matrix passes. The first matrix remains in evaluation/revision-initial.
+
+## Registration and material evidence
+
+The previous release saved nine tradeable proposals without an evidence identifier. The research graph constructed the proposal before binding it to the input snapshot. Registration also used the same storage method as an authorized local update, which allowed a repeated registration to replace a terminal record. ADR-005 separates registration from operator updates. The graph binds the proposal to its material input, and older evidence is normalized during import. The registration unit cases cover fresh, approved, rejected and executed proposals as well as a change of evidence.
+
+## Replay output and judge budgets
+
+The replay engine retained file-write errors while the CLI still printed a success line. A mismatch between paths and strings could count the completed report twice. The CLI now returns a diagnostic and a failing status when rebuilding fails. The judge command also consumed the modes independently of its advertised maximum call count. The updated request loop spends one shared budget for the two modes. The CLI unit cases cover a failed report write, an empty judge budget and a failure after a request starts.
+
+## Wrapped replay diagnostic on GitHub
+
+The first submission-branch regression passed 182 of 183 extension tests on Ubuntu. The failing case deleted `usage.json`. Replay returned a nonzero exit and named the missing file, but the longer runner path moved part of the diagnostic onto a new line. The test expected a contiguous phrase. Its acceptance criteria are the exit status, diagnostic and missing filename across terminal widths. [Cloud regression output](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/actions/runs/45031340237/job/137235399147)

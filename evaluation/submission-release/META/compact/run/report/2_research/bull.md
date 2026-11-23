@@ -1,0 +1,12 @@
+
+Bull Analyst: **Role: Bull Analyst (nonbinding role analysis — not a transaction proposal)**
+
+Let me open with the number the bear will lead with, and flip it: revenue **+28% to $60.801B** [src-meta]. That is not a company in trouble — that's a demand engine running at nearly 30% growth on a **$60B+ quarterly base**. And the growth is *monetization*, not user-count luck: DAP is **3.60B, +3%** [src-meta] while revenue grows 28% — meaning ARPU is compounding hard. That's the competitive moat showing up in dollars: 3.6 billion daily people is a distribution asset no competitor can replicate.
+
+Now the "margin collapse" bear case. Yes, operating margin fell to **31% from 43%** [src-meta]. But look at *why*: **$2.40B legal + $1.18B severance = $3.58B** of largely non-recurring charges [src-meta]. Strip those out and operating income is **~$22.36B, a ~36.8% margin** (calc: 18.775+3.58 / 60.801, operands [src-meta]). A 36.8% margin on 28% growth is elite. The bear will say "still below 43%" — fair, but that gap is **capex of $31.08B, ~51% of revenue** [src-meta], and capex is *investment*, not decay. You don't penalize a company for pouring 51% of revenue into AI infrastructure that extends its lead; you penalize it if that spend stops producing growth. Growth is accelerating, not stalling.
+
+On the tape: the **-8.0% gap** (calc 539.03/585.61−1 [market-meta]) on **42.27M shares vs 22.37M** [market-meta] is capitulation — the weak hands just left. The stock had run from ~563 to 681 before this [market-meta]; a violent reset on a *known, quantified* charge is exactly where risk/reward improves, not deteriorates. The market repriced the expense trajectory, not demand — and demand is the thing that matters.
+
+What I will *not* do is fabricate a valuation. EPS, P/E, guidance, and targets are **UNKNOWN** [src-meta] — I won't cite a multiple I don't have. My case rests on: 28% revenue growth, 3.6B DAP, a 36.8% ex-charge margin, and a washed-out gap.
+
+**To the bear:** bring me a demand problem. You can't — revenue is +28% [src-meta]. You'll argue capex crushes FCF; I'll argue that's the price of owning the next platform cycle, and the one-offs are already in the price after an 8% gap. The bull case holds.

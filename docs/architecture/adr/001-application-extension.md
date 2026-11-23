@@ -1,6 +1,7 @@
 # ADR-001: Extend the existing graph through application-owned seams
 
-Status: accepted by leo, 2026-08-31. Requirements: FR-001 through FR-003, INV-001, INV-002. The concrete plan and tests were approved at 12:05:17.791955 UTC before OpenCode's first implementation event at 12:06:32.695 UTC.
+Status: accepted by Liyu MA, 2026-08-31. Requirements: FR-001 through FR-003, INV-001, INV-002. The concrete plan and tests were approved at 12:05:17.791955 UTC before OpenCode's first implementation event at 12:06:32.695 UTC.
+Approval record ID: `leo`.
 
 ## Context and alternatives
 

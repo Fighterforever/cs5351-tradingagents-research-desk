@@ -6,13 +6,13 @@ This index is derived from the application AST. Each function inherits the modul
 
 Owner: ADR-004. Requirement contract: QUALITY-001/002/003; COST-001; PERF-001; GOV-004. Verification: AT-07/08.
 
-Package namespace; no functions..
+No module-level functions.
 
 ## src/research_desk/__main__.py
 
 Owner: ADR-004. Requirement contract: QUALITY-001/002/003; COST-001; PERF-001; GOV-004. Verification: AT-07/08.
 
-Package namespace; no functions..
+No module-level functions.
 
 ## src/research_desk/budget.py
 
@@ -22,7 +22,7 @@ Owner: ADR-001. Requirement contract: NFR-003. Verification: AT-06. Revision: AD
 
 ## src/research_desk/cli.py
 
-Owner: ADR-001; ADR-002. Requirement contract: FR-001/002/003; INV-001/002. Verification: AT-01/03/04/07.
+Owner: ADR-001; ADR-002. Requirement contract: FR-001/002/003; INV-001/002. Verification: AT-01/03/04/07. Submission repair: ADR-005.
 
 `_settings`, `_store`, `_default_operator`, `analyze`, `_print_run_result`, `export`, `replay`, `propose`, `review`, `execute`, `ledger`, `compare`, `_context_chars`, `evaluate_case`, `judge_case`, `aggregate`.
 
@@ -58,25 +58,25 @@ Owner: ADR-001. Requirement contract: FR-003; QUALITY-001/002/003; COST-001; PER
 
 ## src/research_desk/eval/live.py
 
-Owner: ADR-001. Requirement contract: FR-003; QUALITY-001/002/003; COST-001; PERF-001. Verification: AT-07. Revision: ADR-004; INV-001; QUALITY-001/003; AT-04/07.
+Owner: ADR-001. Requirement contract: FR-003; QUALITY-001/002/003; COST-001; PERF-001. Verification: AT-07. Revision: ADR-004; INV-001; QUALITY-001/003; AT-04/07. Submission repair: ADR-005.
 
-`_base_url`, `_project_root`, `_current_source_fingerprint`, `_provenance_payload`, `_read_source_fingerprint`, `_graph_config`, `_desk_settings`, `_dump_json`, `run_evaluate_case`, `_replace_dir`, `_normalize_number_token`, `_contains_price`, `_report_text`, `_report_text_with_identity`, `_deterministic_checks`, `run_judge_case`, `_observed_tools_text`, `_judge_prompt`, `_valid_citation_rate`, `JudgeScore._supported_within_cited`, `JudgeScore._semantic_errors_invalidate`, `_llm_judge`, `run_aggregate`, `_arm_value`, `_aggregate_report`, `_pct`.
+`_base_url`, `_project_root`, `_current_source_fingerprint`, `_provenance_payload`, `_read_source_fingerprint`, `_graph_config`, `_desk_settings`, `_dump_json`, `run_evaluate_case`, `_replace_dir`, `_normalize_number_token`, `_contains_price`, `_report_text`, `_report_text_with_identity`, `_deterministic_checks`, `_prepare_arm_judge_dir`, `run_judge_case`, `_observed_tools_text`, `_judge_prompt`, `_valid_citation_rate`, `JudgeScore._supported_within_cited`, `JudgeScore._semantic_errors_invalidate`, `_llm_judge`, `run_aggregate`, `_arm_value`, `_aggregate_report`, `_pct`.
 
 ## src/research_desk/eval/quality.py
 
-Owner: ADR-004. Requirement contract: QUALITY-001/002/003; COST-001; PERF-001; GOV-004. Verification: AT-07/08.
+Owner: ADR-004. Requirement contract: QUALITY-001/002/003; COST-001; PERF-001; GOV-004. Verification: AT-07/08. Submission repair: ADR-005.
 
-`_source_paths`, `source_fingerprint`, `_json`, `_num`, `_provenance`, `_summary`, `_pack`, `_judge`, `validate_release`.
+`_source_paths`, `source_fingerprint`, `_record`, `_num`, `_provenance`, `_summary`, `_pack`, `_judge`, `validate_release`.
 
 ## src/research_desk/evidence.py
 
-Owner: ADR-001 and its evidence-format appendix. Requirement contract: SEC-001; FR-001. Verification: AT-01/02.
+Owner: ADR-001 and its evidence-format appendix. Requirement contract: SEC-001; FR-001. Verification: AT-01/02. Submission repair: ADR-005.
 
-`_is_credential_key`, `sanitize_secrets`, `EvidenceLog.__init__`, `EvidenceLog.record`, `record_data_read`, `EvidenceRecorder.__init__`, `EvidenceRecorder._node_from_kwargs`, `EvidenceRecorder.on_chat_model_start`, `EvidenceRecorder.on_llm_start`, `EvidenceRecorder._start_llm`, `EvidenceRecorder._serialize_messages`, `EvidenceRecorder.on_llm_end`, `EvidenceRecorder.on_llm_error`, `EvidenceRecorder.on_tool_start`, `EvidenceRecorder.on_tool_end`, `EvidenceRecorder.on_tool_error`, `_msg_to_text`, `_safe_str`, `_extract_usage`, `_data_snapshot_from_events`, `build_pack`, `EvidencePackIO.export`, `EvidencePackIO.export_zip`, `EvidencePackIO._flatten`, `EvidencePackIO.import_pack`, `EvidencePackIO._load_dir`, `EvidencePackIO.load_external_proposal`.
+`_canonical_json`, `material_evidence_id`, `_is_credential_key`, `sanitize_secrets`, `EvidenceLog.__init__`, `EvidenceLog.record`, `record_data_read`, `EvidenceRecorder.__init__`, `EvidenceRecorder._node_from_kwargs`, `EvidenceRecorder.on_chat_model_start`, `EvidenceRecorder.on_llm_start`, `EvidenceRecorder._start_llm`, `EvidenceRecorder._serialize_messages`, `EvidenceRecorder.on_llm_end`, `EvidenceRecorder.on_llm_error`, `EvidenceRecorder.on_tool_start`, `EvidenceRecorder.on_tool_end`, `EvidenceRecorder.on_tool_error`, `_msg_to_text`, `_safe_str`, `_extract_usage`, `_data_snapshot_from_events`, `build_pack`, `EvidencePackIO.export`, `EvidencePackIO.export_zip`, `EvidencePackIO._flatten`, `EvidencePackIO.import_pack`, `EvidencePackIO._load_dir`, `EvidencePackIO.load_external_proposal`.
 
 ## src/research_desk/graph_adapter.py
 
-Owner: ADR-001. Requirement contract: SEC-001; NFR-003; QUALITY-001/002/003. Verification: AT-01/02/06/07. Revision: ADR-004; CTX-001; I-CONTEXT; AT-06.
+Owner: ADR-001. Requirement contract: SEC-001; NFR-003; QUALITY-001/002/003. Verification: AT-01/02/06/07. Revision: ADR-004; CTX-001; I-CONTEXT; AT-06. Submission repair: ADR-005.
 
 `_provider_tools`, `EvidenceTradingGraph.__init__`, `EvidenceTradingGraph._create_tool_nodes`, `EvidenceTradingGraph.resolve_instrument_context`, `EvidenceTradingGraph._fetch_returns`, `_available_sources_from_provider`, `_parse_stock_data_price`, `_parse_verified_snapshot_price`, `price_from_evidence`, `merge_trace`, `decide_proposal`, `ResearchRunner.__init__`, `ResearchRunner._memory_entries`, `ResearchRunner._assemble_context`, `ResearchRunner._build_graph`, `ResearchRunner._price_from_provider`, `ResearchRunner.run`, `ResearchRunner._data_snapshot_from_run`, `ResearchRunner._available_sources`, `_trim_state`.
 
@@ -94,9 +94,9 @@ Owner: ADR-002. Requirement contract: INV-002. Verification: AT-04/05.
 
 ## src/research_desk/replay.py
 
-Owner: ADR-001. Requirement contract: FR-001; NFR-001. Verification: AT-01.
+Owner: ADR-001. Requirement contract: FR-001; NFR-001. Verification: AT-01. Submission repair: ADR-005.
 
-`ReplayEngine.__init__`, `ReplayEngine.load`, `ReplayEngine.replay`.
+`ReplayEngine.__init__`, `ReplayEngine.load`, `ReplayEngine.replay`, `_file_state`, `_written_files`, `_policy_bounds_for`.
 
 ## src/research_desk/report.py
 
@@ -112,6 +112,6 @@ Owner: ADR-002. Requirement contract: INV-001/002. Verification: AT-03/04/05. Re
 
 ## src/research_desk/storage.py
 
-Owner: ADR-002. Requirement contract: INV-001/002. Verification: AT-03/05.
+Owner: ADR-002. Requirement contract: INV-001/002. Verification: AT-03/05. Submission repair: ADR-005.
 
-`ResearchDeskStore.__init__`, `ResearchDeskStore._migrate`, `ResearchDeskStore.get_ledger`, `ResearchDeskStore.apply_transaction`, `ResearchDeskStore.list_transactions`, `ResearchDeskStore.save_proposal`, `ResearchDeskStore.get_proposal`, `ResearchDeskStore.list_proposals`, `ResearchDeskStore.update_proposal_status`, `ResearchDeskStore._row_to_proposal`, `ResearchDeskStore.close`, `_json_default`, `write_json`, `read_json`.
+`ResearchDeskStore.__init__`, `ResearchDeskStore._migrate`, `ResearchDeskStore.get_ledger`, `ResearchDeskStore.apply_transaction`, `ResearchDeskStore.list_transactions`, `ResearchDeskStore.save_proposal`, `ResearchDeskStore.register_proposal`, `ResearchDeskStore.get_proposal`, `ResearchDeskStore.list_proposals`, `ResearchDeskStore.update_proposal_status`, `ResearchDeskStore._row_to_proposal`, `ResearchDeskStore.close`, `_json_default`, `write_json`, `read_json`.

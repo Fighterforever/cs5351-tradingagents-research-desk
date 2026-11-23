@@ -1,14 +1,6 @@
-"""Gate 6: the AI-use log must be updated for code or prompt changes.
-
-Uses the actual PR base..head (or an explicit changed-file list, or the working
-tree) to obtain changed files. When a change touches code (``*.py``) or prompt
-files, ``docs/ai-use-log.yaml`` must belong to that same change set and be a
-valid, non-empty log under the agreed schema. Every entry must carry the common
-fields (date/tool/model/purpose/scope/review/outcome); OpenCode CLI entries must
-additionally carry ``session`` and ``prompt``, while non-OpenCode (coordinator)
-entries must instead carry a real ``evidence`` reference. The gate does not pass
-merely because the log exists: at least one entry's ``scope`` must cover every
-changed code/prompt file. A git failure is a gate failure, never "no change".
+"""Gate 6 matches changed code and runtime prompt paths to new or amended AI-use log
+entries relative to Git. It verifies evidence and review files plus the original prompt
+and session ID for OpenCode.
 """
 
 from __future__ import annotations
@@ -17,19 +9,18 @@ import argparse
 from pathlib import Path
 
 import yaml
-from _gate_lib import add_change_args, changed_files, fail, resolve_root
+from _gate_lib import add_change_args, changed_files, fail, read_base_text, resolve_root
 
 LOG_PATH = "docs/ai-use-log.yaml"
 COMMON_ENTRY_FIELDS = ("date", "tool", "model", "purpose", "scope", "review", "outcome")
 OPENCODE_TOOL_FIELDS = ("session", "prompt")
 COORDINATOR_EVIDENCE_FIELD = ("evidence",)
-# Executable workflow / behavior-configuration paths: a change here also needs
-# an AI-use log update. Ordinary prose/schema data is intentionally excluded.
 BEHAVIOR_CONFIG_PATHS = {
     "pyproject.toml",
     "opencode.json",
     ".opencode/permissions.jsonc",
 }
+ARCHIVE_PREFIXES = ("transcripts/", "evaluation/")
 
 
 def is_code_or_prompt_change(path: str) -> bool:
@@ -39,6 +30,10 @@ def is_code_or_prompt_change(path: str) -> bool:
     if lower.startswith(".github/workflows/"):
         return True
     if path in BEHAVIOR_CONFIG_PATHS:
+        return True
+    if lower.startswith(ARCHIVE_PREFIXES):
+        return False
+    if Path(path).name == "Prompt.md" or "prompts/" in lower:
         return True
     return "prompt" in lower
 
@@ -50,6 +45,85 @@ def covers(scope_item: str, file_path: str) -> bool:
     if file_path == scope_item:
         return True
     return file_path.startswith(scope_item + "/")
+
+
+def _real_file(root: Path, value) -> bool:
+    if not isinstance(value, str) or not value.strip():
+        return False
+    raw = Path(value)
+    if raw.is_absolute():
+        return False
+    candidate = (root / raw).resolve()
+    try:
+        candidate.relative_to(root.resolve())
+    except ValueError:
+        return False
+    return candidate.is_file()
+
+
+def _normalize_scope(scope) -> list[str] | None:
+    if not isinstance(scope, list) or not scope:
+        return None
+    out = []
+    for item in scope:
+        if not isinstance(item, str) or not item.strip():
+            return None
+        item = item.strip()
+        if Path(item).is_absolute() or ".." in Path(item).parts:
+            return None
+        out.append(item)
+    return out
+
+
+def _entry_covers_any(entry: dict, files: list[str]) -> set[str]:
+    scope = _normalize_scope(entry.get("scope"))
+    if scope is None:
+        return set()
+    return {f for f in files if any(covers(s, f) for s in scope)}
+
+
+def validate_entries(root, entries, previous_entries, changed_paths) -> list[str]:
+    root = Path(root)
+    failures: list[str] = []
+    code_prompt = [p for p in changed_paths if is_code_or_prompt_change(p)]
+
+    changed_entries = []
+    for i, entry in enumerate(entries or []):
+        if not isinstance(entry, dict):
+            failures.append(f"entries[{i}] is not a mapping")
+            continue
+        if any(entry == prev for prev in previous_entries or [] if isinstance(prev, dict)):
+            continue
+        changed_entries.append((i, entry))
+
+    covered: set[str] = set()
+    for i, entry in changed_entries:
+        tool = entry.get("tool")
+        is_opencode = "opencode" in str(tool).lower()
+        required = list(COMMON_ENTRY_FIELDS)
+        required += list(OPENCODE_TOOL_FIELDS if is_opencode else COORDINATOR_EVIDENCE_FIELD)
+        for field in required:
+            if field not in entry or entry[field] in (None, ""):
+                failures.append(f"entries[{i}] (tool={tool!r}) missing required field: {field}")
+        if not _real_file(root, entry.get("review")):
+            failures.append(f"entries[{i}] review is not a repo-local file: {entry.get('review')!r}")
+        if is_opencode:
+            session = entry.get("session")
+            if not isinstance(session, str) or not session.strip():
+                failures.append(f"entries[{i}] session must be a nonempty string: {session!r}")
+            if not _real_file(root, entry.get("prompt")):
+                failures.append(f"entries[{i}] prompt is not a repo-local file: {entry.get('prompt')!r}")
+        if not _real_file(root, entry.get("evidence")):
+            failures.append(f"entries[{i}] evidence is not a repo-local file: {entry.get('evidence')!r}")
+        if _normalize_scope(entry.get("scope")) is None:
+            failures.append(f"entries[{i}] scope must be a nonempty list of project-relative paths")
+        covered |= _entry_covers_any(entry, code_prompt)
+
+    uncovered = [f for f in code_prompt if f not in covered]
+    if uncovered:
+        failures.append("changed code/prompt files not covered by any changed log entry scope:")
+        failures.extend(f"  {f}" for f in uncovered)
+    return failures
 
 
 def main() -> None:
@@ -99,38 +173,24 @@ def main() -> None:
     if not isinstance(entries, list) or not entries:
         failures.append(f"{LOG_PATH} must have a non-empty entries list")
 
-    covered: set[str] = set()
-    valid_entries = 0
-    for i, entry in enumerate(entries or []):
-        if not isinstance(entry, dict):
-            failures.append(f"entries[{i}] is not a mapping")
-            continue
-        valid_entries += 1
-        tool = entry.get("tool")
-        required = list(COMMON_ENTRY_FIELDS)
-        if "opencode" in str(tool).lower():
-            required += list(OPENCODE_TOOL_FIELDS)
-        else:
-            required += list(COORDINATOR_EVIDENCE_FIELD)
-        for field in required:
-            if field not in entry or entry[field] in (None, ""):
-                failures.append(f"entries[{i}] (tool={tool!r}) missing required field: {field}")
-        scope = entry.get("scope")
-        if scope is not None and not isinstance(scope, list):
-            failures.append(f"entries[{i}] scope must be a list")
-            scope = []
-        for file_path in code_prompt:
-            if any(covers(str(s), file_path) for s in (scope or [])):
-                covered.add(file_path)
+    previous_entries = []
+    try:
+        base_text = read_base_text(root, args.base_ref or "HEAD", LOG_PATH)
+    except Exception as exc:
+        fail(checks, failures + [f"could not read baseline {LOG_PATH}: {exc}"])
 
-    checks.append(f"log entries: {len(entries or [])} (valid: {valid_entries})")
+    if base_text is not None:
+        try:
+            prev_data = yaml.safe_load(base_text)
+        except yaml.YAMLError as exc:
+            fail(checks, failures + [f"baseline {LOG_PATH} is not valid YAML: {exc}"])
+        if isinstance(prev_data, dict) and isinstance(prev_data.get("entries"), list):
+            previous_entries = prev_data["entries"]
+        elif prev_data is not None:
+            fail(checks, failures + [f"baseline {LOG_PATH} has malformed entries"])
 
-    uncovered = [f for f in code_prompt if f not in covered]
-    if uncovered:
-        failures.append("changed code/prompt files not covered by any log entry scope:")
-        failures.extend(f"  {f}" for f in uncovered)
-    else:
-        checks.append("all changed code/prompt files are covered by a log entry scope")
+    failures.extend(validate_entries(root, entries or [], previous_entries, code_prompt))
+    checks.append(f"log entries: {len(entries or [])}")
 
     fail(checks, failures)
 

@@ -1,0 +1,162 @@
+{
+  "info": {
+    "id": "ses_dfc6deb83ffewJaokYLMtQ4oLe",
+    "slug": "witty-orchid",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/launch-review",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/launch-review",
+    "title": "Research Desk launch-review",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 566,
+      "output": 1667,
+      "reasoning": 0,
+      "cache": {
+        "read": 1792,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795356234876,
+      "updated": 1795356250279
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795356234909
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_20392149c001M3Z6az8FUnjvNg",
+        "sessionID": "ses_dfc6deb83ffewJaokYLMtQ4oLe"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Return only replacement Markdown for a concise English root Prompt.md. Course D9 requires a static startup prompt: read AGENTS.md, produce execution plan with traceability, interface contract, scope boundaries, testing strategy, steps; stop for human approval before generating any code; proceed through build and self-verification with human decisions at each stage. Use the project’s real tests, evidence, names of paths and OpenCode code generation rule. Historic approval records cannot substitute for a fresh launch decision. Capture who decided what; avoid inventing a decision. Use direct simple instructions. Read the old text here:\n# Project launch prompt\n\nRead `AGENTS.md` and its reading order. Before generating code, produce a concrete execution plan identifying requirement IDs, modules, declared interfaces, scope boundaries, tests and implementation steps. Identify any safety-relevant paths and cite the applicable ADR.\n\nCheck for a leo approval of this exact plan and its tests that predates implementation. An existing approval is reusable only within its recorded scope. The approved three-feature plan and AT-01 through AT-08 in `docs/process/test-approval.yaml` authorize the current delivery. For a new scope or changed safety policy, stop after a reviewable plan and obtain a new decision; never create an approval on behalf of the implementation agent.\n\nAfter approval, build the smallest complete vertical slice on the real upstream application. Run the approved acceptance examples. Present behavior, test evidence and concrete unresolved issues for the next stage decision. Preserve the build, verification and release stage records. Do not treat a textual PASS as evidence.\n\nGenerate all application/test/CI code through OpenCode. Preserve upstream behavior. Record actual model settings and sessions. Runtime model requests use environment credentials provided by the host; inspect neither user secrets nor unrelated services. A finished delivery includes runnable source, source-linked requirements, architecture contracts, all prior regression tests, real evidence packs, comparison results, AI-use records, the process report and genuine GitHub check evidence.\n\"",
+          "id": "prt_2039214a3001C493tuRmULl9sj",
+          "sessionID": "ses_dfc6deb83ffewJaokYLMtQ4oLe",
+          "messageID": "msg_20392149c001M3Z6az8FUnjvNg"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_20392149c001M3Z6az8FUnjvNg",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/launch-review",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 4025,
+          "input": 566,
+          "output": 1667,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1792
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795356235195,
+          "completed": 1795356250256
+        },
+        "finish": "stop",
+        "id": "msg_2039215bb001edYqN5tN2699PC",
+        "sessionID": "ses_dfc6deb83ffewJaokYLMtQ4oLe"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_2039227ae001Jj1RD0M9aQnE6S",
+          "sessionID": "ses_dfc6deb83ffewJaokYLMtQ4oLe",
+          "messageID": "msg_2039215bb001edYqN5tN2699PC"
+        },
+        {
+          "type": "reasoning",
+          "text": "The user wants me to return only replacement Markdown for a concise English root Prompt.md. They gave requirements for course D9: static startup prompt that:\n\n- reads AGENTS.md\n- produce execution plan with traceability, interface contract, scope boundaries, testing strategy, steps\n- stop for human approval before generating any code\n- proceed through build and self-verification with human decisions at each stage\n- use the project's real tests, evidence, names of paths and OpenCode code generation rule\n- historic approval records cannot substitute for a fresh launch decision\n- capture who decided what; avoid inventing a decision\n- direct simple instructions\n\nI need to produce a replacement markdown, concise. Should be the prompt text. Only replacement Markdown, no commentary.\n\nLet me craft. It should reference AGENTS.md reading order, plan, traceability, interfaces, scope, tests, steps, safety paths/ADR maybe. Stop for fresh human approval before code. Then build, run real tests, present evidence, decisions at each stage. OpenCode generates all app/test/CI code. Record who decided what. No reusing old approvals. Real paths? \"names of paths\" - they want concrete names of paths, perhaps AGENTS.md, docs/process/test-approval.yaml, evidence paths. We shouldn't invent too much. Use existing known paths: AGENTS.md, docs/process/test-approval.yaml. But new plan approval maybe docs/process/... Unknown. Avoid inventing decisions, not necessarily paths. \"names of paths\" likely means specify actual project paths rather than vague references. We only know AGENTS.md and docs/process/test-approval.yaml. Could say record plan and decision in the project's existing process records, naming exact paths. Hmm.\n\n\"Use the project’s real tests, evidence, names of paths and OpenCode code generation rule.\" This might mean the prompt should direct use of actual tests and evidence, concrete path names, and the rule that code is generated via OpenCode.\n\n\"Historic approval records cannot substitute for a fresh launch decision.\" Must explicitly say prior approvals, including docs/process/test-approval.yaml entries and AT-01–AT-08, do not authorize this launch; a fresh decision is required for this exact plan and tests.\n\n\"Capture who decided what; avoid inventing a decision.\" Say record decision maker, timestamp, scope, and decision verbatim; never infer or create approval.\n\nShould include stage gates: plan approval -> build -> verification -> release? \"proceed through build and self-verification with human decisions at each stage.\" Could be plan, build, verification, release decisions.\n\nConcise. Maybe around 350-500 words. The old is ~400. Let's write clear numbered sections maybe.\n\nNeed \"static startup prompt\" - no dynamic dependencies? It says Course D9 requires a static startup prompt. So the prompt should be stable, no conditional branching based on ephemeral state except checks. Direct.\n\nDraft:\n\n# Project launch prompt\n\nRead `AGENTS.md` first, in its stated reading order. Do not generate code yet.\n\n## 1. Plan\nProduce an execution plan that includes:\n- requirement IDs and traceability links to source;\n- modules and declared interfaces (interface contract);\n- scope boundaries, including explicit exclusions;\n- safety-relevant paths and the applicable ADR;\n- testing strategy using the project's real tests and acceptance examples, with exact paths;\n- ordered implementation steps and evidence to capture.\n\nName the actual files, commands and evidence paths. Do not use placeholders.\n\n## 2. Fresh approval gate\nStop before generating any code. Present the plan and tests for a fresh human launch decision. Record who decided what, when, and the approved scope. Do not invent, infer, or self-issue a decision.\n\nHistoric approvals, including the three-feature plan and AT-01–AT-08 in `docs/process/test-approval.yaml`, are records of past scope only. They do not authorize this launch and cannot substitute for a new decision on this exact plan and tests.\n\n## 3. Build\nAfter approval, build the smallest complete vertical slice on the real upstream application. Generate all application, test and CI code through OpenCode under the project's code generation rule. Preserve upstream behavior. Record model settings and sessions. Use host-provided environment credentials for runtime model requests; do not inspect user secrets or unrelated services.\n\n## 4. Verify and decide\nRun the approved real tests and acceptance examples. Present observed behavior, test output, evidence paths and unresolved issues. A textual PASS is not evidence. Stop for a human decision at verification and again before release. Preserve build, verification and release records, each naming the decision maker and decision.\n\n## 5. Deliver\nA finished delivery contains runnable source, source-linked requirements, architecture contracts, all prior regression tests, real evidence packs, comparison results, AI-use records, the process report and genuine GitHub check evidence.\n\nThat's good. \"with human decisions at each stage\" - yes stops at plan, verification, release. Build maybe no stop unless decision needed. Could say human decisions at each stage. Fine.\n\nNeed \"concise English root Prompt.md\". Return only replacement Markdown. No fences. Let's ensure not too verbose. Maybe reduce.\n\nShould I mention \"self-verification\"? Yes run tests and self-verify. \"proceed through build and self-verification\". Add \"self-verify against the approved plan\".\n\n\"names of paths\" - we include AGENTS.md and docs/process/test-approval.yaml, and require actual paths in plan/evidence. Good.\n\n\"OpenCode code generation rule\" - mention all app/test/CI code generated through OpenCode. Good.\n\n\"avoid inventing a decision\" - included.\n\n\"Capture who decided what\" - included.\n\nOne concern: the old says \"Check for a leo approval\". New says fresh human decision. Good, not naming leo? Could say \"human approver\". Fine.\n\nLet's final only markdown.",
+          "time": {
+            "start": 1795356239795,
+            "end": 1795356248051
+          },
+          "id": "prt_2039227b3001PRTeyCoMufGhVs",
+          "sessionID": "ses_dfc6deb83ffewJaokYLMtQ4oLe",
+          "messageID": "msg_2039215bb001edYqN5tN2699PC"
+        },
+        {
+          "type": "text",
+          "text": "# Project launch prompt\n\nRead `AGENTS.md` first, in its stated reading order. Do not generate code yet.\n\n## 1. Produce the execution plan\n\nWrite a concrete plan that includes:\n\n- requirement IDs with traceability to source;\n- modules and the declared interface contract;\n- scope boundaries and explicit exclusions;\n- safety-relevant paths and the applicable ADR;\n- testing strategy using the project's real tests and acceptance examples;\n- ordered implementation steps and the evidence to capture.\n\nName the actual files, commands and evidence paths. Do not use placeholders.\n\n## 2. Stop for a fresh approval\n\nStop before generating any code. Present the plan and tests for a fresh human launch decision. Record who decided what, when, and the approved scope. Do not invent, infer, or self-issue a decision.\n\nHistoric approvals, including the three-feature plan and AT-01 through AT-08 in `docs/process/test-approval.yaml`, record past scope only. They do not authorize this launch and cannot substitute for a new decision on this exact plan and tests.\n\n## 3. Build\n\nAfter approval, build the smallest complete vertical slice on the real upstream application. Generate all application, test and CI code through OpenCode under the project's code generation rule. Preserve upstream behavior. Record model settings and sessions. Use host-provided environment credentials for runtime model requests; do not inspect user secrets or unrelated services.\n\n## 4. Self-verify and decide\n\nRun the approved real tests and acceptance examples. Self-verify against the approved plan. Present observed behavior, test output, evidence paths and unresolved issues. A textual PASS is not evidence. Stop for a human decision at verification and again before release. Preserve build, verification and release records, each naming the decision maker and the decision.\n\n## 5. Deliver\n\nA finished delivery contains runnable source, source-linked requirements, architecture contracts, all prior regression tests, real evidence packs, comparison results, AI-use records, the process report and genuine GitHub check evidence.",
+          "time": {
+            "start": 1795356248062,
+            "end": 1795356250239
+          },
+          "id": "prt_2039247fe001uRsAxRWeHZs4Rr",
+          "sessionID": "ses_dfc6deb83ffewJaokYLMtQ4oLe",
+          "messageID": "msg_2039215bb001edYqN5tN2699PC"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 4025,
+            "input": 566,
+            "output": 1667,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1792
+            }
+          },
+          "cost": 0,
+          "id": "prt_203925088001ke3kzFrS8Q11kE",
+          "sessionID": "ses_dfc6deb83ffewJaokYLMtQ4oLe",
+          "messageID": "msg_2039215bb001edYqN5tN2699PC"
+        }
+      ]
+    }
+  ]
+}

@@ -101,7 +101,7 @@ def main() -> None:
     parser.add_argument("--packs-dir", default="test/fixtures/packs")
     parser.add_argument(
         "--evidence-dir",
-        default="evaluation/release",
+        default="evaluation/submission-release",
         help="Current-source paired release evidence directory.",
     )
     args = parser.parse_args()

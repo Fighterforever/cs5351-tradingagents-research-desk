@@ -1,27 +1,24 @@
 # Selected User Conversation Excerpts (`leo` / Liyu MA, 59072966)
 
-**Metadata** — Participant: Liyu MA (`59072966`, decision owner `leo`) | Record type: Selected verbatim user excerpts in conversation order from the current project conversation | Related records: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md) (`I-01`–`I-30` coordinating-workflow instructions) and [`gemini-pipeline-review.json`](gemini-pipeline-review.json) (Gemini CLI technical and pipeline review)
+**Metadata** — Participant: Liyu MA (`59072966`, decision owner `leo`) | Record type: Selected user excerpts and source-linked summaries in conversation order from the current project conversation | Related records: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md) (`I-01`–`I-30` coordinating-workflow instructions) and [`gemini-pipeline-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-pipeline-review.json) (Gemini CLI technical and pipeline review)
 
 ## Scope and Attribution
 
-The six entries below (`U-01`–`U-06`) are verbatim user directives issued by `leo` (`Liyu MA, 59072966`) during the project conversation. They record project-level scope, governance, repository publication, documentation style, and review-delegation decisions, and are indexed by conversation order and source locator description.
+The entries below record directions issued by `leo` (`Liyu MA, 59072966`) during the project conversation. U-01 and U-02 describe the original allocation. U-07 records the change to the current four-member team. The intervening entries cover repository publication, documentation and review.
 
-## Verbatim Directives
+## User directions
 
 ### `U-01` — Working Aliases, Video Scope Exclusion, and Gemini CLI Assessment
 
 - **Source locator**: User message requesting the five-member optimization plan and Gemini assessment.
-- **Verbatim quote**:
-  > 我们五个人的化名是Alfa、Bravo、Charlie、Delta、Echo。最终的视频你可以先不管。完成之后把结果和 project 要求让 cli 里的 gemini 来评判一下除了视频之外的东西是否能直接提交并且拿满分。
-- **Plain-English explanation**: Sets the five working aliases (`Alfa`, `Bravo`, `Charlie`, `Delta`, `Echo`), excludes the final demonstration video from the current revision pass, and directs a Gemini CLI evaluation of all non-video deliverables against the course project requirements.
+- [Original message](leo-project-directions.json), entry `U-01`.
+- **Plain-English explanation**: Defines the original five roles, excludes the final demonstration video from the current revision pass, and directs a Gemini CLI evaluation of all non-video deliverables against the course project requirements.
 - **Engineering rationale**: Establishes stable responsibility labels for structuring the five-member project scope and introduces an independent CLI review pass to check deliverable completeness before submission.
-- **Resulting artifacts**: [`../docs/process/team.md`](../docs/process/team.md), [`gemini-release-review.json`](gemini-release-review.json), [`../docs/process/delivery-checklist.md`](../docs/process/delivery-checklist.md)
+- **Resulting artifacts**: [`../docs/process/team.md`](../docs/process/team.md), [`gemini-release-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-release-review.json), [`../docs/process/delivery-checklist.md`](../docs/process/delivery-checklist.md)
 
 ### `U-02` — Equal Responsibility Allocation and Deferred Formal Roster
 
 - **Source locator**: User response to the formal roster and division-of-work question.
-- **Verbatim quote**:
-  > 你不用管正式姓名、学号。实际分工你平均分给五个人就行。
 - **Plain-English explanation**: Directs equal task allocation across the five working aliases while deferring entry of formal student names and student IDs.
 - **Engineering rationale**: Records an equal allocation across the five responsibility areas, with a weight of `1.0` each. Formal identities remain a final roster item.
 - **Resulting artifacts**: [`../docs/process/team.md`](../docs/process/team.md), [`../Report.md`](../Report.md)
@@ -47,17 +44,49 @@ The six entries below (`U-01`–`U-06`) are verbatim user directives issued by `
 ### `U-05` — Source-Linked Intervention Annotations, Clear Prose, and Re-Review
 
 - **Source locator**: User request to add actual intervention annotations and review the project again.
-- **Verbatim quote**:
-  > 真实干预注释帮我补充上去，让 gemini 优化字句，不要防御化写作，要通顺流畅简明地写。然后重新深度审阅一下
 - **Plain-English explanation**: Requests adding source-linked intervention annotations, using Gemini CLI to polish the wording in a clear, fluent, and non-defensive style, and running another in-depth project review.
 - **Engineering rationale**: Links the 30 recorded coordinating-workflow directives (`I-01`–`I-30`) to exact transcript pointers and resulting repository changes, improves documentation readability, and verifies technical consistency across reports and logs.
-- **Resulting artifacts**: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md), [`intervention-index.json`](intervention-index.json), [`gemini-intervention-edit.json`](gemini-intervention-edit.json), [`gemini-intervention-review.json`](gemini-intervention-review.json)
+- **Resulting artifacts**: [`59072966-Liyu-MA.md`](59072966-Liyu-MA.md), [`intervention-index.json`](intervention-index.json), [`gemini-intervention-edit.json`](gemini-intervention-edit.json), [`gemini-intervention-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-intervention-review.json)
 
 ### `U-06` — Delegation of Pipeline Supervision-Evidence Review to Gemini CLI
 
 - **Source locator**: Current user request to delegate supervision-evidence work to Gemini.
-- **Verbatim quote**:
-  > 真实成员监督证据我需要你让 gemini 自己完成。
 - **Plain-English explanation**: Delegates the completion of the supervision-evidence review and documentation to Gemini CLI.
 - **Engineering rationale**: Produces an explicit, attributable technical review by Gemini CLI covering all 24 requirement classifications, the three architecture candidates (`3.10`, `4.65`, `3.10`), the five responsibility scopes, and lifecycle evidence status.
-- **Resulting artifacts**: [`gemini-pipeline-review.json`](gemini-pipeline-review.json), [`../docs/process/pipeline-review.md`](../docs/process/pipeline-review.md)
+- **Resulting artifacts**: [`gemini-pipeline-review.json`](https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-pipeline-review.json), [`../docs/process/pipeline-review.md`](../docs/process/pipeline-review.md)
+
+### U-07 — Four-person team allocation
+
+- **Source locator** — User message changing the team size after the request to document member supervision.
+- **Decision and rationale** — The user reduced the team to four and reassigned the fifth role's duties so that release, report and verification work each retained an owner.
+- **Result** — The revised responsibility table assigns report integration to Liyu MA, release governance to Xinyao HENG, reproducible delivery to Yinuo Li and CI to Chengru WANG. [Team responsibilities](../docs/process/team.md)
+
+### U-08 — Submission contracts and release
+
+Summary of the student’s direction. The student requested repairs to proposal registration, approval, gates, and CLI reporting, together with a review of disclosure records, student materials, and repository consistency. [Original request](submission-repair/records-confirmed.full.json), JSON pointer `/messages/0/parts/0/text`, request field in the recorded input. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [review-memo.md](../docs/review-memo.md)
+
+### U-09 — Liyu MA identity
+
+Liyu MA confirmed the name and student number. [Original message](leo-project-directions.json), entry `U-09`. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
+
+### U-10 — Xinyao HENG and Yinuo Li identities
+
+Liyu MA supplied the formal names and student numbers for Xinyao HENG and Yinuo Li. [Original message](leo-project-directions.json), entry `U-10`, field `quote`. [team.md](../docs/process/team.md) · [Report.md](../Report.md)
+
+### U-11 — OpenCode provider decision
+
+> 允许 OpenCode 使用 AioHub 完成本次修复及评估
+
+Liyu MA authorized OpenCode to use the configured AioHub endpoint for the repair and evaluation. [005-submission-contracts.md](../docs/architecture/adr/005-submission-contracts.md) · [ai-use-log.yaml](../docs/ai-use-log.yaml)
+
+### U-12 — Review the separate demonstration
+
+Liyu MA chose to record the English narration and exported the aligned recording. During the final review, Liyu MA asked the coordinator to check “终端操作能不能看清、画面和旁白字幕能不能对上”. The revised demonstration shows one captured command at a time, holds the ledger on screen while the presenter explains the balance, and displays the token counts beside the comparison bars. This intervention concerns acceptance of the separate demonstration.
+
+### U-13 — Architecture discussion and final contributions
+
+At final review, Liyu MA recalled advocating retention of the upstream research graph and identified Xinyao HENG as the advocate for changing it directly. Liyu MA also confirmed equal final contributions and accepted the four reflection paragraphs.
+
+> liyu 建议保留上游交易研究图，Xinyao HENG 主张直接修改上游
+
+In a follow-up, Liyu MA recalled that Xinyao HENG compared collecting evidence inside the upstream graph with capturing it in an outer wrapper. Yinuo Li checked offline replay and approval persistence after repeat registration. [Original message](leo-project-directions.json), entry `U-13`, field `follow_up_quote`.

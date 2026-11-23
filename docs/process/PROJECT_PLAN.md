@@ -1,7 +1,7 @@
 # TradingAgents Research Desk 项目方案
 
 版本：1.0.0。
-状态：leo已采纳，OpenCode正在实现。执行来源统一见 `../ai-use-log.yaml`。本文指标为验收目标，实测结果在后续报告中单列。
+这是实施前采纳的原始方案。文中指标为当时的验收目标。当前四人分工见[团队记录](team.md)，最终测量结果见[项目报告](../../Report.md)。
 
 ## 一、交付范围
 
@@ -9,7 +9,7 @@
 
 第一版使用 CLI 和 HTML/Markdown 报告。只支持 market/news 分析员、US 股票和英语研究报告，仍沿用上游 bull/bear、research manager、trader、risk 与 portfolio manager 流程。完成可演示的纵向切片后再考虑界面美化，不接真实交易。
 
-本次评估参与者为leo，evaluation identifier为leo，相对贡献1.0。三项新增功能共同组成可运行流程，不虚构额外成员，也不把机械拆分当作额外个人贡献。
+初始方案用 leo 记录决策和评估。以下三项功能组成首轮交付范围。
 
 ## 二、基线与只读核对结果
 
@@ -142,9 +142,9 @@ flowchart LR
 
 本方案制定时，规划阶段只读核对课程规范和公共源码并生成方案与测试规格。此后已进入OpenCode实现和真实API验证；最终状态与实测结果以项目Report.md、原始会话和evaluation目录为准。
 
-用户已经授权材料发送至api.deepseek.com及API使用，并要求主线程自主决定，不等待再次批准。主线程已采纳本方案。GitHub账户Fighterforever在允许联网的检查下认证正常；先完成本地成果再落实远端交付。参与者统一leo、evaluation identifier leo、相对贡献1.0；来源统一在AI-use/provenance中说明。课程D5份数有one/five/按成员的冲突，完整保存实际会话。
+初始开发通过已授权的 DeepSeek 接口运行。[AI 使用记录](../ai-use-log.yaml)保留各阶段的工具与用途，[监督索引](../../transcripts/supervision-index.md)链接开发会话和批注。
 
 
 ## 当前团队与修订
 
-团队由 Alfa、Bravo、Charlie、Delta 组成，职责和贡献分配见 [team.md](team.md)。原始实现决定与历史事件保留其记录身份。当前非视频修订由 [revision-authorization.md](revision-authorization.md) 授权，具体修订见 ADR-004。
+团队由 Liyu MA、Xinyao HENG、Yinuo Li、Chengru WANG 组成，职责和贡献分配见 [team.md](team.md)。原始实现决定与历史事件保留其记录身份。当前非视频修订由 [revision-authorization.md](revision-authorization.md) 授权，具体修订见 ADR-004。

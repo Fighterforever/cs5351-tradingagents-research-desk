@@ -1,0 +1,94 @@
+{
+  "ticker": "NVDA",
+  "arms": {
+    "baseline": {
+      "support": 0.9,
+      "relevance": 0.95,
+      "cited_claim_count": 42,
+      "supported_cited_claim_count": 41,
+      "valid_citation_rate": 0.9762,
+      "invalid_citation_explanations": [
+        "News Analyst states 'I have no prior close in evidence, so I cannot compute the post-earnings move, gap, or volume surge' and labels the reaction size UNKNOWN \u2014 but the frozen market CSV (market-nvda) contains the 2026-08-26 close of 209.66 and volume of 179,900,000, which the same run retrieved and other sections used. The claim is contradicted by the cited evidence pack, though it is a conservative understatement rather than a fabrication."
+      ],
+      "uncited_factual_claims": [
+        "Final Portfolio Decision references a 'USD 100,000 book' and a '10% single-position limit' \u2014 neither figure appears in the evidence pack (no portfolio size or risk-limit data was provided).",
+        "Trader/PM states 'Risk per full position \u2248 4.8% of the position's notional' and '~0.24% of portfolio at 5% sizing' \u2014 arithmetic on an assumed book size, not sourced."
+      ],
+      "semantic_valid": true,
+      "semantic_errors": [],
+      "rationale": "Support: All key conclusions trace to the two evidence sources. Earnings figures (revenue 96.2B, +18% QoQ/+106% YoY, Data Center 89.0B +117%, 75.0% GM both bases, GAAP 2.46 / non-GAAP 2.22) are quoted correctly and cited to src-nvda. Market facts (close 227.98, open 222.86, range 220.90\u2013230.47, volume 298,909,800, prior close 209.66, prior volume 179,900,000, 225.30/225.16/225.01 shelf, 10-EMA 217.08, 20-SMA 217.21, VWMA 209.92, Bollinger 217.21/231.57/202.85, MACD 2.93/3.60/\u22120.67, RSI 53.50, ATR 6.51) all match the frozen CSV and indicator outputs. Derived arithmetic (+8.74%, 1.66x, 92.5%, 5.02%, 4.96%, 8.60%, 2.86%, 1.66x/2.07x ATR, 0.24 EPS spread, implied 81.5B/46.7B) is correctly computed and explicitly labeled as derived. NO_DATA_AVAILABLE items (50-SMA, 200-SMA, global news, macro, prediction markets) are honestly reported as unavailable rather than fabricated \u2014 a notable strength. Minor deductions: the News Analyst wrongly claims no prior close is in evidence (contradicted by the same market CSV), and the final decision introduces an unsourced USD 100,000 book size and 10% position limit. Relevance: tightly focused on NVDA at 2026-08-27, with the debate structure (bull/bear/manager/risk/trader/PM) all serving the single decision; some repetition of the same derived figures across roles, but no off-task drift. Semantic validity: earnings period and units are handled correctly throughout \u2014 fiscal Q2 2027, quarter ended 2026-07-26, EPS explicitly flagged as single-quarter and never relabeled TTM/annual; trailing P/E, forward P/E and price targets are consistently declared UNKNOWN with no multiple computed from quarterly EPS. No period/unit error and no unsupported numerical valuation assertion, so semantic_valid = true.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report contract references company 'NVIDIA Corporation'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report contract references analysis date 2026-08-27"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-nvda'"
+        }
+      ]
+    },
+    "compact": {
+      "support": 0.95,
+      "relevance": 0.95,
+      "cited_claim_count": 42,
+      "supported_cited_claim_count": 42,
+      "valid_citation_rate": 1.0,
+      "invalid_citation_explanations": [],
+      "uncited_factual_claims": [
+        "Position sizing figures (~2% first tranche, ~5% total, 10% single-position cap) are analyst assumptions with no source ID \u2014 appropriately framed as judgment, not evidence.",
+        "Preferred add zone 217\u2013220 is explicitly labeled an analyst assumption rather than a sourced level.",
+        "Stop-loss placement at 207.25 is sourced to the 08-24 swing low, but the choice to use it as a stop is analyst judgment."
+      ],
+      "semantic_valid": true,
+      "semantic_errors": [],
+      "rationale": "All earnings figures match the frozen source exactly: fiscal Q2 2027 ended 2026-07-26, revenue $96.2B +18% q/q and +106% y/y, Data Center $89.0B +117% y/y, gross margin 75.0% GAAP and non-GAAP, GAAP EPS 2.46 / non-GAAP EPS 2.22. Critically, the report repeatedly and correctly labels EPS as single-quarter and explicitly refuses to compute a trailing P/E, declaring it UNKNOWN for lack of TTM evidence \u2014 no period/unit relabeling anywhere. Derived arithmetic (92.5% Data Center mix, ~$81.5B prior quarter, ~$46.7B year-ago, ~$14.7B sequential add, +8.74% one-day move, MACD histogram \u22120.54) all checks out against the cited inputs. Technical claims (close 227.98, open 222.86, high 230.47, low 220.90, volume 298.9M vs 179.9M, 10 EMA 217.08, MACD 2.68/signal 3.22, RSI 53.50, Bollinger upper 231.57, ATR 6.51, 08-24 low 207.25) are all directly supported by the observed tool outputs, and the NO_DATA_AVAILABLE indicators (50/200 SMA, macro, global news, prediction markets) are honestly reported as unavailable rather than fabricated. Minor blemish: the News Analyst states no volume/technicals were returned in its tool results, which is inconsistent with the pack, but this is a role-scoping statement rather than a factual error affecting conclusions. Support and relevance are both high; the report is tightly focused on NVDA at 2026-08-27 with a clear final decision.",
+      "error": false,
+      "deterministic_checks": [
+        {
+          "check": "instrument_identity",
+          "passed": true,
+          "detail": "report contract references company 'NVIDIA Corporation'"
+        },
+        {
+          "check": "analysis_date",
+          "passed": true,
+          "detail": "report contract references analysis date 2026-08-27"
+        },
+        {
+          "check": "final_decision_present",
+          "passed": true,
+          "detail": "final trade decision is present in the final state"
+        },
+        {
+          "check": "frozen_price_in_report",
+          "passed": true,
+          "detail": "frozen latest close 227.98 is supported by evidence and stated in the report"
+        },
+        {
+          "check": "source_id_referenced",
+          "passed": true,
+          "detail": "report references source_id 'src-nvda'"
+        }
+      ]
+    }
+  }
+}

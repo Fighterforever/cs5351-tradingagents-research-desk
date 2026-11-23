@@ -1,0 +1,436 @@
+{
+  "info": {
+    "id": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+    "slug": "nimble-sailor",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test",
+    "title": "Research Desk quality-test",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 6248,
+      "output": 625,
+      "reasoning": 0,
+      "cache": {
+        "read": 19840,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355649307,
+      "updated": 1795355662960
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355649329
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_203892531001FRsqWbrjoLhKFh",
+        "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Review one test only: test_source_fingerprint_tracks_upstream_role_changes in /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py. This previous revision replaced the existing assertion that independently changing a versioned YAML prompt invalidates its previous provenance. Keep the newly added upstream role-change assertion AND restore the original YAML change/inequality assurance in this test. Make each change separately and compare it with the immediately preceding fingerprint. Rename the test to reflect both if appropriate. No other changes, and no shell commands. Use the read and edit tools on that exact file and finish.\"",
+          "id": "prt_203892534001GkdQfGE08K7NW6",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_203892531001FRsqWbrjoLhKFh"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_203892531001FRsqWbrjoLhKFh",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 3539,
+          "input": 1674,
+          "output": 73,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1792
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355649583,
+          "completed": 1795355652818
+        },
+        "finish": "tool-calls",
+        "id": "msg_20389262f001KILGo6juD1OhrF",
+        "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_203893096001T0GoA0hoHYhP4D",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_20389262f001KILGo6juD1OhrF"
+        },
+        {
+          "type": "tool",
+          "tool": "read",
+          "callID": "chatcmpl-tool-98a3b2d6f9755d7f",
+          "state": {
+            "status": "completed",
+            "input": {
+              "filePath": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py"
+            },
+            "output": "<path>/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py</path>\n<type>file</type>\n<content>\n1: \"\"\"Synthetic release-evidence gate tests.\n2: \n3: All metadata here is explicitly synthetic. Only two boundaries are mocked:\n4: ``source_fingerprint`` and ``EvidencePackIO.import_pack``. No live files or\n5: provider calls are used.\n6: \"\"\"\n7: \n8: from __future__ import annotations\n9: \n10: import json\n11: from pathlib import Path\n12: from types import SimpleNamespace\n13: \n14: import pytest\n15: \n16: from research_desk.eval.case_registry import all_cases, case_for\n17: from research_desk.eval.quality import (\n18:     MANDATORY,\n19:     PROVENANCE,\n20:     source_fingerprint,\n21:     validate_release,\n22: )\n23: from research_desk.models import InputSnapshot\n24: \n25: MODEL = \"deepseek-flash\"\n26: PROVIDER = \"deepseek\"\n27: \n28: \n29: def _write(path: Path, data) -> None:\n30:     path.parent.mkdir(parents=True, exist_ok=True)\n31:     path.write_text(json.dumps(data), encoding=\"utf-8\")\n32: \n33: \n34: def _fake_pack(source: Path):\n35:     arm = Path(source).parent\n36:     summary = json.loads((arm / \"summary.json\").read_text(encoding=\"utf-8\"))\n37:     case = case_for(summary[\"ticker\"])\n38:     text = (\n39:         f\"{case['identity']['company_name']} {case['analysis_date']} \"\n40:         f\"close {case['latest_close']:.2f} {case['source_id']}\"\n41:     )\n42:     identity = dict(case[\"identity\"])\n43:     return SimpleNamespace(\n44:         complete=True,\n45:         manifest=SimpleNamespace(\n46:             outcome=\"completed\",\n47:             ticker=summary[\"ticker\"],\n48:             trade_date=case[\"analysis_date\"],\n49:             context_mode=summary[\"context_mode\"],\n50:         ),\n51:         usage=SimpleNamespace(\n52:             calls=summary[\"calls\"],\n53:             input_tokens=summary[\"input_tokens\"],\n54:             output_tokens=summary[\"output_tokens\"],\n55:             total_tokens=summary[\"total_tokens\"],\n56:         ),\n57:         final_state={\"market_report\": text, \"final_trade_decision\": text},\n58:         input=InputSnapshot(\n59:             identity=identity,\n60:             data_snapshot={},\n61:             available_sources={\n62:                 \"identity\": identity,\n63:                 \"source_id\": case[\"source_id\"],\n64:                 \"market_source_id\": f\"market-{case['ticker'].lower()}\",\n65:                 \"as_of\": case[\"as_of\"],\n66:                 \"latest_close\": case[\"latest_close\"],\n67:                 \"verified_snapshot\": f\"last_close: {case['latest_close']:.2f}\",\n68:             },\n69:         ),\n70:     )\n71: \n72: \n73: @pytest.fixture()\n74: def synthetic_release(tmp_path, monkeypatch):\n75:     root = tmp_path / \"root\"\n76:     root.mkdir()\n77:     evidence = tmp_path / \"evaluation\" / \"release\"\n78:     current = \"sha256:synthetic-current\"\n79:     config = {\n80:         \"llm_provider\": PROVIDER,\n81:         \"quick_think_llm\": MODEL,\n82:         \"deep_think_llm\": MODEL,\n83:         \"max_tokens\": 1800,\n84:         \"temperature\": 0,\n85:         \"llm_max_retries\": 2,\n86:         \"max_debate_rounds\": 1,\n87:         \"max_risk_discuss_rounds\": 1,\n88:         \"extra_body\": {\"thinking\": {\"type\": \"disabled\"}},\n89:         \"backend_url\": \"https://example.invalid/v1\",\n90:         \"checkpoint_enabled\": False,\n91:     }\n92:     for case in all_cases():\n93:         ticker = case[\"ticker\"]\n94:         for mode in (\"baseline\", \"compact\"):\n95:             if mode == \"baseline\":\n96:                 tokens, wall = (100, 50, 150), 10.0\n97:             else:\n98:                 tokens, wall = (70, 30, 100), 9.0\n99:             arm = evidence / ticker / mode\n100:             summary = {\n101:                 \"ticker\": ticker,\n102:                 \"context_mode\": mode,\n103:                 \"outcome\": \"completed\",\n104:                 \"pack_complete\": True,\n105:                 \"error\": None,\n106:                 \"calls\": 2,\n107:                 \"input_tokens\": tokens[0],\n108:                 \"output_tokens\": tokens[1],\n109:                 \"total_tokens\": tokens[2],\n110:                 \"wall_seconds\": wall,\n111:             }\n112:             _write(arm / \"summary.json\", summary)\n113:             _write(arm / \"config.json\", config)\n114:             _write(arm / PROVENANCE, {\n115:                 \"source_fingerprint\": current, \"model\": MODEL, \"provider\": PROVIDER,\n116:             })\n117:             judge_dir = evidence / \"judge\" / ticker / mode\n118:             _write(judge_dir / \"judge.json\", {\n119:                 \"support\": 0.9,\n120:                 \"relevance\": 0.9,\n121:                 \"valid_citation_rate\": 1.0,\n122:                 \"semantic_valid\": True,\n123:                 \"semantic_errors\": [],\n124:                 \"error\": False,\n125:                 \"deterministic_checks\": [\n126:                     {\"check\": name, \"passed\": True, \"detail\": \"synthetic\"}\n127:                     for name in MANDATORY\n128:                 ],\n129:             })\n130:             _write(judge_dir / PROVENANCE, {\n131:                 \"source_fingerprint\": current, \"model\": MODEL, \"provider\": PROVIDER,\n132:             })\n133: \n134:     monkeypatch.setattr(\n135:         \"research_desk.eval.quality.source_fingerprint\", lambda _root: current\n136:     )\n137:     from research_desk.evidence import EvidencePackIO\n138: \n139:     monkeypatch.setattr(EvidencePackIO, \"import_pack\", lambda _self, source: _fake_pack(source))\n140:     return {\"root\": root, \"evidence\": evidence, \"current\": current}\n141: \n142: \n143: def _mutate(path: Path, change) -> None:\n144:     data = json.loads(path.read_text(encoding=\"utf-8\"))\n145:     change(data)\n146:     _write(path, data)\n147: \n148: \n149: def _validate(fixture):\n150:     return validate_release(fixture[\"root\"], fixture[\"evidence\"])\n151: \n152: \n153: def test_source_fingerprint_tracks_upstream_role_changes(tmp_path):\n154:     \"\"\"AT-07: representative upstream tradingagents roles are fingerprinted.\"\"\"\n155:     root = tmp_path / \"tree\"\n156:     (root / \"src/research_desk\").mkdir(parents=True)\n157:     (root / \"src/research_desk/module.py\").write_text(\"VALUE = 1\\n\", encoding=\"utf-8\")\n158:     upstream = root / \"tradingagents/agents/analysts/market_analyst.py\"\n159:     upstream.parent.mkdir(parents=True)\n160:     upstream.write_text(\"ROLE = 'market analyst'\\n\", encoding=\"utf-8\")\n161:     (root / \"prompts\").mkdir()\n162:     prompt = root / \"prompts/research.yaml\"\n163:     prompt.write_text(\"prompt: research\\n\", encoding=\"utf-8\")\n164:     (root / \"test/fixtures/market\").mkdir(parents=True)\n165:     (root / \"test/fixtures/market/AAPL.csv\").write_text(\n166:         \"Date,Close\\n2026-07-31,308.91\\n\", encoding=\"utf-8\"\n167:     )\n168:     (root / \"test/fixtures/market/orchestration-manifest.json\").write_text(\n169:         \"{}\\n\", encoding=\"utf-8\"\n170:     )\n171:     (root / \"pyproject.toml\").write_text(\"[project]\\nname = 'minimal'\\n\", encoding=\"utf-8\")\n172:     (root / \"requirements-lock.txt\").write_text(\"pytest==9.1.1\\n\", encoding=\"utf-8\")\n173: \n174:     first = source_fingerprint(root)\n175:     assert first.startswith(\"sha256:\")\n176: \n177:     upstream.write_text(\"ROLE = 'news analyst'\\n\", encoding=\"utf-8\")\n178:     assert source_fingerprint(root) != first\n179: \n180: \n181: def test_complete_synthetic_release_passes_and_reports_targets(synthetic_release):\n182:     result = _validate(synthetic_release)\n183:     assert result[\"failures\"] == []\n184:     aggregate = result[\"metrics\"][\"aggregate\"]\n185:     assert aggregate[\"token_reduction\"] == pytest.approx(1 / 3)\n186:     assert aggregate[\"mean_support_drop\"] == pytest.approx(0.0)\n187:     assert aggregate[\"mean_relevance_drop\"] == pytest.approx(0.0)\n188:     assert aggregate[\"wall_ratio\"] == pytest.approx(0.9)\n189:     assert all(target[\"passed\"] for target in result[\"metrics\"][\"should_targets\"].values())\n190: \n191: \n192: @pytest.mark.parametrize(\"metric\", [\"support\", \"relevance\"])\n193: def test_quality_metric_drop_over_limit_fails(synthetic_release, metric):\n194:     for case in all_cases():\n195:         _mutate(\n196:             synthetic_release[\"evidence\"]\n197:             / \"judge\"\n198:             / case[\"ticker\"]\n199:             / \"compact\"\n200:             / \"judge.json\",\n201:             lambda data, metric=metric: data.update({metric: 0.84}),\n202:         )\n203:     result = _validate(synthetic_release)\n204:     failures = \" \".join(result[\"failures\"])\n205:     assert f\"mean {metric} drop\" in failures\n206:     assert result[\"metrics\"][\"aggregate\"][f\"mean_{metric}_drop\"] > 0.05\n207: \n208: \n209: def test_missing_arm_fails(synthetic_release):\n210:     \"\"\"GOV-003: an incomplete matrix reports missing pairs and withholds aggregate metrics.\"\"\"\n211:     import shutil\n212: \n213:     shutil.rmtree(synthetic_release[\"evidence\"] / \"AAPL\" / \"compact\")\n214:     result = _validate(synthetic_release)\n215:     assert any(\"AAPL/compact: arm missing\" in f for f in result[\"failures\"])\n216:     assert any(\n217:         \"missing or invalid case pairs: AAPL\" in f for f in result[\"failures\"]\n218:     )\n219:     assert \"aggregate\" not in result[\"metrics\"]\n220:     assert \"should_targets\" not in result[\"metrics\"]\n221: \n222: \n223: @pytest.mark.parametrize(\n224:     (\"kind\", \"location\"),\n225:     [\n226:         (\"summary\", (\"AAPL\", \"baseline\", \"summary.json\")),\n227:         (\"config\", (\"AAPL\", \"baseline\", \"config.json\")),\n228:         (\"run provenance\", (\"AAPL\", \"baseline\", PROVENANCE)),\n229:         (\"judge\", (\"judge\", \"AAPL\", \"baseline\", \"judge.json\")),\n230:         (\"judge provenance\", (\"judge\", \"AAPL\", \"baseline\", PROVENANCE)),\n231:     ],\n232:     ids=[\"summary\", \"config\", \"run-provenance\", \"judge\", \"judge-provenance\"],\n233: )\n234: def test_invalid_json_record_rejected_before_aggregate(\n235:     synthetic_release, kind, location\n236: ):\n237:     \"\"\"GOV-003 / AT-07: a non-object record invalidates its pair and withholds aggregates.\"\"\"\n238:     path = synthetic_release[\"evidence\"].joinpath(*location)\n239:     _write(path, [\"not\", \"a\", \"JSON\", \"object\"])\n240:     result = _validate(synthetic_release)\n241:     assert any(\n242:         f\"AAPL/baseline: {kind}\" in failure and \"is not a JSON object\" in failure\n243:         for failure in result[\"failures\"]\n244:     )\n245:     assert \"aggregate\" not in result[\"metrics\"]\n246:     assert \"should_targets\" not in result[\"metrics\"]\n247: \n248: \n249: def test_stale_fingerprint_fails(synthetic_release):\n250:     \"\"\"GOV-003: a prior per-arm failure withholds aggregate metrics.\"\"\"\n251:     _mutate(\n252:         synthetic_release[\"evidence\"] / \"AAPL\" / \"baseline\" / PROVENANCE,\n253:         lambda d: d.update(source_fingerprint=\"sha256:stale\"),\n254:     )\n255:     result = _validate(synthetic_release)\n256:     assert any(\"stale or incorrect source fingerprint\" in f for f in result[\"failures\"])\n257:     assert \"aggregate\" not in result[\"metrics\"]\n258:     assert \"should_targets\" not in result[\"metrics\"]\n259: \n260: \n261: def test_missing_named_deterministic_check_fails(synthetic_release):\n262:     def drop(data):\n263:         data[\"deterministic_checks\"] = [\n264:             c for c in data[\"deterministic_checks\"] if c[\"check\"] != \"source_id_referenced\"\n265:         ]\n266: \n267:     _mutate(\n268:         synthetic_release[\"evidence\"] / \"judge\" / \"MSFT\" / \"compact\" / \"judge.json\",\n269:         drop,\n270:     )\n271:     result = _validate(synthetic_release)\n272:     assert any(\n273:         \"mandatory deterministic check missing: source_id_referenced\" in f\n274:         for f in result[\"failures\"]\n275:     )\n276: \n277: \n278: def test_model_mismatch_fails(synthetic_release):\n279:     _mutate(\n280:         synthetic_release[\"evidence\"] / \"NVDA\" / \"baseline\" / PROVENANCE,\n281:         lambda d: d.update(model=\"wrong-model\"),\n282:     )\n283:     result = _validate(synthetic_release)\n284:     assert any(\"NVDA/baseline: run provenance model\" in f for f in result[\"failures\"])\n285: \n286: \n287: def test_failed_semantics_and_support_fail(synthetic_release):\n288:     def degrade(data):\n289:         data[\"semantic_valid\"] = False\n290:         data[\"semantic_errors\"] = [\"quarterly EPS labeled as TTM\"]\n291:         data[\"support\"] = 0.5\n292: \n293:     _mutate(\n294:         synthetic_release[\"evidence\"] / \"judge\" / \"AMZN\" / \"baseline\" / \"judge.json\",\n295:         degrade,\n296:     )\n297:     result = _validate(synthetic_release)\n298:     failures = \" \".join(result[\"failures\"])\n299:     assert \"semantic_valid is not true\" in failures\n300:     assert \"semantic_errors is not empty\" in failures\n301:     assert \"support below 0.8\" in failures\n302: \n303: \n304: def test_omitted_semantic_valid_is_not_a_pass(synthetic_release):\n305:     _mutate(\n306:         synthetic_release[\"evidence\"] / \"judge\" / \"META\" / \"compact\" / \"judge.json\",\n307:         lambda d: d.pop(\"semantic_valid\"),\n308:     )\n309:     result = _validate(synthetic_release)\n310:     assert any(\"semantic_valid is not true\" in f for f in result[\"failures\"])\n\n(End of file - total 310 lines)\n</content>",
+            "metadata": {
+              "preview": "\"\"\"Synthetic release-evidence gate tests.\n\nAll metadata here is explicitly synthetic. Only two boundaries are mocked:\n``source_fingerprint`` and ``EvidencePackIO.import_pack``. No live files or\nprovider calls are used.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom pathlib import Path\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom research_desk.eval.case_registry import all_cases, case_for\nfrom research_desk.eval.quality import (\n    MANDATORY,\n    PROVENANCE,\n    source_fingerprint,",
+              "truncated": false,
+              "loaded": [],
+              "display": {
+                "type": "file",
+                "path": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py",
+                "text": "\"\"\"Synthetic release-evidence gate tests.\n\nAll metadata here is explicitly synthetic. Only two boundaries are mocked:\n``source_fingerprint`` and ``EvidencePackIO.import_pack``. No live files or\nprovider calls are used.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport json\nfrom pathlib import Path\nfrom types import SimpleNamespace\n\nimport pytest\n\nfrom research_desk.eval.case_registry import all_cases, case_for\nfrom research_desk.eval.quality import (\n    MANDATORY,\n    PROVENANCE,\n    source_fingerprint,\n    validate_release,\n)\nfrom research_desk.models import InputSnapshot\n\nMODEL = \"deepseek-flash\"\nPROVIDER = \"deepseek\"\n\n\ndef _write(path: Path, data) -> None:\n    path.parent.mkdir(parents=True, exist_ok=True)\n    path.write_text(json.dumps(data), encoding=\"utf-8\")\n\n\ndef _fake_pack(source: Path):\n    arm = Path(source).parent\n    summary = json.loads((arm / \"summary.json\").read_text(encoding=\"utf-8\"))\n    case = case_for(summary[\"ticker\"])\n    text = (\n        f\"{case['identity']['company_name']} {case['analysis_date']} \"\n        f\"close {case['latest_close']:.2f} {case['source_id']}\"\n    )\n    identity = dict(case[\"identity\"])\n    return SimpleNamespace(\n        complete=True,\n        manifest=SimpleNamespace(\n            outcome=\"completed\",\n            ticker=summary[\"ticker\"],\n            trade_date=case[\"analysis_date\"],\n            context_mode=summary[\"context_mode\"],\n        ),\n        usage=SimpleNamespace(\n            calls=summary[\"calls\"],\n            input_tokens=summary[\"input_tokens\"],\n            output_tokens=summary[\"output_tokens\"],\n            total_tokens=summary[\"total_tokens\"],\n        ),\n        final_state={\"market_report\": text, \"final_trade_decision\": text},\n        input=InputSnapshot(\n            identity=identity,\n            data_snapshot={},\n            available_sources={\n                \"identity\": identity,\n                \"source_id\": case[\"source_id\"],\n                \"market_source_id\": f\"market-{case['ticker'].lower()}\",\n                \"as_of\": case[\"as_of\"],\n                \"latest_close\": case[\"latest_close\"],\n                \"verified_snapshot\": f\"last_close: {case['latest_close']:.2f}\",\n            },\n        ),\n    )\n\n\n@pytest.fixture()\ndef synthetic_release(tmp_path, monkeypatch):\n    root = tmp_path / \"root\"\n    root.mkdir()\n    evidence = tmp_path / \"evaluation\" / \"release\"\n    current = \"sha256:synthetic-current\"\n    config = {\n        \"llm_provider\": PROVIDER,\n        \"quick_think_llm\": MODEL,\n        \"deep_think_llm\": MODEL,\n        \"max_tokens\": 1800,\n        \"temperature\": 0,\n        \"llm_max_retries\": 2,\n        \"max_debate_rounds\": 1,\n        \"max_risk_discuss_rounds\": 1,\n        \"extra_body\": {\"thinking\": {\"type\": \"disabled\"}},\n        \"backend_url\": \"https://example.invalid/v1\",\n        \"checkpoint_enabled\": False,\n    }\n    for case in all_cases():\n        ticker = case[\"ticker\"]\n        for mode in (\"baseline\", \"compact\"):\n            if mode == \"baseline\":\n                tokens, wall = (100, 50, 150), 10.0\n            else:\n                tokens, wall = (70, 30, 100), 9.0\n            arm = evidence / ticker / mode\n            summary = {\n                \"ticker\": ticker,\n                \"context_mode\": mode,\n                \"outcome\": \"completed\",\n                \"pack_complete\": True,\n                \"error\": None,\n                \"calls\": 2,\n                \"input_tokens\": tokens[0],\n                \"output_tokens\": tokens[1],\n                \"total_tokens\": tokens[2],\n                \"wall_seconds\": wall,\n            }\n            _write(arm / \"summary.json\", summary)\n            _write(arm / \"config.json\", config)\n            _write(arm / PROVENANCE, {\n                \"source_fingerprint\": current, \"model\": MODEL, \"provider\": PROVIDER,\n            })\n            judge_dir = evidence / \"judge\" / ticker / mode\n            _write(judge_dir / \"judge.json\", {\n                \"support\": 0.9,\n                \"relevance\": 0.9,\n                \"valid_citation_rate\": 1.0,\n                \"semantic_valid\": True,\n                \"semantic_errors\": [],\n                \"error\": False,\n                \"deterministic_checks\": [\n                    {\"check\": name, \"passed\": True, \"detail\": \"synthetic\"}\n                    for name in MANDATORY\n                ],\n            })\n            _write(judge_dir / PROVENANCE, {\n                \"source_fingerprint\": current, \"model\": MODEL, \"provider\": PROVIDER,\n            })\n\n    monkeypatch.setattr(\n        \"research_desk.eval.quality.source_fingerprint\", lambda _root: current\n    )\n    from research_desk.evidence import EvidencePackIO\n\n    monkeypatch.setattr(EvidencePackIO, \"import_pack\", lambda _self, source: _fake_pack(source))\n    return {\"root\": root, \"evidence\": evidence, \"current\": current}\n\n\ndef _mutate(path: Path, change) -> None:\n    data = json.loads(path.read_text(encoding=\"utf-8\"))\n    change(data)\n    _write(path, data)\n\n\ndef _validate(fixture):\n    return validate_release(fixture[\"root\"], fixture[\"evidence\"])\n\n\ndef test_source_fingerprint_tracks_upstream_role_changes(tmp_path):\n    \"\"\"AT-07: representative upstream tradingagents roles are fingerprinted.\"\"\"\n    root = tmp_path / \"tree\"\n    (root / \"src/research_desk\").mkdir(parents=True)\n    (root / \"src/research_desk/module.py\").write_text(\"VALUE = 1\\n\", encoding=\"utf-8\")\n    upstream = root / \"tradingagents/agents/analysts/market_analyst.py\"\n    upstream.parent.mkdir(parents=True)\n    upstream.write_text(\"ROLE = 'market analyst'\\n\", encoding=\"utf-8\")\n    (root / \"prompts\").mkdir()\n    prompt = root / \"prompts/research.yaml\"\n    prompt.write_text(\"prompt: research\\n\", encoding=\"utf-8\")\n    (root / \"test/fixtures/market\").mkdir(parents=True)\n    (root / \"test/fixtures/market/AAPL.csv\").write_text(\n        \"Date,Close\\n2026-07-31,308.91\\n\", encoding=\"utf-8\"\n    )\n    (root / \"test/fixtures/market/orchestration-manifest.json\").write_text(\n        \"{}\\n\", encoding=\"utf-8\"\n    )\n    (root / \"pyproject.toml\").write_text(\"[project]\\nname = 'minimal'\\n\", encoding=\"utf-8\")\n    (root / \"requirements-lock.txt\").write_text(\"pytest==9.1.1\\n\", encoding=\"utf-8\")\n\n    first = source_fingerprint(root)\n    assert first.startswith(\"sha256:\")\n\n    upstream.write_text(\"ROLE = 'news analyst'\\n\", encoding=\"utf-8\")\n    assert source_fingerprint(root) != first\n\n\ndef test_complete_synthetic_release_passes_and_reports_targets(synthetic_release):\n    result = _validate(synthetic_release)\n    assert result[\"failures\"] == []\n    aggregate = result[\"metrics\"][\"aggregate\"]\n    assert aggregate[\"token_reduction\"] == pytest.approx(1 / 3)\n    assert aggregate[\"mean_support_drop\"] == pytest.approx(0.0)\n    assert aggregate[\"mean_relevance_drop\"] == pytest.approx(0.0)\n    assert aggregate[\"wall_ratio\"] == pytest.approx(0.9)\n    assert all(target[\"passed\"] for target in result[\"metrics\"][\"should_targets\"].values())\n\n\n@pytest.mark.parametrize(\"metric\", [\"support\", \"relevance\"])\ndef test_quality_metric_drop_over_limit_fails(synthetic_release, metric):\n    for case in all_cases():\n        _mutate(\n            synthetic_release[\"evidence\"]\n            / \"judge\"\n            / case[\"ticker\"]\n            / \"compact\"\n            / \"judge.json\",\n            lambda data, metric=metric: data.update({metric: 0.84}),\n        )\n    result = _validate(synthetic_release)\n    failures = \" \".join(result[\"failures\"])\n    assert f\"mean {metric} drop\" in failures\n    assert result[\"metrics\"][\"aggregate\"][f\"mean_{metric}_drop\"] > 0.05\n\n\ndef test_missing_arm_fails(synthetic_release):\n    \"\"\"GOV-003: an incomplete matrix reports missing pairs and withholds aggregate metrics.\"\"\"\n    import shutil\n\n    shutil.rmtree(synthetic_release[\"evidence\"] / \"AAPL\" / \"compact\")\n    result = _validate(synthetic_release)\n    assert any(\"AAPL/compact: arm missing\" in f for f in result[\"failures\"])\n    assert any(\n        \"missing or invalid case pairs: AAPL\" in f for f in result[\"failures\"]\n    )\n    assert \"aggregate\" not in result[\"metrics\"]\n    assert \"should_targets\" not in result[\"metrics\"]\n\n\n@pytest.mark.parametrize(\n    (\"kind\", \"location\"),\n    [\n        (\"summary\", (\"AAPL\", \"baseline\", \"summary.json\")),\n        (\"config\", (\"AAPL\", \"baseline\", \"config.json\")),\n        (\"run provenance\", (\"AAPL\", \"baseline\", PROVENANCE)),\n        (\"judge\", (\"judge\", \"AAPL\", \"baseline\", \"judge.json\")),\n        (\"judge provenance\", (\"judge\", \"AAPL\", \"baseline\", PROVENANCE)),\n    ],\n    ids=[\"summary\", \"config\", \"run-provenance\", \"judge\", \"judge-provenance\"],\n)\ndef test_invalid_json_record_rejected_before_aggregate(\n    synthetic_release, kind, location\n):\n    \"\"\"GOV-003 / AT-07: a non-object record invalidates its pair and withholds aggregates.\"\"\"\n    path = synthetic_release[\"evidence\"].joinpath(*location)\n    _write(path, [\"not\", \"a\", \"JSON\", \"object\"])\n    result = _validate(synthetic_release)\n    assert any(\n        f\"AAPL/baseline: {kind}\" in failure and \"is not a JSON object\" in failure\n        for failure in result[\"failures\"]\n    )\n    assert \"aggregate\" not in result[\"metrics\"]\n    assert \"should_targets\" not in result[\"metrics\"]\n\n\ndef test_stale_fingerprint_fails(synthetic_release):\n    \"\"\"GOV-003: a prior per-arm failure withholds aggregate metrics.\"\"\"\n    _mutate(\n        synthetic_release[\"evidence\"] / \"AAPL\" / \"baseline\" / PROVENANCE,\n        lambda d: d.update(source_fingerprint=\"sha256:stale\"),\n    )\n    result = _validate(synthetic_release)\n    assert any(\"stale or incorrect source fingerprint\" in f for f in result[\"failures\"])\n    assert \"aggregate\" not in result[\"metrics\"]\n    assert \"should_targets\" not in result[\"metrics\"]\n\n\ndef test_missing_named_deterministic_check_fails(synthetic_release):\n    def drop(data):\n        data[\"deterministic_checks\"] = [\n            c for c in data[\"deterministic_checks\"] if c[\"check\"] != \"source_id_referenced\"\n        ]\n\n    _mutate(\n        synthetic_release[\"evidence\"] / \"judge\" / \"MSFT\" / \"compact\" / \"judge.json\",\n        drop,\n    )\n    result = _validate(synthetic_release)\n    assert any(\n        \"mandatory deterministic check missing: source_id_referenced\" in f\n        for f in result[\"failures\"]\n    )\n\n\ndef test_model_mismatch_fails(synthetic_release):\n    _mutate(\n        synthetic_release[\"evidence\"] / \"NVDA\" / \"baseline\" / PROVENANCE,\n        lambda d: d.update(model=\"wrong-model\"),\n    )\n    result = _validate(synthetic_release)\n    assert any(\"NVDA/baseline: run provenance model\" in f for f in result[\"failures\"])\n\n\ndef test_failed_semantics_and_support_fail(synthetic_release):\n    def degrade(data):\n        data[\"semantic_valid\"] = False\n        data[\"semantic_errors\"] = [\"quarterly EPS labeled as TTM\"]\n        data[\"support\"] = 0.5\n\n    _mutate(\n        synthetic_release[\"evidence\"] / \"judge\" / \"AMZN\" / \"baseline\" / \"judge.json\",\n        degrade,\n    )\n    result = _validate(synthetic_release)\n    failures = \" \".join(result[\"failures\"])\n    assert \"semantic_valid is not true\" in failures\n    assert \"semantic_errors is not empty\" in failures\n    assert \"support below 0.8\" in failures\n\n\ndef test_omitted_semantic_valid_is_not_a_pass(synthetic_release):\n    _mutate(\n        synthetic_release[\"evidence\"] / \"judge\" / \"META\" / \"compact\" / \"judge.json\",\n        lambda d: d.pop(\"semantic_valid\"),\n    )\n    result = _validate(synthetic_release)\n    assert any(\"semantic_valid is not true\" in f for f in result[\"failures\"])",
+                "lineStart": 1,
+                "lineEnd": 310,
+                "totalLines": 310,
+                "truncated": false
+              }
+            },
+            "title": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py",
+            "time": {
+              "start": 1795355652802,
+              "end": 1795355652813
+            }
+          },
+          "id": "prt_203893098001YQ2wSDH66xpXt0",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_20389262f001KILGo6juD1OhrF"
+        },
+        {
+          "reason": "tool-calls",
+          "type": "step-finish",
+          "tokens": {
+            "total": 3539,
+            "input": 1674,
+            "output": 73,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1792
+            }
+          },
+          "cost": 0,
+          "id": "prt_2038932cf001FtCqJAsfVv1RAB",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_20389262f001KILGo6juD1OhrF"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_203892531001FRsqWbrjoLhKFh",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 7562,
+          "input": 3866,
+          "output": 304,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 3392
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355652819,
+          "completed": 1795355657408
+        },
+        "finish": "tool-calls",
+        "id": "msg_2038932d30013xgGgCX1Nxc6ia",
+        "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_203893e5d001PmyP75d1LBaQ6L",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_2038932d30013xgGgCX1Nxc6ia"
+        },
+        {
+          "type": "reasoning",
+          "text": "The user wants me to restore the original YAML change/inequality assurance in this test, keeping the upstream role-change assertion. Make each change separately and compare with immediately preceding fingerprint. Rename test appropriately.\n\nSo the test should:\n1. Compute first fingerprint.\n2. Change upstream role file, compute second, assert second != first.\n3. Change YAML prompt, compute third, assert third != second.\n\nCurrently there's no YAML change assertion. Let me edit.\n\nRename to reflect both: e.g. `test_source_fingerprint_tracks_upstream_role_and_prompt_changes`.\n\nLet me make the edit.",
+          "time": {
+            "start": 1795355655777,
+            "end": 1795355656742
+          },
+          "id": "prt_203893e61001xfH33f56U2wSJu",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_2038932d30013xgGgCX1Nxc6ia"
+        },
+        {
+          "type": "tool",
+          "tool": "edit",
+          "callID": "chatcmpl-tool-93b8cb5cd0520b3e",
+          "state": {
+            "status": "completed",
+            "input": {
+              "filePath": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py",
+              "oldString": "def test_source_fingerprint_tracks_upstream_role_changes(tmp_path):\n    \"\"\"AT-07: representative upstream tradingagents roles are fingerprinted.\"\"\"",
+              "newString": "def test_source_fingerprint_tracks_upstream_role_and_prompt_changes(tmp_path):\n    \"\"\"AT-07: representative upstream tradingagents roles and YAML prompts are fingerprinted.\"\"\""
+            },
+            "output": "Edit applied successfully.",
+            "metadata": {
+              "diagnostics": {},
+              "diff": "Index: /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n===================================================================\n--- /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n+++ /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n@@ -149,10 +149,10 @@\n def _validate(fixture):\n     return validate_release(fixture[\"root\"], fixture[\"evidence\"])\n \n \n-def test_source_fingerprint_tracks_upstream_role_changes(tmp_path):\n-    \"\"\"AT-07: representative upstream tradingagents roles are fingerprinted.\"\"\"\n+def test_source_fingerprint_tracks_upstream_role_and_prompt_changes(tmp_path):\n+    \"\"\"AT-07: representative upstream tradingagents roles and YAML prompts are fingerprinted.\"\"\"\n     root = tmp_path / \"tree\"\n     (root / \"src/research_desk\").mkdir(parents=True)\n     (root / \"src/research_desk/module.py\").write_text(\"VALUE = 1\\n\", encoding=\"utf-8\")\n     upstream = root / \"tradingagents/agents/analysts/market_analyst.py\"\n",
+              "filediff": {
+                "file": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py",
+                "patch": "Index: /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n===================================================================\n--- /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n+++ /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n@@ -149,10 +149,10 @@\n def _validate(fixture):\n     return validate_release(fixture[\"root\"], fixture[\"evidence\"])\n \n \n-def test_source_fingerprint_tracks_upstream_role_changes(tmp_path):\n-    \"\"\"AT-07: representative upstream tradingagents roles are fingerprinted.\"\"\"\n+def test_source_fingerprint_tracks_upstream_role_and_prompt_changes(tmp_path):\n+    \"\"\"AT-07: representative upstream tradingagents roles and YAML prompts are fingerprinted.\"\"\"\n     root = tmp_path / \"tree\"\n     (root / \"src/research_desk\").mkdir(parents=True)\n     (root / \"src/research_desk/module.py\").write_text(\"VALUE = 1\\n\", encoding=\"utf-8\")\n     upstream = root / \"tradingagents/agents/analysts/market_analyst.py\"\n",
+                "additions": 2,
+                "deletions": 2
+              },
+              "truncated": false
+            },
+            "title": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py",
+            "time": {
+              "start": 1795355657395,
+              "end": 1795355657404
+            }
+          },
+          "id": "prt_20389422c001xes7pZ8AWWtXvS",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_2038932d30013xgGgCX1Nxc6ia"
+        },
+        {
+          "reason": "tool-calls",
+          "type": "step-finish",
+          "tokens": {
+            "total": 7562,
+            "input": 3866,
+            "output": 304,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 3392
+            }
+          },
+          "cost": 0,
+          "id": "prt_2038944be001HjXPAp9SoHuAXl",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_2038932d30013xgGgCX1Nxc6ia"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_203892531001FRsqWbrjoLhKFh",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 7774,
+          "input": 408,
+          "output": 198,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 7168
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355657410,
+          "completed": 1795355660257
+        },
+        "finish": "tool-calls",
+        "id": "msg_2038944c20012FgmDUXxLpobcQ",
+        "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_203894cdd001pLRyKtgeW6jzd6",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_2038944c20012FgmDUXxLpobcQ"
+        },
+        {
+          "type": "tool",
+          "tool": "edit",
+          "callID": "chatcmpl-tool-81386cfd6ca4fd7b",
+          "state": {
+            "status": "completed",
+            "input": {
+              "filePath": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py",
+              "newString": "    upstream.write_text(\"ROLE = 'news analyst'\\n\", encoding=\"utf-8\")\n    second = source_fingerprint(root)\n    assert second != first\n\n    prompt.write_text(\"prompt: updated research\\n\", encoding=\"utf-8\")\n    assert source_fingerprint(root) != second",
+              "oldString": "    upstream.write_text(\"ROLE = 'news analyst'\\n\", encoding=\"utf-8\")\n    assert source_fingerprint(root) != first"
+            },
+            "output": "Edit applied successfully.",
+            "metadata": {
+              "diagnostics": {},
+              "diff": "Index: /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n===================================================================\n--- /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n+++ /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n@@ -174,11 +174,15 @@\n     first = source_fingerprint(root)\n     assert first.startswith(\"sha256:\")\n \n     upstream.write_text(\"ROLE = 'news analyst'\\n\", encoding=\"utf-8\")\n-    assert source_fingerprint(root) != first\n+    second = source_fingerprint(root)\n+    assert second != first\n \n+    prompt.write_text(\"prompt: updated research\\n\", encoding=\"utf-8\")\n+    assert source_fingerprint(root) != second\n \n+\n def test_complete_synthetic_release_passes_and_reports_targets(synthetic_release):\n     result = _validate(synthetic_release)\n     assert result[\"failures\"] == []\n     aggregate = result[\"metrics\"][\"aggregate\"]\n",
+              "filediff": {
+                "file": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py",
+                "patch": "Index: /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n===================================================================\n--- /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n+++ /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py\n@@ -174,11 +174,15 @@\n     first = source_fingerprint(root)\n     assert first.startswith(\"sha256:\")\n \n     upstream.write_text(\"ROLE = 'news analyst'\\n\", encoding=\"utf-8\")\n-    assert source_fingerprint(root) != first\n+    second = source_fingerprint(root)\n+    assert second != first\n \n+    prompt.write_text(\"prompt: updated research\\n\", encoding=\"utf-8\")\n+    assert source_fingerprint(root) != second\n \n+\n def test_complete_synthetic_release_passes_and_reports_targets(synthetic_release):\n     result = _validate(synthetic_release)\n     assert result[\"failures\"] == []\n     aggregate = result[\"metrics\"][\"aggregate\"]\n",
+                "additions": 5,
+                "deletions": 1
+              },
+              "truncated": false
+            },
+            "title": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test/test/offline/test_release_quality.py",
+            "time": {
+              "start": 1795355660194,
+              "end": 1795355660203
+            }
+          },
+          "id": "prt_203894ce200175R2PWkKuLvVoi",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_2038944c20012FgmDUXxLpobcQ"
+        },
+        {
+          "reason": "tool-calls",
+          "type": "step-finish",
+          "tokens": {
+            "total": 7774,
+            "input": 408,
+            "output": 198,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 7168
+            }
+          },
+          "cost": 0,
+          "id": "prt_203894fde001H2ZgDOFr7kfzh8",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_2038944c20012FgmDUXxLpobcQ"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_203892531001FRsqWbrjoLhKFh",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-test",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 7838,
+          "input": 300,
+          "output": 50,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 7488
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355660258,
+          "completed": 1795355662944
+        },
+        "finish": "stop",
+        "id": "msg_203894fe2001ycgUEMoG9dCPPi",
+        "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_2038958f5001kqbHHPsyGE59VA",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_203894fe2001ycgUEMoG9dCPPi"
+        },
+        {
+          "type": "text",
+          "text": "Done. Restored the YAML prompt change assertion and kept the upstream role-change check, each compared against the immediately preceding fingerprint. Renamed the test to `test_source_fingerprint_tracks_upstream_role_and_prompt_changes`.",
+          "time": {
+            "start": 1795355662587,
+            "end": 1795355662938
+          },
+          "id": "prt_2038958fb0014EWXZpRc7asa8I",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_203894fe2001ycgUEMoG9dCPPi"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 7838,
+            "input": 300,
+            "output": 50,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 7488
+            }
+          },
+          "cost": 0,
+          "id": "prt_203895a5d001Vep2JCMMSTPNQv",
+          "sessionID": "ses_dfc76dae4ffeXpii6M4SSrXYRW",
+          "messageID": "msg_203894fe2001ycgUEMoG9dCPPi"
+        }
+      ]
+    }
+  ]
+}

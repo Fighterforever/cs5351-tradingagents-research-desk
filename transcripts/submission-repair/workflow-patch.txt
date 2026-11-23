@@ -1,0 +1,7 @@
+No tools. Return only a JSON object with one key replacement containing the complete replacement YAML-indented shell snippet for the source block below. It is repeated verbatim in the gate jobs. On PR use actual PR base; on push use before. If before is all zeros/empty, pick merge-base between current checkout HEAD and refs/remotes/origin/main if present, otherwise the established baseline tag. This is first-push diff calculation, not a substitute for any check. For pushes onto main with no before (e.g. original first main) avoid main-vs-main empty fallback. Preserve GitHub output. Do not change job names. Source block:
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            echo "base=$BASE_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          fi

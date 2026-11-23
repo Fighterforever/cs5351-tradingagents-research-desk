@@ -1,0 +1,28 @@
+{
+  "ticker": "MSFT",
+  "analysis_date": "2026-07-30",
+  "announcement_date": "2026-07-29",
+  "split": "development",
+  "company_name": "Microsoft Corporation",
+  "sector": "Technology",
+  "industry": "Software \u2014 Infrastructure",
+  "source_url": "https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast",
+  "source_id": "src-msft",
+  "csv": "MSFT.csv",
+  "csv_path": "/Users/leeyoma/Downloads/cs5351/work/project/test/fixtures/market/MSFT.csv",
+  "as_of": "2026-07-30",
+  "latest_close": 451.1000061035156,
+  "identity": {
+    "company_name": "Microsoft Corporation",
+    "sector": "Technology",
+    "industry": "Software \u2014 Infrastructure"
+  },
+  "notes": [
+    "Microsoft fiscal Q4 2026 ended June 30.",
+    "Revenue USD90.0 billion increased 18%; operating income 40.6 billion increased 18%.",
+    "GAAP EPS 4.81 compared with non-GAAP 4.74.",
+    "Microsoft Cloud revenue 59.3 billion increased 27%; Azure and other cloud revenue increased 43%.",
+    "Full fiscal year revenue 331.8 billion."
+  ],
+  "balance": "Investment gains affected reported income and EPS; do not equate all GAAP growth with operating growth."
+}

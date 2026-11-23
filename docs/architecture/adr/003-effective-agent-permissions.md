@@ -1,6 +1,7 @@
 # ADR-003: Install effective role permissions
 
-Status: accepted by leo, 2026-08-31. Requirements: GOV-001 through GOV-004; source: docs/architecture/permission-model.md.
+Status: accepted by Liyu MA, 2026-08-31. Requirements: GOV-001 through GOV-004; source: docs/architecture/permission-model.md.
+Approval record ID: `leo`.
 
 The required .opencode/permissions.jsonc is a machine-readable permission manifest. OpenCode does not automatically enforce that filename. The real project opencode.json must load .opencode/rules.md through its documented instructions field and configure supported role permissions. The CI check verifies consistency between the documented manifest and effective configuration.
 
@@ -10,7 +11,7 @@ This installation is authorized now, but activation waits until the current impl
 
 ## Affected paths
 
-This decision covers `opencode.json`, `.opencode/permissions.jsonc`, `.opencode/rules.md`, `.agent/rules.md` and the permission-consistency checks in `scripts/`. The two rules files and approval records remain owned by leo. This explicit path list documents the same accepted installation scope and does not alter the decision date.
+This decision covers `opencode.json`, `.opencode/permissions.jsonc`, `.opencode/rules.md`, `.agent/rules.md` and the permission-consistency checks in `scripts/`. The two rules files and approval records remain owned by Liyu MA. This explicit path list documents the same accepted installation scope and does not alter the decision date.
 
 The pinned public `.opencode/config-schema.json` accompanies the effective configuration so CI validates the same official schema without depending on an orchestration directory outside the repository.
 

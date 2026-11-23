@@ -1,0 +1,47 @@
+{
+  "support": 0.9,
+  "relevance": 0.95,
+  "cited_claim_count": 42,
+  "supported_cited_claim_count": 41,
+  "valid_citation_rate": 0.9762,
+  "invalid_citation_explanations": [
+    "Market Analyst \u00a72.2: '2026-07-22 close: 244.85, then a sharp five-session slide to 226.65 on 2026-07-29' \u2014 the 244.85 close is 2026-07-22 but the slide to 226.65 spans five trading sessions (07-23, 07-24, 07-27, 07-28, 07-29), so the 'five-session' framing is arithmetically loose though the price levels themselves are supported by market-amzn."
+  ],
+  "uncited_factual_claims": [
+    "News Analyst \u00a75 table: 'Ticker / identity \u2014 AMZN, Amazon.com, Inc. (Cons. Disc. / Internet Retail)' labeled 'resolved identity' with no source ID; the sector classification is not in any observed source.",
+    "News Analyst \u00a71: 'get_news(\"AMZN\", 2026-07-24 \u2192 2026-07-31)' \u2014 the specific date-range argument is asserted without a source ID (the observed call returned the frozen release, but the range itself is not evidenced).",
+    "News Analyst \u00a73: 'no volume, moving averages, or technical indicators were returned in this session' \u2014 a claim about tool availability that contradicts the observed get_indicators outputs and carries no citation.",
+    "Aggressive Analyst: 'the conservative and neutral seats haven't spoken yet' \u2014 procedural claim about the debate sequence, uncited and not evidence-based."
+  ],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "Support 0.9: The report's key conclusions are directly grounded in the two observed sources. Every earnings figure (net sales 200.6bn +20%, AWS 42.2bn +37%, AWS OI 27.5bn vs 19.2bn, net income 62.6bn, pre-tax other income 53.4bn from Anthropic, TTM FCF outflow 7.6bn) is correctly attributed to src-amzn, and every price/technical figure (271.58 close, 235.50 prior close, 265.00 open, 273.23 high, 262.01 low, 129.05M volume, 10 EMA 242.70, MACD 0.08/-0.84/+0.91, RSI 64.04, ATR 9.26, 274.99 and 278.56 window highs, 226.65/227.01 lows) matches market-amzn. Derived arithmetic (15.32%, 2.48%, 1.27x, 8.3bn, 65.2%, 13.7%, 85%, 11.9%, 19.8%, -7.43%, -1.24%, -2.51%) is correctly labeled as calculation on cited operands and checks out. The report is notably disciplined about the NO_DATA_AVAILABLE indicators (50/200 SMA) and macro/prediction-market gaps, refusing to fabricate. Minor deductions: the News Analyst's claim that no technical indicators were returned is contradicted by the observed get_indicators outputs (a cross-role inconsistency, though it does not corrupt the final decision), the 'five-session slide' framing is loose, and the sector classification is uncited. Relevance 0.95: fully on-ticker, on-date, on-task; the multi-role debate is long but each seat addresses the same decision, with only mild redundancy. Semantic validity: the report explicitly refuses to compute a trailing P/E from the single distorted quarter, correctly labels the 62.6bn as a Q2 figure containing non-operating gains, correctly labels the 7.6bn as TTM FCF, and never relabels a quarterly figure as TTM/annual. No period/unit errors and no unsupported numerical valuation assertions.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'Amazon.com, Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-07-31"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 271.58 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-amzn'"
+    }
+  ]
+}

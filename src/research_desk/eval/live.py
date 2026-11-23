@@ -422,6 +422,28 @@ def _deterministic_checks(case: dict, pack, ticker: str) -> list[dict[str, Any]]
     return checks
 
 
+def _prepare_arm_judge_dir(judge_ticker_dir: Path, mode: str) -> Path:
+    """Return a clean arm judge dir, archiving any prior current result.
+
+    A prior result under ``judge/<ticker>/<mode>`` is moved into a per-run
+    history sibling so a re-used output root cannot present an old score as
+    current. Archived history is never overwritten.
+    """
+    arm_judge_dir = judge_ticker_dir / mode
+    if arm_judge_dir.exists():
+        history_root = judge_ticker_dir / "history"
+        history_root.mkdir(parents=True, exist_ok=True)
+        stamp = time.strftime("%Y%m%dT%H%M%S", time.gmtime())
+        archived = history_root / f"{mode}-{stamp}-{os.getpid()}"
+        suffix = 1
+        while archived.exists():
+            archived = history_root / f"{mode}-{stamp}-{os.getpid()}-{suffix}"
+            suffix += 1
+        arm_judge_dir.rename(archived)
+    arm_judge_dir.mkdir(parents=True, exist_ok=True)
+    return arm_judge_dir
+
+
 def run_judge_case(
     ticker: str,
     out_dir: str | Path,
@@ -446,9 +468,17 @@ def run_judge_case(
     root = _project_root()
     judged: dict[str, Any] = {"ticker": ticker, "arms": {}}
     source_failure = False
+    if max_calls is not None and max_calls < 0:
+        raise ValueError(f"max_calls must be nonnegative, got {max_calls!r}")
+    remaining_calls = max_calls
     for mode in ("baseline", "compact"):
+        arm_judge_dir = _prepare_arm_judge_dir(out / "judge" / ticker, mode)
         run_dir = out / ticker / mode / "run"
         if not run_dir.exists():
+            judged["arms"][mode] = {
+                "error": "no run directory; arm was not judged",
+                "note": "skipped: no run for this call",
+            }
             continue
         current = _current_source_fingerprint(root)
         run_fingerprint = _read_source_fingerprint(
@@ -480,6 +510,15 @@ def run_judge_case(
                 "note": "skipped judge: run not completed",
             }
             continue
+        if remaining_calls is not None and remaining_calls <= 0:
+            judged["arms"][mode] = {
+                "outcome": pack.manifest.outcome,
+                "error": "judge call budget exhausted (--max-calls)",
+                "note": "not judged: no judge request was made",
+            }
+            continue
+        if remaining_calls is not None:
+            remaining_calls -= 1
         report_text = _report_text_with_identity(pack)
         deterministic = _deterministic_checks(case, pack, ticker)
         judge_cfg = {
@@ -489,19 +528,37 @@ def run_judge_case(
             "max_tokens": OUTPUT_CAP,
             "temperature": 0,
         }
-        arm_judge_dir = out / "judge" / ticker / mode
         arm_judge_dir.mkdir(parents=True, exist_ok=True)
         _dump_json(
             arm_judge_dir / PROVENANCE_FILENAME,
             _provenance_payload(current, judge_cfg, _base_url()),
         )
-        raw, score = _llm_judge(
-            case,
-            report_text,
-            deterministic,
-            available_sources=pack.input.available_sources or {},
-            events=pack.events,
-        )
+        try:
+            raw, score = _llm_judge(
+                case,
+                report_text,
+                deterministic,
+                available_sources=pack.input.available_sources or {},
+                events=pack.events,
+                max_retries=0 if max_calls is not None else None,
+            )
+        except Exception as exc:  # noqa: BLE001 - record the failed request honestly
+            logger.warning("judge request failed for %s/%s: %s", ticker, mode, exc)
+            raw = {"prompt": None, "invoke_error": str(exc), "usage": {}}
+            score = {
+                "support": None,
+                "relevance": None,
+                "cited_claim_count": 0,
+                "supported_cited_claim_count": 0,
+                "valid_citation_rate": None,
+                "invalid_citation_explanations": [],
+                "uncited_factual_claims": [],
+                "semantic_valid": False,
+                "semantic_errors": [],
+                "rationale": f"judge request failed: {exc}",
+                "error": True,
+                "deterministic_checks": deterministic,
+            }
         source_after = _current_source_fingerprint(root)
         if source_after != current:
             judged["arms"][mode] = {
@@ -682,17 +739,23 @@ def _llm_judge(
     *,
     available_sources: dict[str, Any],
     events,
+    max_retries: int | None = None,
 ):
-    """Run the real DeepSeek evaluator; returns (raw, score) without fabrication."""
+    """Run the real DeepSeek evaluator; returns (raw, score) without fabrication.
+
+    ``max_retries`` is only set when the caller has an explicit call budget, so
+    SDK-level retries cannot turn one budgeted judge request into several.
+    """
     from tradingagents.llm_clients import create_llm_client
 
-    client = create_llm_client(
-        PROVIDER,
-        MODEL,
-        base_url=_base_url(),
-        max_tokens=OUTPUT_CAP,
-        temperature=0,
-    )
+    client_kwargs: dict[str, Any] = {
+        "base_url": _base_url(),
+        "max_tokens": OUTPUT_CAP,
+        "temperature": 0,
+    }
+    if max_retries is not None:
+        client_kwargs["max_retries"] = max_retries
+    client = create_llm_client(PROVIDER, MODEL, **client_kwargs)
     llm = client.get_llm()
     if hasattr(llm, "extra_body"):
         llm.extra_body = dict(THINKING_DISABLED_EXTRA_BODY)

@@ -1,0 +1,334 @@
+{
+  "info": {
+    "id": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+    "slug": "hidden-tiger",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path",
+    "title": "Research Desk quality-path",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 5871,
+      "output": 195,
+      "reasoning": 0,
+      "cache": {
+        "read": 12416,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355457170,
+      "updated": 1795355464721
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355457193
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_2038636a9001CgBCYTEvfAGpaD",
+        "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Use the edit tool to change just the --evidence-dir default from evaluation/release to evaluation/submission-release in scripts/check_semantic.py. This makes the unqualified CI invocation consume the new source-bound release directory. Keep explicit caller overrides. Do not edit anything else. Read and edit the exact absolute file /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py. The original source excerpt is:\n    parser.add_argument(\n        \\\"--evidence-dir\\\",\n        default=\\\"evaluation/release\\\",\n        help=\\\"Current-source paired release evidence directory.\\\",\n    )\n    args = parser.parse_args(\nIf a tool fails, return exactly a JSON object with old and new literal containing the original default assignment and new default assignment for the coordinator to apply. End once the edit succeeds.\"",
+          "id": "prt_2038636ac0010jPS5Inw7DqBVs",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_2038636a9001CgBCYTEvfAGpaD"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_2038636a9001CgBCYTEvfAGpaD",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 3576,
+          "input": 1713,
+          "output": 71,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1792
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355457477,
+          "completed": 1795355460453
+        },
+        "finish": "tool-calls",
+        "id": "msg_2038637c5001DQ47Q0plYIuqYd",
+        "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_203864268001KHFsAuKgZd2ZKT",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_2038637c5001DQ47Q0plYIuqYd"
+        },
+        {
+          "type": "tool",
+          "tool": "read",
+          "callID": "chatcmpl-tool-b23647f5c8045320",
+          "state": {
+            "status": "completed",
+            "input": {
+              "filePath": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py"
+            },
+            "output": "<path>/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py</path>\n<type>file</type>\n<content>\n1: \"\"\"Gate 4: fixed semantic regression over captured evidence and the frozen corpus.\n2: \n3: Two deterministic offline parts, clearly labelled (this is NOT a claim of fresh\n4: live-model quality):\n5: \n6: A. Captured-output regression: every committed evidence pack under\n7:    ``test/fixtures/packs`` is replayed with networking blocked for ALL replays,\n8:    compared against hard-coded fixed expected decisions and preserved source\n9:    facts, with deterministic policy/budget properties rechecked. The fixed pack\n10:    names are required so deleting one cannot make the suite pass.\n11: \n12: B. AT-07 deterministic prompt-transform regression over the real frozen\n13:    six-case corpus in ``src/research_desk/eval`` (``case_registry.all_cases`` +\n14:    ``compact_delegate.compact_transform``): builds a grounded message from each\n15:    case's real fields, runs the real compact transform, and verifies that the\n16:    retained output preserves symbol / date / price / source identifiers and\n17:    numeric facts. The 2 development / 4 held-out split is verified.\n18: \n19: The synthetic padding in part B is ONLY an offline stress input to prove fact\n20: retention under compaction; it is never presented as a live token-saving\n21: baseline. No provider request is ever made. Live judge/CLI output evaluation is\n22: a separate recorded release experiment owned by the source/evaluation thread.\n23: \"\"\"\n24: \n25: from __future__ import annotations\n26: \n27: import argparse\n28: import socket\n29: import sys\n30: import tempfile\n31: from pathlib import Path\n32: \n33: from _gate_lib import add_change_args, changed_files, fail, resolve_root\n34: \n35: # Committed fixture packs that must exist (deleting one must fail the gate).\n36: REQUIRED_PACKS = (\"aapl_buy_complete\", \"msft_review\", \"tsla_hold\", \"nvda_compact_memory\")\n37: \n38: # Fixed expected outcomes for the committed fixture corpus (offline regression).\n39: EXPECTED = {\n40:     \"aapl_buy_complete\": {\n41:         \"signal\": \"Buy\",\n42:         \"ticker\": \"AAPL\",\n43:         \"price\": 100.0,\n44:         \"proposal\": True,\n45:         \"max_by_cap\": 100,\n46:         \"max_by_cash\": 1000,\n47:     },\n48:     \"msft_review\": {\"signal\": \"REVIEW\", \"proposal\": False},\n49:     \"tsla_hold\": {\"signal\": \"Hold\", \"proposal\": False},\n50:     \"nvda_compact_memory\": {\n51:         \"signal\": \"Buy\",\n52:         \"ticker\": \"NVDA\",\n53:         \"price\": 137.0,\n54:         \"proposal\": True,\n55:         \"max_by_cap\": 72,\n56:         \"max_by_cash\": 729,\n57:     },\n58: }\n59: \n60: \n61: class _NetworkBlock:\n62:     \"\"\"Blocks real socket I/O and counts any attempted external call.\"\"\"\n63: \n64:     def __init__(self) -> None:\n65:         self.attempts = 0\n66: \n67:     def _block(self, *args, **kwargs):  # noqa: ANN002,ANN003\n68:         self.attempts += 1\n69:         raise OSError(\"network blocked during offline gate\")\n70: \n71: \n72: def _grounded_message(case: dict) -> str:\n73:     \"\"\"A grounded prompt carrying each case's real identity/date/price/source facts.\"\"\"\n74:     lines = [\n75:         \"STANDING ANALYSIS CONSTRAINTS (always true for this run):\",\n76:         f\"Instrument identity: {case['ticker']}\",\n77:         f\"Company: {case['identity']['company_name']}\",\n78:         f\"Sector/industry: {case['identity']['sector']} / {case['identity']['industry']}\",\n79:         f\"Analysis date: {case['analysis_date']}\",\n80:         f\"Announcement date: {case['announcement_date']}\",\n81:         f\"last_close: {case['latest_close']}\",\n82:         f\"source_id: {case['source_id']}\",\n83:         f\"source_url: {case['source_url']}\",\n84:         \"Evidence notes:\",\n85:     ]\n86:     lines += [f\"- {note}\" for note in case[\"notes\"]]\n87:     lines.append(\"Balance guidance: \" + case[\"balance\"])\n88:     # Synthetic verbose padding: an OFFLINE stress input only, to prove fact\n89:     # retention when compaction trimming would otherwise apply. This is not a\n90:     # live token-saving baseline.\n91:     for i in range(8):\n92:         lines.append(f\"verbose analyst draft paragraph {i}: \" + \"non-grounding filler text. \" * 30)\n93:     return \"\\n\".join(lines)\n94: \n95: \n96: def main() -> None:\n97:     parser = argparse.ArgumentParser(\n98:         description=\"Gate 4: fixed semantic regression (offline captured + prompt-transform).\"\n99:     )\n100:     add_change_args(parser)\n101:     parser.add_argument(\"--packs-dir\", default=\"test/fixtures/packs\")\n102:     parser.add_argument(\n103:         \"--evidence-dir\",\n104:         default=\"evaluation/release\",\n105:         help=\"Current-source paired release evidence directory.\",\n106:     )\n107:     args = parser.parse_args()\n108: \n109:     root: Path = resolve_root(args.root)\n110:     sys.path.insert(0, str(root))\n111:     sys.path.insert(0, str(root / \"src\"))\n112: \n113:     checks: list[str] = []\n114:     failures: list[str] = []\n115: \n116:     net = _NetworkBlock()\n117:     socket.socket.connect = net._block\n118:     socket.socket.sendall = net._block\n119:     socket.socket.recv = net._block\n120:     socket.getaddrinfo = net._block\n121: \n122:     packs_dir = root / args.packs_dir\n123:     if not packs_dir.is_dir():\n124:         fail(checks, [f\"fixture packs dir missing: {packs_dir}\"])\n125:     present = {p.name for p in packs_dir.iterdir() if (p / \"manifest.json\").exists()}\n126:     for name in REQUIRED_PACKS:\n127:         if name not in present:\n128:             failures.append(f\"required fixed pack missing: {name}\")\n129:     checks.append(f\"FIXED_CORPUS_PACKS={len(present)}\")\n130:     checks.append(f\"REQUIRED_PACKS={len(REQUIRED_PACKS)}\")\n131: \n132:     from research_desk.evidence import EvidencePackIO\n133:     from research_desk.models import LedgerState\n134:     from research_desk.policy import policy_bounds\n135:     from research_desk.replay import ReplayEngine\n136: \n137:     io = EvidencePackIO()\n138:     engine = ReplayEngine()\n139: \n140:     for pack_name in REQUIRED_PACKS:\n141:         pack_dir = packs_dir / pack_name\n142:         if not pack_dir.is_dir():\n143:             continue  # absence already reported above\n144:         expected = EXPECTED[pack_name]\n145:         try:\n146:             pack = io.import_pack(str(pack_dir))\n147:         except Exception as exc:  # noqa: BLE001 - surface as a failure\n148:             failures.append(f\"pack {pack_name} failed to import: {exc}\")\n149:             continue\n150: \n151:         if expected.get(\"ticker\") and pack.manifest.ticker != expected[\"ticker\"]:\n152:             failures.append(f\"{pack_name}: ticker {pack.manifest.ticker!r} != {expected['ticker']!r}\")\n153:         if pack.manifest.signal != expected[\"signal\"]:\n154:             failures.append(\n155:                 f\"{pack_name}: manifest signal {pack.manifest.signal!r} != expected {expected['signal']!r}\"\n156:             )\n157:         if not pack.manifest.trade_date:\n158:             failures.append(f\"{pack_name}: missing trade_date in manifest\")\n159:         if not pack.manifest.prompt_version:\n160:             failures.append(f\"{pack_name}: missing prompt_version in manifest\")\n161: \n162:         with tempfile.TemporaryDirectory() as tmp:\n163:             try:\n164:                 result = engine.replay(pack, Path(tmp), ledger=LedgerState(cash=100000.0))\n165:             except Exception as exc:  # noqa: BLE001\n166:                 failures.append(f\"{pack_name}: replay raised {exc}\")\n167:                 continue\n168:             if result.external_calls != 0:\n169:                 failures.append(f\"{pack_name}: replay reported {result.external_calls} external calls\")\n170:             if result.signal != expected[\"signal\"]:\n171:                 failures.append(f\"{pack_name}: replayed signal {result.signal!r} != expected {expected['signal']!r}\")\n172:             if result.signal != pack.manifest.signal:\n173:                 failures.append(\n174:                     f\"{pack_name}: replayed signal {result.signal!r} != manifest {pack.manifest.signal!r}\"\n175:                 )\n176: \n177:         prop = pack.proposal\n178:         if expected[\"proposal\"]:\n179:             if prop is None:\n180:                 failures.append(f\"{pack_name}: expected a PENDING_REVIEW proposal, got none\")\n181:             else:\n182:                 if prop.price is not None and abs(prop.price - expected[\"price\"]) > 1e-9:\n183:                     failures.append(f\"{pack_name}: proposal price {prop.price} != {expected['price']}\")\n184:                 bounds = policy_bounds(LedgerState(cash=100000.0), pack.manifest.ticker, prop.price)\n185:                 if bounds.get(\"max_by_cap\") != expected[\"max_by_cap\"]:\n186:                     failures.append(f\"{pack_name}: max_by_cap {bounds.get('max_by_cap')} != {expected['max_by_cap']}\")\n187:                 if bounds.get(\"max_by_cash\") != expected[\"max_by_cash\"]:\n188:                     failures.append(f\"{pack_name}: max_by_cash {bounds.get('max_by_cash')} != {expected['max_by_cash']}\")\n189:         else:\n190:             if prop is not None:\n191:                 failures.append(f\"{pack_name}: expected no proposal for {expected['signal']}, got one\")\n192: \n193:         usage = pack.usage\n194:         if usage.total_tokens != usage.input_tokens + usage.output_tokens:\n195:             failures.append(\n196:                 f\"{pack_name}: usage total {usage.total_tokens} != input {usage.input_tokens} + output {usage.output_tokens}\"\n197:             )\n198:         if usage.stop_reason not in {\"completed\", \"budget_exhausted\", \"error\"}:\n199:             failures.append(f\"{pack_name}: unknown usage stop_reason {usage.stop_reason!r}\")\n200: \n201:     # --- AT-07 deterministic prompt-transform regression over the frozen corpus ---\n202:     try:\n203:         from research_desk.eval.case_registry import all_cases\n204:         from research_desk.eval.compact_delegate import compact_transform\n205:     except ImportError as exc:\n206:         failures.append(f\"AT-07 eval module missing under src/research_desk/eval: {exc}\")\n207:         all_cases = None  # type: ignore[assignment]\n208:         compact_transform = None  # type: ignore[assignment]\n209: \n210:     if all_cases is not None:\n211:         cases = all_cases()\n212:         checks.append(f\"AT07_CORPUS_CASES={len(cases)}\")\n213:         if len(cases) != 6:\n214:             failures.append(f\"expected 6 frozen evaluation cases, got {len(cases)}\")\n215:         dev = [c for c in cases if c.get(\"split\") == \"development\"]\n216:         held = [c for c in cases if c.get(\"split\") == \"held_out\"]\n217:         checks.append(f\"AT07_SPLIT: development={len(dev)}, held_out={len(held)}\")\n218:         if len(dev) != 2 or len(held) != 4:\n219:             failures.append(f\"AT-07 split must be 2 development / 4 held-out; got {len(dev)}/{len(held)}\")\n220: \n221:         for case in cases:\n222:             ticker = case[\"ticker\"]\n223:             csv_path = Path(case[\"csv_path\"])\n224:             if not csv_path.exists():\n225:                 failures.append(f\"AT-07 case {ticker}: csv missing -> {csv_path}\")\n226:             out = compact_transform(_grounded_message(case))\n227:             out_text = \"\\n\".join(\n228:                 m.content if isinstance(m.content, str) else str(m.content)\n229:                 for m in (out if isinstance(out, list) else [out])\n230:             )\n231:             facts = [\n232:                 ticker,\n233:                 case[\"analysis_date\"],\n234:                 str(case[\"latest_close\"]),\n235:                 case[\"source_id\"],\n236:                 case[\"source_url\"],\n237:             ]\n238:             for fact in facts:\n239:                 if fact not in out_text:\n240:                     failures.append(f\"AT-07 case {ticker}: compact output dropped fact {fact!r}\")\n241:             for note in case[\"notes\"]:\n242:                 if note not in out_text:\n243:                     failures.append(f\"AT-07 case {ticker}: compact output dropped a numeric note\")\n244:                     break\n245: \n246:     checks.append(\n247:         \"GATE4_OFFLINE_SCOPE=fixed captured-output replay + deterministic prompt-transform \"\n248:         \"regression (no live model quality claim)\"\n249:     )\n250:     checks.append(\n251:         \"PADDING=offline fact-retention stress input only; NOT a live token-saving baseline\"\n252:     )\n253: \n254:     if net.attempts:\n255:         failures.append(f\"network access attempted during offline gate ({net.attempts} attempt(s))\")\n256:     else:\n257:         checks.append(\"external network calls attempted: 0\")\n258: \n259:     changed = changed_files(root, args.base_ref, args.head_ref, args.changed_files)\n260:     if changed:\n261:         prompt_changes = [\n262:             c for c in changed\n263:             if c.endswith(\".py\") or \"prompt\" in c.lower() or \"/prompts/\" in c\n264:         ]\n265:         if prompt_changes:\n266:             checks.append(\n267:                 f\"prompt/model change detected ({len(prompt_changes)} file(s)); \"\n268:                 \"fixed captured-output + prompt-transform gate applies (live quality \"\n269:                 \"requires the recorded release experiment)\"\n270:             )\n271: \n272:     # --- Source-bound release evidence (ADR-004) ---\n273:     try:\n274:         from research_desk.eval.quality import validate_release\n275: \n276:         evidence_dir = Path(args.evidence_dir)\n277:         if not evidence_dir.is_absolute():\n278:             evidence_dir = root / evidence_dir\n279:         release = validate_release(root, evidence_dir)\n280:         checks.extend(release[\"checks\"])\n281:         checks.extend(f\"WARNING: {w}\" for w in release[\"warnings\"])\n282:         failures.extend(release[\"failures\"])\n283:         checks.append(\n284:             \"RELEASE_EVIDENCE=validated independently from per-case/per-arm files; \"\n285:             \"aggregate PASS is not trusted\"\n286:         )\n287:     except Exception as exc:  # noqa: BLE001 - surface as a gate failure\n288:         failures.append(f\"release evidence validation could not run: {exc}\")\n289: \n290:     fail(checks, failures)\n291: \n292: \n293: if __name__ == \"__main__\":\n294:     main()\n\n(End of file - total 294 lines)\n</content>",
+            "metadata": {
+              "preview": "\"\"\"Gate 4: fixed semantic regression over captured evidence and the frozen corpus.\n\nTwo deterministic offline parts, clearly labelled (this is NOT a claim of fresh\nlive-model quality):\n\nA. Captured-output regression: every committed evidence pack under\n   ``test/fixtures/packs`` is replayed with networking blocked for ALL replays,\n   compared against hard-coded fixed expected decisions and preserved source\n   facts, with deterministic policy/budget properties rechecked. The fixed pack\n   names are required so deleting one cannot make the suite pass.\n\nB. AT-07 deterministic prompt-transform regression over the real frozen\n   six-case corpus in ``src/research_desk/eval`` (``case_registry.all_cases`` +\n   ``compact_delegate.compact_transform``): builds a grounded message from each\n   case's real fields, runs the real compact transform, and verifies that the\n   retained output preserves symbol / date / price / source identifiers and\n   numeric facts. The 2 development / 4 held-out split is verified.\n\nThe synthetic padding in part B is ONLY an offline stress input to prove fact\nretention under compaction; it is never presented as a live token-saving",
+              "truncated": false,
+              "loaded": [],
+              "display": {
+                "type": "file",
+                "path": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py",
+                "text": "\"\"\"Gate 4: fixed semantic regression over captured evidence and the frozen corpus.\n\nTwo deterministic offline parts, clearly labelled (this is NOT a claim of fresh\nlive-model quality):\n\nA. Captured-output regression: every committed evidence pack under\n   ``test/fixtures/packs`` is replayed with networking blocked for ALL replays,\n   compared against hard-coded fixed expected decisions and preserved source\n   facts, with deterministic policy/budget properties rechecked. The fixed pack\n   names are required so deleting one cannot make the suite pass.\n\nB. AT-07 deterministic prompt-transform regression over the real frozen\n   six-case corpus in ``src/research_desk/eval`` (``case_registry.all_cases`` +\n   ``compact_delegate.compact_transform``): builds a grounded message from each\n   case's real fields, runs the real compact transform, and verifies that the\n   retained output preserves symbol / date / price / source identifiers and\n   numeric facts. The 2 development / 4 held-out split is verified.\n\nThe synthetic padding in part B is ONLY an offline stress input to prove fact\nretention under compaction; it is never presented as a live token-saving\nbaseline. No provider request is ever made. Live judge/CLI output evaluation is\na separate recorded release experiment owned by the source/evaluation thread.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport argparse\nimport socket\nimport sys\nimport tempfile\nfrom pathlib import Path\n\nfrom _gate_lib import add_change_args, changed_files, fail, resolve_root\n\n# Committed fixture packs that must exist (deleting one must fail the gate).\nREQUIRED_PACKS = (\"aapl_buy_complete\", \"msft_review\", \"tsla_hold\", \"nvda_compact_memory\")\n\n# Fixed expected outcomes for the committed fixture corpus (offline regression).\nEXPECTED = {\n    \"aapl_buy_complete\": {\n        \"signal\": \"Buy\",\n        \"ticker\": \"AAPL\",\n        \"price\": 100.0,\n        \"proposal\": True,\n        \"max_by_cap\": 100,\n        \"max_by_cash\": 1000,\n    },\n    \"msft_review\": {\"signal\": \"REVIEW\", \"proposal\": False},\n    \"tsla_hold\": {\"signal\": \"Hold\", \"proposal\": False},\n    \"nvda_compact_memory\": {\n        \"signal\": \"Buy\",\n        \"ticker\": \"NVDA\",\n        \"price\": 137.0,\n        \"proposal\": True,\n        \"max_by_cap\": 72,\n        \"max_by_cash\": 729,\n    },\n}\n\n\nclass _NetworkBlock:\n    \"\"\"Blocks real socket I/O and counts any attempted external call.\"\"\"\n\n    def __init__(self) -> None:\n        self.attempts = 0\n\n    def _block(self, *args, **kwargs):  # noqa: ANN002,ANN003\n        self.attempts += 1\n        raise OSError(\"network blocked during offline gate\")\n\n\ndef _grounded_message(case: dict) -> str:\n    \"\"\"A grounded prompt carrying each case's real identity/date/price/source facts.\"\"\"\n    lines = [\n        \"STANDING ANALYSIS CONSTRAINTS (always true for this run):\",\n        f\"Instrument identity: {case['ticker']}\",\n        f\"Company: {case['identity']['company_name']}\",\n        f\"Sector/industry: {case['identity']['sector']} / {case['identity']['industry']}\",\n        f\"Analysis date: {case['analysis_date']}\",\n        f\"Announcement date: {case['announcement_date']}\",\n        f\"last_close: {case['latest_close']}\",\n        f\"source_id: {case['source_id']}\",\n        f\"source_url: {case['source_url']}\",\n        \"Evidence notes:\",\n    ]\n    lines += [f\"- {note}\" for note in case[\"notes\"]]\n    lines.append(\"Balance guidance: \" + case[\"balance\"])\n    # Synthetic verbose padding: an OFFLINE stress input only, to prove fact\n    # retention when compaction trimming would otherwise apply. This is not a\n    # live token-saving baseline.\n    for i in range(8):\n        lines.append(f\"verbose analyst draft paragraph {i}: \" + \"non-grounding filler text. \" * 30)\n    return \"\\n\".join(lines)\n\n\ndef main() -> None:\n    parser = argparse.ArgumentParser(\n        description=\"Gate 4: fixed semantic regression (offline captured + prompt-transform).\"\n    )\n    add_change_args(parser)\n    parser.add_argument(\"--packs-dir\", default=\"test/fixtures/packs\")\n    parser.add_argument(\n        \"--evidence-dir\",\n        default=\"evaluation/release\",\n        help=\"Current-source paired release evidence directory.\",\n    )\n    args = parser.parse_args()\n\n    root: Path = resolve_root(args.root)\n    sys.path.insert(0, str(root))\n    sys.path.insert(0, str(root / \"src\"))\n\n    checks: list[str] = []\n    failures: list[str] = []\n\n    net = _NetworkBlock()\n    socket.socket.connect = net._block\n    socket.socket.sendall = net._block\n    socket.socket.recv = net._block\n    socket.getaddrinfo = net._block\n\n    packs_dir = root / args.packs_dir\n    if not packs_dir.is_dir():\n        fail(checks, [f\"fixture packs dir missing: {packs_dir}\"])\n    present = {p.name for p in packs_dir.iterdir() if (p / \"manifest.json\").exists()}\n    for name in REQUIRED_PACKS:\n        if name not in present:\n            failures.append(f\"required fixed pack missing: {name}\")\n    checks.append(f\"FIXED_CORPUS_PACKS={len(present)}\")\n    checks.append(f\"REQUIRED_PACKS={len(REQUIRED_PACKS)}\")\n\n    from research_desk.evidence import EvidencePackIO\n    from research_desk.models import LedgerState\n    from research_desk.policy import policy_bounds\n    from research_desk.replay import ReplayEngine\n\n    io = EvidencePackIO()\n    engine = ReplayEngine()\n\n    for pack_name in REQUIRED_PACKS:\n        pack_dir = packs_dir / pack_name\n        if not pack_dir.is_dir():\n            continue  # absence already reported above\n        expected = EXPECTED[pack_name]\n        try:\n            pack = io.import_pack(str(pack_dir))\n        except Exception as exc:  # noqa: BLE001 - surface as a failure\n            failures.append(f\"pack {pack_name} failed to import: {exc}\")\n            continue\n\n        if expected.get(\"ticker\") and pack.manifest.ticker != expected[\"ticker\"]:\n            failures.append(f\"{pack_name}: ticker {pack.manifest.ticker!r} != {expected['ticker']!r}\")\n        if pack.manifest.signal != expected[\"signal\"]:\n            failures.append(\n                f\"{pack_name}: manifest signal {pack.manifest.signal!r} != expected {expected['signal']!r}\"\n            )\n        if not pack.manifest.trade_date:\n            failures.append(f\"{pack_name}: missing trade_date in manifest\")\n        if not pack.manifest.prompt_version:\n            failures.append(f\"{pack_name}: missing prompt_version in manifest\")\n\n        with tempfile.TemporaryDirectory() as tmp:\n            try:\n                result = engine.replay(pack, Path(tmp), ledger=LedgerState(cash=100000.0))\n            except Exception as exc:  # noqa: BLE001\n                failures.append(f\"{pack_name}: replay raised {exc}\")\n                continue\n            if result.external_calls != 0:\n                failures.append(f\"{pack_name}: replay reported {result.external_calls} external calls\")\n            if result.signal != expected[\"signal\"]:\n                failures.append(f\"{pack_name}: replayed signal {result.signal!r} != expected {expected['signal']!r}\")\n            if result.signal != pack.manifest.signal:\n                failures.append(\n                    f\"{pack_name}: replayed signal {result.signal!r} != manifest {pack.manifest.signal!r}\"\n                )\n\n        prop = pack.proposal\n        if expected[\"proposal\"]:\n            if prop is None:\n                failures.append(f\"{pack_name}: expected a PENDING_REVIEW proposal, got none\")\n            else:\n                if prop.price is not None and abs(prop.price - expected[\"price\"]) > 1e-9:\n                    failures.append(f\"{pack_name}: proposal price {prop.price} != {expected['price']}\")\n                bounds = policy_bounds(LedgerState(cash=100000.0), pack.manifest.ticker, prop.price)\n                if bounds.get(\"max_by_cap\") != expected[\"max_by_cap\"]:\n                    failures.append(f\"{pack_name}: max_by_cap {bounds.get('max_by_cap')} != {expected['max_by_cap']}\")\n                if bounds.get(\"max_by_cash\") != expected[\"max_by_cash\"]:\n                    failures.append(f\"{pack_name}: max_by_cash {bounds.get('max_by_cash')} != {expected['max_by_cash']}\")\n        else:\n            if prop is not None:\n                failures.append(f\"{pack_name}: expected no proposal for {expected['signal']}, got one\")\n\n        usage = pack.usage\n        if usage.total_tokens != usage.input_tokens + usage.output_tokens:\n            failures.append(\n                f\"{pack_name}: usage total {usage.total_tokens} != input {usage.input_tokens} + output {usage.output_tokens}\"\n            )\n        if usage.stop_reason not in {\"completed\", \"budget_exhausted\", \"error\"}:\n            failures.append(f\"{pack_name}: unknown usage stop_reason {usage.stop_reason!r}\")\n\n    # --- AT-07 deterministic prompt-transform regression over the frozen corpus ---\n    try:\n        from research_desk.eval.case_registry import all_cases\n        from research_desk.eval.compact_delegate import compact_transform\n    except ImportError as exc:\n        failures.append(f\"AT-07 eval module missing under src/research_desk/eval: {exc}\")\n        all_cases = None  # type: ignore[assignment]\n        compact_transform = None  # type: ignore[assignment]\n\n    if all_cases is not None:\n        cases = all_cases()\n        checks.append(f\"AT07_CORPUS_CASES={len(cases)}\")\n        if len(cases) != 6:\n            failures.append(f\"expected 6 frozen evaluation cases, got {len(cases)}\")\n        dev = [c for c in cases if c.get(\"split\") == \"development\"]\n        held = [c for c in cases if c.get(\"split\") == \"held_out\"]\n        checks.append(f\"AT07_SPLIT: development={len(dev)}, held_out={len(held)}\")\n        if len(dev) != 2 or len(held) != 4:\n            failures.append(f\"AT-07 split must be 2 development / 4 held-out; got {len(dev)}/{len(held)}\")\n\n        for case in cases:\n            ticker = case[\"ticker\"]\n            csv_path = Path(case[\"csv_path\"])\n            if not csv_path.exists():\n                failures.append(f\"AT-07 case {ticker}: csv missing -> {csv_path}\")\n            out = compact_transform(_grounded_message(case))\n            out_text = \"\\n\".join(\n                m.content if isinstance(m.content, str) else str(m.content)\n                for m in (out if isinstance(out, list) else [out])\n            )\n            facts = [\n                ticker,\n                case[\"analysis_date\"],\n                str(case[\"latest_close\"]),\n                case[\"source_id\"],\n                case[\"source_url\"],\n            ]\n            for fact in facts:\n                if fact not in out_text:\n                    failures.append(f\"AT-07 case {ticker}: compact output dropped fact {fact!r}\")\n            for note in case[\"notes\"]:\n                if note not in out_text:\n                    failures.append(f\"AT-07 case {ticker}: compact output dropped a numeric note\")\n                    break\n\n    checks.append(\n        \"GATE4_OFFLINE_SCOPE=fixed captured-output replay + deterministic prompt-transform \"\n        \"regression (no live model quality claim)\"\n    )\n    checks.append(\n        \"PADDING=offline fact-retention stress input only; NOT a live token-saving baseline\"\n    )\n\n    if net.attempts:\n        failures.append(f\"network access attempted during offline gate ({net.attempts} attempt(s))\")\n    else:\n        checks.append(\"external network calls attempted: 0\")\n\n    changed = changed_files(root, args.base_ref, args.head_ref, args.changed_files)\n    if changed:\n        prompt_changes = [\n            c for c in changed\n            if c.endswith(\".py\") or \"prompt\" in c.lower() or \"/prompts/\" in c\n        ]\n        if prompt_changes:\n            checks.append(\n                f\"prompt/model change detected ({len(prompt_changes)} file(s)); \"\n                \"fixed captured-output + prompt-transform gate applies (live quality \"\n                \"requires the recorded release experiment)\"\n            )\n\n    # --- Source-bound release evidence (ADR-004) ---\n    try:\n        from research_desk.eval.quality import validate_release\n\n        evidence_dir = Path(args.evidence_dir)\n        if not evidence_dir.is_absolute():\n            evidence_dir = root / evidence_dir\n        release = validate_release(root, evidence_dir)\n        checks.extend(release[\"checks\"])\n        checks.extend(f\"WARNING: {w}\" for w in release[\"warnings\"])\n        failures.extend(release[\"failures\"])\n        checks.append(\n            \"RELEASE_EVIDENCE=validated independently from per-case/per-arm files; \"\n            \"aggregate PASS is not trusted\"\n        )\n    except Exception as exc:  # noqa: BLE001 - surface as a gate failure\n        failures.append(f\"release evidence validation could not run: {exc}\")\n\n    fail(checks, failures)\n\n\nif __name__ == \"__main__\":\n    main()",
+                "lineStart": 1,
+                "lineEnd": 294,
+                "totalLines": 294,
+                "truncated": false
+              }
+            },
+            "title": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py",
+            "time": {
+              "start": 1795355460252,
+              "end": 1795355460268
+            }
+          },
+          "id": "prt_20386426c001OcjQ4RtrnSXAfg",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_2038637c5001DQ47Q0plYIuqYd"
+        },
+        {
+          "reason": "tool-calls",
+          "type": "step-finish",
+          "tokens": {
+            "total": 3576,
+            "input": 1713,
+            "output": 71,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1792
+            }
+          },
+          "cost": 0,
+          "id": "prt_203864361001EUk2nUYu18j4Vv",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_2038637c5001DQ47Q0plYIuqYd"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_2038636a9001CgBCYTEvfAGpaD",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 7444,
+          "input": 3932,
+          "output": 120,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 3392
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355460456,
+          "completed": 1795355463020
+        },
+        "finish": "tool-calls",
+        "id": "msg_2038643670015lQKmtJe639Gka",
+        "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_203864b13001oX1AlpDTSpXF7r",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_2038643670015lQKmtJe639Gka"
+        },
+        {
+          "type": "tool",
+          "tool": "edit",
+          "callID": "chatcmpl-tool-9327a98703e54f9d",
+          "state": {
+            "status": "completed",
+            "input": {
+              "filePath": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py",
+              "oldString": "        default=\"evaluation/release\",",
+              "newString": "        default=\"evaluation/submission-release\","
+            },
+            "output": "Edit applied successfully.",
+            "metadata": {
+              "diagnostics": {},
+              "diff": "Index: /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py\n===================================================================\n--- /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py\n+++ /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py\n@@ -100,9 +100,9 @@\n add_change_args(parser)\n parser.add_argument(\"--packs-dir\", default=\"test/fixtures/packs\")\n parser.add_argument(\n     \"--evidence-dir\",\n-    default=\"evaluation/release\",\n+    default=\"evaluation/submission-release\",\n     help=\"Current-source paired release evidence directory.\",\n )\n args = parser.parse_args()\n \n",
+              "filediff": {
+                "file": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py",
+                "patch": "Index: /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py\n===================================================================\n--- /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py\n+++ /Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py\n@@ -100,9 +100,9 @@\n add_change_args(parser)\n parser.add_argument(\"--packs-dir\", default=\"test/fixtures/packs\")\n parser.add_argument(\n     \"--evidence-dir\",\n-    default=\"evaluation/release\",\n+    default=\"evaluation/submission-release\",\n     help=\"Current-source paired release evidence directory.\",\n )\n args = parser.parse_args()\n \n",
+                "additions": 1,
+                "deletions": 1
+              },
+              "truncated": false
+            },
+            "title": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path/scripts/check_semantic.py",
+            "time": {
+              "start": 1795355462803,
+              "end": 1795355462810
+            }
+          },
+          "id": "prt_203864b14001XoX1wwIC1OrP1Q",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_2038643670015lQKmtJe639Gka"
+        },
+        {
+          "reason": "tool-calls",
+          "type": "step-finish",
+          "tokens": {
+            "total": 7444,
+            "input": 3932,
+            "output": 120,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 3392
+            }
+          },
+          "cost": 0,
+          "id": "prt_203864d69001mDc2MR7jj5c5mN",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_2038643670015lQKmtJe639Gka"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_2038636a9001CgBCYTEvfAGpaD",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/quality-path",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 7462,
+          "input": 226,
+          "output": 4,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 7232
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355463021,
+          "completed": 1795355464708
+        },
+        "finish": "stop",
+        "id": "msg_203864d6d001sIA6gQ7r4KCmKX",
+        "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_2038653ec001yU2TlQ7FZbAeFh",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_203864d6d001sIA6gQ7r4KCmKX"
+        },
+        {
+          "type": "text",
+          "text": "Done.",
+          "time": {
+            "start": 1795355464687,
+            "end": 1795355464705
+          },
+          "id": "prt_2038653ef001bUrIg38DlHkCKL",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_203864d6d001sIA6gQ7r4KCmKX"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 7462,
+            "input": 226,
+            "output": 4,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 7232
+            }
+          },
+          "cost": 0,
+          "id": "prt_20386540200129QbX4Uxk6FK6j",
+          "sessionID": "ses_dfc79c96dffePtDx4WXdzi7nFF",
+          "messageID": "msg_203864d6d001sIA6gQ7r4KCmKX"
+        }
+      ]
+    }
+  ]
+}

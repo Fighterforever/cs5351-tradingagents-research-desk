@@ -71,18 +71,19 @@ class ReplayEngine:
         result.signal = signal
 
         out = Path(out_dir)
+        before = _file_state(out)
+        complete: Path | None = None
         try:
             complete = write_report_tree(pack.final_state, pack.manifest.ticker, out)
             apply_research_identity_header(complete, render_research_identity(pack))
-            result.report_files = [str(p) for p in out.rglob("*") if p.is_file()]
-            if complete not in result.report_files:
-                result.report_files.append(str(complete))
         except Exception as exc:  # noqa: BLE001 - report rebuild is best-effort
             result.error = f"report rebuild failed: {exc}"
+        finally:
+            result.report_files = _written_files(out, before, complete)
 
         if ledger is not None and pack.proposal is not None:
             prop = pack.proposal
-            result.policy_bounds = policy_bounds(ledger, prop.ticker, prop.price)
+            result.policy_bounds = _policy_bounds_for(ledger, prop)
             if prop.shares is not None and prop.price is not None:
                 verdict = (
                     evaluate_sell(ledger, prop.ticker, prop.shares, prop.price)
@@ -104,3 +105,49 @@ class ReplayEngine:
                 )
 
         return result
+
+
+def _file_state(root: Path) -> dict[str, tuple[int, int]]:
+    """Snapshot existing files so unrelated preexisting output is not counted."""
+    if not root.exists():
+        return {}
+    state: dict[str, tuple[int, int]] = {}
+    for path in root.rglob("*"):
+        if path.is_file():
+            stat = path.stat()
+            state[str(path)] = (stat.st_mtime_ns, stat.st_size)
+    return state
+
+
+def _written_files(
+    root: Path, before: dict[str, tuple[int, int]], complete: Path | None
+) -> list[str]:
+    """Unique files this replay actually wrote (new or changed), as strings."""
+    written: set[str] = set()
+    for path in root.rglob("*"):
+        if not path.is_file():
+            continue
+        stat = path.stat()
+        if before.get(str(path)) != (stat.st_mtime_ns, stat.st_size):
+            written.add(str(path))
+    if complete is not None:
+        written.add(str(complete))
+    return sorted(written)
+
+
+def _policy_bounds_for(ledger, prop) -> dict:
+    """Deterministic bounds, using the policy owner for buy and sell semantics."""
+    bounds = policy_bounds(ledger, prop.ticker, prop.price)
+    if prop.side != "sell":
+        return bounds
+
+    position = ledger.positions.get(prop.ticker.upper())
+    owned = position.shares if position is not None else 0
+    bounds = dict(bounds)
+    bounds["side"] = "sell"
+    bounds["max_sell"] = owned
+    # A sale never adds shares and needs no cash; report nonnegative limits
+    # instead of the buy-oriented additional-share/cash caps.
+    bounds["max_by_cap"] = 0
+    bounds["max_by_cash"] = 0
+    return bounds

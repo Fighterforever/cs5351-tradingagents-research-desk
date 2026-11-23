@@ -1,0 +1,245 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+Small corrections using exact text replacements only. In storage.register_proposal include REVIEW_REQUIRED as a nonterminal status in the guarded SQL and parameters; do not persist a research-supplied operator reason, use NULL; improve the long leading comment to one docstring; on returning the inserted or existing record use a clear invariant (raise if unexpectedly missing), not a fallback that returns the incoming record and its authority fields. In cli.research avoid the unused variable stored, assign the returned record back to result.proposal for a truthful printed outcome. In evidence.py compute canonical material identity for all fields of the InputSnapshot as via sanitize_secrets(input_snapshot.model_dump()), plus normalized ticker/trade_date. Existing serialization exports the same sanitized inputs; reuse json canonicalization. Use the source pack manifest ticker/date for deriving proposal identity. Reject mismatch proposal and manifest in run_id, ticker or date instead of trusting the incoming proposal labels. Keep no original archives modified.
+
+SOURCE src/research_desk/storage.py
+
+    def register_proposal(self, proposal: ProposalRecord) -> ProposalRecord:
+        # Import-facing registration: untrusted advisory material only. New
+        # rows start pending with no operator approval, shares, or execution.
+        # A legit unchanged duplicate returns the actual ledger row (preserving
+        # any chosen quantity/approval); rejected/simulated rows are immutable.
+        # If research terms/identity change while nonterminal, reset local
+        # approval/shares/execution to pending with a freshly computed version.
+        nonterminal = (
+            ProposalStatus.PENDING_REVIEW.value,
+            ProposalStatus.APPROVED.value,
+        )
+        terms_unchanged = (
+            "proposals.run_id = excluded.run_id"
+            " AND proposals.ticker = excluded.ticker"
+            " AND proposals.trade_date = excluded.trade_date"
+            " AND proposals.signal = excluded.signal"
+            " AND proposals.rating IS excluded.rating"
+            " AND proposals.side = excluded.side"
+            " AND proposals.price IS excluded.price"
+            " AND proposals.evidence_id IS excluded.evidence_id"
+        )
+        with self._conn:
+            self._conn.execute(
+                f"""INSERT INTO proposals
+                   (id, run_id, ticker, trade_date, signal, rating, side, price,
+                    shares, evidence_id, status, proposal_version, operator,
+                    created_at, approved_at, approved_version, reason, execution_json)
+                   VALUES (?,?,?,?,?,?,?,?,NULL,?,?,?,NULL,?,NULL,NULL,?,NULL)
+                   ON CONFLICT(id) DO UPDATE SET
+                     run_id = excluded.run_id,
+                     ticker = excluded.ticker,
+                     trade_date = excluded.trade_date,
+                     signal = excluded.signal,
+                     rating = excluded.rating,
+                     side = excluded.side,
+                     price = excluded.price,
+                     evidence_id = excluded.evidence_id,
+                     status = excluded.status,
+                     proposal_version = excluded.proposal_version,
+                     reason = excluded.reason,
+                     shares = NULL,
+                     operator = NULL,
+                     approved_at = NULL,
+                     approved_version = NULL,
+                     execution_json = NULL
+                   WHERE proposals.status IN (?,?)
+                     AND NOT ({terms_unchanged})""",
+                (
+                    proposal.proposal_id, proposal.run_id, proposal.ticker,
+                    proposal.trade_date, proposal.signal, proposal.rating,
+                    proposal.side, proposal.price, proposal.evidence_id,
+                    ProposalStatus.PENDING_REVIEW.value,
+                    make_proposal_version(
+                        proposal.ticker,
+                        proposal.trade_date,
+                        proposal.signal,
+                        proposal.price,
+                        side=proposal.side,
+                        evidence_id=proposal.evidence_id,
+                    ),
+                    proposal.created_at, proposal.reason,
+                    *nonterminal,
+                ),
+            )
+        existing = self.get_proposal(proposal.proposal_id)
+        if existing is not None:
+            return existing
+        return proposal
+
+    def get_proposal(self, proposal_id: str) -> ProposalRecord | None:
+        row = self._conn.execute(
+            "SELECT * FROM proposals WHERE id=?", (proposal_id,)
+        ).fetchone()
+        if row is None:
+            return None
+        return self._row_to_proposal(row)
+
+
+SOURCE src/research_desk/evidence.py
+
+logger = logging.getLogger(__name__)
+
+
+def _canonical_json(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, default=str)
+
+
+def material_evidence_id(
+    ticker: str, trade_date: str, input_snapshot: InputSnapshot
+) -> str:
+    """Stable SHA-256 identity of the material evidence for a proposal.
+
+    Derived only from logical inputs (ticker, trade date and material
+    ``InputSnapshot`` data), so it is identical on creation and import,
+    independent of JSON key ordering, secret sanitization and run IDs.
+    """
+    import hashlib
+
+    payload = {
+        "ticker": str(ticker).upper(),
+        "trade_date": str(trade_date),
+        "identity": input_snapshot.identity,
+        "data_snapshot": input_snapshot.data_snapshot,
+        "available_sources": input_snapshot.available_sources,
+        "memory_used": input_snapshot.memory_used,
+        "memory_sources": input_snapshot.memory_sources,
+    }
+    return hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+
+# Files that make up a complete evidence pack. ``complete`` is only set when all
+# of them are present and parseable.
+PACK_FILES = (
+    "manifest.json",
+    "input.json",
+    "events.jsonl",
+    "final_state.json",
+    "usage.json",
+    "calls.json",
+)
+
+...
+def sanitize_secrets(obj: Any, _key: str = "") -> Any:
+    """Recursively redact credential-looking keys so packs never hold secrets (SEC-001).
+
+    Actual Pydantic models -- including LangChain ``HumanMessage``,
+    ``AIMessage`` and ``ToolMessage`` values nested in graph state -- are
+    converted to JSON-native dicts via their ``model_dump(mode="json")`` API
+    before redaction. Their type, content, tool calls, tool call id,
+    additional kwargs, response metadata and usage metadata therefore survive
+    export/import intact while any credential fields inside them are still
+    redacted. Messages are never stringified.
+    """
+    if isinstance(obj, BaseModel):
+        return sanitize_secrets(obj.model_dump(mode="json"), _key)
+    if isinstance(obj, dict):
+        out = {}
+        for k, v in obj.items():
+            if _is_credential_key(str(k)):
+                out[k] = "**REDACTED**" if v not in (None, "") else v
+            else:
+                out[k] = sanitize_secrets(v, _key)
+        return out
+    if isinstance(obj, (list, tuple)):
+        return [sanitize_secrets(v, _key) for v in obj]
+    return obj
+
+
+class EvidenceLog:
+    """Ordered, sequence-numbered event log for one run."""
+
+    def __init__(self) -> None:
+
+...
+                f"Evidence pack {d} claims a completed run but has an empty final_state."
+            )
+        if proposal is not None:
+            from .models import make_proposal_version
+
+            proposal.evidence_id = material_evidence_id(
+                proposal.ticker or manifest.ticker,
+                proposal.trade_date or manifest.trade_date,
+                input_snapshot,
+            )
+            proposal.proposal_version = make_proposal_version(
+                proposal.ticker,
+                proposal.trade_date,
+                proposal.signal,
+                proposal.price,
+                side=proposal.side,
+                shares=proposal.shares,
+                evidence_id=proposal.evidence_id,
+            )
+        return pack
+
+    def load_external_proposal(self, d: Path) -> Any:
+        """Load proposal.json from a pack directory without requiring a full pack."""
+        if not (d / "proposal.json").exists():
+            return None
+        from .models import ProposalRecord
+
+SOURCE src/research_desk/cli.py
+        source_pack=source_pack,
+    )
+    with console.status(f"Running research on {ticker} ({trade_date})..."):
+        result = runner.run(ticker, trade_date)
+
+    store = _store(settings)
+    stored = None
+    if result.proposal is not None and not no_proposal:
+        stored = store.register_proposal(result.proposal)
+    store.close()
+
+    _print_run_result(result)
+    if result.outcome == RunOutcome.BUDGET_STOPPED.value:
+        console.print(
+            "[yellow]Budget stopped: incomplete research returned, no approvable "
+
+SOURCE src/research_desk/models.py
+    """Provenance header of a research run and its evidence pack."""
+
+    run_id: str
+    ticker: str
+    trade_date: str
+    asset_type: str = "stock"
+    analysts: list[str] = Field(default_factory=list)
+    context_mode: str = "baseline"
+    data_mode: str = "live"  # live | frozen
+    outcome: str = "completed"
+    signal: str | None = None
+    prompt_version: str = ""
+    package_schema_version: int = 1
+    created_at: str = ""
+    operator: str = "research-desk"
+    model_quick: str | None = None
+    model_deep: str | None = None
+    budget_max_calls: int | None = None
+    source_pack: str | None = None  # when this pack is a controlled rerun of another pack
+    reason: str | None = None
+
+
+class InputSnapshot(BaseModel):
+    """The material inputs a run consumed, so a rerun can be replayed."""
+
+    instrument_context: str = ""
+    past_context: str = ""
+    initial_state: dict[str, Any] = Field(default_factory=dict)
+    identity: dict[str, Any] = Field(default_factory=dict)
+    data_snapshot: dict[str, dict[str, str]] = Field(
+        default_factory=dict
+    )  # tool_name -> {"canonical args key": result text}
+    memory_used: list[dict[str, Any]] = Field(default_factory=list)
+    memory_sources: list[str] = Field(default_factory=list)
+    # Factual *available* corpus for the case (identity, full market CSV, official
+    # news notes) recorded separately from the tool calls actually made. This is
+    # what makes the evidence-derived price available for proposal/replay even
+    # when a model path did not ask one of the data tools.
+    available_sources: dict[str, Any] = Field(default_factory=dict)
+
+
+class EvidencePack(BaseModel):

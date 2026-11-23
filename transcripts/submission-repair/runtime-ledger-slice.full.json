@@ -1,0 +1,151 @@
+{
+  "info": {
+    "id": "ses_dfc7662f4ffe7GnPbDSB3M1xHc",
+    "slug": "clever-rocket",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-ledger-slice",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-ledger-slice",
+    "title": "Research Desk runtime-ledger-slice",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 2330,
+      "output": 817,
+      "reasoning": 0,
+      "cache": {
+        "read": 1792,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355680012,
+      "updated": 1795355689883
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355680060
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_203899d3c001p6ytZrN7DW3PK0",
+        "sessionID": "ses_dfc7662f4ffe7GnPbDSB3M1xHc"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Return ONLY valid JSON {\\\"changes\\\":[{\\\"path\\\":\\\"...\\\",\\\"old\\\":\\\"unique exact original substring\\\",\\\"new\\\":\\\"new text\\\"}]} with optionally a new file via {\\\"path\\\":\\\"...\\\",\\\"content\\\":\\\"...\\\"} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.\nAdd only ResearchDeskStore.register_proposal(proposal)->ProposalRecord. Distinguish this import-facing API from existing save_proposal for trusted operator updates. Use one atomic SQLite INSERT ... ON CONFLICT ... DO UPDATE guarded by nonterminal state and changed research terms. Legit unchanged duplicate returns actual ledger row, preserves chosen quantity/approval; rejected/simulated are immutable. If research terms/identity change in nonterminal state, reset local approval/shares/execution to pending with freshly computed unapproved proposal version. New registration stores only advisory material, pending and empty operator/approval/execution. Reuse _row_to_proposal/get_proposal and make_proposal_version as suitable. Do not persist supplied status/shares/approval. Do not modify existing save_proposal or unrelated methods. Source uses existing SQLite schema. No tests in this slice.\n\nSOURCE src/research_desk/storage.py\nfrom __future__ import annotations\n\nimport json\nimport sqlite3\nfrom pathlib import Path\nfrom typing import Any\n\nfrom .config import INITIAL_CASH\nfrom .models import (\n    ExecutionRecord,\n    LedgerPosition,\n    LedgerState,\n    ProposalRecord,\n    ProposalStatus,\n    TransactionRecord,\n    utcnow_iso,\n)\n\n_SCHEMA = \\\"\\\"\\\"\nCREATE TABLE IF NOT EXISTS ledger_state (\n    id INTEGER PRIMARY KEY CHECK (id = 1),\n    cash REAL NOT NULL,\n    last_updated TEXT NOT NULL\n);\n\nCREATE TABLE IF NOT EXISTS positions (\n    ticker TEXT PRIMARY KEY,\n    shares INTEGER NOT NULL,\n    avg_price REAL\n);\n\nCREATE TABLE IF NOT EXISTS proposals (\n    id TEXT PRIMARY KEY,\n    run_id TEXT NOT NULL,\n    ticker TEXT NOT NULL,\n    trade_date TEXT NOT NULL,\n    signal TEXT NOT NULL,\n    rating TEXT,\n    side TEXT NOT NULL DEFAULT 'buy',\n    price REAL,\n    shares INTEGER,\n    evidence_id TEXT,\n    status TEXT NOT NULL,\n    proposal_version TEXT NOT NULL,\n    operator TEXT,\n    created_at TEXT NOT NULL,\n    approved_at TEXT,\n    approved_version TEXT,\n    reason TEXT,\n    execution_json TEXT\n);\n\nCREATE TABLE IF NOT EXISTS transactions (\n    id TEXT PRIMARY KEY,\n    proposal_id TEXT NOT NULL,\n    ticker TEXT NOT NULL,\n    side TEXT NOT NULL,\n    shares INTEGER NOT NULL,\n    price REAL NOT NULL,\n    cash_delta REAL NOT NULL,\n    equity_before REAL NOT NULL,\n    equity_after REAL NOT NULL,\n    status TEXT NOT NULL,\n    policy_json TEXT NOT NULL,\n    operator TEXT,\n    created_at TEXT NOT NULL\n);\n\\\"\\\"\\\"\n\n\nclass ResearchDeskStore:\n    \\\"\\\"\\\"Thin SQLite wrapper for ledger + proposals.\n\n    Not an ORM: methods are few and map directly to the review/ledger commands\n    so the deterministic policy logic stays readable and testable.\n    \\\"\\\"\\\"\n\n    def __init__(self, db_path: str | Path):\n        self.db_path = Path(db_path)\n        self.db_path.parent.mkdir(parents=True, exist_ok=True)\n        self._conn = sqlite3.connect(str(self.db_path))\n        self._conn.row_factory = sqlite3.Row\n        self._conn.execute(\\\"PRAGMA journal_mode=WAL\\\")\n        self._conn.executescript(_SCHEMA)\n        self._conn.commit()\n        self._migrate()\n        # Seed the single ledger row on first use.\n        if self.get_ledger() is None:\n            self._conn.execute(\n\n...\n    def save_proposal(self, proposal: ProposalRecord) -> None:\n        # Carry over a prior approval binding when content is re-saved: an\n        # approved proposal whose run inputs later change keeps its approved\n        # version so execution detects the stale approval (AT-05). Fresh\n        # (PENDING_REVIEW) proposals keep None.\n        prior = self._conn.execute(\n            \\\"SELECT approved_at, approved_version, operator FROM proposals WHERE id=?\\\",\n            (proposal.proposal_id,),\n        ).fetchone()\n        carry_approved_at = proposal.approved_at\n        carry_approved_version = proposal.approved_version\n        carry_operator = proposal.operator\n        if prior is not None and (prior[\\\"approved_version\\\"] is not None):\n            carry_approved_at = proposal.approved_at or prior[\\\"approved_at\\\"]\n            carry_approved_version = proposal.approved_version or prior[\\\"approved_version\\\"]\n            carry_operator = proposal.operator or prior[\\\"operator\\\"]\n        with self._conn:\n            self._conn.execute(\n                \\\"\\\"\\\"INSERT OR REPLACE INTO proposals\n                   (id, run_id, ticker, trade_date, signal, rating, side, price,\n                    shares, evidence_id, status, proposal_version, operator,\n                    created_at, approved_at, approved_version, reason, execution_json)\n                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)\\\"\\\"\\\",\n                (\n                    proposal.proposal_id, proposal.run_id, proposal.ticker,\n                    proposal.trade_date, proposal.signal, proposal.rating,\n                    proposal.side, proposal.price, proposal.shares,\n                    proposal.evidence_id, proposal.status.value,\n                    proposal.proposal_version, carry_operator,\n                    proposal.created_at, carry_approved_at,\n                    carry_approved_version, proposal.reason,\n                    json.dumps(proposal.execution.model_dump()) if proposal.execution else None,\n                ),\n            )\n\n    def get_proposal(self, proposal_id: str) -> ProposalRecord | None:\n        row = self._conn.execute(\n            \\\"SELECT * FROM proposals WHERE id=?\\\", (proposal_id,)\n        ).fetchone()\n        if row is None:\n            return None\n        return self._row_to_proposal(row)\n\n\n...\n                    (status.value, operator, reason, proposal_id),\n                )\n\n    def _row_to_proposal(self, row: sqlite3.Row) -> ProposalRecord:\n        execution = None\n        if row[\\\"execution_json\\\"]:\n            execution = ExecutionRecord(**json.loads(row[\\\"execution_json\\\"]))\n        return ProposalRecord(\n            proposal_id=row[\\\"id\\\"],\n            run_id=row[\\\"run_id\\\"],\n            ticker=row[\\\"ticker\\\"],\n            trade_date=row[\\\"trade_date\\\"],\n            signal=row[\\\"signal\\\"],\n            rating=row[\\\"rating\\\"],\n            side=row[\\\"side\\\"],\n            price=row[\\\"price\\\"],\n            shares=row[\\\"shares\\\"],\n            evidence_id=row[\\\"evidence_id\\\"],\n            status=ProposalStatus(row[\\\"status\\\"]),\n            proposal_version=row[\\\"proposal_version\\\"],\n            operator=row[\\\"operator\\\"],\n            created_at=row[\\\"created_at\\\"],\n            approved_at=row[\\\"approved_at\\\"],\n            approved_version=row[\\\"approved_version\\\"],\n            reason=row[\\\"reason\\\"],\n            execution=execution,\n        )\n\n    def close(self) -> None:\n        self._conn.close()\n\n\n\nSOURCE src/research_desk/models.py\n    complete: bool = False  # set True only when a full pack was exported\n\n    @field_validator(\\\"final_state\\\")\n    @classmethod\n    def _final_state_serializable(cls, v):\n        if not v:\n            return v\n        if not isinstance(v, dict):\n            raise ValueError(\\\"final_state must be a dict\\\")\n        return v\n\n\nclass ProposalRecord(BaseModel):\n    \\\"\\\"\\\"A single reviewable proposal produced by a research run.\\\"\\\"\\\"\n\n    proposal_id: str\n    run_id: str\n    ticker: str\n    trade_date: str\n    signal: str\n    rating: str | None = None\n    side: str = \\\"buy\\\"  # \\\"buy\\\" | \\\"sell\\\"; derived from the tradeable signal\n    price: float | None = None  # from evidence only, never operator-typed\n    shares: int | None = None  # from the trusted CLI operator\n    evidence_id: str | None = None  # identity of the frozen evidence that supplied price/signal\n    status: ProposalStatus = ProposalStatus.PENDING_REVIEW\n    proposal_version: str = \\\"\\\"  # binds approvals to this exact content\n    operator: str | None = None\n    created_at: str = \\\"\\\"\n    approved_at: str | None = None\n    approved_version: str | None = None\n    reason: str | None = None\n    execution: ExecutionRecord | None = None\n\n    @field_validator(\\\"shares\\\")\n    @classmethod\n    def _shares_positive_int(cls, v):\n        if v is None:\n\n...\ndef make_proposal_version(\n    ticker: str,\n    trade_date: str,\n    signal: str,\n    price: float | None,\n    *,\n    side: str = \\\"buy\\\",\n    shares: int | None = None,\n    evidence_id: str | None = None,\n) -> str:\n    \\\"\\\"\\\"Content fingerprint binding an approval to the exact proposal inputs.\n\n    The fingerprint covers every *tradeable* field: ticker, analysis date,\n    action (side), signal, price (from evidence), evidence identity, and the\n    operator-supplied quantity. Changing any of these requires a new approval.\n    \\\"\\\"\\\"\n    import hashlib\n\n    payload = \\\"|\\\".join(\n        [\n            ticker.upper(),\n            str(trade_date),\n            str(side),\n            str(signal),\n            str(price),\n            str(evidence_id or \\\"\\\"),\n            str(shares if shares is not None else \\\"\\\"),\n        ]\n    )\n    return hashlib.sha256(payload.encode(\\\"utf-8\\\")).hexdigest()[:16]\n\n\nEvidencePack.model_rebuild()\n\"",
+          "id": "prt_203899d40001v9eCCN6MISvOcS",
+          "sessionID": "ses_dfc7662f4ffe7GnPbDSB3M1xHc",
+          "messageID": "msg_203899d3c001p6ytZrN7DW3PK0"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_203899d3c001p6ytZrN7DW3PK0",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-ledger-slice",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 4939,
+          "input": 2330,
+          "output": 817,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1792
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355681477,
+          "completed": 1795355689862
+        },
+        "finish": "stop",
+        "id": "msg_20389a2c5001sMjm2EOKstV5RF",
+        "sessionID": "ses_dfc7662f4ffe7GnPbDSB3M1xHc"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_20389b50f001BySqZJK1L3VCQH",
+          "sessionID": "ses_dfc7662f4ffe7GnPbDSB3M1xHc",
+          "messageID": "msg_20389a2c5001sMjm2EOKstV5RF"
+        },
+        {
+          "type": "text",
+          "text": "{\"changes\":[{\"path\":\"src/research_desk/storage.py\",\"old\":\"    def get_proposal(self, proposal_id: str) -> ProposalRecord | None:\",\"new\":\"    def register_proposal(self, proposal: ProposalRecord) -> ProposalRecord:\\n        # Import-facing registration: untrusted advisory material only. New\\n        # rows start pending with no operator approval, shares, or execution.\\n        # A legit unchanged duplicate returns the actual ledger row (preserving\\n        # any chosen quantity/approval); rejected/simulated rows are immutable.\\n        # If research terms/identity change while nonterminal, reset local\\n        # approval/shares/execution to pending with a freshly computed version.\\n        nonterminal = (\\n            ProposalStatus.PENDING_REVIEW.value,\\n            ProposalStatus.APPROVED.value,\\n        )\\n        terms_unchanged = (\\n            \\\"proposals.run_id = excluded.run_id\\\"\\n            \\\" AND proposals.ticker = excluded.ticker\\\"\\n            \\\" AND proposals.trade_date = excluded.trade_date\\\"\\n            \\\" AND proposals.signal = excluded.signal\\\"\\n            \\\" AND proposals.rating IS excluded.rating\\\"\\n            \\\" AND proposals.side = excluded.side\\\"\\n            \\\" AND proposals.price IS excluded.price\\\"\\n            \\\" AND proposals.evidence_id IS excluded.evidence_id\\\"\\n        )\\n        with self._conn:\\n            self._conn.execute(\\n                f\\\"\\\"\\\"INSERT INTO proposals\\n                   (id, run_id, ticker, trade_date, signal, rating, side, price,\\n                    shares, evidence_id, status, proposal_version, operator,\\n                    created_at, approved_at, approved_version, reason, execution_json)\\n                   VALUES (?,?,?,?,?,?,?,?,NULL,?,?,?,NULL,?,NULL,NULL,?,NULL)\\n                   ON CONFLICT(id) DO UPDATE SET\\n                     run_id = excluded.run_id,\\n                     ticker = excluded.ticker,\\n                     trade_date = excluded.trade_date,\\n                     signal = excluded.signal,\\n                     rating = excluded.rating,\\n                     side = excluded.side,\\n                     price = excluded.price,\\n                     evidence_id = excluded.evidence_id,\\n                     status = excluded.status,\\n                     proposal_version = excluded.proposal_version,\\n                     reason = excluded.reason,\\n                     shares = NULL,\\n                     operator = NULL,\\n                     approved_at = NULL,\\n                     approved_version = NULL,\\n                     execution_json = NULL\\n                   WHERE proposals.status IN (?,?)\\n                     AND NOT ({terms_unchanged})\\\"\\\"\\\",\\n                (\\n                    proposal.proposal_id, proposal.run_id, proposal.ticker,\\n                    proposal.trade_date, proposal.signal, proposal.rating,\\n                    proposal.side, proposal.price, proposal.evidence_id,\\n                    ProposalStatus.PENDING_REVIEW.value,\\n                    make_proposal_version(\\n                        proposal.ticker,\\n                        proposal.trade_date,\\n                        proposal.signal,\\n                        proposal.price,\\n                        side=proposal.side,\\n                        evidence_id=proposal.evidence_id,\\n                    ),\\n                    proposal.created_at, proposal.reason,\\n                    *nonterminal,\\n                ),\\n            )\\n        existing = self.get_proposal(proposal.proposal_id)\\n        if existing is not None:\\n            return existing\\n        return proposal\\n\\n    def get_proposal(self, proposal_id: str) -> ProposalRecord | None:\"},{\"path\":\"src/research_desk/storage.py\",\"old\":\"    ProposalStatus,\\n    TransactionRecord,\\n    utcnow_iso,\\n)\",\"new\":\"    ProposalStatus,\\n    TransactionRecord,\\n    make_proposal_version,\\n    utcnow_iso,\\n)\"}]}",
+          "time": {
+            "start": 1795355686168,
+            "end": 1795355689845
+          },
+          "id": "prt_20389b518001RlXCm2tmtE1ya2",
+          "sessionID": "ses_dfc7662f4ffe7GnPbDSB3M1xHc",
+          "messageID": "msg_20389a2c5001sMjm2EOKstV5RF"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 4939,
+            "input": 2330,
+            "output": 817,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1792
+            }
+          },
+          "cost": 0,
+          "id": "prt_20389c37f001aUKceKuAckbhZn",
+          "sessionID": "ses_dfc7662f4ffe7GnPbDSB3M1xHc",
+          "messageID": "msg_20389a2c5001sMjm2EOKstV5RF"
+        }
+      ]
+    }
+  ]
+}

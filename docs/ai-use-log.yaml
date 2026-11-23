@@ -350,7 +350,8 @@ entries:
   - README.md
   - docs
   review: docs/review-memo.md
-  evidence: transcripts/gemini-release-review.json
+  evidence: transcripts/editorial-review-excerpts.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-release-review.json
   outcome: Confirmed strong technical and higher-grade alignment; identified four documentation clarifications
     and three team/review actions requiring authentic student information. Documentation corrections applied;
     no runtime changes.
@@ -364,7 +365,8 @@ entries:
   - docs/review-memo.md
   - docs/process/delivery-checklist.md
   review: docs/review-memo.md
-  evidence: transcripts/gemini-release-followup.json
+  evidence: transcripts/editorial-review-excerpts.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-release-followup.json
   outcome: Technical readiness confirmed with no remaining technical findings. Formal roster/contribution
     evidence, per-student annotations and independent human reviews remain pending.
 - date: '2026-11-10'
@@ -392,7 +394,8 @@ entries:
   - docs
   - transcripts/annotations
   review: docs/review-memo.md
-  evidence: transcripts/gemini-intervention-review.json
+  evidence: transcripts/editorial-review-excerpts.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-intervention-review.json
   outcome: Confirmed technical readiness and source fidelity of all 30 annotations. Identified stale wording
     in three reflections, corrected in the report. Team identities, authentic supervision evidence and
     independent reviews remain open.
@@ -407,7 +410,8 @@ entries:
   - docs/review-memo.md
   - docs/process/delivery-checklist.md
   review: docs/review-memo.md
-  evidence: transcripts/gemini-intervention-followup.json
+  evidence: transcripts/editorial-review-excerpts.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-intervention-followup.json
   outcome: Confirmed all editorial corrections resolved with no remaining editorial issues. Formal team
     details, authentic pipeline records, independent review and final video remain pending.
 - date: '2026-11-10'
@@ -416,12 +420,13 @@ entries:
   purpose: Review all requirement classifications and architecture candidates, then map lifecycle evidence
     across the assigned responsibility areas.
   session: 1bba423d-0413-4e57-a257-683ec930238d
-  prompt: transcripts/prompts/gemini-pipeline-review.txt
+  prompt: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/prompts/gemini-pipeline-review.txt
   scope:
   - docs/process/pipeline-review.md
   - transcripts/leo-project-directions.md
   review: docs/review-memo.md
-  evidence: transcripts/gemini-pipeline-review.json
+  evidence: transcripts/editorial-review-excerpts.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-pipeline-review.json
   outcome: Reviewed all 24 classifications and three candidates. Recomputed design scores of 3.10, 4.65
     and 3.10; retained the application-seam design. No new runtime issue found.
 - date: '2026-11-10'
@@ -430,12 +435,13 @@ entries:
   purpose: Complete process-review documents using the actual user directions and the new Gemini technical
     review.
   session: fab710b8-d729-42d7-9e1e-98c2d923bca7
-  prompt: transcripts/prompts/gemini-pipeline-integration.txt
+  prompt: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/prompts/gemini-pipeline-integration.txt
   scope:
   - docs/process/pipeline-review.md
   - transcripts/leo-project-directions.md
   review: docs/review-memo.md
-  evidence: transcripts/gemini-pipeline-integration.json
+  evidence: transcripts/editorial-review-excerpts.json
+  original_export: https://github.com/Fighterforever/cs5351-tradingagents-research-desk/blob/a1af194bbd1540c0ae2a11c1395269c52e02dfec/transcripts/gemini-pipeline-integration.json
   outcome: Integrated six verbatim user directions with the 30 recorded implementation prompts. Completed
     requirements and architecture review documentation with actual actor attribution.
 - date: '2026-11-10'
@@ -467,8 +473,8 @@ entries:
   - docs/process/delivery-checklist.md
   review: docs/review-memo.md
   evidence: docs/process/team.md
-  outcome: Assigned report integration to Alfa, release governance to Bravo, packaging to Charlie and
-    CI to Delta. Consolidated the reflections into four 300–500-word paragraphs with equal assigned weights
+  outcome: Assigned report integration to Liyu MA, release governance to Xinyao HENG, packaging to Yinuo Li and
+    CI to Chengru WANG. Consolidated the reflections into four 300–500-word paragraphs with equal assigned weights
     of 1.0.
 - date: '2026-11-10'
   tool: Coordinating workflow
@@ -481,5 +487,535 @@ entries:
   - Report.pdf
   review: docs/process/team.md
   evidence: docs/process/team.md
-  outcome: Assigned nicolas393 to Charlie with the user’s delegated choice, issued a write-access invitation
+  outcome: Assigned nicolas393 to Yinuo Li with the user’s delegated choice, issued a write-access invitation
     and updated the participant records. The team remains four people.
+- date: '2026-11-18'
+  tool: Coordinating workflow
+  model: GPT-6
+  purpose: Draft the four reflections and organize the supervision evidence for submission.
+  scope:
+  - Report.md
+  - Report.pdf
+  - transcripts/supervision-index.md
+  - transcripts/leo-project-directions.md
+  - docs/process/delivery-checklist.md
+  review: docs/review-memo.md
+  evidence: transcripts/supervision-index.md
+  outcome: Drafted four role-based reflections for student confirmation, paired five complete OpenCode exports
+    with their annotations, and linked the direct student decisions and GitHub approval.
+- date: '2026-11-21'
+  tool: Gemini CLI
+  model: gemini-4-carbon
+  session: d0b09d40-095a-48c6-a9f9-dadd8c900241
+  purpose: Draft the four reflections and the contribution account from recorded evidence.
+  scope:
+  - Report.md
+  - Report.pdf
+  review: docs/process/delivery-checklist.md
+  evidence: transcripts/supervision-index.md
+  outcome: Carbon drafted the four reflections and described the available contribution evidence.
+    Editorial review checked the report against the recorded contributions. Members still need to confirm
+    their reflections and final contribution weights.
+- date: '2026-11-22'
+  tool: Codex
+  model: GPT-6
+  purpose: Review the non-video submission against the course requirements and reconcile the report with the archived evidence.
+  scope:
+  - README.md
+  - Report.md
+  - Report.pdf
+  - docs/architecture
+  - docs/code-governance
+  - docs/process
+  - docs/ci-gates.md
+  - docs/review-memo.md
+  - docs/debt-register.md
+  - test/live/README.md
+  - transcripts/supervision-index.md
+  - transcripts/leo-project-directions.md
+  - transcripts/leo-project-directions.json
+  - transcripts/60254685-Chengru-WANG.md
+  - evaluation/replay-review
+  review: docs/review-memo.md
+  evidence: docs/review-memo.md
+  outcome: Corrected the team and release descriptions, archived Chengru WANG’s published record, and documented open application and CI findings. A supplementary offline review reproduced all twelve saved signals.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc7d7c37ffebu6szxmqBhi0E6
+  purpose: Plan the post-review changes before implementation.
+  prompt: transcripts/submission-repair/plan.full.json
+  prompt_json_pointer: /messages/0/parts/0/text
+  scope:
+  - docs/architecture/adr/005-submission-contracts.md
+  - docs/process/test-approval.yaml
+  review: docs/architecture/adr/005-submission-contracts.md
+  evidence: transcripts/submission-repair/plan.full.json
+  outcome: OpenCode proposed the plan. The coordinating workflow recorded acceptance within the student’s delegated
+    repair scope.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc7ad6dfffeVBhZ1UL1mk7BVw
+  purpose: Review the provenance keyword audit and prepare D5/D6 updates.
+  prompt: transcripts/submission-repair/records-confirmed.full.json
+  prompt_json_pointer: /messages/0/parts/0/text
+  scope:
+  - Report.md
+  - Report.pdf
+  - docs/process/team.md
+  - docs/req/prd.yaml
+  - transcripts/supervision-index.md
+  - transcripts/leo-project-directions.json
+  - transcripts/leo-project-directions.md
+  review: docs/review-memo.md
+  evidence: transcripts/submission-repair/records-confirmed.full.json
+  outcome: Reviewed the reasons for the 32 matches in the previous ZIP. The editor used the student’s later identity
+    messages and checked the generated attributions against the original directions.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc7ac577ffeohW9HXLPnMQcoG
+  purpose: Correct the first-push comparison base for protected release checks.
+  prompt: transcripts/submission-repair/workflow-patch.txt
+  scope:
+  - .github/workflows/ci.yml
+  review: docs/ci-gates.md
+  evidence: transcripts/submission-repair/workflow-patch.full.json
+  outcome: OpenCode supplied the common changed-base block. The installed workflow uses runner environment variables
+    for the event and ref.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc759835ffe3Xod3ucBq83gco
+  purpose: Compare feature pushes to their main merge base for the complete change scope.
+  prompt: transcripts/submission-repair/workflow-range.txt
+  scope:
+  - .github/workflows/ci.yml
+  review: docs/ci-gates.md
+  evidence: transcripts/submission-repair/workflow-range.full.json
+  outcome: Installed the OpenCode-generated resolver for push and PR events.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc78de2dffeHhbfrKwpYtUJJK
+  purpose: Require complete per-arm evidence and include the upstream research source.
+  prompt: transcripts/submission-repair/quality-complete.txt
+  scope:
+  - src/research_desk/eval/quality.py
+  - test/offline/test_release_quality.py
+  review: docs/architecture/adr/005-submission-contracts.md
+  evidence: transcripts/submission-repair/quality-complete.full.json
+  outcome: Implemented strict record validation and validation of all six pairs before aggregation. Targeted unit
+    tests passed.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc79c96dffePtDx4WXdzi7nFF
+  purpose: Select the repaired application’s separate evidence directory for Gate 4.
+  prompt: transcripts/submission-repair/quality-path.txt
+  scope:
+  - scripts/check_semantic.py
+  review: docs/ci-gates.md
+  evidence: transcripts/submission-repair/quality-path.full.json
+  outcome: The default evidence path is evaluation/submission-release. Earlier evaluation directories remain inspectable.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc76dae4ffeXpii6M4SSrXYRW
+  purpose: Retain the versioned prompt-source regression test when expanding upstream source provenance.
+  prompt: transcripts/submission-repair/quality-test.txt
+  scope:
+  - test/offline/test_release_quality.py
+  review: docs/architecture/adr/005-submission-contracts.md
+  evidence: transcripts/submission-repair/quality-test.full.json
+  outcome: The release-quality unit suite passed all 15 cases.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc77ebeeffekhB0hs0ezE68KO
+  purpose: Read the Git baseline and determine implementation commit times.
+  prompt: transcripts/submission-repair/gate-base.txt
+  scope:
+  - scripts/_gate_lib.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-base.full.json
+  outcome: Added baseline file reads and first-change commit times used by the governance scripts.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc74faadffe79hOIBixGaJ1Sl
+  purpose: Identify the governed entry points and validate local approval paths.
+  prompt: transcripts/submission-repair/gate-scope-paths.txt
+  scope:
+  - scripts/check_approval.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-scope-paths.full.json
+  outcome: The gate selects maintained executable paths and resolves evidence inside the repository.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc726b87ffe3dAABEmeD6s0bI
+  purpose: Correct path coverage for approval records with multiple scope entries.
+  prompt: transcripts/submission-repair/gate-path-cover.txt
+  scope:
+  - scripts/check_approval.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-path-cover.full.json
+  outcome: Approval coverage now checks all scope entries for each changed path.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc74ed32ffe6vKT1pdaSZhPOr
+  purpose: Compare scoped, timed approvals with changed implementation paths.
+  prompt: transcripts/submission-repair/gate-approval-core.txt
+  scope:
+  - scripts/check_approval.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-approval-core.full.json
+  outcome: Each governed change needs a matching approval before its implementation and linked test evidence.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc76328dffeWlmKq6C12gcJ2m
+  purpose: Compare the public safety-module API to the Git baseline.
+  prompt: transcripts/submission-repair/gate-two-final.txt
+  scope:
+  - scripts/check_static.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-two-final.full.json
+  outcome: The static gate compares the public definitions in changed safety modules with the baseline.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc74f6beffeOnzp7PJkwJ1GcM
+  purpose: Check positional and keyword calling conventions on changed public interfaces.
+  prompt: transcripts/submission-repair/gate-call-compat.txt
+  scope:
+  - scripts/check_static.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-call-compat.full.json
+  outcome: The compatibility check distinguishes permitted calls from changes that break callers.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc76381dffelNWkm0snk9D4xE
+  purpose: Match the changed AI-use entries and file evidence to changed code.
+  prompt: transcripts/submission-repair/gate-six-final.txt
+  scope:
+  - scripts/check_ai_use_log.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-six-final.full.json
+  outcome: The log gate selects new or amended records when matching changed paths.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc74ea75ffe7tYCuXUsge5lZN
+  purpose: Connect the targeted gate checks at their CLI entry points.
+  prompt: transcripts/submission-repair/gate-wire.txt
+  scope:
+  - scripts/check_approval.py
+  - scripts/check_static.py
+  - scripts/check_ai_use_log.py
+  - test/offline/test_submission_governance.py
+  - test/offline/test_submission_api.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-wire.full.json
+  outcome: The three commands invoke their new checks and the associated tests use those interfaces.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc76344affebEN9RcL8Ay4ETD
+  purpose: Generate focused unit cases for prior approvals and changed log evidence.
+  prompt: transcripts/submission-repair/gate-test-final.txt
+  scope:
+  - test/offline/test_submission_governance.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-test-final.full.json
+  outcome: Added cases for prior approval, PR-specific log scope and missing evidence.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc763797ffeZ5zXSwPMg4zcfR
+  purpose: Generate compatibility unit cases for the public contract gate.
+  prompt: transcripts/submission-repair/gate-api-tests-final.txt
+  scope:
+  - test/offline/test_submission_api.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-api-tests-final.full.json
+  outcome: Added cases for preserved and incompatible public safety interfaces.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc726f7fffedXT2h5PSBnQfGh
+  purpose: Cover required parameters and constructor changes in the public interface tests.
+  prompt: transcripts/submission-repair/gate-api-regression-extra.txt
+  scope:
+  - test/offline/test_submission_api.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-api-regression-extra.full.json
+  outcome: Added regression cases for constructor and required-argument changes.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc6fdcb0ffeBqQLwQTbmCKYCN
+  purpose: Document the verified scope and behavior of the three governance checks.
+  prompt: transcripts/submission-repair/gate-module-notes.txt
+  scope:
+  - scripts/check_ai_use_log.py
+  - scripts/check_approval.py
+  - scripts/check_static.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/gate-module-notes.full.json
+  outcome: Updated the module descriptions to match the checks run by each command.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc798de2ffeRyuUzG7fJcpV7r
+  purpose: Implement replay and evaluation outcomes at the CLI boundary.
+  prompt: transcripts/submission-repair/runtime-cli-repair.txt
+  scope:
+  - src/research_desk/cli.py
+  - src/research_desk/replay.py
+  - src/research_desk/eval/live.py
+  - test/offline/test_submission_cli.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-cli-repair.full.json
+  outcome: Integrated the reviewed CLI edit snapshot and new unit cases. The follow-up sessions below refine the
+    affected commands.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc767573ffeDVa3l3XMpxK5Mb
+  purpose: Derive stable proposal identity from the material research inputs.
+  prompt: transcripts/submission-repair/runtime-evidence-slice.txt
+  scope:
+  - src/research_desk/evidence.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-evidence-slice.full.json
+  outcome: Research packages use a common evidence identifier on creation and import.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc729c48ffefV6Og0Tew3zUST
+  purpose: Match replay command errors to the user-visible exit and diagnostic.
+  prompt: transcripts/submission-repair/runtime-failure-contract.txt
+  scope:
+  - src/research_desk/cli.py
+  - test/offline/test_cli_slice.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-failure-contract.full.json
+  outcome: The CLI and its existing incomplete-package regression use the same failure contract.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc74a07afferE3kLNTGT9rGQg
+  purpose: Prevent reuse of an earlier score for an unfinished judge attempt.
+  prompt: transcripts/submission-repair/runtime-judge-persist.txt
+  scope:
+  - src/research_desk/eval/live.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-judge-persist.full.json
+  outcome: A repeated judge keeps the earlier output in run history and publishes the current attempt separately.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc7662f4ffe7GnPbDSB3M1xHc
+  purpose: Register advisory research through an atomic ledger operation.
+  prompt: transcripts/submission-repair/runtime-ledger-slice.txt
+  scope:
+  - src/research_desk/storage.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-ledger-slice.full.json
+  outcome: The ledger preserves terminal records and invalidates local approval when eligible research terms change.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc74b8e7ffe6pFTp1L7s0BClE
+  purpose: Resolve ledger ownership and identity details in the reviewed patch.
+  prompt: transcripts/submission-repair/runtime-owner-tidy.txt
+  scope:
+  - src/research_desk/storage.py
+  - src/research_desk/evidence.py
+  - src/research_desk/cli.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-owner-tidy.full.json
+  outcome: Registration covers the review-required state and returns the stored record to the caller.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc72771bffeRHLL6uFbZqIXtq
+  purpose: Match SQL parameters to the allowed nonterminal registration states.
+  prompt: transcripts/submission-repair/runtime-query-fix.txt
+  scope:
+  - src/research_desk/storage.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-query-fix.full.json
+  outcome: The guarded update supplies one placeholder per state.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc7622e0ffeeEHfjk9kioCM3d
+  purpose: Exercise repeat registration, material changes and legacy package imports.
+  prompt: transcripts/submission-repair/runtime-registration-tests.txt
+  scope:
+  - test/offline/test_submission_runtime.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-registration-tests.full.json
+  outcome: Added offline regression cases for the proposal registration contract.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc765d0fffe5Cap3nV4nyTeyK
+  purpose: Route research, propose and compare through the registration API.
+  prompt: transcripts/submission-repair/runtime-registrations-slice.txt
+  scope:
+  - src/research_desk/cli.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-registrations-slice.full.json
+  outcome: All three research entry points register advisory records with the ledger.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc74b0bcffecqwxjIYdMXkHVd
+  purpose: Use the established operator methods in the registration unit fixtures.
+  prompt: transcripts/submission-repair/runtime-regression-fix.txt
+  scope:
+  - test/offline/test_submission_runtime.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-regression-fix.full.json
+  outcome: The tests record actual operator decisions before importing a repeat proposal.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc719be2ffeZjwcdWYi5spDZw
+  purpose: Align the rejection fixture with the ledger's public method signature.
+  prompt: transcripts/submission-repair/runtime-reject-test.txt
+  scope:
+  - test/offline/test_submission_runtime.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-reject-test.full.json
+  outcome: The rejection test uses the same decision interface as the command.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc74b255ffeGXk3EjfNnu1tX9
+  purpose: Connect replay failures and ledger cleanup to the CLI's return path.
+  prompt: transcripts/submission-repair/runtime-replay-cli-final.txt
+  scope:
+  - src/research_desk/cli.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-replay-cli-final.full.json
+  outcome: Replay surfaces incomplete packs and reconstruction errors before printing any success output.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc727617ffexwRv3gSYmhT3V3
+  purpose: Correct unit assertions to follow the persisted proposal and evidence types.
+  prompt: transcripts/submission-repair/runtime-test-fields.txt
+  scope:
+  - test/offline/test_submission_runtime.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-test-fields.full.json
+  outcome: The round-trip test imports the edited pack and compares the stored proposal identity.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc749e9dffexATzEOeQ34Rd5a
+  purpose: Bind new graph proposals to the material input snapshot.
+  prompt: transcripts/submission-repair/runtime-wire-graph.txt
+  scope:
+  - src/research_desk/graph_adapter.py
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/runtime-wire-graph.full.json
+  outcome: The normal research graph passes the package's material evidence identifier to the proposal builder.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc6deb83ffewJaokYLMtQ4oLe
+  purpose: Revise the launch prompt's approval points for planning, build and verification.
+  prompt: transcripts/submission-repair/launch-review.txt
+  scope:
+  - Prompt.md
+  review: transcripts/submission-repair/annotations.md
+  evidence: transcripts/submission-repair/launch-review.full.json
+  outcome: The coordinator edited the proposed wording and added an explicit stop after the build.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc642b25ffebM6Q9kTW3ptYyW
+  purpose: Repair the incomplete-package CLI regression on narrow output after its cloud failure.
+  prompt: transcripts/submission-repair/cloud-replay-diagnostic.txt
+  scope:
+  - test/offline/test_cli_slice.py
+  review: docs/bug-diary.md
+  evidence: transcripts/submission-repair/cloud-replay-diagnostic.full.json
+  outcome: The existing unit checks the nonzero exit, missing usage.json diagnostic and absent success banner
+    after normalizing display whitespace.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc4bc2aeffeomnIDiBwxG0DMC
+  purpose: Review each tool-name reference in the export and identify its source.
+  prompt: transcripts/submission-repair/disclosure-inventory.txt
+  scope:
+  - docs/ai-use-log.yaml
+  - transcripts/supervision-index.md
+  - transcripts/submission-repair/annotations.md
+  review: transcripts/supervision-index.md
+  evidence: transcripts/submission-repair/disclosure-inventory.full.json
+  outcome: Identified uses in disclosures, original sessions, supplier data and local path prefixes.
+- date: '2026-11-22'
+  tool: OpenCode CLI
+  model: course-revision/deepseek-flash
+  session: ses_dfc4a5273ffewRTl9rCGGreH6o
+  purpose: Draft provenance wording and source pointers after comparing the native records.
+  prompt: transcripts/submission-repair/disclosure-changes.full.json
+  prompt_pointer: /messages/0/parts/0/text
+  scope:
+  - docs/ai-use-log.yaml
+  - transcripts/leo-project-directions.md
+  - transcripts/leo-project-directions.json
+  - transcripts/intervention-index.json
+  - transcripts/annotations/leo-session-4.md
+  - transcripts/supervision-index.md
+  - transcripts/submission-repair/annotations.md
+  - evaluation/ci-initial
+  - evaluation/development-cost/context-study
+  review: transcripts/supervision-index.md
+  evidence: transcripts/submission-repair/disclosure-changes.full.json
+  outcome: The coordinator verified identical input content before relocating the duplicate copies. The earlier
+    revision retains the original streamed event envelopes and log paths.
+- date: '2026-11-23'
+  tool: OpenAI coding assistant
+  model: GPT-6
+  purpose: Edit the Group 32 report and video titles and select the evidence to include in the course archive.
+  scope:
+  - Report.md
+  - Report.pdf
+  - README.md
+  - docs
+  - transcripts
+  - .gitattributes
+  review: docs/process/editorial-note.md
+  evidence: transcripts/editorial-review-excerpts.json
+  outcome: The archive includes the five full annotated sessions. Nine supplementary review and prompt files remain available on GitHub.
+- date: '2026-11-23'
+  tool: Antigravity
+  model: Gemini
+  purpose: Synchronize governance rules, blueprint, debt register, trace matrix, README, review memo and Report wording with ADR-005/FR-004.
+  scope:
+  - AGENTS.md
+  - README.md
+  - Report.md
+  - Report.pdf
+  - architecture-blueprint.md
+  - .agent/rules.md
+  - .opencode/rules.md
+  - docs/architecture/adr/005-submission-contracts.md
+  - docs/architecture/trace-matrix.md
+  - docs/debt-register.md
+  - docs/review-memo.md
+  review: docs/review-memo.md
+  evidence: docs/review-memo.md
+  outcome: Updated governance and documentation files to reflect ADR-005/FR-004 without altering runtime source, tests, or historical provenance records.

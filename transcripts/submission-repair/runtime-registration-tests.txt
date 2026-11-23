@@ -1,0 +1,446 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+Create a single new test/offline/test_submission_runtime.py file (the content JSON field) with focused module-level pytest unit tests using specified APIs. A new store.register_proposal(proposal) imports advisory research terms, extends the existing trusted store.save_proposal path and returns a stored ProposalRecord. Test approved repeated unchanged registration preserves operator-assigned shares, rejected/simulated proposals retain status/tx and known-id re-registration of amended evidence requires fresh review. For legacy packs omit evidence_id: export/import existing folder fixture with io.export_dir / import_pack and confirm material identity is stable over a roundtrip and changes when material pack.input.available_sources changes. Use existing helpers fixtures and real semantics; do not assume unlisted signatures. No attack reproduction or network test.
+
+SOURCE test/offline/conftest.py
+"""Offline-slice fixtures: isolated home dir, store, and evidence pack loader.
+
+All offline tests run with ``RESEARCH_DESK_HOME`` pointed at a per-test temp
+dir, so the real user ledger in ``~/.research_desk`` is never touched and no
+test order depends on shared state. The stock fixture packs under
+``test/fixtures/packs`` are imported read-only.
+"""
+
+from __future__ import annotations
+
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from research_desk.config import ResearchDeskSettings
+from research_desk.evidence import EvidencePackIO
+from research_desk.storage import ResearchDeskStore
+
+FIXTURES = {
+    "aapl_buy": "aapl_buy_complete",
+    "msft_review": "msft_review",
+    "tsla_hold": "tsla_hold",
+    "nvda_compact_memory": "nvda_compact_memory",
+}
+
+
+@pytest.fixture()
+def desk_home(tmp_path):
+    home = tmp_path / "desk"
+    home.mkdir()
+    yield str(home)
+
+
+@pytest.fixture()
+def settings(desk_home):
+    s = ResearchDeskSettings(home=desk_home)
+    s.ensure_dirs()
+    return s
+
+
+@pytest.fixture()
+def store(settings):
+    st = ResearchDeskStore(settings.db_path)
+    yield st
+    st.close()
+
+
+@pytest.fixture()
+def pack_io():
+    return EvidencePackIO()
+
+
+@pytest.fixture(params=["aapl_buy", "msft_review", "tsla_hold", "nvda_compact_memory"])
+def fixture_pack(request, pack_io):
+    """Each of the four committed fixture packs, imported read-only."""
+    return pack_io.import_pack(f"test/fixtures/packs/{FIXTURES[request.param]}")
+
+
+@pytest.fixture()
+def aapl_pack(pack_io):
+    return pack_io.import_pack("test/fixtures/packs/aapl_buy_complete")
+
+
+@pytest.fixture()
+def mock_llm_client():
+    """Patch the LLM factory so graph construction needs no live API.
+
+    ``TradingAgentsGraph`` binds ``create_llm_client`` into its own module
+    namespace at import time, so the patch target is that binding (the factory
+    attribute patch in the upstream conftest would not redirect the graph).
+    """
+    client = MagicMock()
+    client.get_llm.return_value = MagicMock()
+    with patch(
+        "tradingagents.graph.trading_graph.create_llm_client",
+        return_value=client,
+    ):
+        yield client
+
+SOURCE test/offline/test_at03_ledger_approve.py
+"""AT-03 / FR-002 / INV-001: normal approval path and transaction idempotence.
+
+Cash 100000, zero positions, price 100; the operator approves 100 shares. The
+first execution debits cash to 90000 and records 100 shares with the approver,
+approval version and passed policy checks. Executing the same proposal again is
+a no-op — no double debit.
+"""
+
+from __future__ import annotations
+
+from research_desk.models import ProposalStatus, utcnow_iso
+from research_desk.review import approve, create_proposal, execute
+
+
+def _proposal(*, signal="Buy", price=100.0, proposal_id=None):
+    return create_proposal(
+        run_id="run-test",
+        ticker="AAPL",
+        trade_date="2026-06-10",
+        signal=signal,
+        rating=signal,
+        price=price,
+        proposal_id=proposal_id or f"prop-at03-{utcnow_iso()[-9:]}",
+    )
+
+
+def test_at03_approve_execute_records_and_idempotent(store):
+    """First execution debits cash and records shares; re-execution is a no-op."""
+    proposal = _proposal()
+    store.save_proposal(proposal)
+
+    approved = approve(proposal, shares=100, operator="leo")
+    store.save_proposal(approved)
+    assert approved.approved_version  # approval bound to this exact proposal version
+
+    updated, execution = execute(store, store.get_proposal(proposal.proposal_id), operator="leo")
+    ledger = store.get_ledger()
+    assert execution.executed is True
+    assert execution.tx_id
+    assert ledger.cash == 90000.0  # 100000 - 100*100
+    assert ledger.positions["AAPL"].shares == 100
+    assert ledger.positions["AAPL"].avg_price == 100.0
+    assert updated.status == ProposalStatus.SIMULATED
+    assert execution.policy_checks  # the deterministic policy results are recorded
+
+    # The proposal itself carries the approver/version/policy trail (INV-001).
+    stored = store.get_proposal(proposal.proposal_id)
+    assert stored.operator == "leo"
+    assert stored.approved_version == approved.approved_version
+
+    # Idempotence: executing the same proposal again changes nothing.
+    before = store.get_ledger()
+    re, rex = execute(store, store.get_proposal(proposal.proposal_id), operator="leo")
+    after = store.get_ledger()
+    assert re.status == ProposalStatus.SIMULATED
+    assert rex.reason == "already executed"
+    assert after.cash == before.cash == 90000.0
+    assert after.positions["AAPL"].shares == 100
+    assert len(store.list_transactions()) == 1  # no second transaction
+
+
+def test_at03_exact_cap_boundary_allowed(store):
+    """100 shares @ 100 on 100000 cash is exactly the 10% cap: allowed."""
+    from research_desk.models import LedgerState
+    from research_desk.policy import evaluate_buy
+
+    verdict = evaluate_buy(LedgerState(cash=100000.0), "AAPL", 100, 100.0)
+    assert verdict.allowed is True
+    assert abs(verdict.position_value - 10000.0) < 1e-9
+    assert abs(verdict.equity - 100000.0) < 1e-9
+
+
+def test_at03_accumulates_multiple_positions(store):
+    """The cap counts TOTAL holdings after the buy, not each independent ticket."""
+    from research_desk.policy import evaluate_buy
+
+    p1 = _proposal(proposal_id="prop-at03-a")
+
+SOURCE test/offline/test_at05_version_recheck.py
+"""AT-05 / FR-002 / INV-001: approvals bind the exact proposal version, and
+execution re-evaluates the *current* ledger. A stale approval or a changed
+ledger yields REVIEW_REQUIRED with no partial writes.
+"""
+
+from __future__ import annotations
+
+from research_desk.models import ProposalStatus, utcnow_iso
+from research_desk.review import approve, create_proposal, execute
+
+
+def _proposal(signal="Buy", price=100.0, proposal_id=None):
+    return create_proposal(
+        run_id="run-x", ticker="AAPL", trade_date="2026-06-10",
+        signal=signal, rating=signal, price=price,
+        proposal_id=proposal_id or f"prop-at05-{utcnow_iso()[-9:]}",
+    )
+
+
+def _approve_and_persist(store, p, shares, operator="leo"):
+    approved = approve(p, shares=shares, operator=operator)
+    store.save_proposal(approved)
+    return approved
+
+
+def test_changed_proposal_cannot_ride_old_approval(store):
+    """Approval was for price 100; a later price change invalidates it (AT-05)."""
+    p = _proposal(price=100.0, proposal_id="prop-at05-version")
+    store.save_proposal(p)
+    approved = _approve_and_persist(store, p, shares=100)
+    # The binding covers the approved content including the operator quantity.
+    assert approved.approved_version  # set at approval time (quantity known)
+    assert approved.approved_version != p.proposal_version  # quantity now bound
+
+    # The run is re-evaluated against new evidence: price changes.
+    changed = _proposal(price=120.0, proposal_id=p.proposal_id)
+    store.save_proposal(changed)
+    stored = store.get_proposal(p.proposal_id)
+    assert stored.proposal_version != approved.approved_version
+
+    updated, ex = execute(store, stored, operator="leo")
+    assert ex.executed is False
+    assert updated.status == ProposalStatus.REVIEW_REQUIRED
+    assert "version changed" in (updated.reason or "")
+    assert store.get_ledger().cash == 100000.0  # no partial write
+    assert store.get_ledger().positions == {}
+
+
+def test_changed_quantity_cannot_ride_old_approval(store):
+    """Approval binds the quantity too: changing shares invalidates it (AT-05)."""
+    p = _proposal(price=100.0, proposal_id="prop-at05-quantity")
+    store.save_proposal(p)
+    _approve_and_persist(store, p, shares=100)
+
+    # The operator later edits the approved proposal to a different quantity.
+    changed = _proposal(price=100.0, proposal_id=p.proposal_id)
+    changed.shares = 90
+    store.save_proposal(changed)
+    stored = store.get_proposal(p.proposal_id)
+
+    updated, ex = execute(store, stored, operator="leo")
+    assert ex.executed is False
+
+SOURCE test/offline/test_revision_contracts.py
+from research_desk.review import ReviewError, approve, create_proposal, execute, reject
+
+
+def _proposal(*, price: float = 100.0, proposal_id: str | None = None):
+    return create_proposal(
+        run_id="run-revision",
+        ticker="AAPL",
+        trade_date="2026-06-10",
+        signal="Buy",
+        rating="Buy",
+        price=price,
+        proposal_id=proposal_id or f"prop-revision-{utcnow_iso()[-9:]}",
+    )
+
+
+def test_rejected_execute_remains_rejected_and_cannot_be_approved():
+    """Execution cannot turn a rejection into an approvable REVIEW_REQUIRED row."""
+    store = MagicMock()
+    proposal = _proposal()
+    reject(proposal, operator="leo")
+    assert proposal.status == ProposalStatus.REJECTED
+
+    updated, execution = execute(store, proposal, operator="leo")
+
+    assert updated.status == ProposalStatus.REJECTED
+    assert execution.executed is False
+    assert execution.reason == "proposal rejected"
+    store.update_proposal_status.assert_not_called()
+    store.apply_transaction.assert_not_called()
+    store.get_ledger.assert_not_called()
+
+    with pytest.raises(ReviewError, match="rejected"):
+        approve(updated, shares=100, operator="leo")
+
+
+def test_previously_approved_then_rejected_stays_rejected_on_execute():
+    """A rejection is terminal even when an earlier approval version is present."""
+    store = MagicMock()
+    proposal = _proposal()
+    approved = approve(proposal, shares=100, operator="leo")
+    assert approved.approved_version
+    reject(approved, operator="leo")
+    assert approved.status == ProposalStatus.REJECTED
+
+    updated, execution = execute(store, approved, operator="leo")
+
+    assert updated.status == ProposalStatus.REJECTED
+    assert execution.executed is False
+    assert execution.reason == "proposal rejected"
+    store.update_proposal_status.assert_not_called()
+    store.apply_transaction.assert_not_called()
+
+    with pytest.raises(ReviewError, match="rejected"):
+        approve(updated, shares=100, operator="leo")
+
+
+SOURCE src/research_desk/evidence.py
+    return EvidencePack(
+        manifest=manifest,
+        input=input_snapshot,
+        events=events,
+        final_state=final_state,
+        usage=usage,
+        calls=calls or [],
+        proposal=proposal,
+        reports_written=reports_written or [],
+        complete=False,
+    )
+
+
+class EvidencePackIO:
+    """Writes and reads evidence packs as directories or ZIP archives."""
+
+    def export(self, pack: EvidencePack, out_dir: str | Path) -> Path:
+        out = Path(out_dir)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "manifest.json").write_text(
+            json.dumps(sanitize_secrets(pack.manifest.model_dump()), indent=2), encoding="utf-8"
+        )
+        (out / "input.json").write_text(
+            json.dumps(sanitize_secrets(pack.input.model_dump()), indent=2), encoding="utf-8"
+        )
+        with (out / "events.jsonl").open("w", encoding="utf-8") as fh:
+            for ev in pack.events:
+                fh.write(json.dumps(sanitize_secrets(ev.model_dump())) + "\n")
+        (out / "final_state.json").write_text(
+            json.dumps(sanitize_secrets(pack.final_state), indent=2), encoding="utf-8"
+        )
+        (out / "usage.json").write_text(
+            json.dumps(pack.usage.model_dump(), indent=2), encoding="utf-8"
+
+SOURCE src/research_desk/review.py
+                price=price,
+                evidence_id=evidence_id,
+            )
+        ),
+        created_at=utcnow_iso(),
+    )
+
+
+def approve(
+    proposal: ProposalRecord,
+    *,
+    shares: int,
+    operator: str,
+) -> ProposalRecord:
+    """Approve an exact proposal version with an operator-supplied share count.
+
+    The approval is bound to the proposal's *content* version, so if the run's
+    material inputs (ticker/date/signal/price) later change, the old approval
+    no longer matches and execution requires review.
+    """
+    if proposal.status == ProposalStatus.SIMULATED:
+        raise ReviewError(f"proposal {proposal.proposal_id} is already simulated")
+    if proposal.status == ProposalStatus.REJECTED:
+        raise ReviewError(f"proposal {proposal.proposal_id} is rejected and cannot be approved")
+    # REVIEW_REQUIRED is a safe-fail state, not a dead end: after the operator
+    # reviews the current evidence, they may approve the corrected version.
+    if not operator:
+        raise ReviewError("approval requires an operator identity")
+    if not isinstance(shares, int) or shares <= 0:
+        raise ReviewError(f"shares must be a positive integer, got {shares!r}")
+    if proposal.price is None or proposal.price <= 0:
+        raise ReviewError(
+            f"proposal {proposal.proposal_id} has no evidence price; cannot approve without price"
+        )
+    proposal.shares = shares
+    proposal.operator = operator
+    proposal.status = ProposalStatus.APPROVED
+    proposal.approved_at = utcnow_iso()
+    proposal.approved_version = _proposal_content_version(proposal)
+    return proposal
+
+
+def reject(proposal: ProposalRecord, *, operator: str, reason: str = "rejected by operator") -> ProposalRecord:
+    if proposal.status == ProposalStatus.SIMULATED:
+        raise ReviewError(f"proposal {proposal.proposal_id} is already simulated")
+    proposal.status = ProposalStatus.REJECTED
+    proposal.operator = operator
+    proposal.reason = reason
+    return proposal
+
+
+def execute(
+
+...
+       unchanged. On success: apply the transaction atomically.
+    """
+    if proposal.status == ProposalStatus.SIMULATED:
+        existing = proposal.execution or ExecutionRecord(executed=True)
+        existing.reason = "already executed"
+        return proposal, existing
+
+    # A rejection is terminal. Check it before any version or generic status
+    # transition so an execution attempt can never reopen it for approval.
+    if proposal.status == ProposalStatus.REJECTED:
+        return proposal, ExecutionRecord(executed=False, reason="proposal rejected")
+
+    current_version = _proposal_content_version(proposal)
+    # A stale approval for different content is checked before status: an
+    # approved proposal whose run inputs changed must not execute the new
+    # version (AT-05), even though the row now carries the new content.
+    if proposal.approved_version is not None and proposal.approved_version != current_version:
+        proposal.status = ProposalStatus.REVIEW_REQUIRED
+
+SOURCE src/research_desk/models.py
+class InputSnapshot(BaseModel):
+    """The material inputs a run consumed, so a rerun can be replayed."""
+
+    instrument_context: str = ""
+    past_context: str = ""
+    initial_state: dict[str, Any] = Field(default_factory=dict)
+    identity: dict[str, Any] = Field(default_factory=dict)
+    data_snapshot: dict[str, dict[str, str]] = Field(
+        default_factory=dict
+    )  # tool_name -> {"canonical args key": result text}
+    memory_used: list[dict[str, Any]] = Field(default_factory=list)
+    memory_sources: list[str] = Field(default_factory=list)
+    # Factual *available* corpus for the case (identity, full market CSV, official
+    # news notes) recorded separately from the tool calls actually made. This is
+    # what makes the evidence-derived price available for proposal/replay even
+    # when a model path did not ask one of the data tools.
+    available_sources: dict[str, Any] = Field(default_factory=dict)
+
+
+class EvidencePack(BaseModel):
+    """A complete, self-contained evidence package for one run.
+
+    ``final_state`` is the graph's merged terminal state; it is the material
+    needed to rebuild reports and derive the signal and policy outputs offline
+
+...
+        return v
+
+
+class ProposalRecord(BaseModel):
+    """A single reviewable proposal produced by a research run."""
+
+    proposal_id: str
+    run_id: str
+    ticker: str
+    trade_date: str
+    signal: str
+    rating: str | None = None
+    side: str = "buy"  # "buy" | "sell"; derived from the tradeable signal
+    price: float | None = None  # from evidence only, never operator-typed
+    shares: int | None = None  # from the trusted CLI operator
+    evidence_id: str | None = None  # identity of the frozen evidence that supplied price/signal
+    status: ProposalStatus = ProposalStatus.PENDING_REVIEW
+    proposal_version: str = ""  # binds approvals to this exact content
+    operator: str | None = None
+    created_at: str = ""
+    approved_at: str | None = None
+    approved_version: str | None = None
+    reason: str | None = None
+    execution: ExecutionRecord | None = None
+
+    @field_validator("shares")
+    @classmethod

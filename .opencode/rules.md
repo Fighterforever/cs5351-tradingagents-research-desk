@@ -9,4 +9,4 @@ Model output remains advisory. Exact approval, deterministic current-ledger chec
 A changed safety requirement needs an ADR and concrete approval before implementation. Existing approval is scoped and timestamped. Update requirements, tests and traceability together. Check actual declarations before using an interface. Keep changes small and purposeful.
 
 
-Current revision: ADR-004 and docs/process/revision-authorization.md authorize the listed contract and release corrections. The user has also authorized public visibility of the project repository and its history.
+Current revision: ADR-004, ADR-005 (FR-004) and docs/process/revision-authorization.md authorize the listed contract, ledger-continuity, gate and release corrections. The user has also authorized public visibility of the project repository and its history.

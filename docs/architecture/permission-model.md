@@ -1,22 +1,13 @@
 # Permission model
 
-The principle is no access until a role needs a path. The machine-readable permissions and effective OpenCode configuration must agree; a file named permissions.jsonc alone is not enforcement. The host keeps credentials outside agent-readable files and injects only the application's runtime environment.
+[opencode.json](../../opencode.json) defines the installed coding roles. Its file and tool rules match the [permission manifest](../../.opencode/permissions.jsonc). Each role inherits the explicit read allowlist. The default read and edit rules deny access.
 
-| Role | Read | Write | Forbidden |
-|---|---|---|---|
-| Plan | AGENTS, Prompt, docs, public upstream source, src/test declarations | proposed plan documents | Application implementation, approvals, secrets |
-| Build | Approved requirements/architecture/tests, src, test, pyproject | src/research_desk, approved test files, scoped package metadata | Human-owned rules/approval decisions, global config, upstream replacement |
-| Verify | Source, tests, requirements, frozen fixtures, run evidence | verification outputs and proposed test changes | Granting approval, weakening requirements, editing source to force a result |
-| Release | Final artifacts and local git state | package, workflow evidence, authorized project remote | Publishing credentials, real orders |
-| leo | All project decisions and review evidence | Plans, ADRs, rules, concrete stage approvals | Falsifying raw sessions or measured results |
+| Role | Files it can edit | Commands it can run |
+|---|---|---|
+| Plan | `proposals/**` | No shell commands |
+| Build | `src/research_desk/**`, `test/**`, `scripts/**`, `pyproject.toml` and `.github/workflows/**`, subject to the protected files below | The exact read-only Git and directory commands in the manifest |
+| Verify | `verification/**` | The listed project-local test and gate commands and a limited set of read-only inspection commands |
 
-Runtime authority is separate from coding-agent permissions. The graph has market/news tools and model access. It has no review, execute or ledger tool. The local operator commands own approval and execution. This is a single-user workstation boundary, not a claim of production identity assurance.
+Build cannot edit the policy, review, storage, configuration or model-contract modules. The upstream engine and its tests are frozen. Rules and approval records are protected for all three roles. A change to a safety boundary requires a scoped decision and an accepted ADR. During the release revision a temporary role covered the paths approved in [ADR-004](adr/004-release-quality-and-context-budget.md). That role was removed after implementation.
 
-Safety-relevant paths include policy.py, review.py, storage.py, config.py, model contracts, permission configuration and rule files. Changes need a reviewed ADR plus a corresponding approval record. Current fixes to total holdings, valid sells and exact approval binding are covered by ADR-002 and the approved AT-04/05 semantics.
-
-
-The user authorized public repository visibility for this revision. The temporary revision role can modify only approved application/test/CI paths under ADR-004. It cannot edit governance or approval records and is removed after implementation.
-
-### Revision closure
-
-The temporary revision role was removed after the accepted source changes. The installed plan/build/verify definitions match the reviewable manifest and pass the permission checker. The authorized provider remains available through the explicit model argument `--model course-revision/deepseek-flash`; its API key is an environment reference.
+The release operator handles provider credentials, repository publication and GitHub checks outside the coding-agent roles. The running research graph receives market and news tools. Only the operator CLI can approve exact terms and invoke the deterministic execution policy.

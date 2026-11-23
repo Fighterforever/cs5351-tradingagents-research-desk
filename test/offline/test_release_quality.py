@@ -150,10 +150,14 @@ def _validate(fixture):
     return validate_release(fixture["root"], fixture["evidence"])
 
 
-def test_source_fingerprint_accepts_yaml_only_prompt_tree(tmp_path):
+def test_source_fingerprint_tracks_upstream_role_and_prompt_changes(tmp_path):
+    """AT-07: representative upstream tradingagents roles and YAML prompts are fingerprinted."""
     root = tmp_path / "tree"
     (root / "src/research_desk").mkdir(parents=True)
     (root / "src/research_desk/module.py").write_text("VALUE = 1\n", encoding="utf-8")
+    upstream = root / "tradingagents/agents/analysts/market_analyst.py"
+    upstream.parent.mkdir(parents=True)
+    upstream.write_text("ROLE = 'market analyst'\n", encoding="utf-8")
     (root / "prompts").mkdir()
     prompt = root / "prompts/research.yaml"
     prompt.write_text("prompt: research\n", encoding="utf-8")
@@ -170,8 +174,12 @@ def test_source_fingerprint_accepts_yaml_only_prompt_tree(tmp_path):
     first = source_fingerprint(root)
     assert first.startswith("sha256:")
 
-    prompt.write_text("prompt: changed\n", encoding="utf-8")
-    assert source_fingerprint(root) != first
+    upstream.write_text("ROLE = 'news analyst'\n", encoding="utf-8")
+    second = source_fingerprint(root)
+    assert second != first
+
+    prompt.write_text("prompt: updated research\n", encoding="utf-8")
+    assert source_fingerprint(root) != second
 
 
 def test_complete_synthetic_release_passes_and_reports_targets(synthetic_release):
@@ -203,20 +211,55 @@ def test_quality_metric_drop_over_limit_fails(synthetic_release, metric):
 
 
 def test_missing_arm_fails(synthetic_release):
+    """GOV-003: an incomplete matrix reports missing pairs and withholds aggregate metrics."""
     import shutil
 
     shutil.rmtree(synthetic_release["evidence"] / "AAPL" / "compact")
     result = _validate(synthetic_release)
     assert any("AAPL/compact: arm missing" in f for f in result["failures"])
+    assert any(
+        "missing or invalid case pairs: AAPL" in f for f in result["failures"]
+    )
+    assert "aggregate" not in result["metrics"]
+    assert "should_targets" not in result["metrics"]
+
+
+@pytest.mark.parametrize(
+    ("kind", "location"),
+    [
+        ("summary", ("AAPL", "baseline", "summary.json")),
+        ("config", ("AAPL", "baseline", "config.json")),
+        ("run provenance", ("AAPL", "baseline", PROVENANCE)),
+        ("judge", ("judge", "AAPL", "baseline", "judge.json")),
+        ("judge provenance", ("judge", "AAPL", "baseline", PROVENANCE)),
+    ],
+    ids=["summary", "config", "run-provenance", "judge", "judge-provenance"],
+)
+def test_invalid_json_record_rejected_before_aggregate(
+    synthetic_release, kind, location
+):
+    """GOV-003 / AT-07: a non-object record invalidates its pair and withholds aggregates."""
+    path = synthetic_release["evidence"].joinpath(*location)
+    _write(path, ["not", "a", "JSON", "object"])
+    result = _validate(synthetic_release)
+    assert any(
+        f"AAPL/baseline: {kind}" in failure and "is not a JSON object" in failure
+        for failure in result["failures"]
+    )
+    assert "aggregate" not in result["metrics"]
+    assert "should_targets" not in result["metrics"]
 
 
 def test_stale_fingerprint_fails(synthetic_release):
+    """GOV-003: a prior per-arm failure withholds aggregate metrics."""
     _mutate(
         synthetic_release["evidence"] / "AAPL" / "baseline" / PROVENANCE,
         lambda d: d.update(source_fingerprint="sha256:stale"),
     )
     result = _validate(synthetic_release)
     assert any("stale or incorrect source fingerprint" in f for f in result["failures"])
+    assert "aggregate" not in result["metrics"]
+    assert "should_targets" not in result["metrics"]
 
 
 def test_missing_named_deterministic_check_fails(synthetic_release):

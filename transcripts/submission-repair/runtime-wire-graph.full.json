@@ -1,0 +1,151 @@
+{
+  "info": {
+    "id": "ses_dfc749e9dffexATzEOeQ34Rd5a",
+    "slug": "gentle-forest",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-wire-graph",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-wire-graph",
+    "title": "Research Desk runtime-wire-graph",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 696,
+      "output": 691,
+      "reasoning": 0,
+      "cache": {
+        "read": 1856,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355795810,
+      "updated": 1795355801308
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355795843
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_2038b6183001Ef5XOhY8t0DP3P",
+        "sessionID": "ses_dfc749e9dffexATzEOeQ34Rd5a"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Return ONLY valid JSON {\\\"changes\\\":[{\\\"path\\\":\\\"...\\\",\\\"old\\\":\\\"unique exact original substring\\\",\\\"new\\\":\\\"new text\\\"}]} with optionally a new file via {\\\"path\\\":\\\"...\\\",\\\"content\\\":\\\"...\\\"} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.\nExact isolated two-code-block fix to graph_adapter.py only. Do both replacements: append material_evidence_id to the existing import from .evidence. Replace the shown snapshot/available_sources/proposal/except/budget_stopped/InputSnapshot section so it constructs the existing InputSnapshot before decide_proposal, reuses the already-computed snapshot for data_snapshot, and actually passes evidence_id=material_evidence_id(ticker,trade_date,input_snapshot) in decide_proposal. Then keep budget_stopped handling and manifest as-is. Return patch JSON.\n\nSOURCE src/research_desk/graph_adapter.py\n\nfrom .budget import BudgetExhausted, BudgetTracker, ContextBudgetExceeded\nfrom .config import ResearchDeskSettings\nfrom .context import ContextAssembler, StandingConstraints, build_common_grounding\nfrom .evidence import EvidenceLog, EvidencePackIO, record_data_read\nfrom .models import (\n    InputSnapshot,\n    ProposalRecord,\n\n...\n        proposal = None\n        proposal_error: str | None = None\n        snapshot = self._data_snapshot_from_run(final_state, frozen_snapshot)\n        available_sources = self._available_sources(ticker, trade_date, frozen_identity)\n        try:\n            proposal = decide_proposal(\n                outcome=outcome.value,\n                signal=signal,\n                run_id=run_id,\n                ticker=ticker,\n                trade_date=trade_date,\n                snapshot=snapshot,\n                available_sources=available_sources,\n            )\n        except ReviewError as exc:\n            proposal_error = str(exc)\n        if outcome == RunOutcome.BUDGET_STOPPED:\n            proposal = None  # incomplete research must not be approvable (NFR-003)\n\n        input_snapshot = InputSnapshot(\n            instrument_context=instrument_context,\n            past_context=assembly.text,\n            initial_state=_trim_state(init_state),\n            identity=identity,\n            data_snapshot=self._data_snapshot_from_run(final_state, frozen_snapshot),\n            memory_used=self._memory_entries(ticker, trade_date),\n            memory_sources=[\\\"tradingagents.memory_log\\\" if self.data_mode == \\\"live\\\" else \\\"frozen-pack\\\"],\n            available_sources=available_sources,\n        )\n\n        manifest = RunManifest(\n            run_id=run_id,\n            ticker=ticker,\n            trade_date=trade_date,\n            asset_type=asset_type,\n            analysts=list(self.settings.analysts),\n\"",
+          "id": "prt_2038b6186001uoBZV6H9hHB6Gw",
+          "sessionID": "ses_dfc749e9dffexATzEOeQ34Rd5a",
+          "messageID": "msg_2038b6183001Ef5XOhY8t0DP3P"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_2038b6183001Ef5XOhY8t0DP3P",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-wire-graph",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 3243,
+          "input": 696,
+          "output": 691,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1856
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355796335,
+          "completed": 1795355801296
+        },
+        "finish": "stop",
+        "id": "msg_2038b636f001ZhQN9lsFUPowS4",
+        "sessionID": "ses_dfc749e9dffexATzEOeQ34Rd5a"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_2038b6b76001oirDleNNOBweqp",
+          "sessionID": "ses_dfc749e9dffexATzEOeQ34Rd5a",
+          "messageID": "msg_2038b636f001ZhQN9lsFUPowS4"
+        },
+        {
+          "type": "text",
+          "text": "{\"changes\":[{\"path\":\"src/research_desk/graph_adapter.py\",\"old\":\"from .evidence import EvidenceLog, EvidencePackIO, record_data_read\",\"new\":\"from .evidence import EvidenceLog, EvidencePackIO, material_evidence_id, record_data_read\"},{\"path\":\"src/research_desk/graph_adapter.py\",\"old\":\"        proposal = None\\n        proposal_error: str | None = None\\n        snapshot = self._data_snapshot_from_run(final_state, frozen_snapshot)\\n        available_sources = self._available_sources(ticker, trade_date, frozen_identity)\\n        try:\\n            proposal = decide_proposal(\\n                outcome=outcome.value,\\n                signal=signal,\\n                run_id=run_id,\\n                ticker=ticker,\\n                trade_date=trade_date,\\n                snapshot=snapshot,\\n                available_sources=available_sources,\\n            )\\n        except ReviewError as exc:\\n            proposal_error = str(exc)\\n        if outcome == RunOutcome.BUDGET_STOPPED:\\n            proposal = None  # incomplete research must not be approvable (NFR-003)\\n\\n        input_snapshot = InputSnapshot(\\n            instrument_context=instrument_context,\\n            past_context=assembly.text,\\n            initial_state=_trim_state(init_state),\\n            identity=identity,\\n            data_snapshot=self._data_snapshot_from_run(final_state, frozen_snapshot),\\n            memory_used=self._memory_entries(ticker, trade_date),\\n            memory_sources=[\\\"tradingagents.memory_log\\\" if self.data_mode == \\\"live\\\" else \\\"frozen-pack\\\"],\\n            available_sources=available_sources,\\n        )\",\"new\":\"        proposal = None\\n        proposal_error: str | None = None\\n        available_sources = self._available_sources(ticker, trade_date, frozen_identity)\\n\\n        input_snapshot = InputSnapshot(\\n            instrument_context=instrument_context,\\n            past_context=assembly.text,\\n            initial_state=_trim_state(init_state),\\n            identity=identity,\\n            data_snapshot=self._data_snapshot_from_run(final_state, frozen_snapshot),\\n            memory_used=self._memory_entries(ticker, trade_date),\\n            memory_sources=[\\\"tradingagents.memory_log\\\" if self.data_mode == \\\"live\\\" else \\\"frozen-pack\\\"],\\n            available_sources=available_sources,\\n        )\\n\\n        try:\\n            proposal = decide_proposal(\\n                outcome=outcome.value,\\n                signal=signal,\\n                run_id=run_id,\\n                ticker=ticker,\\n                trade_date=trade_date,\\n                snapshot=input_snapshot.data_snapshot,\\n                available_sources=available_sources,\\n                evidence_id=material_evidence_id(ticker, trade_date, input_snapshot),\\n            )\\n        except ReviewError as exc:\\n            proposal_error = str(exc)\\n        if outcome == RunOutcome.BUDGET_STOPPED:\\n            proposal = None  # incomplete research must not be approvable (NFR-003)\"}]}",
+          "time": {
+            "start": 1795355798393,
+            "end": 1795355801289
+          },
+          "id": "prt_2038b6b79001j2swGRRfAdscPr",
+          "sessionID": "ses_dfc749e9dffexATzEOeQ34Rd5a",
+          "messageID": "msg_2038b636f001ZhQN9lsFUPowS4"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 3243,
+            "input": 696,
+            "output": 691,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1856
+            }
+          },
+          "cost": 0,
+          "id": "prt_2038b76cc001lboVab0z5wiEVA",
+          "sessionID": "ses_dfc749e9dffexATzEOeQ34Rd5a",
+          "messageID": "msg_2038b636f001ZhQN9lsFUPowS4"
+        }
+      ]
+    }
+  ]
+}

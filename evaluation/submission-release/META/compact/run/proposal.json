@@ -1,0 +1,20 @@
+{
+  "proposal_id": "prop-74f11a005d47",
+  "run_id": "run-601ba8f12879",
+  "ticker": "META",
+  "trade_date": "2026-07-30",
+  "signal": "Underweight",
+  "rating": "Underweight",
+  "side": "sell",
+  "price": 539.030029296875,
+  "shares": null,
+  "evidence_id": "d81d8893568046c26163d750aaea1991eb1b74ac2c8659cc7c5247eee23f178a",
+  "status": "PENDING_REVIEW",
+  "proposal_version": "5b2d1b1e5d64284a",
+  "operator": null,
+  "created_at": "2026-11-22T14:03:42.230622Z",
+  "approved_at": null,
+  "approved_version": null,
+  "reason": null,
+  "execution": null
+}

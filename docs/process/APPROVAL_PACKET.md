@@ -2,7 +2,7 @@
 
 版本：1.0.0。状态：**leo已批准；OpenCode正在实现**。
 
-项目规划工作流根据课程规范与TradingAgents官方源码准备了本方案。决策人统一为 **leo**；主线程已获授权自主决定并指导OpenCode实现。执行来源统一见 `../ai-use-log.yaml`。
+项目规划工作流根据课程规范与TradingAgents官方源码准备了本方案。决策负责人为 **Liyu MA**；主线程已获授权自主决定并指导OpenCode实现。执行来源统一见 `../ai-use-log.yaml`。
 
 以下范围由已有授权采纳，并通过 OpenCode 实施；普通编辑不再询问，实质范围或安全边界变化由主线程自行判断并记录理由：
 
@@ -14,7 +14,7 @@
 6. 同意 `PROJECT_PLAN.md` 的应用层加局部接口架构。OpenCode 在代码前先输出精确修改文件和接口；按离线纵向切片→真实研究→compact→交付的顺序实施。
 7. 同意验收目标：固定6组资料；事实字段100%正确、引用有效率>=95%、支持度/相关性>=0.8；compact目标tokens降低>=20%、质量平均下降<=0.05。测量不达标就继续有针对性优化或如实记录，不修改结果。
 
-决策角色：leo  
+决策角色：Liyu MA  
 方案提出：项目规划工作流  
 方案采纳：见下方已有批准记录  
 首次实现：批准后通过OpenCode开始，详见实际会话时间戳
@@ -26,7 +26,7 @@
 
 ## 决策记录
 
-Reviewer: leo
+Reviewer: Liyu MA
 Decision: APPROVED
 Approved at: 2026-08-31T12:05:17.791955+00:00
 
@@ -35,4 +35,4 @@ Approved at: 2026-08-31T12:05:17.791955+00:00
 
 ## 当前团队与修订
 
-团队由 Alfa、Bravo、Charlie、Delta 组成，职责和贡献分配见 [team.md](team.md)。原始实现决定与历史事件保留其记录身份。当前非视频修订由 [revision-authorization.md](revision-authorization.md) 授权，具体修订见 ADR-004。
+团队由 Liyu MA、Xinyao HENG、Yinuo Li、Chengru WANG 组成，职责和贡献分配见 [team.md](team.md)。原始实现决定与历史事件保留其记录身份。当前非视频修订由 [revision-authorization.md](revision-authorization.md) 授权，具体修订见 ADR-004。

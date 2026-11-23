@@ -1,0 +1,12 @@
+{
+  "files": [
+    "calls.json",
+    "events.jsonl",
+    "final_state.json",
+    "input.json",
+    "manifest.json",
+    "report",
+    "usage.json"
+  ],
+  "complete": true
+}

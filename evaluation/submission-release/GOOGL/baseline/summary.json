@@ -1,0 +1,16 @@
+{
+  "ticker": "GOOGL",
+  "analysis_date": "2026-07-23",
+  "context_mode": "baseline",
+  "outcome": "completed",
+  "signal": "Hold",
+  "stop_reason": "completed",
+  "calls": 13,
+  "input_tokens": 75482,
+  "output_tokens": 16887,
+  "total_tokens": 92369,
+  "wall_seconds": 157.847,
+  "error": null,
+  "pack_complete": true,
+  "run_dir": "/Users/leeyoma/Downloads/cs5351/work/project/evaluation/submission-release/GOOGL/baseline/run"
+}

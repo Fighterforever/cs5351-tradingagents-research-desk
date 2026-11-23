@@ -1,0 +1,84 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+Small coordinated correction. In cli.py raise numeric typer.Exit(1) from None when handling replay exceptions (ruff B904), simplify optional ledger connection cleanup to store.close() in a finally, without getattr/callable guards. In existing test_cli_slice.py::test_cli_replay_incomplete_fails the command used to leak a raw internal EvidencePackError; change assertion to the new actual user-visible contract: nonzero exit and missing required files diagnostic in r.output, and no successful Replayed banner. Preserve direct exception tests in test_at01_replay.py. Remove any now-unused import in test_cli_slice.py.
+
+SOURCE src/research_desk/cli.py
+    ledger = None
+    store = None
+    if with_ledger:
+        store = _store(settings)
+        try:
+            ledger = store.get_ledger()
+        finally:
+            close = getattr(store, "close", None)
+            if callable(close):
+                close()
+    try:
+        result = engine.replay(source, out_dir, ledger=ledger)
+    except (EvidencePackError, OSError, ValueError) as exc:
+        console.print(f"[red]Replay failed: {exc}[/red]")
+        raise typer.Exit(1)
+    if result.incomplete or result.error:
+        detail = result.error or "incomplete evidence pack"
+        console.print(f"[red]Replay failed: {detail}[/red]")
+        raise typer.Exit(1)
+    console.print(f"[green]Replayed {result.pack.manifest.run_id}[/green] (external calls: {result.external_calls})")
+    console.print(f"signal: {result.signal or 'n/a'}")
+    console.print(f"reports: {len(result.report_files)} files under {out_dir}")
+    if result.policy_bounds is not None:
+        bounds = result.policy_bounds
+        if bounds.get("side") == "sell":
+
+SOURCE test/offline/test_cli_slice.py
+"""End-to-end CLI vertical slice on fixture evidence (zero external calls).
+
+Drives the real CLI commands (export -> replay -> propose -> review -> execute
+-> ledger) against a fixture pack under an isolated desk home, verifying the
+whole evidence -> review -> ledger flow works from the operator's terminal.
+"""
+
+from __future__ import annotations
+
+import shutil
+
+from typer.testing import CliRunner
+
+from research_desk.cli import app
+
+runner = CliRunner()
+
+
+def _seed_run(desk_home):
+    """Copy the committed aapl fixture into the isolated runs dir under its run_id."""
+    from research_desk.config import ResearchDeskSettings
+
+    settings = ResearchDeskSettings(home=desk_home)
+    settings.ensure_dirs()
+    src = "test/fixtures/packs/aapl_buy_complete"
+    dest = settings.runs_dir / "fixture-aapl-buy"
+    shutil.copytree(src, dest)
+    return settings
+
+
+
+...
+    r = runner.invoke(app, ["ledger"])
+    assert "100,000.00" in r.output  # unchanged
+
+
+def test_cli_replay_incomplete_fails(desk_home, monkeypatch, tmp_path):
+    monkeypatch.setenv("RESEARCH_DESK_HOME", desk_home)
+    from research_desk.evidence import EvidencePackError
+
+    bad = tmp_path / "bad"
+    shutil.copytree("test/fixtures/packs/aapl_buy_complete", bad)
+    (bad / "usage.json").unlink()
+    r = runner.invoke(app, ["replay", str(bad)])
+    assert r.exit_code != 0
+    assert isinstance(r.exception, EvidencePackError)
+    assert "missing required files" in str(r.exception)
+
+
+def test_cli_ledger_report_renders(desk_home, monkeypatch):
+    monkeypatch.setenv("RESEARCH_DESK_HOME", desk_home)
+    _seed_run(desk_home)
+    runner.invoke(app, ["propose", "fixture-aapl-buy"])

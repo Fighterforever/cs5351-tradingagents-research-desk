@@ -151,6 +151,30 @@ requirements:
   - research_desk.cli
   tests:
   - AT-07
+- id: FR-004
+  type: functional
+  statement: An operator can register a proposal from a saved research package and
+    resume its recorded ledger state. A material change to an open proposal
+    requires fresh review. Rejected and executed proposals remain closed.
+  priority: Must
+  fit:
+    metric: registration_contract_case_pass_rate
+    operator: ==
+    threshold: 1.0
+    verification: Check initial registration, unchanged approved terms, rejection,
+      completed execution, revised evidence and legacy-package import in
+      test/offline/test_submission_runtime.py. Repeat registration must preserve
+      any existing transaction and leave balances unchanged.
+  source:
+  - docs/architecture/adr/005-submission-contracts.md
+  - transcripts/leo-project-directions.md
+  components:
+  - research_desk.evidence
+  - research_desk.storage
+  - research_desk.cli
+  tests:
+  - AT-03
+  - AT-05
 - id: NFR-003
   type: cost
   statement: A configured call budget prevents starting another model request, and

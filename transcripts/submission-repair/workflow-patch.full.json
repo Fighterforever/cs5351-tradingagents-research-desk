@@ -1,0 +1,162 @@
+{
+  "info": {
+    "id": "ses_dfc7ac577ffeohW9HXLPnMQcoG",
+    "slug": "playful-cactus",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/workflow-patch",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/workflow-patch",
+    "title": "Research Desk workflow-patch",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 329,
+      "output": 6350,
+      "reasoning": 0,
+      "cache": {
+        "read": 1856,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355392648,
+      "updated": 1795355433392
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355392682
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_203853aaa001OtNyVJI3hE8NvN",
+        "sessionID": "ses_dfc7ac577ffeohW9HXLPnMQcoG"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"No tools. Return only a JSON object with one key replacement containing the complete replacement YAML-indented shell snippet for the source block below. It is repeated verbatim in the gate jobs. On PR use actual PR base; on push use before. If before is all zeros/empty, pick merge-base between current checkout HEAD and refs/remotes/origin/main if present, otherwise the established baseline tag. This is first-push diff calculation, not a substitute for any check. For pushes onto main with no before (e.g. original first main) avoid main-vs-main empty fallback. Preserve GitHub output. Do not change job names. Source block:\n          BASE=\\\"${{ github.event.pull_request.base.sha || github.event.before }}\\\"\n          if [ -z \\\"$BASE\\\" ] || [ \\\"$BASE\\\" = \\\"0000000000000000000000000000000000000000\\\" ]; then\n            echo \\\"base=$BASE_TAG\\\" >> \\\"$GITHUB_OUTPUT\\\"\n          else\n            echo \\\"base=$BASE\\\" >> \\\"$GITHUB_OUTPUT\\\"\n          fi\n\"",
+          "id": "prt_203853aad001mE0TtHMgSV5aGn",
+          "sessionID": "ses_dfc7ac577ffeohW9HXLPnMQcoG",
+          "messageID": "msg_203853aaa001OtNyVJI3hE8NvN"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_203853aaa001OtNyVJI3hE8NvN",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/workflow-patch",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 8535,
+          "input": 329,
+          "output": 6350,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1856
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355393036,
+          "completed": 1795355433359
+        },
+        "finish": "stop",
+        "id": "msg_203853c0c001nslqBZofvoI6jF",
+        "sessionID": "ses_dfc7ac577ffeohW9HXLPnMQcoG"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_20385476e00102w5s00nvwXRnn",
+          "sessionID": "ses_dfc7ac577ffeohW9HXLPnMQcoG",
+          "messageID": "msg_203853c0c001nslqBZofvoI6jF"
+        },
+        {
+          "type": "reasoning",
+          "text": "The user wants me to return only a JSON object with key \"replacement\" containing the complete replacement YAML-indented shell snippet. No tools.\n\nLet me parse the requirements:\n\nSource block:\n```\n          BASE=\"${{ github.event.pull_request.base.sha || github.event.before }}\"\n          if [ -z \"$BASE\" ] || [ \"$BASE\" = \"0000000000000000000000000000000000000000\" ]; then\n            echo \"base=$BASE_TAG\" >> \"$GITHUB_OUTPUT\"\n          else\n            echo \"base=$BASE\" >> \"$GITHUB_OUTPUT\"\n          fi\n```\n\nRequirements:\n- On PR use actual PR base; on push use before.\n- If before is all zeros/empty, pick merge-base between current checkout HEAD and refs/remotes/origin/main if present, otherwise the established baseline tag.\n- This is first-push diff calculation, not a substitute for any check.\n- For pushes onto main with no before (e.g. original first main) avoid main-vs-main empty fallback.\n- Preserve GitHub output.\n- Do not change job names.\n\nSo we need to build a shell snippet. The existing variable BASE_TAG is referenced (established baseline tag). We need to preserve that.\n\nThe tricky part: \"For pushes onto main with no before (e.g. original first main) avoid main-vs-main empty fallback.\" That means if the event is a push to main and before is zero, and we do merge-base HEAD origin/main, that would yield HEAD itself (empty diff). So avoid that. In that case use baseline tag.\n\nLet's design logic:\n\n1. Determine if PR: `${{ github.event_name == 'pull_request' }}` or check `github.event.pull_request.base.sha`.\n2. Set BASE from PR base if present, else github.event.before.\n3. If BASE is empty or all zeros:\n   - Need to decide fallback.\n   - For push onto main with no before: use baseline tag (BASE_TAG) to avoid main-vs-main empty fallback.\n   - Otherwise (e.g. push to non-main branch? or PR with missing base?): pick merge-base between HEAD and origin/main if present, otherwise baseline tag.\n\nBut careful: \"If before is all zeros/empty, pick merge-base between current checkout HEAD and refs/remotes/origin/main if present, otherwise the established baseline tag.\" Then \"For pushes onto main with no before ... avoid main-vs-main empty fallback.\" So for main push, don't do merge-base; use baseline tag directly.\n\nHow to detect main push? `github.ref == 'refs/heads/main'` or `github.ref_name == 'main'`. The default branch might not be main, but the prompt says main explicitly. Use `github.ref == 'refs/heads/main'`.\n\nAlso need to ensure origin/main exists / refs/remotes/origin/main present. Use `git rev-parse --verify refs/remotes/origin/main` and maybe fetch? The prompt says \"if present\" so we just check presence. We shouldn't add fetch? Possibly. But maybe need to ensure remote refs are available; often checkout action fetches only the PR. But instructions: \"pick merge-base between current checkout HEAD and refs/remotes/origin/main if present, otherwise the established baseline tag.\" So just check present. Could add a fetch of origin main? Not asked. Better not.\n\nNeed to preserve GitHub output: echo \"base=$...\" >> \"$GITHUB_OUTPUT\".\n\nAlso preserve BASE_TAG usage. The source block references BASE_TAG presumably defined earlier. We can rely on it.\n\nNeed YAML-indented: 10 spaces indentation as in source (they used 10 spaces). Keep consistent.\n\nLet's write:\n\n```\n          BASE=\"${{ github.event.pull_request.base.sha || github.event.before }}\"\n          if [ -z \"$BASE\" ] || [ \"$BASE\" = \"0000000000000000000000000000000000000000\" ]; then\n            if [ \"${{ github.event_name }}\" = \"push\" ] && [ \"${{ github.ref }}\" = \"refs/heads/main\" ]; then\n              BASE=\"$BASE_TAG\"\n            elif git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null 2>&1; then\n              BASE=\"$(git merge-base HEAD refs/remotes/origin/main || true)\"\n            fi\n            if [ -z \"$BASE\" ] || [ \"$BASE\" = \"0000000000000000000000000000000000000000\" ]; then\n              BASE=\"$BASE_TAG\"\n            fi\n          fi\n          echo \"base=$BASE\" >> \"$GITHUB_OUTPUT\"\n```\n\nWait: If merge-base returns empty or fails, fallback to BASE_TAG. Good.\n\nBut \"On PR use actual PR base; on push use before.\" The initial BASE expression already does PR base || before. For PR, github.event.before might also be set, but PR base takes precedence. Fine. But what if PR base is all zeros? Unlikely. The fallback logic would apply; for PR event not push, it will try merge-base. That's acceptable maybe. But perhaps for PR with empty base we should use baseline tag. Hmm.\n\nPotential issue: For push to main, we skip merge-base entirely and use baseline tag. That satisfies \"avoid main-vs-main empty fallback\". Good.\n\nBut what about push to main where before is all zeros but there is a baseline tag — use tag. Good.\n\nWhat about push to non-main branch with no before: merge-base HEAD origin/main if present, else baseline tag. Good.\n\nWhat about PR event where base sha is zero/empty: merge-base? The requirement says \"On PR use actual PR base; on push use before. If before is all zeros/empty, pick merge-base...\" It specifically mentions before, but likely generic. We can treat similarly. Fine.\n\nHowever, we need to be careful with GitHub expressions inside shell. Using `${{ github.event_name }}` yields e.g. `push` unquoted? We wrap in quotes: `[ \"${{ github.event_name }}\" = \"push\" ]` -> `[ \"push\" = \"push\" ]` fine. Similarly ref. Good.\n\nBut maybe we should not rely on `github.ref` for main? It's fine.\n\nAlso \"This is first-push diff calculation, not a substitute for any check.\" That's just a comment? We probably shouldn't add comments per code style \"DO NOT ADD ANY COMMENTS unless asked\". The user didn't ask for comments; they said this is first-push diff calculation, not a substitute for any check. It might be an instruction to not over-engineer or to not rely on this for checks. So no comment.\n\n\"Do not change job names.\" We aren't.\n\n\"Preserve GitHub output.\" We keep echo to GITHUB_OUTPUT.\n\nNow consider: The source block's else branch echoes base=$BASE. Our replacement always echoes at the end. That's fine, preserves output.\n\nBut one subtlety: In the fallback, if merge-base fails, `BASE` might become empty. Then we set to BASE_TAG. Good.\n\nBut what if BASE_TAG itself is empty? Not our concern; established baseline tag presumably set.\n\nPotential issue with `git merge-base HEAD refs/remotes/origin/main` if HEAD == origin/main (e.g., main branch) - but we already skip for main push. For PR, HEAD is merge commit, origin/main exists, merge-base works. For non-main push, works.\n\nAlso need to ensure the script handles `set -e`? If the job has `set -e` (default GitHub Actions shell is `bash -e`), then commands that fail could abort. We use `|| true` on merge-base, and rev-parse guarded with `if`. But `git merge-base` inside command substitution with `|| true` protects. Good. However `BASE=\"$(git merge-base HEAD refs/remotes/origin/main || true)\"` works.\n\nBut the `if git rev-parse --verify --quiet ...; then` is safe.\n\nWait: `git rev-parse --verify --quiet refs/remotes/origin/main` returns 0 if exists. Good.\n\nNow should we use `refs/remotes/origin/main` or `origin/main`? The prompt says \"refs/remotes/origin/main if present\". Use that exact.\n\nNow consider if origin/main doesn't exist but there is a remote tracking `origin/HEAD`? Not asked.\n\nNow indentation: The source has 10 spaces before `BASE`. Let's keep exactly 10 spaces. The nested lines add 2 spaces each. The user asks for \"complete replacement YAML-indented shell snippet for the source block below.\" So the replacement should be the same indentation as source.\n\nLet's verify indentation count: In the source:\n`          BASE=...` = 10 spaces.\n`          if ...` = 10 spaces.\n`            echo ...` = 12 spaces.\n`          else` = 10.\n`            echo ...` = 12.\n`          fi` = 10.\n\nOur snippet:\n10 spaces BASE\n10 if\n12 if (push main)\n14 BASE=\"$BASE_TAG\"\n12 elif git rev-parse...\n14 BASE=\"$(...)\"\n12 fi\n12 if [ -z ... ]...\n14 BASE=\"$BASE_TAG\"\n12 fi\n10 fi\n10 echo \"base=$BASE\" >> \"$GITHUB_OUTPUT\"\n\nCheck nesting: Outer if (10). Inside: if push main (12) ... elif (12) ... fi (12). Then another if (12) ... fi (12). Then outer fi (10). Then echo (10). Good.\n\nBut wait, the `elif` branch: if origin/main present, set BASE to merge-base. But if merge-base returns the same as HEAD for main push, we skipped. Good.\n\nOne more consideration: \"If before is all zeros/empty, pick merge-base between current checkout HEAD and refs/remotes/origin/main if present, otherwise the established baseline tag.\" For push to main with no before, we use baseline tag, which is \"otherwise\" case? Actually they say avoid main-vs-main empty fallback. So for main push, we should not even attempt merge-base; directly baseline tag. That's what we do.\n\nBut what if push to main with before all zeros but origin/main is not current HEAD? Then merge-base might not be empty, but still they said avoid main-vs-main empty fallback; using tag is safe. Good.\n\nNow, could we simplify: Determine `IS_MAIN_PUSH` via expression. Fine.\n\nBut there's a nuance: The source uses `github.event.pull_request.base.sha || github.event.before`. For push events, `github.event.pull_request.base.sha` is null, so before. For PR events, base sha. Good.\n\nShould we handle `github.event.before` being absent for some events? Expression yields empty string. Good.\n\nNow, do we need to use `github.event_name == 'pull_request'` to decide? Our initial BASE expression already prioritizes PR base. But for a PR event where base sha is empty, fallback logic applies; not push main, so merge-base. That's probably fine.\n\nPotential problem: For a push to main, `github.event.pull_request.base.sha` is empty and `github.event.before` is zeros. Our outer if triggers. Then check `github.event_name == 'push'` and `github.ref == 'refs/heads/main'` -> true, set BASE_TAG. Then inner if sees BASE non-empty and not zeros, so skip. Echo tag. Good.\n\nWhat about push to main with before non-zero? Outer if false, echo before. Good.\n\nWhat about push to non-main with before zero? Outer if true. event_name push, ref not main -> elif checks origin/main. If present, merge-base. If merge-base yields empty (shouldn't if HEAD descends from origin/main? Actually if unrelated histories, merge-base fails -> empty -> fallback tag). Good. If origin/main absent -> BASE remains zero? Wait: We entered outer if because BASE is zero/empty. We did not modify BASE in the push-non-main case if origin/main absent, because the `elif` condition false, so no branch executes, BASE stays zero/empty. Then inner if catches it and sets BASE_TAG. Good. If origin/main present but merge-base returns something, BASE set. If merge-base returns empty, inner if sets tag. Good.\n\nWhat about PR event with base zero and ref not main? event_name pull_request, so first inner if false. elif checks origin/main. If present, merge-base HEAD origin/main. HEAD is PR merge commit; merge-base with origin/main likely the base commit. Good. If absent, fallback tag. Fine.\n\nNow, is there a risk that `github.ref` for PR is `refs/pull/123/merge` so not main, good.\n\nNow, we must output only JSON object. So final answer: `{\"replacement\": \"...\"}` with the snippet escaped as a JSON string. Need to properly escape newlines and quotes.\n\nWe should not include markdown code fences. Just the JSON object.\n\nLet's construct the snippet string exactly.\n\nSnippet lines:\n\n1. `          BASE=\"${{ github.event.pull_request.base.sha || github.event.before }}\"`\n2. `          if [ -z \"$BASE\" ] || [ \"$BASE\" = \"0000000000000000000000000000000000000000\" ]; then`\n3. `            if [ \"${{ github.event_name }}\" = \"push\" ] && [ \"${{ github.ref }}\" = \"refs/heads/main\" ]; then`\n4. `              BASE=\"$BASE_TAG\"`\n5. `            elif git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null 2>&1; then`\n6. `              BASE=\"$(git merge-base HEAD refs/remotes/origin/main || true)\"`\n7. `            fi`\n8. `            if [ -z \"$BASE\" ] || [ \"$BASE\" = \"0000000000000000000000000000000000000000\" ]; then`\n9. `              BASE=\"$BASE_TAG\"`\n10. `            fi`\n11. `          fi`\n12. `          echo \"base=$BASE\" >> \"$GITHUB_OUTPUT\"`\n\nWait line 8 indentation: It's inside outer if, so 12 spaces. Line 9 inside inner if, 14 spaces. Line 10 fi 12. Good.\n\nBut line 3 is inside outer if, 12 spaces. Line 4 14. Line 5 12. Line 6 14. Line 7 12. Good.\n\nNow JSON escape:\n- Newlines -> \\n\n- Double quotes -> \\\"\n- Backslashes? The snippet has `$GITHUB_OUTPUT` no backslash. `>/dev/null 2>&1` no backslash. `$(...)` no backslash. `||` fine. `${{ ... }}` no quotes inside except the expression? The expression contains no double quotes. Good. But there are double quotes around shell variables, must escape.\n\nLet's write JSON string carefully. Could produce with a script mentally. Let's build:\n\n`          BASE=\\\"${{ github.event.pull_request.base.sha || github.event.before }}\\\"\\n          if [ -z \\\"$BASE\\\" ] || [ \\\"$BASE\\\" = \\\"0000000000000000000000000000000000000000\\\" ]; then\\n            if [ \\\"${{ github.event_name }}\\\" = \\\"push\\\" ] && [ \\\"${{ github.ref }}\\\" = \\\"refs/heads/main\\\" ]; then\\n              BASE=\\\"$BASE_TAG\\\"\\n            elif git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null 2>&1; then\\n              BASE=\\\"$(git merge-base HEAD refs/remotes/origin/main || true)\\\"\\n            fi\\n            if [ -z \\\"$BASE\\\" ] || [ \\\"$BASE\\\" = \\\"0000000000000000000000000000000000000000\\\" ]; then\\n              BASE=\\\"$BASE_TAG\\\"\\n            fi\\n          fi\\n          echo \\\"base=$BASE\\\" >> \\\"$GITHUB_OUTPUT\\\"`\n\nCheck: The `${{ ... }}` inside JSON string: no escaping needed for `{` `}`. Fine.\n\nNow, is there any concern about using `github.ref` for main when the default branch is not main? The prompt explicitly says main, so fine.\n\nBut let's reconsider requirement: \"On PR use actual PR base; on push use before. If before is all zeros/empty, pick merge-base between current checkout HEAD and refs/remotes/origin/main if present, otherwise the established baseline tag. This is first-push diff calculation, not a substitute for any check. For pushes onto main with no before (e.g. original first main) avoid main-vs-main empty fallback. Preserve GitHub output. Do not change job names.\"\n\nThey might expect the fallback to use merge-base for all no-before cases except main push. Our code does that. However, one subtlety: \"If before is all zeros/empty, pick merge-base between current checkout HEAD and refs/remotes/origin/main if present, otherwise the established baseline tag.\" This sentence might apply even to main push? Then the next sentence overrides for main push: \"For pushes onto main with no before ... avoid main-vs-main empty fallback.\" So for main push, we should avoid merge-base if it would produce HEAD (empty diff). Our approach of directly using baseline tag is safe. But maybe a more nuanced approach: for main push with no before, if origin/main exists but is not HEAD? Actually on a push to main, current checkout HEAD is the new commit; refs/remotes/origin/main likely points to the previous main tip (the before), but if before is zero (first push), origin/main might not exist or might point to something else. If origin/main exists and equals HEAD, merge-base is HEAD -> empty. So avoid. Direct tag is fine.\n\nCould there be a case where main push with no before but origin/main exists and is different from HEAD (e.g., force push to main with zero before? unlikely). The requirement says avoid main-vs-main empty fallback, so tag is acceptable.\n\nNow, do we need to quote `${{ github.event_name }}`? It yields `push` or `pull_request`. Quoted fine. For `github.ref`, yields `refs/heads/main` or `refs/pull/...`. Quoted fine.\n\nOne potential issue: In GitHub Actions, the shell might be `bash -e`. The expression substitution happens before shell. If `github.event_name` is undefined? It's always defined. Fine.\n\nNow, maybe we should use `github.event_name == 'push'` in expression and `github.ref == 'refs/heads/main'` but we cannot use `==` in shell? We used `=` for string comparison, correct in `[ ]`.\n\nNow, \"Preserve GitHub output.\" We kept `echo \"base=$BASE\" >> \"$GITHUB_OUTPUT\"`. Good. But note the source had two echos in branches; our single echo is equivalent. Good.\n\nNow, should we keep the original structure more closely to avoid changing behavior? The user asked for replacement. Our replacement is fine.\n\nBut let's double-check the inner fallback logic: If `BASE` is all zeros and we're on a push to main, we set BASE=\"$BASE_TAG\". Then inner if: `[ -z \"$BASE\" ]` false if tag non-empty; `[ \"$BASE\" = \"0000...\" ]` false. So echo tag. Good.\n\nIf `BASE_TAG` is empty (not set), inner if would set BASE to empty again, then echo base=. But that's a pre-existing assumption. The source also used BASE_TAG. Fine.\n\nNow, maybe we should avoid reusing `BASE` for the tag to keep semantics? Not necessary.\n\nOne more thought: For push to main with no before, the requirement says \"avoid main-vs-main empty fallback.\" Our code avoids merge-base entirely, so no empty fallback. Good.\n\nNow, is there a possibility that `github.event_name` is `pull_request_target`? Then not push, so fallback merge-base. Fine.\n\nNow, output only JSON. Need to ensure valid JSON: The string must escape double quotes. Let's carefully assemble and validate.\n\nI'll write the JSON in final. No extra text.\n\nBut before final, let's think if the user expects the replacement to include the condition `github.event_name == 'push'` perhaps using expression to avoid shell. Our approach is fine.\n\nWait, there's a subtle bug: The outer `BASE` expression uses `github.event.pull_request.base.sha || github.event.before`. For a push event, `github.event.pull_request` is null, so `github.event.pull_request.base.sha` is null -> falls to before. Good. For a PR event, `github.event.before` might also be present (the base of the branch?), but PR base takes precedence. Good.\n\nNow, what about `github.event.before` for a PR event? It might be the base sha of the branch? Actually in PR events, `github.event.before` is not present? The `pull_request` event payload doesn't have `before`; it has `pull_request.base.sha`. So expression works.\n\nNow, consider a push event to a non-main branch where before is zero (new branch). We compute merge-base HEAD origin/main. If origin/main is present, merge-base gives the fork point. That's the desired first-push diff. If origin/main absent, baseline tag. Good.\n\nBut what if the new branch is not based on main but on another branch? The requirement says origin/main, so fine.\n\nNow, potential issue: `git merge-base HEAD refs/remotes/origin/main` might output multiple lines if multiple merge bases? `git merge-base` without `--all` outputs one. Fine.\n\nNow, maybe need to ensure `git` is available and repo is fetched. Not our concern.\n\nNow, could the `if git rev-parse ...` be affected by `set -e`? No, it's a condition.\n\nNow, the `BASE=\"$(git merge-base ... || true)\"` under `set -e`: The `|| true` ensures success. Good. But if `git merge-base` outputs an error to stderr, it may still print to stderr; not a problem. Could redirect stderr to /dev/null to keep logs clean, but not required. Maybe add `2>/dev/null`? The prompt didn't ask. But it might be cleaner. However, if merge-base fails due to unrelated histories, it prints \"fatal: ...\" to stderr, which could be noisy. We could suppress: `git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true`. But then if it fails, we fallback. Let's consider adding `2>/dev/null` for cleanliness. But changing behavior? No. Might be nice. However, if there's a real error, suppressing could hide. But fallback handles. I'll include `2>/dev/null`? The requirement says pick merge-base if present. If merge-base fails, fallback tag. Suppressing stderr is fine. But it's not necessary. Keep simple to avoid over-engineering. Maybe include `2>/dev/null` to avoid noise in CI. Let's decide.\n\nI think adding `2>/dev/null` is reasonable. But the `git rev-parse --verify --quiet` already suppresses output. For merge-base, errors could be noisy. Let's add `2>/dev/null`. Then line 6: `BASE=\"$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true)\"`. That's fine.\n\nBut wait, if merge-base fails and outputs nothing, `BASE` becomes empty. Inner if sets tag. Good.\n\nNow, another subtlety: If `git merge-base` succeeds but outputs an empty line? It won't.\n\nNow, final JSON.\n\nLet's also consider whether to use `${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}`? In shell, we could do `if [ \"${{ github.event_name }}\" = \"push\" ] && [ \"${{ github.ref }}\" = \"refs/heads/main\" ]; then`. That's what we have.\n\nNow, is `github.ref` the correct context for push to main? Yes, `refs/heads/main`.\n\nNow, should we check `github.event.repository.default_branch` instead of hardcoding main? The prompt explicitly says main. Keep.\n\nNow, let's verify JSON escaping for `${{ ... }}`: In JSON, `$` is fine, `{` fine. No escape.\n\nLet's produce final.\n\nBut wait: The user says \"Return only a JSON object with one key replacement containing the complete replacement YAML-indented shell snippet\". So the JSON object should be exactly `{\"replacement\": \"...\"}`. No code fence. Good.\n\nLet's double-check the snippet indentation in the JSON string: I'll count spaces.\n\nLine 1: 10 spaces then `BASE=...`\nLine 2: 10 spaces `if ...`\nLine 3: 12 spaces `if ...`\nLine 4: 14 spaces `BASE=...`\nLine 5: 12 spaces `elif ...`\nLine 6: 14 spaces `BASE=...`\nLine 7: 12 spaces `fi`\nLine 8: 12 spaces `if ...`\nLine 9: 14 spaces `BASE=...`\nLine 10: 12 spaces `fi`\nLine 11: 10 spaces `fi`\nLine 12: 10 spaces `echo ...`\n\nYes.\n\nNow, let's write the JSON string exactly. I'll use double quotes around the whole string, escape internal double quotes.\n\nString content:\n\n```\n          BASE=\"${{ github.event.pull_request.base.sha || github.event.before }}\"\n          if [ -z \"$BASE\" ] || [ \"$BASE\" = \"0000000000000000000000000000000000000000\" ]; then\n            if [ \"${{ github.event_name }}\" = \"push\" ] && [ \"${{ github.ref }}\" = \"refs/heads/main\" ]; then\n              BASE=\"$BASE_TAG\"\n            elif git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null 2>&1; then\n              BASE=\"$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true)\"\n            fi\n            if [ -z \"$BASE\" ] || [ \"$BASE\" = \"0000000000000000000000000000000000000000\" ]; then\n              BASE=\"$BASE_TAG\"\n            fi\n          fi\n          echo \"base=$BASE\" >> \"$GITHUB_OUTPUT\"\n```\n\nEscaped:\n\n`          BASE=\\\"${{ github.event.pull_request.base.sha || github.event.before }}\\\"\\n          if [ -z \\\"$BASE\\\" ] || [ \\\"$BASE\\\" = \\\"0000000000000000000000000000000000000000\\\" ]; then\\n            if [ \\\"${{ github.event_name }}\\\" = \\\"push\\\" ] && [ \\\"${{ github.ref }}\\\" = \\\"refs/heads/main\\\" ]; then\\n              BASE=\\\"$BASE_TAG\\\"\\n            elif git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null 2>&1; then\\n              BASE=\\\"$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true)\\\"\\n            fi\\n            if [ -z \\\"$BASE\\\" ] || [ \\\"$BASE\\\" = \\\"0000000000000000000000000000000000000000\\\" ]; then\\n              BASE=\\\"$BASE_TAG\\\"\\n            fi\\n          fi\\n          echo \\\"base=$BASE\\\" >> \\\"$GITHUB_OUTPUT\\\"`\n\nNow, is there any issue with the JSON parser interpreting `\\n` as newline? Yes, that's intended. The `\\n` in JSON string becomes actual newline when parsed. Good.\n\nNow, ensure no unescaped backslashes: The snippet has no backslashes except the escape sequences we add. `2>&1` no backslash. `$(...)` no backslash. Good.\n\nNow, final answer.",
+          "time": {
+            "start": 1795355395954,
+            "end": 1795355432472
+          },
+          "id": "prt_203854772001XPWDoYEhZIIWRz",
+          "sessionID": "ses_dfc7ac577ffeohW9HXLPnMQcoG",
+          "messageID": "msg_203853c0c001nslqBZofvoI6jF"
+        },
+        {
+          "type": "text",
+          "text": "{\"replacement\":\"          BASE=\\\"${{ github.event.pull_request.base.sha || github.event.before }}\\\"\\n          if [ -z \\\"$BASE\\\" ] || [ \\\"$BASE\\\" = \\\"0000000000000000000000000000000000000000\\\" ]; then\\n            if [ \\\"${{ github.event_name }}\\\" = \\\"push\\\" ] && [ \\\"${{ github.ref }}\\\" = \\\"refs/heads/main\\\" ]; then\\n              BASE=\\\"$BASE_TAG\\\"\\n            elif git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null 2>&1; then\\n              BASE=\\\"$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null || true)\\\"\\n            fi\\n            if [ -z \\\"$BASE\\\" ] || [ \\\"$BASE\\\" = \\\"0000000000000000000000000000000000000000\\\" ]; then\\n              BASE=\\\"$BASE_TAG\\\"\\n            fi\\n          fi\\n          echo \\\"base=$BASE\\\" >> \\\"$GITHUB_OUTPUT\\\"\"}",
+          "time": {
+            "start": 1795355432516,
+            "end": 1795355433335
+          },
+          "id": "prt_20385d644001Ffb8yKFvzwwN5Y",
+          "sessionID": "ses_dfc7ac577ffeohW9HXLPnMQcoG",
+          "messageID": "msg_203853c0c001nslqBZofvoI6jF"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 8535,
+            "input": 329,
+            "output": 6350,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1856
+            }
+          },
+          "cost": 0,
+          "id": "prt_20385d980001jqQhKL5qlgsMVs",
+          "sessionID": "ses_dfc7ac577ffeohW9HXLPnMQcoG",
+          "messageID": "msg_203853c0c001nslqBZofvoI6jF"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+**Rating**: Overweight
+
+**Executive Summary**: Overweight AMZN, staged entry only. Take a reduced Tranche 1 (~1/3 of intended full position) on a pullback that holds above the gap zone rather than a single clip near 263; keep total exposure at the low end of 3–5% of book, sized so risk to a volatility-widened stop below 226.65 is ~1% of book. Tranche 2 only on a five-session hold above 226.65 plus a reclaim of 274.99. Horizon 3–6 months; no price target issued (trailing P/E UNKNOWN — no TTM EPS in sources [src-amzn]).
+
+**Investment Thesis**: The decisive fact is operating, not headline: AWS sales USD42.2bn, +37%, with operating income USD27.5bn vs USD19.2bn (~+43%, calc (27.5−19.2)/19.2) and total net sales USD200.6bn, +20% [src-amzn]. That acceleration is independent of the Anthropic mark, so the Aggressive Analyst is right that the engine is real — and the Conservative Analyst's demand to wait for a 274.99 reclaim before any exposure inverts the risk logic, as the Neutral Analyst correctly noted.
+
+But the Aggressive case fails on two points. First, "institutional accumulation" from 129.05M shares (~2.9x the 2026-07-28 level) is an assumption, not a sourced fact [market-amzn]; the 248.4M June 26 spike near a low proves volume is directionless evidence [market-amzn]. Second, "TTM P/E UNKNOWN, so not expensive" is backwards — unknown valuation is neutral, not bullish [src-amzn].
+
+The Conservative wins on quality and cash: USD53.4bn of USD62.6bn net income is pre-tax other income, mainly Anthropic (~85%, calc 53.4/62.6) [src-amzn], and TTM FCF is a −USD7.6bn outflow with no capex guidance or inflection evidence in the corpus [src-amzn]. The 263.0 limit sits ~16% above the 2026-07-29 close of 226.65 (calc (263.0−226.65)/226.65) [market-amzn], and the stock is still below the 2026-05-06 level of 274.99 [market-amzn] — overhead supply, not a clean breakout.
+
+Resolution is sizing, not conviction inflation: adopt the Neutral Analyst's adjustment — smaller, conditional Tranche 1, a stop widened below 226.65 rather than resting on the chart's most obvious level, and a low-end 3–5% cap. Upgrade to Buy only when TTM FCF turns positive from −USD7.6bn or capex/FCF trajectory is disclosed [src-amzn]. Treat the Anthropic gains as non-recurring; underwrite AWS operating income and net sales growth only. Ticker AMZN, analysis date 2026-07-31, latest close 271.58 USD [market-amzn].
+
+**Time Horizon**: 3-6 months

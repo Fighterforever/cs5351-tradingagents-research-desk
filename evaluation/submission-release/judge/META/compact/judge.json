@@ -1,0 +1,40 @@
+{
+  "support": 0.95,
+  "relevance": 0.95,
+  "cited_claim_count": 42,
+  "supported_cited_claim_count": 42,
+  "valid_citation_rate": 1.0,
+  "invalid_citation_explanations": [],
+  "uncited_factual_claims": [],
+  "semantic_valid": true,
+  "semantic_errors": [],
+  "rationale": "All key conclusions trace directly to the frozen evidence: Q2 2026 revenue $60.801B +28%, operating income $18.775B -8%, margin 31% vs 43%, $2.40B legal + $1.18B severance, DAP 3.60B +3%, capex $31.08B [src-meta]; close 539.03, prior close 585.61, volume 42.27M vs 22.37M, day range 524.49-539.88, and the 563->681.31 run [market-meta]. Derived figures are correctly labeled as calculations with cited operands and check out arithmetically (18.775/60.801=30.9%; 42.03/60.801=69.1%; 3.58/60.801=5.9%; 22.36/60.801=36.8%; 31.08/60.801=51.1%; 539.03/585.61-1=-8.0%; 585.61/539.03-1=+8.6%). No fabricated indicators, multiples, or macro data; unavailable sources are explicitly reported as NO_DATA_AVAILABLE. Semantic validity holds: all earnings figures are correctly framed as Q2 2026 quarterly results, no quarterly EPS is relabeled TTM/annual, no trailing P/E is computed, and EPS/P-E/guidance/targets are consistently flagged UNKNOWN. Minor nits only: the \"~563 (2026-06-30)\" reference is a rounded close (563.29) and the \"prior close 585.61\" is the 2026-07-29 close, both accurate in substance; the report is somewhat repetitive across role sections but stays on task for META/2026-07-30.",
+  "error": false,
+  "deterministic_checks": [
+    {
+      "check": "instrument_identity",
+      "passed": true,
+      "detail": "report contract references company 'Meta Platforms, Inc.'"
+    },
+    {
+      "check": "analysis_date",
+      "passed": true,
+      "detail": "report contract references analysis date 2026-07-30"
+    },
+    {
+      "check": "final_decision_present",
+      "passed": true,
+      "detail": "final trade decision is present in the final state"
+    },
+    {
+      "check": "frozen_price_in_report",
+      "passed": true,
+      "detail": "frozen latest close 539.03 is supported by evidence and stated in the report"
+    },
+    {
+      "check": "source_id_referenced",
+      "passed": true,
+      "detail": "report references source_id 'src-meta'"
+    }
+  ]
+}

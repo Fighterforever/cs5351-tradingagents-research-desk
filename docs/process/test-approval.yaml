@@ -36,3 +36,57 @@ revision:
   approved_at: '2026-11-09T14:14:13.562174+00:00'
   implementation_started_at: '2026-11-09T14:22:11.409000+00:00'
   evidence: transcripts/project-revision-runtime.raw.jsonl
+change_approvals:
+- id: submission-contracts
+  authority: leo (delegated scope; detailed cases accepted by the coordinating workflow)
+  decision: APPROVED
+  approved_at: '2026-11-22T13:48:11.507590+00:00'
+  evidence: docs/architecture/adr/005-submission-contracts.md
+  scope:
+  - src/research_desk/graph_adapter.py
+  - src/research_desk/evidence.py
+  - src/research_desk/review.py
+  - src/research_desk/models.py
+  - src/research_desk/storage.py
+  - src/research_desk/replay.py
+  - src/research_desk/cli.py
+  - src/research_desk/eval/live.py
+  - src/research_desk/eval/quality.py
+  - scripts/check_approval.py
+  - scripts/check_ai_use_log.py
+  - scripts/check_static.py
+  - scripts/check_semantic.py
+  - scripts/_gate_lib.py
+  - scripts/check_gate_examples.py
+  - .github/workflows/ci.yml
+  - test/offline/test_submission_runtime.py
+  - test/offline/test_submission_cli.py
+  - test/offline/test_submission_governance.py
+  - test/offline/test_submission_api.py
+  - test/offline/test_release_quality.py
+  - test/offline/test_submission_quality.py
+  tests:
+  - test/offline/test_submission_runtime.py
+  - test/offline/test_submission_cli.py
+  - test/offline/test_submission_governance.py
+  - test/offline/test_submission_api.py
+  - test/offline/test_release_quality.py
+  test_placement: The Gate 4 cases specified before implementation are in test/offline/test_release_quality.py.
+- id: replay-cli-diagnostic
+  authority: leo (delegated repair scope; coordinator selected the existing unit case)
+  decision: APPROVED
+  approved_at: "2026-11-22T13:58:18.646185+00:00"
+  scope:
+  - test/offline/test_cli_slice.py
+  tests:
+  - test/offline/test_cli_slice.py::test_cli_replay_incomplete_fails
+  evidence: docs/architecture/adr/005-submission-contracts.md
+- id: launch-stage-decisions
+  authority: leo (delegated submission repair; coordinator accepted the D9 document criteria)
+  decision: APPROVED
+  approved_at: "2026-11-22T14:03:39.470119+00:00"
+  scope:
+  - Prompt.md
+  tests:
+  - docs/process/delivery-checklist.md::D9 manual review of plan, build and self-verification gates
+  evidence: docs/architecture/adr/005-submission-contracts.md

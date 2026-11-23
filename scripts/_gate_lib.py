@@ -10,6 +10,7 @@ import argparse
 import shutil
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -109,3 +110,61 @@ def fail(checks: list[str], failures: list[str]) -> None:
             print(f"- {f}")
         sys.exit(1)
     sys.exit(0)
+
+
+def read_base_text(root: Path, ref: str, relative_path: str) -> str | None:
+    """Return ``relative_path`` contents at ``ref``, or None if absent there.
+
+    Distinguishes an absent file in a valid tree (None) from an unknown
+    revision or other git error (RuntimeError).
+    """
+    ls = _git(root, ["ls-tree", "--name-only", ref, "--", relative_path])
+    if ls.returncode != 0:
+        raise RuntimeError(
+            f"git ls-tree failed (ref={ref!r}, path={relative_path!r}): "
+            f"{ls.stderr.strip() or ls.stdout.strip()}"
+        )
+    if not any(line.strip() for line in ls.stdout.splitlines()):
+        return None
+    show = _git(root, ["show", f"{ref}:{relative_path}"])
+    if show.returncode != 0:
+        raise RuntimeError(
+            f"git show failed (ref={ref!r}, path={relative_path!r}): "
+            f"{show.stderr.strip() or show.stdout.strip()}"
+        )
+    return show.stdout
+
+
+def first_change_time(
+    root: Path,
+    base: str,
+    head: str | None,
+    paths: list[str],
+) -> datetime | None:
+    """Earliest committer timestamp in ``base..(head or HEAD)`` touching ``paths``."""
+    concrete = [p for p in paths if p]
+    if not concrete:
+        return None
+    proc = _git(
+        root,
+        [
+            "log",
+            "--format=%ct",
+            f"{base}..{head or 'HEAD'}",
+            "--",
+            *concrete,
+        ],
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"git log failed (base={base!r}, head={head!r}): "
+            f"{proc.stderr.strip() or proc.stdout.strip()}"
+        )
+    stamps = [
+        int(line.strip())
+        for line in proc.stdout.splitlines()
+        if line.strip()
+    ]
+    if not stamps:
+        return None
+    return datetime.fromtimestamp(min(stamps), tz=timezone.utc)

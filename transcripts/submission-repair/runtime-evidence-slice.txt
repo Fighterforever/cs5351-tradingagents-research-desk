@@ -1,0 +1,343 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+Add a top-level material_evidence_id(ticker,trade_date,input_snapshot) in evidence.py. Use a canonical SHA-256 accounting for ticker, trade date and material InputSnapshot data (identity, data_snapshot, available_sources, direct_reads and material memory). Stable over JSON key ordering and export/import secret sanitization; remove no material data. Derive from same logical inputs on both creation and import, NOT from unique run ID or passed proposal identity. After importing any current or legacy evidence pack with a proposal, derive its evidence id from the pack. Recompute the pending proposal version using existing make_proposal_version. For the ResearchRunner runtime, build the existing InputSnapshot before calling decide_proposal so you can pass evidence_id=material_evidence_id(...). Reuse already built snapshot and avoid duplicate data retrieval. Do not edit other files or any saved archive. Code to select, only shown excerpts.
+
+SOURCE src/research_desk/evidence.py
+from __future__ import annotations
+
+import json
+import logging
+import zipfile
+from pathlib import Path
+from typing import Any
+
+from langchain_core.callbacks import BaseCallbackHandler
+from langchain_core.messages import AIMessage
+from langchain_core.outputs import LLMResult
+from pydantic import BaseModel
+
+from .budget import BudgetTracker
+from .models import (
+    CallUsage,
+    EvidenceEvent,
+    EvidencePack,
+    InputSnapshot,
+    RunManifest,
+    UsageSummary,
+    utcnow_iso,
+)
+
+logger = logging.getLogger(__name__)
+
+# Files that make up a complete evidence pack. ``complete`` is only set when all
+# of them are present and parseable.
+PACK_FILES = (
+    "manifest.json",
+    "input.json",
+    "events.jsonl",
+    "final_state.json",
+    "usage.json",
+    "calls.json",
+)
+
+_SECRET_KEY_FRAGMENTS = (
+    "api_key",
+    "apikey",
+    "password",
+    "secret",
+    "credential",
+    "authorization",
+)
+
+
+def _is_credential_key(key: str) -> bool:
+    """Small explicit credential predicate (SEC-001).
+
+    Matches real credential names -- ``api_key``, ``apikey``, ``*_token``
+    (including a bare ``token``), ``password``, ``secret``, ``credential`` and
+    ``authorization`` -- without classifying provider-reported usage, count,
+    budget or ``token_limit`` fields as credentials. A substring rule for
+    ``token`` would redact ``input_tokens``/``output_tokens``/``total_tokens``
+    and destroy measured evidence, so only exact and ``_token``-suffixed keys
+    count as token credentials.
+    """
+    kl = key.lower()
+
+...
+# Evidence pack IO
+# ---------------------------------------------------------------------------
+
+
+class EvidencePackError(Exception):
+    """Raised when an evidence pack is missing required material or malformed."""
+
+
+def _data_snapshot_from_events(events: list[EvidenceEvent]) -> dict[str, dict[str, str]]:
+    """Rebuild the frozen tool-data snapshot from the tool_call/tool_result events.
+
+    Keys are the canonical JSON of the tool arguments; values are the recorded
+
+...
+
+    def _load_dir(self, d: Path) -> EvidencePack:
+        missing = [name for name in PACK_FILES if not (d / name).exists()]
+        if missing:
+            raise EvidencePackError(
+                f"Incomplete evidence pack at {d}: missing required files {missing}. "
+                "A complete pack must include manifest, input snapshot, events, "
+                "final state, usage and calls."
+            )
+        manifest = RunManifest(**json.loads((d / "manifest.json").read_text(encoding="utf-8")))
+        input_snapshot = InputSnapshot(
+            **json.loads((d / "input.json").read_text(encoding="utf-8"))
+        )
+        events = [
+            EvidenceEvent(**json.loads(line))
+            for line in (d / "events.jsonl").read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        final_state = json.loads((d / "final_state.json").read_text(encoding="utf-8"))
+        usage = UsageSummary(**json.loads((d / "usage.json").read_text(encoding="utf-8")))
+        calls = json.loads((d / "calls.json").read_text(encoding="utf-8"))
+        proposal = None
+        if (d / "proposal.json").exists():
+            from .models import ProposalRecord
+
+            proposal = ProposalRecord(**json.loads((d / "proposal.json").read_text(encoding="utf-8")))
+        pack = EvidencePack(
+            manifest=manifest,
+            input=input_snapshot,
+            events=events,
+            final_state=final_state,
+            usage=usage,
+            calls=calls,
+            proposal=proposal,
+            complete=True,
+        )
+        if manifest.outcome == "completed" and not final_state:
+            raise EvidencePackError(
+                f"Evidence pack {d} claims a completed run but has an empty final_state."
+            )
+        return pack
+
+    def load_external_proposal(self, d: Path) -> Any:
+        """Load proposal.json from a pack directory without requiring a full pack."""
+        if not (d / "proposal.json").exists():
+            return None
+        from .models import ProposalRecord
+
+        return ProposalRecord(**json.loads((d / "proposal.json").read_text(encoding="utf-8")))
+
+SOURCE src/research_desk/graph_adapter.py
+import logging
+import time
+import uuid
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
+from langchain_core.tools import tool
+from langgraph.prebuilt import ToolNode
+
+from tradingagents.agents.utils.agent_utils import (
+    build_instrument_context,
+    resolve_instrument_identity,
+)
+from tradingagents.agents.utils.rating import is_review
+from tradingagents.graph.trading_graph import TradingAgentsGraph
+from tradingagents.reporting import write_report_tree
+
+from .budget import BudgetExhausted, BudgetTracker, ContextBudgetExceeded
+from .config import ResearchDeskSettings
+from .context import ContextAssembler, StandingConstraints, build_common_grounding
+from .evidence import EvidenceLog, EvidencePackIO, record_data_read
+from .models import (
+    InputSnapshot,
+    ProposalRecord,
+    RunManifest,
+    RunOutcome,
+    RunResult,
+    utcnow_iso,
+)
+from .report import apply_research_identity_header, render_research_identity
+from .review import ReviewError, create_proposal
+
+logger = logging.getLogger(__name__)
+
+
+def _provider_tools(provider: Any) -> dict[str, Any]:
+    """Build frozen tools bound to a concrete ``FrozenMarketProvider``.
+
+...
+
+        # Proposal (only a completed, tradeable signal with evidence price).
+        proposal = None
+        proposal_error: str | None = None
+        snapshot = self._data_snapshot_from_run(final_state, frozen_snapshot)
+        available_sources = self._available_sources(ticker, trade_date, frozen_identity)
+        try:
+            proposal = decide_proposal(
+                outcome=outcome.value,
+                signal=signal,
+                run_id=run_id,
+                ticker=ticker,
+                trade_date=trade_date,
+                snapshot=snapshot,
+                available_sources=available_sources,
+            )
+        except ReviewError as exc:
+            proposal_error = str(exc)
+        if outcome == RunOutcome.BUDGET_STOPPED:
+            proposal = None  # incomplete research must not be approvable (NFR-003)
+
+        input_snapshot = InputSnapshot(
+            instrument_context=instrument_context,
+            past_context=assembly.text,
+            initial_state=_trim_state(init_state),
+            identity=identity,
+            data_snapshot=self._data_snapshot_from_run(final_state, frozen_snapshot),
+            memory_used=self._memory_entries(ticker, trade_date),
+            memory_sources=["tradingagents.memory_log" if self.data_mode == "live" else "frozen-pack"],
+            available_sources=available_sources,
+        )
+
+        manifest = RunManifest(
+            run_id=run_id,
+            ticker=ticker,
+            trade_date=trade_date,
+            asset_type=asset_type,
+            analysts=list(self.settings.analysts),
+            context_mode=self.context_mode,
+            data_mode=self.data_mode,
+            outcome=outcome.value,
+            signal=signal,
+            prompt_version=self.settings.prompt_version,
+            created_at=utcnow_iso(),
+            operator="research-desk",
+            model_quick=self.graph_config.get("quick_think_llm"),
+            model_deep=self.graph_config.get("deep_think_llm"),
+            budget_max_calls=self.settings.max_calls,
+            source_pack=self.source_pack.manifest.run_id if self.source_pack is not None else None,
+            reason=proposal_error,
+        )
+
+        from .evidence import build_pack
+
+        pack = build_pack(
+            manifest=manifest,
+            input_snapshot=input_snapshot,
+            events=evidence_log.events,
+            final_state=final_state,
+            usage=usage,
+            proposal=proposal,
+            reports_written=report_files,
+        )
+        if complete_report_path is not None:
+            apply_research_identity_header(
+                complete_report_path, render_research_identity(pack)
+            )
+        run_dir = self.settings.runs_dir / run_id
+        self.io.export(pack, run_dir)
+        pack_path = str(run_dir)
+
+
+SOURCE src/research_desk/models.py
+    source_pack: str | None = None  # when this pack is a controlled rerun of another pack
+    reason: str | None = None
+
+
+class InputSnapshot(BaseModel):
+    """The material inputs a run consumed, so a rerun can be replayed."""
+
+    instrument_context: str = ""
+    past_context: str = ""
+    initial_state: dict[str, Any] = Field(default_factory=dict)
+    identity: dict[str, Any] = Field(default_factory=dict)
+    data_snapshot: dict[str, dict[str, str]] = Field(
+        default_factory=dict
+    )  # tool_name -> {"canonical args key": result text}
+    memory_used: list[dict[str, Any]] = Field(default_factory=list)
+    memory_sources: list[str] = Field(default_factory=list)
+    # Factual *available* corpus for the case (identity, full market CSV, official
+    # news notes) recorded separately from the tool calls actually made. This is
+    # what makes the evidence-derived price available for proposal/replay even
+    # when a model path did not ask one of the data tools.
+    available_sources: dict[str, Any] = Field(default_factory=dict)
+
+
+class EvidencePack(BaseModel):
+    """A complete, self-contained evidence package for one run.
+
+    ``final_state`` is the graph's merged terminal state; it is the material
+    needed to rebuild reports and derive the signal and policy outputs offline
+    with zero external calls.
+    """
+
+    manifest: RunManifest
+    input: InputSnapshot
+    events: list[EvidenceEvent] = Field(default_factory=list)
+    final_state: dict[str, Any] = Field(default_factory=dict)
+    usage: UsageSummary = Field(default_factory=UsageSummary)
+    calls: list[CallRecord] = Field(default_factory=list)
+    reports_written: list[str] = Field(default_factory=list)
+    proposal: ProposalRecord | None = None
+    complete: bool = False  # set True only when a full pack was exported
+
+
+...
+class ProposalRecord(BaseModel):
+    """A single reviewable proposal produced by a research run."""
+
+    proposal_id: str
+    run_id: str
+    ticker: str
+    trade_date: str
+    signal: str
+    rating: str | None = None
+    side: str = "buy"  # "buy" | "sell"; derived from the tradeable signal
+    price: float | None = None  # from evidence only, never operator-typed
+    shares: int | None = None  # from the trusted CLI operator
+    evidence_id: str | None = None  # identity of the frozen evidence that supplied price/signal
+    status: ProposalStatus = ProposalStatus.PENDING_REVIEW
+    proposal_version: str = ""  # binds approvals to this exact content
+    operator: str | None = None
+    created_at: str = ""
+    approved_at: str | None = None
+    approved_version: str | None = None
+    reason: str | None = None
+    execution: ExecutionRecord | None = None
+
+
+...
+def make_proposal_version(
+    ticker: str,
+    trade_date: str,
+    signal: str,
+    price: float | None,
+    *,
+    side: str = "buy",
+    shares: int | None = None,
+    evidence_id: str | None = None,
+) -> str:
+    """Content fingerprint binding an approval to the exact proposal inputs.
+
+    The fingerprint covers every *tradeable* field: ticker, analysis date,
+    action (side), signal, price (from evidence), evidence identity, and the
+    operator-supplied quantity. Changing any of these requires a new approval.
+    """
+    import hashlib
+
+    payload = "|".join(
+        [
+            ticker.upper(),
+            str(trade_date),
+            str(side),
+            str(signal),
+            str(price),
+            str(evidence_id or ""),
+            str(shares if shares is not None else ""),
+        ]
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+
+EvidencePack.model_rebuild()

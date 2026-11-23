@@ -1,0 +1,151 @@
+{
+  "info": {
+    "id": "ses_dfc727617ffexwRv3gSYmhT3V3",
+    "slug": "proud-star",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-test-fields",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-test-fields",
+    "title": "Research Desk runtime-test-fields",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 2370,
+      "output": 717,
+      "reasoning": 0,
+      "cache": {
+        "read": 1792,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355937256,
+      "updated": 1795355944977
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355937294
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_2038d8a0e0014iUwYW8SSzRleA",
+        "sessionID": "ses_dfc727617ffexwRv3gSYmhT3V3"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Return ONLY valid JSON {\\\"changes\\\":[{\\\"path\\\":\\\"...\\\",\\\"old\\\":\\\"unique exact original substring\\\",\\\"new\\\":\\\"new text\\\"}]} with optionally a new file via {\\\"path\\\":\\\"...\\\",\\\"content\\\":\\\"...\\\"} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.\nRepair the actual new test file with exact small replacements. No implementation changes. Remove unused pytest import. test_legacy_pack_roundtrip_material_identity must access pack.proposal.evidence_id after disk import (InputSnapshot has no evidence_id), reexport and verify same. After modifying reimported.input.available_sources use pack_io.export to a separate directory and import it anew, assert its proposal.evidence_id is nonempty and differs from initial. Keep original fixture unchanged. In test_amended_evidence_known_id_requires_fresh_review change only evidence_id, not price, then assert original price. Repeated execute returns the stored executed=True record and original tx id in current API: check that and same transaction count, no mutated ledger (do not compare volatile fields where unnecessary). Fix incorrect hardcoded rejection reason if present using actual reject result. Tests must observe real API, no fabricated workarounds.\n\nSOURCE test/offline/test_submission_runtime.py\n\\\"\\\"\\\"Runtime registration: register_proposal imports advisory terms and preserves\noperator-assigned shares; legacy packs roundtrip with stable material identity.\n\\\"\\\"\\\"\n\nfrom __future__ import annotations\n\nimport pytest\n\nfrom research_desk.models import ProposalStatus, utcnow_iso\nfrom research_desk.review import approve, create_proposal, execute, reject\n\n\ndef _proposal(*, price=100.0, signal=\\\"Buy\\\", proposal_id=None, evidence_id=\\\"ev-1\\\"):\n    return create_proposal(\n        run_id=\\\"run-rt\\\",\n        ticker=\\\"AAPL\\\",\n        trade_date=\\\"2026-06-10\\\",\n        signal=signal,\n        rating=signal,\n        price=price,\n        proposal_id=proposal_id or f\\\"prop-rt-{utcnow_iso()[-9:]}\\\",\n        evidence_id=evidence_id,\n    )\n\n\ndef test_register_proposal_returns_record_with_advisory_terms(store):\n    proposal = _proposal()\n    record = store.register_proposal(proposal)\n    assert record.proposal_id == proposal.proposal_id\n    assert record.status == ProposalStatus.PENDING_REVIEW\n    stored = store.get_proposal(proposal.proposal_id)\n    assert stored is not None\n\n\ndef test_approved_repeated_unchanged_registration_preserves_shares(store):\n    proposal = _proposal(proposal_id=\\\"prop-rt-shares\\\")\n    original = store.register_proposal(proposal)\n    approved = approve(original, shares=42, operator=\\\"leo\\\")\n    store.save_proposal(approved)\n    assert store.get_proposal(proposal.proposal_id).shares == 42\n\n    again = store.register_proposal(proposal)\n    assert again.shares == 42\n    assert store.get_proposal(proposal.proposal_id).shares == 42\n    assert again.approved_version == approved.approved_version\n\n\ndef test_rejected_proposal_retains_status_and_execution(store):\n    proposal = _proposal(proposal_id=\\\"prop-rt-rej\\\")\n    original = store.register_proposal(proposal)\n    rejected = reject(original, operator=\\\"leo\\\")\n    store.update_proposal_status(rejected)\n    stored = store.get_proposal(proposal.proposal_id)\n    assert stored.status == ProposalStatus.REJECTED\n    assert stored.reason == \\\"rejected by operator\\\"\n\n    again = store.register_proposal(proposal)\n    assert again.status == ProposalStatus.REJECTED\n    assert store.get_proposal(proposal.proposal_id).status == ProposalStatus.REJECTED\n\n\ndef test_amended_evidence_known_id_requires_fresh_review(store):\n    proposal = _proposal(proposal_id=\\\"prop-rt-amend\\\")\n    original = store.register_proposal(proposal)\n    approved = approve(original, shares=100, operator=\\\"leo\\\")\n    store.save_proposal(approved)\n\n    amended = _proposal(price=120.0, proposal_id=proposal.proposal_id, evidence_id=\\\"ev-2\\\")\n    record = store.register_proposal(amended)\n    assert record.price == 120.0\n    assert record.status == ProposalStatus.PENDING_REVIEW\n    assert not record.approved_version\n\n    executed, execution = execute(store, record, operator=\\\"leo\\\")\n    assert executed.status != ProposalStatus.SIMULATED\n    assert execution.executed is False\n\n\ndef test_executed_proposal_stays_simulated_on_repeat(store):\n    proposal = _proposal(proposal_id=\\\"prop-rt-exec\\\")\n    original = store.register_proposal(proposal)\n    approved = approve(original, shares=100, operator=\\\"leo\\\")\n    store.save_proposal(approved)\n\n    updated, execution = execute(store, store.get_proposal(proposal.proposal_id), operator=\\\"leo\\\")\n    assert updated.status == ProposalStatus.SIMULATED\n    assert execution.executed is True\n    tx_id = execution.tx_id\n    ledger_before = store.get_ledger().model_dump()\n\n    again = store.register_proposal(proposal)\n    assert again.status == ProposalStatus.SIMULATED\n    stored = store.get_proposal(proposal.proposal_id)\n    assert stored.status == ProposalStatus.SIMULATED\n\n    re, rex = execute(store, stored, operator=\\\"leo\\\")\n    assert re.status == ProposalStatus.SIMULATED\n    assert rex.executed is False\n    assert rex.tx_id == tx_id\n    assert store.get_ledger().model_dump() == ledger_before\n\n\ndef test_legacy_pack_roundtrip_material_identity(pack_io, tmp_path):\n    pack = pack_io.import_pack(\\\"test/fixtures/packs/aapl_buy_complete\\\")\n    assert pack.input.evidence_id\n\n    out = tmp_path / \\\"exported\\\"\n    pack_io.export(pack, out)\n    reimported = pack_io.import_pack(out)\n    assert reimported.input.evidence_id == pack.input.evidence_id\n\n    before = reimported.input.evidence_id\n    reimported.input.available_sources[\\\"sentinel\\\"] = {\\\"note\\\": \\\"changed\\\"}\n    assert reimported.input.evidence_id != before\n\nSOURCE src/research_desk/review.py\n        raise ReviewError(f\\\"proposal {proposal.proposal_id} is rejected and cannot be approved\\\")\n    # REVIEW_REQUIRED is a safe-fail state, not a dead end: after the operator\n    # reviews the current evidence, they may approve the corrected version.\n    if not operator:\n        raise ReviewError(\\\"approval requires an operator identity\\\")\n    if not isinstance(shares, int) or shares <= 0:\n        raise ReviewError(f\\\"shares must be a positive integer, got {shares!r}\\\")\n    if proposal.price is None or proposal.price <= 0:\n        raise ReviewError(\n            f\\\"proposal {proposal.proposal_id} has no evidence price; cannot approve without price\\\"\n        )\n    proposal.shares = shares\n    proposal.operator = operator\n    proposal.status = ProposalStatus.APPROVED\n    proposal.approved_at = utcnow_iso()\n    proposal.approved_version = _proposal_content_version(proposal)\n    return proposal\n\n\ndef reject(proposal: ProposalRecord, *, operator: str, reason: str = \\\"rejected by operator\\\") -> ProposalRecord:\n    if proposal.status == ProposalStatus.SIMULATED:\n\n...\n    Steps (each observable, none partial):\n    1. Idempotence: an already-SIMULATED proposal returns its stored execution.\n    2. A REJECTED proposal is terminal: return unexecuted without changing its\n       status or touching the store, so it can never be reopened for approval.\n    3. Version binding: the current proposal content must match the approved\n       version; otherwise REVIEW_REQUIRED (AT-05).\n    4. Re-read the current ledger and run the deterministic policy.\n    5. On any failure: return REVIEW_REQUIRED / BLOCKED with reasons; ledger\n       unchanged. On success: apply the transaction atomically.\n    \\\"\\\"\\\"\n    if proposal.status == ProposalStatus.SIMULATED:\n        existing = proposal.execution or ExecutionRecord(executed=True)\n        existing.reason = \\\"already executed\\\"\n        return proposal, existing\n\n    # A rejection is terminal. Check it before any version or generic status\n    # transition so an execution attempt can never reopen it for approval.\n    if proposal.status == ProposalStatus.REJECTED:\n        return proposal, ExecutionRecord(executed=False, reason=\\\"proposal rejected\\\")\n\n    current_version = _proposal_content_version(proposal)\n\nSOURCE src/research_desk/evidence.py\n                    f\\\"Proposal run_id {proposal.run_id!r} does not match \\\"\n                    f\\\"manifest run_id {manifest.run_id!r}\\\"\n                )\n            if (proposal.ticker or \\\"\\\").strip().upper() != (\n                manifest.ticker or \\\"\\\"\n            ).strip().upper():\n                raise ValueError(\n                    f\\\"Proposal ticker {proposal.ticker!r} does not match \\\"\n                    f\\\"manifest ticker {manifest.ticker!r}\\\"\n                )\n            if (proposal.trade_date or \\\"\\\").strip() != (\n                manifest.trade_date or \\\"\\\"\n            ).strip():\n                raise ValueError(\n                    f\\\"Proposal trade_date {proposal.trade_date!r} does not match \\\"\n                    f\\\"manifest trade_date {manifest.trade_date!r}\\\"\n                )\n            proposal.ticker = manifest.ticker\n            proposal.trade_date = manifest.trade_date\n            proposal.evidence_id = material_evidence_id(\n                manifest.ticker,\n                manifest.trade_date,\n                input_snapshot,\n            )\n\"",
+          "id": "prt_2038d8a14001N6AbIz9XRi43hB",
+          "sessionID": "ses_dfc727617ffexwRv3gSYmhT3V3",
+          "messageID": "msg_2038d8a0e0014iUwYW8SSzRleA"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_2038d8a0e0014iUwYW8SSzRleA",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-test-fields",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 4879,
+          "input": 2370,
+          "output": 717,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1792
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355937662,
+          "completed": 1795355944964
+        },
+        "finish": "stop",
+        "id": "msg_2038d8b7e001Sdvp3JfvVeIlKp",
+        "sessionID": "ses_dfc727617ffexwRv3gSYmhT3V3"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_2038d9ca0001YZO38WvAzZqwn5",
+          "sessionID": "ses_dfc727617ffexwRv3gSYmhT3V3",
+          "messageID": "msg_2038d8b7e001Sdvp3JfvVeIlKp"
+        },
+        {
+          "type": "text",
+          "text": "{\"changes\":[{\"path\":\"test/offline/test_submission_runtime.py\",\"old\":\"from __future__ import annotations\\n\\nimport pytest\\n\\nfrom research_desk.models\",\"new\":\"from __future__ import annotations\\n\\nfrom research_desk.models\"},{\"path\":\"test/offline/test_submission_runtime.py\",\"old\":\"    amended = _proposal(price=120.0, proposal_id=proposal.proposal_id, evidence_id=\\\"ev-2\\\")\\n    record = store.register_proposal(amended)\\n    assert record.price == 120.0\\n    assert record.status == ProposalStatus.PENDING_REVIEW\",\"new\":\"    amended = _proposal(proposal_id=proposal.proposal_id, evidence_id=\\\"ev-2\\\")\\n    record = store.register_proposal(amended)\\n    assert record.price == 100.0\\n    assert record.status == ProposalStatus.PENDING_REVIEW\"},{\"path\":\"test/offline/test_submission_runtime.py\",\"old\":\"    re, rex = execute(store, stored, operator=\\\"leo\\\")\\n    assert re.status == ProposalStatus.SIMULATED\\n    assert rex.executed is False\\n    assert rex.tx_id == tx_id\\n    assert store.get_ledger().model_dump() == ledger_before\",\"new\":\"    re, rex = execute(store, stored, operator=\\\"leo\\\")\\n    assert re.status == ProposalStatus.SIMULATED\\n    assert rex.executed is True\\n    assert rex.tx_id == tx_id\\n    assert store.get_ledger().model_dump() == ledger_before\"},{\"path\":\"test/offline/test_submission_runtime.py\",\"old\":\"    pack = pack_io.import_pack(\\\"test/fixtures/packs/aapl_buy_complete\\\")\\n    assert pack.input.evidence_id\\n\\n    out = tmp_path / \\\"exported\\\"\\n    pack_io.export(pack, out)\\n    reimported = pack_io.import_pack(out)\\n    assert reimported.input.evidence_id == pack.input.evidence_id\\n\\n    before = reimported.input.evidence_id\\n    reimported.input.available_sources[\\\"sentinel\\\"] = {\\\"note\\\": \\\"changed\\\"}\\n    assert reimported.input.evidence_id != before\",\"new\":\"    pack = pack_io.import_pack(\\\"test/fixtures/packs/aapl_buy_complete\\\")\\n    assert pack.proposal.evidence_id\\n\\n    out = tmp_path / \\\"exported\\\"\\n    pack_io.export(pack, out)\\n    reimported = pack_io.import_pack(out)\\n    assert reimported.proposal.evidence_id == pack.proposal.evidence_id\\n\\n    initial = reimported.proposal.evidence_id\\n    reimported.input.available_sources[\\\"sentinel\\\"] = {\\\"note\\\": \\\"changed\\\"}\\n    out2 = tmp_path / \\\"exported-changed\\\"\\n    pack_io.export(reimported, out2)\\n    changed = pack_io.import_pack(out2)\\n    assert changed.proposal.evidence_id\\n    assert changed.proposal.evidence_id != initial\"}]}",
+          "time": {
+            "start": 1795355942053,
+            "end": 1795355944950
+          },
+          "id": "prt_2038d9ca5001UoC038BDD4b9Zh",
+          "sessionID": "ses_dfc727617ffexwRv3gSYmhT3V3",
+          "messageID": "msg_2038d8b7e001Sdvp3JfvVeIlKp"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 4879,
+            "input": 2370,
+            "output": 717,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1792
+            }
+          },
+          "cost": 0,
+          "id": "prt_2038da7fb00172OppaQUB25U4E",
+          "sessionID": "ses_dfc727617ffexwRv3gSYmhT3V3",
+          "messageID": "msg_2038d8b7e001Sdvp3JfvVeIlKp"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+One new-test call is wrong. Produce a single exact JSON old/new replacement for store.update_proposal_status(rejected) in test_submission_runtime.py following the actual storage method and the CLI rejection call below. No other change or edits.
+
+SOURCE test/offline/test_submission_runtime.py
+    assert store.get_proposal(proposal.proposal_id).shares == 42
+    assert again.approved_version == approved.approved_version
+
+
+def test_rejected_proposal_retains_status_and_execution(store):
+    proposal = _proposal(proposal_id="prop-rt-rej")
+    original = store.register_proposal(proposal)
+    rejected = reject(original, operator="leo")
+    store.update_proposal_status(rejected)
+    stored = store.get_proposal(proposal.proposal_id)
+    assert stored.status == ProposalStatus.REJECTED
+    assert stored.reason == "rejected by operator"
+
+    again = store.register_proposal(proposal)
+    assert again.status == ProposalStatus.REJECTED
+    assert store.get_proposal(proposal.proposal_id).status == ProposalStatus.REJECTED
+
+
+
+SOURCE src/research_desk/cli.py
+            updated = _approve(proposal, shares=shares, operator=op)
+            store.save_proposal(updated)  # persists shares, status, version binding
+            console.print(
+                f"[green]Approved {proposal_id} ({proposal.ticker}, {proposal.signal}) "
+                f"for {shares} shares at ${proposal.price or 'n/a'} by {op}[/green]"
+            )
+        elif action == "reject":
+            updated = _reject(proposal, operator=op)
+            store.update_proposal_status(
+                proposal.proposal_id, ProposalStatus.REJECTED, operator=op, reason=updated.reason
+            )
+            console.print(f"[yellow]Rejected {proposal_id} by {op}[/yellow]")
+        else:
+            raise typer.BadParameter("action must be approve | reject")
+
+SOURCE src/research_desk/storage.py
+    def list_proposals(self, status: str | None = None) -> list[ProposalRecord]:
+        if status:
+            rows = self._conn.execute(
+                "SELECT * FROM proposals WHERE status=? ORDER BY created_at", (status,)
+            ).fetchall()
+        else:
+            rows = self._conn.execute(
+                "SELECT * FROM proposals ORDER BY created_at"
+            ).fetchall()
+        return [self._row_to_proposal(r) for r in rows]
+
+    def update_proposal_status(
+        self,
+        proposal_id: str,
+        status: ProposalStatus,
+        operator: str | None = None,
+        approved_version: str | None = None,
+        reason: str | None = None,
+    ) -> None:
+        with self._conn:
+            now = utcnow_iso()
+            if status == ProposalStatus.APPROVED:

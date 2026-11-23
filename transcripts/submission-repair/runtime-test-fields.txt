@@ -1,0 +1,190 @@
+Return ONLY valid JSON {"changes":[{"path":"...","old":"unique exact original substring","new":"new text"}]} with optionally a new file via {"path":"...","content":"..."} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.
+Repair the actual new test file with exact small replacements. No implementation changes. Remove unused pytest import. test_legacy_pack_roundtrip_material_identity must access pack.proposal.evidence_id after disk import (InputSnapshot has no evidence_id), reexport and verify same. After modifying reimported.input.available_sources use pack_io.export to a separate directory and import it anew, assert its proposal.evidence_id is nonempty and differs from initial. Keep original fixture unchanged. In test_amended_evidence_known_id_requires_fresh_review change only evidence_id, not price, then assert original price. Repeated execute returns the stored executed=True record and original tx id in current API: check that and same transaction count, no mutated ledger (do not compare volatile fields where unnecessary). Fix incorrect hardcoded rejection reason if present using actual reject result. Tests must observe real API, no fabricated workarounds.
+
+SOURCE test/offline/test_submission_runtime.py
+"""Runtime registration: register_proposal imports advisory terms and preserves
+operator-assigned shares; legacy packs roundtrip with stable material identity.
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from research_desk.models import ProposalStatus, utcnow_iso
+from research_desk.review import approve, create_proposal, execute, reject
+
+
+def _proposal(*, price=100.0, signal="Buy", proposal_id=None, evidence_id="ev-1"):
+    return create_proposal(
+        run_id="run-rt",
+        ticker="AAPL",
+        trade_date="2026-06-10",
+        signal=signal,
+        rating=signal,
+        price=price,
+        proposal_id=proposal_id or f"prop-rt-{utcnow_iso()[-9:]}",
+        evidence_id=evidence_id,
+    )
+
+
+def test_register_proposal_returns_record_with_advisory_terms(store):
+    proposal = _proposal()
+    record = store.register_proposal(proposal)
+    assert record.proposal_id == proposal.proposal_id
+    assert record.status == ProposalStatus.PENDING_REVIEW
+    stored = store.get_proposal(proposal.proposal_id)
+    assert stored is not None
+
+
+def test_approved_repeated_unchanged_registration_preserves_shares(store):
+    proposal = _proposal(proposal_id="prop-rt-shares")
+    original = store.register_proposal(proposal)
+    approved = approve(original, shares=42, operator="leo")
+    store.save_proposal(approved)
+    assert store.get_proposal(proposal.proposal_id).shares == 42
+
+    again = store.register_proposal(proposal)
+    assert again.shares == 42
+    assert store.get_proposal(proposal.proposal_id).shares == 42
+    assert again.approved_version == approved.approved_version
+
+
+def test_rejected_proposal_retains_status_and_execution(store):
+    proposal = _proposal(proposal_id="prop-rt-rej")
+    original = store.register_proposal(proposal)
+    rejected = reject(original, operator="leo")
+    store.update_proposal_status(rejected)
+    stored = store.get_proposal(proposal.proposal_id)
+    assert stored.status == ProposalStatus.REJECTED
+    assert stored.reason == "rejected by operator"
+
+    again = store.register_proposal(proposal)
+    assert again.status == ProposalStatus.REJECTED
+    assert store.get_proposal(proposal.proposal_id).status == ProposalStatus.REJECTED
+
+
+def test_amended_evidence_known_id_requires_fresh_review(store):
+    proposal = _proposal(proposal_id="prop-rt-amend")
+    original = store.register_proposal(proposal)
+    approved = approve(original, shares=100, operator="leo")
+    store.save_proposal(approved)
+
+    amended = _proposal(price=120.0, proposal_id=proposal.proposal_id, evidence_id="ev-2")
+    record = store.register_proposal(amended)
+    assert record.price == 120.0
+    assert record.status == ProposalStatus.PENDING_REVIEW
+    assert not record.approved_version
+
+    executed, execution = execute(store, record, operator="leo")
+    assert executed.status != ProposalStatus.SIMULATED
+    assert execution.executed is False
+
+
+def test_executed_proposal_stays_simulated_on_repeat(store):
+    proposal = _proposal(proposal_id="prop-rt-exec")
+    original = store.register_proposal(proposal)
+    approved = approve(original, shares=100, operator="leo")
+    store.save_proposal(approved)
+
+    updated, execution = execute(store, store.get_proposal(proposal.proposal_id), operator="leo")
+    assert updated.status == ProposalStatus.SIMULATED
+    assert execution.executed is True
+    tx_id = execution.tx_id
+    ledger_before = store.get_ledger().model_dump()
+
+    again = store.register_proposal(proposal)
+    assert again.status == ProposalStatus.SIMULATED
+    stored = store.get_proposal(proposal.proposal_id)
+    assert stored.status == ProposalStatus.SIMULATED
+
+    re, rex = execute(store, stored, operator="leo")
+    assert re.status == ProposalStatus.SIMULATED
+    assert rex.executed is False
+    assert rex.tx_id == tx_id
+    assert store.get_ledger().model_dump() == ledger_before
+
+
+def test_legacy_pack_roundtrip_material_identity(pack_io, tmp_path):
+    pack = pack_io.import_pack("test/fixtures/packs/aapl_buy_complete")
+    assert pack.input.evidence_id
+
+    out = tmp_path / "exported"
+    pack_io.export(pack, out)
+    reimported = pack_io.import_pack(out)
+    assert reimported.input.evidence_id == pack.input.evidence_id
+
+    before = reimported.input.evidence_id
+    reimported.input.available_sources["sentinel"] = {"note": "changed"}
+    assert reimported.input.evidence_id != before
+
+SOURCE src/research_desk/review.py
+        raise ReviewError(f"proposal {proposal.proposal_id} is rejected and cannot be approved")
+    # REVIEW_REQUIRED is a safe-fail state, not a dead end: after the operator
+    # reviews the current evidence, they may approve the corrected version.
+    if not operator:
+        raise ReviewError("approval requires an operator identity")
+    if not isinstance(shares, int) or shares <= 0:
+        raise ReviewError(f"shares must be a positive integer, got {shares!r}")
+    if proposal.price is None or proposal.price <= 0:
+        raise ReviewError(
+            f"proposal {proposal.proposal_id} has no evidence price; cannot approve without price"
+        )
+    proposal.shares = shares
+    proposal.operator = operator
+    proposal.status = ProposalStatus.APPROVED
+    proposal.approved_at = utcnow_iso()
+    proposal.approved_version = _proposal_content_version(proposal)
+    return proposal
+
+
+def reject(proposal: ProposalRecord, *, operator: str, reason: str = "rejected by operator") -> ProposalRecord:
+    if proposal.status == ProposalStatus.SIMULATED:
+
+...
+    Steps (each observable, none partial):
+    1. Idempotence: an already-SIMULATED proposal returns its stored execution.
+    2. A REJECTED proposal is terminal: return unexecuted without changing its
+       status or touching the store, so it can never be reopened for approval.
+    3. Version binding: the current proposal content must match the approved
+       version; otherwise REVIEW_REQUIRED (AT-05).
+    4. Re-read the current ledger and run the deterministic policy.
+    5. On any failure: return REVIEW_REQUIRED / BLOCKED with reasons; ledger
+       unchanged. On success: apply the transaction atomically.
+    """
+    if proposal.status == ProposalStatus.SIMULATED:
+        existing = proposal.execution or ExecutionRecord(executed=True)
+        existing.reason = "already executed"
+        return proposal, existing
+
+    # A rejection is terminal. Check it before any version or generic status
+    # transition so an execution attempt can never reopen it for approval.
+    if proposal.status == ProposalStatus.REJECTED:
+        return proposal, ExecutionRecord(executed=False, reason="proposal rejected")
+
+    current_version = _proposal_content_version(proposal)
+
+SOURCE src/research_desk/evidence.py
+                    f"Proposal run_id {proposal.run_id!r} does not match "
+                    f"manifest run_id {manifest.run_id!r}"
+                )
+            if (proposal.ticker or "").strip().upper() != (
+                manifest.ticker or ""
+            ).strip().upper():
+                raise ValueError(
+                    f"Proposal ticker {proposal.ticker!r} does not match "
+                    f"manifest ticker {manifest.ticker!r}"
+                )
+            if (proposal.trade_date or "").strip() != (
+                manifest.trade_date or ""
+            ).strip():
+                raise ValueError(
+                    f"Proposal trade_date {proposal.trade_date!r} does not match "
+                    f"manifest trade_date {manifest.trade_date!r}"
+                )
+            proposal.ticker = manifest.ticker
+            proposal.trade_date = manifest.trade_date
+            proposal.evidence_id = material_evidence_id(
+                manifest.ticker,
+                manifest.trade_date,
+                input_snapshot,
+            )

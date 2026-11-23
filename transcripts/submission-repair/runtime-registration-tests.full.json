@@ -1,0 +1,151 @@
+{
+  "info": {
+    "id": "ses_dfc7622e0ffeeEHfjk9kioCM3d",
+    "slug": "proud-garden",
+    "projectID": "global",
+    "directory": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-registration-tests",
+    "path": "Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-registration-tests",
+    "title": "Research Desk runtime-registration-tests",
+    "agent": "course-work",
+    "model": {
+      "id": "deepseek-flash",
+      "providerID": "course-revision",
+      "variant": "default"
+    },
+    "version": "1.19.3",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 4708,
+      "output": 933,
+      "reasoning": 0,
+      "cache": {
+        "read": 1856,
+        "write": 0
+      }
+    },
+    "permission": [
+      {
+        "permission": "question",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_enter",
+        "pattern": "*",
+        "action": "deny"
+      },
+      {
+        "permission": "plan_exit",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ],
+    "time": {
+      "created": 1795355696415,
+      "updated": 1795355704071
+    }
+  },
+  "messages": [
+    {
+      "info": {
+        "role": "user",
+        "time": {
+          "created": 1795355696467
+        },
+        "agent": "course-work",
+        "model": {
+          "providerID": "course-revision",
+          "modelID": "deepseek-flash"
+        },
+        "summary": {
+          "diffs": []
+        },
+        "id": "msg_20389dd530014FWIq0iTNLk1qM",
+        "sessionID": "ses_dfc7622e0ffeeEHfjk9kioCM3d"
+      },
+      "parts": [
+        {
+          "type": "text",
+          "text": "\"Return ONLY valid JSON {\\\"changes\\\":[{\\\"path\\\":\\\"...\\\",\\\"old\\\":\\\"unique exact original substring\\\",\\\"new\\\":\\\"new text\\\"}]} with optionally a new file via {\\\"path\\\":\\\"...\\\",\\\"content\\\":\\\"...\\\"} instead. All user-approved code will be applied and tested by the coordinator. No tools, no commentary; produce compact precise replacements rather than copying long functions. Stop thinking early. Any undisplayed file portions are outside scope.\nCreate a single new test/offline/test_submission_runtime.py file (the content JSON field) with focused module-level pytest unit tests using specified APIs. A new store.register_proposal(proposal) imports advisory research terms, extends the existing trusted store.save_proposal path and returns a stored ProposalRecord. Test approved repeated unchanged registration preserves operator-assigned shares, rejected/simulated proposals retain status/tx and known-id re-registration of amended evidence requires fresh review. For legacy packs omit evidence_id: export/import existing folder fixture with io.export_dir / import_pack and confirm material identity is stable over a roundtrip and changes when material pack.input.available_sources changes. Use existing helpers fixtures and real semantics; do not assume unlisted signatures. No attack reproduction or network test.\n\nSOURCE test/offline/conftest.py\n\\\"\\\"\\\"Offline-slice fixtures: isolated home dir, store, and evidence pack loader.\n\nAll offline tests run with ``RESEARCH_DESK_HOME`` pointed at a per-test temp\ndir, so the real user ledger in ``~/.research_desk`` is never touched and no\ntest order depends on shared state. The stock fixture packs under\n``test/fixtures/packs`` are imported read-only.\n\\\"\\\"\\\"\n\nfrom __future__ import annotations\n\nfrom unittest.mock import MagicMock, patch\n\nimport pytest\n\nfrom research_desk.config import ResearchDeskSettings\nfrom research_desk.evidence import EvidencePackIO\nfrom research_desk.storage import ResearchDeskStore\n\nFIXTURES = {\n    \\\"aapl_buy\\\": \\\"aapl_buy_complete\\\",\n    \\\"msft_review\\\": \\\"msft_review\\\",\n    \\\"tsla_hold\\\": \\\"tsla_hold\\\",\n    \\\"nvda_compact_memory\\\": \\\"nvda_compact_memory\\\",\n}\n\n\n@pytest.fixture()\ndef desk_home(tmp_path):\n    home = tmp_path / \\\"desk\\\"\n    home.mkdir()\n    yield str(home)\n\n\n@pytest.fixture()\ndef settings(desk_home):\n    s = ResearchDeskSettings(home=desk_home)\n    s.ensure_dirs()\n    return s\n\n\n@pytest.fixture()\ndef store(settings):\n    st = ResearchDeskStore(settings.db_path)\n    yield st\n    st.close()\n\n\n@pytest.fixture()\ndef pack_io():\n    return EvidencePackIO()\n\n\n@pytest.fixture(params=[\\\"aapl_buy\\\", \\\"msft_review\\\", \\\"tsla_hold\\\", \\\"nvda_compact_memory\\\"])\ndef fixture_pack(request, pack_io):\n    \\\"\\\"\\\"Each of the four committed fixture packs, imported read-only.\\\"\\\"\\\"\n    return pack_io.import_pack(f\\\"test/fixtures/packs/{FIXTURES[request.param]}\\\")\n\n\n@pytest.fixture()\ndef aapl_pack(pack_io):\n    return pack_io.import_pack(\\\"test/fixtures/packs/aapl_buy_complete\\\")\n\n\n@pytest.fixture()\ndef mock_llm_client():\n    \\\"\\\"\\\"Patch the LLM factory so graph construction needs no live API.\n\n    ``TradingAgentsGraph`` binds ``create_llm_client`` into its own module\n    namespace at import time, so the patch target is that binding (the factory\n    attribute patch in the upstream conftest would not redirect the graph).\n    \\\"\\\"\\\"\n    client = MagicMock()\n    client.get_llm.return_value = MagicMock()\n    with patch(\n        \\\"tradingagents.graph.trading_graph.create_llm_client\\\",\n        return_value=client,\n    ):\n        yield client\n\nSOURCE test/offline/test_at03_ledger_approve.py\n\\\"\\\"\\\"AT-03 / FR-002 / INV-001: normal approval path and transaction idempotence.\n\nCash 100000, zero positions, price 100; the operator approves 100 shares. The\nfirst execution debits cash to 90000 and records 100 shares with the approver,\napproval version and passed policy checks. Executing the same proposal again is\na no-op — no double debit.\n\\\"\\\"\\\"\n\nfrom __future__ import annotations\n\nfrom research_desk.models import ProposalStatus, utcnow_iso\nfrom research_desk.review import approve, create_proposal, execute\n\n\ndef _proposal(*, signal=\\\"Buy\\\", price=100.0, proposal_id=None):\n    return create_proposal(\n        run_id=\\\"run-test\\\",\n        ticker=\\\"AAPL\\\",\n        trade_date=\\\"2026-06-10\\\",\n        signal=signal,\n        rating=signal,\n        price=price,\n        proposal_id=proposal_id or f\\\"prop-at03-{utcnow_iso()[-9:]}\\\",\n    )\n\n\ndef test_at03_approve_execute_records_and_idempotent(store):\n    \\\"\\\"\\\"First execution debits cash and records shares; re-execution is a no-op.\\\"\\\"\\\"\n    proposal = _proposal()\n    store.save_proposal(proposal)\n\n    approved = approve(proposal, shares=100, operator=\\\"leo\\\")\n    store.save_proposal(approved)\n    assert approved.approved_version  # approval bound to this exact proposal version\n\n    updated, execution = execute(store, store.get_proposal(proposal.proposal_id), operator=\\\"leo\\\")\n    ledger = store.get_ledger()\n    assert execution.executed is True\n    assert execution.tx_id\n    assert ledger.cash == 90000.0  # 100000 - 100*100\n    assert ledger.positions[\\\"AAPL\\\"].shares == 100\n    assert ledger.positions[\\\"AAPL\\\"].avg_price == 100.0\n    assert updated.status == ProposalStatus.SIMULATED\n    assert execution.policy_checks  # the deterministic policy results are recorded\n\n    # The proposal itself carries the approver/version/policy trail (INV-001).\n    stored = store.get_proposal(proposal.proposal_id)\n    assert stored.operator == \\\"leo\\\"\n    assert stored.approved_version == approved.approved_version\n\n    # Idempotence: executing the same proposal again changes nothing.\n    before = store.get_ledger()\n    re, rex = execute(store, store.get_proposal(proposal.proposal_id), operator=\\\"leo\\\")\n    after = store.get_ledger()\n    assert re.status == ProposalStatus.SIMULATED\n    assert rex.reason == \\\"already executed\\\"\n    assert after.cash == before.cash == 90000.0\n    assert after.positions[\\\"AAPL\\\"].shares == 100\n    assert len(store.list_transactions()) == 1  # no second transaction\n\n\ndef test_at03_exact_cap_boundary_allowed(store):\n    \\\"\\\"\\\"100 shares @ 100 on 100000 cash is exactly the 10% cap: allowed.\\\"\\\"\\\"\n    from research_desk.models import LedgerState\n    from research_desk.policy import evaluate_buy\n\n    verdict = evaluate_buy(LedgerState(cash=100000.0), \\\"AAPL\\\", 100, 100.0)\n    assert verdict.allowed is True\n    assert abs(verdict.position_value - 10000.0) < 1e-9\n    assert abs(verdict.equity - 100000.0) < 1e-9\n\n\ndef test_at03_accumulates_multiple_positions(store):\n    \\\"\\\"\\\"The cap counts TOTAL holdings after the buy, not each independent ticket.\\\"\\\"\\\"\n    from research_desk.policy import evaluate_buy\n\n    p1 = _proposal(proposal_id=\\\"prop-at03-a\\\")\n\nSOURCE test/offline/test_at05_version_recheck.py\n\\\"\\\"\\\"AT-05 / FR-002 / INV-001: approvals bind the exact proposal version, and\nexecution re-evaluates the *current* ledger. A stale approval or a changed\nledger yields REVIEW_REQUIRED with no partial writes.\n\\\"\\\"\\\"\n\nfrom __future__ import annotations\n\nfrom research_desk.models import ProposalStatus, utcnow_iso\nfrom research_desk.review import approve, create_proposal, execute\n\n\ndef _proposal(signal=\\\"Buy\\\", price=100.0, proposal_id=None):\n    return create_proposal(\n        run_id=\\\"run-x\\\", ticker=\\\"AAPL\\\", trade_date=\\\"2026-06-10\\\",\n        signal=signal, rating=signal, price=price,\n        proposal_id=proposal_id or f\\\"prop-at05-{utcnow_iso()[-9:]}\\\",\n    )\n\n\ndef _approve_and_persist(store, p, shares, operator=\\\"leo\\\"):\n    approved = approve(p, shares=shares, operator=operator)\n    store.save_proposal(approved)\n    return approved\n\n\ndef test_changed_proposal_cannot_ride_old_approval(store):\n    \\\"\\\"\\\"Approval was for price 100; a later price change invalidates it (AT-05).\\\"\\\"\\\"\n    p = _proposal(price=100.0, proposal_id=\\\"prop-at05-version\\\")\n    store.save_proposal(p)\n    approved = _approve_and_persist(store, p, shares=100)\n    # The binding covers the approved content including the operator quantity.\n    assert approved.approved_version  # set at approval time (quantity known)\n    assert approved.approved_version != p.proposal_version  # quantity now bound\n\n    # The run is re-evaluated against new evidence: price changes.\n    changed = _proposal(price=120.0, proposal_id=p.proposal_id)\n    store.save_proposal(changed)\n    stored = store.get_proposal(p.proposal_id)\n    assert stored.proposal_version != approved.approved_version\n\n    updated, ex = execute(store, stored, operator=\\\"leo\\\")\n    assert ex.executed is False\n    assert updated.status == ProposalStatus.REVIEW_REQUIRED\n    assert \\\"version changed\\\" in (updated.reason or \\\"\\\")\n    assert store.get_ledger().cash == 100000.0  # no partial write\n    assert store.get_ledger().positions == {}\n\n\ndef test_changed_quantity_cannot_ride_old_approval(store):\n    \\\"\\\"\\\"Approval binds the quantity too: changing shares invalidates it (AT-05).\\\"\\\"\\\"\n    p = _proposal(price=100.0, proposal_id=\\\"prop-at05-quantity\\\")\n    store.save_proposal(p)\n    _approve_and_persist(store, p, shares=100)\n\n    # The operator later edits the approved proposal to a different quantity.\n    changed = _proposal(price=100.0, proposal_id=p.proposal_id)\n    changed.shares = 90\n    store.save_proposal(changed)\n    stored = store.get_proposal(p.proposal_id)\n\n    updated, ex = execute(store, stored, operator=\\\"leo\\\")\n    assert ex.executed is False\n\nSOURCE test/offline/test_revision_contracts.py\nfrom research_desk.review import ReviewError, approve, create_proposal, execute, reject\n\n\ndef _proposal(*, price: float = 100.0, proposal_id: str | None = None):\n    return create_proposal(\n        run_id=\\\"run-revision\\\",\n        ticker=\\\"AAPL\\\",\n        trade_date=\\\"2026-06-10\\\",\n        signal=\\\"Buy\\\",\n        rating=\\\"Buy\\\",\n        price=price,\n        proposal_id=proposal_id or f\\\"prop-revision-{utcnow_iso()[-9:]}\\\",\n    )\n\n\ndef test_rejected_execute_remains_rejected_and_cannot_be_approved():\n    \\\"\\\"\\\"Execution cannot turn a rejection into an approvable REVIEW_REQUIRED row.\\\"\\\"\\\"\n    store = MagicMock()\n    proposal = _proposal()\n    reject(proposal, operator=\\\"leo\\\")\n    assert proposal.status == ProposalStatus.REJECTED\n\n    updated, execution = execute(store, proposal, operator=\\\"leo\\\")\n\n    assert updated.status == ProposalStatus.REJECTED\n    assert execution.executed is False\n    assert execution.reason == \\\"proposal rejected\\\"\n    store.update_proposal_status.assert_not_called()\n    store.apply_transaction.assert_not_called()\n    store.get_ledger.assert_not_called()\n\n    with pytest.raises(ReviewError, match=\\\"rejected\\\"):\n        approve(updated, shares=100, operator=\\\"leo\\\")\n\n\ndef test_previously_approved_then_rejected_stays_rejected_on_execute():\n    \\\"\\\"\\\"A rejection is terminal even when an earlier approval version is present.\\\"\\\"\\\"\n    store = MagicMock()\n    proposal = _proposal()\n    approved = approve(proposal, shares=100, operator=\\\"leo\\\")\n    assert approved.approved_version\n    reject(approved, operator=\\\"leo\\\")\n    assert approved.status == ProposalStatus.REJECTED\n\n    updated, execution = execute(store, approved, operator=\\\"leo\\\")\n\n    assert updated.status == ProposalStatus.REJECTED\n    assert execution.executed is False\n    assert execution.reason == \\\"proposal rejected\\\"\n    store.update_proposal_status.assert_not_called()\n    store.apply_transaction.assert_not_called()\n\n    with pytest.raises(ReviewError, match=\\\"rejected\\\"):\n        approve(updated, shares=100, operator=\\\"leo\\\")\n\n\nSOURCE src/research_desk/evidence.py\n    return EvidencePack(\n        manifest=manifest,\n        input=input_snapshot,\n        events=events,\n        final_state=final_state,\n        usage=usage,\n        calls=calls or [],\n        proposal=proposal,\n        reports_written=reports_written or [],\n        complete=False,\n    )\n\n\nclass EvidencePackIO:\n    \\\"\\\"\\\"Writes and reads evidence packs as directories or ZIP archives.\\\"\\\"\\\"\n\n    def export(self, pack: EvidencePack, out_dir: str | Path) -> Path:\n        out = Path(out_dir)\n        out.mkdir(parents=True, exist_ok=True)\n        (out / \\\"manifest.json\\\").write_text(\n            json.dumps(sanitize_secrets(pack.manifest.model_dump()), indent=2), encoding=\\\"utf-8\\\"\n        )\n        (out / \\\"input.json\\\").write_text(\n            json.dumps(sanitize_secrets(pack.input.model_dump()), indent=2), encoding=\\\"utf-8\\\"\n        )\n        with (out / \\\"events.jsonl\\\").open(\\\"w\\\", encoding=\\\"utf-8\\\") as fh:\n            for ev in pack.events:\n                fh.write(json.dumps(sanitize_secrets(ev.model_dump())) + \\\"\\n\\\")\n        (out / \\\"final_state.json\\\").write_text(\n            json.dumps(sanitize_secrets(pack.final_state), indent=2), encoding=\\\"utf-8\\\"\n        )\n        (out / \\\"usage.json\\\").write_text(\n            json.dumps(pack.usage.model_dump(), indent=2), encoding=\\\"utf-8\\\"\n\nSOURCE src/research_desk/review.py\n                price=price,\n                evidence_id=evidence_id,\n            )\n        ),\n        created_at=utcnow_iso(),\n    )\n\n\ndef approve(\n    proposal: ProposalRecord,\n    *,\n    shares: int,\n    operator: str,\n) -> ProposalRecord:\n    \\\"\\\"\\\"Approve an exact proposal version with an operator-supplied share count.\n\n    The approval is bound to the proposal's *content* version, so if the run's\n    material inputs (ticker/date/signal/price) later change, the old approval\n    no longer matches and execution requires review.\n    \\\"\\\"\\\"\n    if proposal.status == ProposalStatus.SIMULATED:\n        raise ReviewError(f\\\"proposal {proposal.proposal_id} is already simulated\\\")\n    if proposal.status == ProposalStatus.REJECTED:\n        raise ReviewError(f\\\"proposal {proposal.proposal_id} is rejected and cannot be approved\\\")\n    # REVIEW_REQUIRED is a safe-fail state, not a dead end: after the operator\n    # reviews the current evidence, they may approve the corrected version.\n    if not operator:\n        raise ReviewError(\\\"approval requires an operator identity\\\")\n    if not isinstance(shares, int) or shares <= 0:\n        raise ReviewError(f\\\"shares must be a positive integer, got {shares!r}\\\")\n    if proposal.price is None or proposal.price <= 0:\n        raise ReviewError(\n            f\\\"proposal {proposal.proposal_id} has no evidence price; cannot approve without price\\\"\n        )\n    proposal.shares = shares\n    proposal.operator = operator\n    proposal.status = ProposalStatus.APPROVED\n    proposal.approved_at = utcnow_iso()\n    proposal.approved_version = _proposal_content_version(proposal)\n    return proposal\n\n\ndef reject(proposal: ProposalRecord, *, operator: str, reason: str = \\\"rejected by operator\\\") -> ProposalRecord:\n    if proposal.status == ProposalStatus.SIMULATED:\n        raise ReviewError(f\\\"proposal {proposal.proposal_id} is already simulated\\\")\n    proposal.status = ProposalStatus.REJECTED\n    proposal.operator = operator\n    proposal.reason = reason\n    return proposal\n\n\ndef execute(\n\n...\n       unchanged. On success: apply the transaction atomically.\n    \\\"\\\"\\\"\n    if proposal.status == ProposalStatus.SIMULATED:\n        existing = proposal.execution or ExecutionRecord(executed=True)\n        existing.reason = \\\"already executed\\\"\n        return proposal, existing\n\n    # A rejection is terminal. Check it before any version or generic status\n    # transition so an execution attempt can never reopen it for approval.\n    if proposal.status == ProposalStatus.REJECTED:\n        return proposal, ExecutionRecord(executed=False, reason=\\\"proposal rejected\\\")\n\n    current_version = _proposal_content_version(proposal)\n    # A stale approval for different content is checked before status: an\n    # approved proposal whose run inputs changed must not execute the new\n    # version (AT-05), even though the row now carries the new content.\n    if proposal.approved_version is not None and proposal.approved_version != current_version:\n        proposal.status = ProposalStatus.REVIEW_REQUIRED\n\nSOURCE src/research_desk/models.py\nclass InputSnapshot(BaseModel):\n    \\\"\\\"\\\"The material inputs a run consumed, so a rerun can be replayed.\\\"\\\"\\\"\n\n    instrument_context: str = \\\"\\\"\n    past_context: str = \\\"\\\"\n    initial_state: dict[str, Any] = Field(default_factory=dict)\n    identity: dict[str, Any] = Field(default_factory=dict)\n    data_snapshot: dict[str, dict[str, str]] = Field(\n        default_factory=dict\n    )  # tool_name -> {\\\"canonical args key\\\": result text}\n    memory_used: list[dict[str, Any]] = Field(default_factory=list)\n    memory_sources: list[str] = Field(default_factory=list)\n    # Factual *available* corpus for the case (identity, full market CSV, official\n    # news notes) recorded separately from the tool calls actually made. This is\n    # what makes the evidence-derived price available for proposal/replay even\n    # when a model path did not ask one of the data tools.\n    available_sources: dict[str, Any] = Field(default_factory=dict)\n\n\nclass EvidencePack(BaseModel):\n    \\\"\\\"\\\"A complete, self-contained evidence package for one run.\n\n    ``final_state`` is the graph's merged terminal state; it is the material\n    needed to rebuild reports and derive the signal and policy outputs offline\n\n...\n        return v\n\n\nclass ProposalRecord(BaseModel):\n    \\\"\\\"\\\"A single reviewable proposal produced by a research run.\\\"\\\"\\\"\n\n    proposal_id: str\n    run_id: str\n    ticker: str\n    trade_date: str\n    signal: str\n    rating: str | None = None\n    side: str = \\\"buy\\\"  # \\\"buy\\\" | \\\"sell\\\"; derived from the tradeable signal\n    price: float | None = None  # from evidence only, never operator-typed\n    shares: int | None = None  # from the trusted CLI operator\n    evidence_id: str | None = None  # identity of the frozen evidence that supplied price/signal\n    status: ProposalStatus = ProposalStatus.PENDING_REVIEW\n    proposal_version: str = \\\"\\\"  # binds approvals to this exact content\n    operator: str | None = None\n    created_at: str = \\\"\\\"\n    approved_at: str | None = None\n    approved_version: str | None = None\n    reason: str | None = None\n    execution: ExecutionRecord | None = None\n\n    @field_validator(\\\"shares\\\")\n    @classmethod\n\"",
+          "id": "prt_20389dd560011oPwMVFGDMoPtv",
+          "sessionID": "ses_dfc7622e0ffeeEHfjk9kioCM3d",
+          "messageID": "msg_20389dd530014FWIq0iTNLk1qM"
+        }
+      ]
+    },
+    {
+      "info": {
+        "parentID": "msg_20389dd530014FWIq0iTNLk1qM",
+        "role": "assistant",
+        "mode": "course-work",
+        "agent": "course-work",
+        "path": {
+          "cwd": "/Users/leeyoma/Downloads/cs5351/work/orchestration/submission-repair/jobs/runtime-registration-tests",
+          "root": "/"
+        },
+        "cost": 0,
+        "tokens": {
+          "total": 7497,
+          "input": 4708,
+          "output": 933,
+          "reasoning": 0,
+          "cache": {
+            "write": 0,
+            "read": 1856
+          }
+        },
+        "modelID": "deepseek-flash",
+        "providerID": "course-revision",
+        "time": {
+          "created": 1795355696894,
+          "completed": 1795355704059
+        },
+        "finish": "stop",
+        "id": "msg_20389defe00118nVvy0PBJPzCD",
+        "sessionID": "ses_dfc7622e0ffeeEHfjk9kioCM3d"
+      },
+      "parts": [
+        {
+          "type": "step-start",
+          "id": "prt_20389ea890010bg1sOO11IeKQu",
+          "sessionID": "ses_dfc7622e0ffeeEHfjk9kioCM3d",
+          "messageID": "msg_20389defe00118nVvy0PBJPzCD"
+        },
+        {
+          "type": "text",
+          "text": "{\"changes\":[{\"path\":\"test/offline/test_submission_runtime.py\",\"content\":\"\\\"\\\"\\\"Runtime registration: register_proposal imports advisory terms and preserves\\noperator-assigned shares; legacy packs roundtrip with stable material identity.\\n\\\"\\\"\\\"\\n\\nfrom __future__ import annotations\\n\\nimport pytest\\n\\nfrom research_desk.models import ProposalStatus, utcnow_iso\\nfrom research_desk.review import approve, create_proposal, reject\\n\\n\\ndef _proposal(*, price=100.0, signal=\\\"Buy\\\", proposal_id=None, evidence_id=\\\"ev-1\\\"):\\n    return create_proposal(\\n        run_id=\\\"run-rt\\\",\\n        ticker=\\\"AAPL\\\",\\n        trade_date=\\\"2026-06-10\\\",\\n        signal=signal,\\n        rating=signal,\\n        price=price,\\n        proposal_id=proposal_id or f\\\"prop-rt-{utcnow_iso()[-9:]}\\\",\\n        evidence_id=evidence_id,\\n    )\\n\\n\\ndef test_register_proposal_returns_record_with_advisory_terms(store):\\n    proposal = _proposal()\\n    record = store.register_proposal(proposal)\\n    assert record.proposal_id == proposal.proposal_id\\n    assert record.status == ProposalStatus.PENDING_REVIEW\\n    stored = store.get_proposal(proposal.proposal_id)\\n    assert stored is not None\\n\\n\\ndef test_approved_repeated_unchanged_registration_preserves_shares(store):\\n    proposal = _proposal(proposal_id=\\\"prop-rt-shares\\\")\\n    store.register_proposal(proposal)\\n    approved = approve(store.get_proposal(proposal.proposal_id), shares=42, operator=\\\"leo\\\")\\n    store.register_proposal(approved)\\n    assert store.get_proposal(proposal.proposal_id).shares == 42\\n\\n    again = store.register_proposal(store.get_proposal(proposal.proposal_id))\\n    assert again.shares == 42\\n    assert store.get_proposal(proposal.proposal_id).shares == 42\\n    assert again.approved_version == approved.approved_version\\n\\n\\ndef test_rejected_proposal_retains_status_and_execution(store):\\n    proposal = _proposal(proposal_id=\\\"prop-rt-rej\\\")\\n    store.register_proposal(proposal)\\n    rejected = reject(store.get_proposal(proposal.proposal_id), operator=\\\"leo\\\")\\n    store.register_proposal(rejected)\\n    stored = store.get_proposal(proposal.proposal_id)\\n    assert stored.status == ProposalStatus.REJECTED\\n    assert stored.reason == \\\"rejected by operator\\\"\\n\\n\\ndef test_amended_evidence_known_id_requires_fresh_review(store):\\n    proposal = _proposal(proposal_id=\\\"prop-rt-amend\\\")\\n    store.register_proposal(proposal)\\n    approved = approve(store.get_proposal(proposal.proposal_id), shares=100, operator=\\\"leo\\\")\\n    store.register_proposal(approved)\\n\\n    amended = _proposal(price=120.0, proposal_id=proposal.proposal_id)\\n    record = store.register_proposal(amended)\\n    assert record.proposal_version != approved.approved_version\\n    assert record.status == ProposalStatus.REVIEW_REQUIRED\\n\\n\\ndef test_legacy_pack_roundtrip_material_identity(pack_io, tmp_path):\\n    pack = pack_io.import_pack(\\\"test/fixtures/packs/aapl_buy_complete\\\")\\n    out = tmp_path / \\\"exported\\\"\\n    pack_io.export_dir(pack, out)\\n    reimported = pack_io.import_pack(out)\\n    before = pack.input.model_dump()\\n    after = reimported.input.model_dump()\\n    assert before == after\\n\\n    changed = reimported.input.model_copy(deep=True)\\n    changed.available_sources[\\\"sentinel\\\"] = {\\\"note\\\": \\\"changed\\\"}\\n    assert changed.model_dump() != after\\n\"}]}",
+          "time": {
+            "start": 1795355699852,
+            "end": 1795355704053
+          },
+          "id": "prt_20389ea8c001MILD404jFeB0qT",
+          "sessionID": "ses_dfc7622e0ffeeEHfjk9kioCM3d",
+          "messageID": "msg_20389defe00118nVvy0PBJPzCD"
+        },
+        {
+          "reason": "stop",
+          "type": "step-finish",
+          "tokens": {
+            "total": 7497,
+            "input": 4708,
+            "output": 933,
+            "reasoning": 0,
+            "cache": {
+              "write": 0,
+              "read": 1856
+            }
+          },
+          "cost": 0,
+          "id": "prt_20389faf8001RrVhsceAP4fXEJ",
+          "sessionID": "ses_dfc7622e0ffeeEHfjk9kioCM3d",
+          "messageID": "msg_20389defe00118nVvy0PBJPzCD"
+        }
+      ]
+    }
+  ]
+}

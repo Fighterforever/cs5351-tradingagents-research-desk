@@ -1,0 +1,11 @@
+**Rating**: Overweight
+
+**Executive Summary**: GOOGL, analysis date 2026-07-23, latest close $317.69 [market-googl]. Execute a staged accumulation: take a toehold tranche now at roughly 1.0x neutral weight (below the trader's 1.05–1.10x, per the Neutral analyst's sizing), with a hard cap of 1.25x neutral until a TTM EPS anchor exists. Add tranche two only on a close above 342.09 or a defended 314.90 retest on declining volume; treat a decisive close below 314.90 as the primary integrity trigger and 309.0 as a hard backstop. All levels and sizes are analyst judgments, not sourced facts.
+
+**Investment Thesis**: The operating evidence is one-directional and no analyst in the debate produced a deteriorating operating metric: Q2 2026 revenue $119.796B, +24%; Google Cloud $24.768B, +82% (~20.7% of revenue, calc: 24.768/119.796); operating income $40.770B at a 34% margin [src-googl]. That is the only hard evidence in the room and it supports participation.
+
+The Conservative analyst wins the quality-of-earnings point and I adopt it: quarterly EPS $9.11 and net income $112.107B were inflated by $97.983B of unrealized equity investment gains [src-googl], leaving pre-other-income net income of roughly $14.1B (calc: 112.107 − 97.983) [src-googl]. TTM EPS and trailing P/E are UNKNOWN [src-googl], so no one can call $317.69 cheap — the Aggressive analyst's "the gain-inflation is priced" rests on a single session (−7.1% to $317.69 on 69.42M volume [market-googl]) and is a wager, not evidence. The Neutral analyst is right that this argues for participation, not conviction.
+
+The Conservative's demand to wait for a 342.09 reclaim is rejected: it pays an unquantified confirmation tax and forfeits the asymmetry of a defended 314.90 floor [market-googl]. The Neutral analyst's structural fix is adopted instead — 314.90 close-based trigger as primary, 309.0 as backstop — since ATR/RSI/MACD are UNKNOWN [market-googl] and neither side can prove 309 sits inside or outside the noise band. Net: strong, accelerating operations plus an unresolved downtrend (lower highs from 400.80 on 05-08, floor 314.90 [market-googl]) and no valuation anchor justify a moderate, staged overweight — not a full-conviction Buy.
+
+**Time Horizon**: 3-6 months, re-evaluated at next earnings release
